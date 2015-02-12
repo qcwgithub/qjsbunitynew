@@ -68,5 +68,9 @@ demo使用方法
 9. 不支持泛型！有带泛型的函数都不能使用
 10. 支持函数重载
 11. StreamingAssets/JavaScript/Generated/ 下的脚本一开始会全部被加载
+12. 不支持类的索引器[]
+13. GC 现在是每隔一段时间调用一次。在JSEngine的Inspector中可以配置
+14. 如果要确保脚本中的 Awake 会被调用，需要配置 ScriptExecutionOrder，把 JSComponent 放在 JSEngine 之前。
+15. 如何比较对象相等。例如2个 GameObject。if (go.Equals(goAnother)) {...}. 虽然在C#中是同一个对象，但是在 JS 中不一样！原则就是最好使用函数去判断，不要在JS中使用==。
 
 ...未完待续

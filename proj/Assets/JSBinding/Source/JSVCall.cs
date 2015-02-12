@@ -945,6 +945,7 @@ public class JSVCall
 //         return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, (UInt32)args.Length, vals, ref rvalCallJS);
 //     }
 
+    public jsval[] arrJsval0 = new jsval[0];
     public bool CallJSFunctionValue(IntPtr jsThis, ref jsval valFunction, params object[] args)
     {
         if (JSMgr.isShutDown) return false;
@@ -972,7 +973,7 @@ public class JSVCall
         {
             if (argsLen == 0)
             {
-                return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, 0, null/*IntPtr.Zero*/, ref rvalCallJS);
+                return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, 0, arrJsval0, ref rvalCallJS);
             }
 
             jsval[] vals = new jsval[argsLen];
