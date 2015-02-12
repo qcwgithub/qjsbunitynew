@@ -35,9 +35,10 @@ demo使用方法
 3. 可以在 JS 中使用了
 
 
-杂项说明
+杂项说明（必读）
 ------------------------------------------------------------------------------------
-1. 包含文件 CS.require
+0. 大部分用法已经在 demo 中有展示了
+1. 包含文件 CS.require(fileName, this); 第2个函数可以不填，不填代表global
 2. 在 js 中调用 +-*/ 操作符
     // js code
     var a = new Vector3(1,0,0)
@@ -52,9 +53,20 @@ demo使用方法
     // != -> op_Inequality
 3. 由于 JS 中已经有名为 Object 的对象，UnityEngine 导到 JS 中变成 UnityObject
 4. 任何出错都会在Unity控制台打印出调用堆栈，请注意查看
-5. 大部分用法已经在 demo 中有展示了
+5. 为什么JS代码后缀是 .javascript？因为如果是 .js 的话会被Unity认为是 UnityScript
+6. JS的2种用法
+    6.1 像 demo 里的 RotateObject.javascript那样，做为 一个 'JSComponent' 使用，里面包含 Awake, Start, Update 等函数。然后在某个 GameObject 身上绑定 JSComponent 组件，脚本名写上 RotateObject.javascript（填相对路径，相对于StreamingAssets/JavaScript/）。这种用法主要用来做为程序的入口
+    6.2 不做为 JSComponent 的 JS 文件。你自己通过 CS.require 来包含你的 JS 代码
+7. 传递函数指针给C#的用法。
+    7.1 通过 property 传递。uiEventListener.onClick = jsOnClick;
+    7.2 通过函数参数传递。xxx.SetDeletate(someJSFunction);
+    7.3 必须注意！你的JS函数自己要存着！不能被垃圾回收了。
+8. 如果传递带有 ref/out 的结构体或类参数？直接传就行了！但是必须先new一个对象出来。例如 
+        var hit = new RaycastHit(); //先new一个
+        Physics.Raycast(ray, hit);  //传进去，一会取hit就是新的值了
 
-
-
+9. 不支持泛型！有带泛型的函数都不能使用
+10. 支持函数重载
+11. StreamingAssets/JavaScript/Generated/ 下的脚本一开始会全部被加载
 
 ...未完待续
