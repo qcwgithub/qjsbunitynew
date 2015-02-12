@@ -3,7 +3,7 @@ demo使用方法
 
 运行 UnityJSTestScene 这个场景。可能的错误：
 
-1：InitJSEngine failed. Click menu [Assets -> JSBinding -> Generate JS and CS Bindings]
+1. InitJSEngine failed. Click menu [Assets -> JSBinding -> Generate JS and CS Bindings]
 解决办法：就点一下那个菜单！
 
 2. DllNotFound 错误：
