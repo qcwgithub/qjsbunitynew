@@ -252,6 +252,8 @@ MonoBehaviour:
   port: 5086
   GCInterval: 1
   jsLoader: {fileID: 1690005564}
+  InitLoadScripts:
+  - ErrorHandler
 --- !u!4 &1254577081
 Transform:
   m_ObjectHideFlags: 0

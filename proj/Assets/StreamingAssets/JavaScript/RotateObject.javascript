@@ -1,6 +1,3 @@
-
-CS.require("globalObjects");
-
 /*
 * this is a simple callback js
 * functions (except delegate function) are called with 'this' set to a GameObject

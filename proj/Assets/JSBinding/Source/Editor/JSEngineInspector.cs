@@ -17,8 +17,14 @@ public class JSEngineInspector : Editor
         {
             EditorGUILayout.PropertyField(serializedObject.FindProperty("port"));
         }
+        //EditorGUILayout.PropertyField(serializedObject.FindProperty("OutputFullCallingStackOnError"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("GCInterval"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("jsLoader"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("InitLoadScripts"), true);
+
+        EditorGUILayout.HelpBox(@"1. Check 'Debug' to enable js debugging with Firefox.
+2. Add 'ErrorHandler' to InitLoadScripts to enable printing calling stack on error.
+     It will make the execution a little slower but easier to locate bugs.", MessageType.Info);
 
         serializedObject.ApplyModifiedProperties();
     }

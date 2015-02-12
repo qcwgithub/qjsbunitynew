@@ -209,6 +209,8 @@ public static class JSMgr
         RefCallStaticMethod("CSharpGenerated", "RegisterAll");
         //CSharpGenerated.RegisterAll(); // register cs function
 
+
+
         JSMgr.jsLoader = jsLoader;
         JSMgr.onInitJSEngine = onInitJSEngine;
         foreach (var shortName in jsGeneratedFileNames)
@@ -925,6 +927,23 @@ public static class JSMgr
         return true;
     }
 
+    // same as require
+    public static bool ExecuteFile(string shortName)
+    {
+        IntPtr ptrScript = GetCompiledScript(shortName);
+        if (ptrScript == IntPtr.Zero)
+        {
+            // require must load js SYNC
+            string fullName = JSMgr.getJSFullName(shortName, false);
+            byte[] bytes = jsLoader.LoadJSSync(fullName);
+            ptrScript = JSMgr.CompileScriptContentByte(shortName, bytes, JSMgr.glob, fullName);
+            if (ptrScript == IntPtr.Zero)
+            {
+                return false;
+            }
+        }
+        return JSMgr.ExecuteScriptGlobal(ptrScript, JSMgr.glob);
+    }
     
 
     /*

@@ -951,20 +951,38 @@ public class JSVCall
 
         int argsLen = (args != null ? args.Length : 0);
 
-        jsval[] vals = new jsval[argsLen + 2];
-
-        JSApi.JSh_SetJsvalObject(ref vals[0], jsThis);
-        vals[1] = valFunction;
-
-        if (argsLen > 0)
+        if (JSEngine.inst.OutputFullCallingStackOnError)
         {
-            for (int i = 0; i < args.Length; i++)
-            {
-                vals[i + 2] = CSObject_2_JSValue(args[i]);
-            }
-        }
+            jsval[] vals = new jsval[argsLen + 2];
 
-        return JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", (UInt32)(argsLen + 2), vals, ref rvalCallJS);
+            JSApi.JSh_SetJsvalObject(ref vals[0], jsThis);
+            vals[1] = valFunction;
+
+            if (argsLen > 0)
+            {
+                for (int i = 0; i < args.Length; i++)
+                {
+                    vals[i + 2] = CSObject_2_JSValue(args[i]);
+                }
+            }
+
+            return JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", (UInt32)(argsLen + 2), vals, ref rvalCallJS);
+        }
+        else
+        {
+            if (argsLen == 0)
+            {
+                return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, 0, null/*IntPtr.Zero*/, ref rvalCallJS);
+            }
+
+            jsval[] vals = new jsval[argsLen];
+            for (int i = 0; i < argsLen; i++)
+            {
+                vals[i] = CSObject_2_JSValue(args[i]);
+            }
+
+            return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, (UInt32)argsLen, vals, ref rvalCallJS);
+        }
     }
 
     public enum Oper

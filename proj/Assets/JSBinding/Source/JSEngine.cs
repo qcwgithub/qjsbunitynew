@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-
+using jsval = JSApi.jsval;
 public class JSEngine : MonoBehaviour 
 {
     public static JSEngine inst;
@@ -22,6 +22,13 @@ public class JSEngine : MonoBehaviour
     public float GCInterval = 3f;
     public JSFileLoader jsLoader;
 
+    /*
+     * 
+     */
+    [NonSerialized]
+    public bool OutputFullCallingStackOnError = false;
+    public string[] InitLoadScripts = new string[0];
+
     public void OnInitJSEngine(bool bSuccess)
     {
         /* 
@@ -30,6 +37,30 @@ public class JSEngine : MonoBehaviour
         mDebug = debug;
         if (bSuccess)
         {
+            if (InitLoadScripts != null)
+            {
+                for (var i = 0; i < InitLoadScripts.Length; i++)
+                {
+                    JSMgr.ExecuteFile(InitLoadScripts[i]);
+                }
+            }
+
+            //
+            // Check to see ErrorHandler exists?
+            //
+            jsval valJSFunEntry = new jsval();
+            valJSFunEntry.asBits = 0;
+            if (JSApi.JSh_GetFunctionValue(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", ref valJSFunEntry) && valJSFunEntry.asBits > 0)
+            {
+                Debug.Log("JS: Enable printing calling stack on error.");
+                OutputFullCallingStackOnError = true;
+            }
+            else
+            {
+
+                Debug.Log("JS: Disable printing calling stack on error.");
+            }
+
             inited = true;
             string[] path = new string[2];
             path[0] = JSBindingSettings.jsDir;
