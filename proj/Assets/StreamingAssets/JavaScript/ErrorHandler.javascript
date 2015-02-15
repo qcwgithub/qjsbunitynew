@@ -19,7 +19,7 @@ CS.Call = function ()
         str += "----------- 2) JS Stack -----------\n\n";
         str += ex.stack;
 
-        printWarning(str);
+        Debug.LogWarning(str);
     }
     return ret;
 };
@@ -39,7 +39,7 @@ CS.jsFunctionEntry = function ()
         ret = fun.apply(obj, args.slice(2));
     } catch (ex) {
         var str = "JS Error! Error:\n" + ex + "\n\nStack:\n\n" + ex.stack;
-        printWarning(str);
+        Debug.LogWarning(str);
     }
     return ret;
 };
