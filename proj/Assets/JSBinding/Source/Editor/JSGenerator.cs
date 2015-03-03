@@ -191,6 +191,64 @@ Object.defineProperty({0}, '{1}',
 
         return sb;
     }
+    public static string SharpKitConstructorName(ConstructorInfo constructor, int howmanyConstructors)
+    {
+        ParameterInfo[] paramS = constructor.GetParameters();
+        string name = "ctor";
+        if (howmanyConstructors == 1)
+        {
+            // if there is only one constructor in original class
+            // the constructor name is "ctor", no suffix
+            return name;
+        }
+        for (int i = 0; i < paramS.Length; i++)
+        {
+            Type t = paramS[i].ParameterType;
+            if (!t.IsArray)
+            {
+                name += "$$" + t.Name;
+            }
+            else
+            {
+                name += "$$";
+                while (t.IsArray)
+                {
+                    Type subt = t.GetElementType();
+                    name += subt.Name + "$";
+                    t = subt;
+                }
+                name += "Array";
+            }
+        }
+        return name;
+    }
+    public static StringBuilder BuildConstructors__forsharpkit(Type type, ConstructorInfo[] constructors, int slot, int howmanyConstructors)
+    {
+        string fmt = @"
+{4}.{5} = function({6}) [[
+    return CS.Call({0}, {1}, {2}, {3}, {7}{8});
+]]";
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < constructors.Length; i++)
+        {
+            ConstructorInfo con = constructors[i];
+            ParameterInfo[] ps = con.GetParameters();
+
+            StringBuilder sbFormalParam = new StringBuilder();
+            StringBuilder sbActualParam = new StringBuilder();
+            for (int j = 0; j < ps.Length; j++)
+            {
+                sbFormalParam.AppendFormat("a{0}{1}", j, (j == ps.Length - 1 ? "" : ", "));
+                sbActualParam.AppendFormat("{2}a{0}{1}", j, (j == ps.Length - 1 ? "" : ", "), (j == 0 ? ", " : ""));
+            }
+            sb.AppendFormat(fmt, (int)JSVCall.Oper.CONSTRUCTOR, slot, i/* index */, "true"/* isStatic */,
+                className, SharpKitConstructorName(con, howmanyConstructors), sbFormalParam,
+                "false", /*isOverloaded*/ 
+                sbActualParam);
+        }
+        return sb;
+    }
     public static StringBuilder BuildMethods(Type type, MethodInfo[] methods, int slot)
     {
         /*
@@ -371,6 +429,8 @@ Object.defineProperty({0}, '{1}',
         JSMgr.ATypeInfo ti;
         int slot = JSMgr.AddTypeInfo(type, out ti);
         var sbCons = BuildConstructors(type, ti.constructors, slot);
+        var sbCons__forsharpkit = BuildConstructors__forsharpkit(type, ti.constructors, slot, ti.howmanyConstructors);
+        sbCons.Append(sbCons__forsharpkit);
         var sbFields = BuildFields(type, ti.fields, slot);
         var sbProperties = BuildProperties(type, ti.properties, slot);
         var sbMethods = BuildMethods(type, ti.methods, slot);

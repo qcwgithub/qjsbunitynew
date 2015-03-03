@@ -484,6 +484,7 @@ public static class JSMgr
         public ConstructorInfo[] constructors;
         public MethodInfo[] methods;
         public int[] methodsOLInfo;//0 not overloaded >0 overloaded index
+        public int howmanyConstructors;//how many constructors actually, (before filtering).
     }
     public static List<ATypeInfo> allTypeInfo = new List<ATypeInfo>();
 
@@ -507,6 +508,7 @@ public static class JSMgr
         ti.properties = type.GetProperties(BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.Static);
         ti.methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
         ti.constructors = type.GetConstructors();
+        ti.howmanyConstructors = ti.constructors.Length;
 
         FilterTypeInfo(type, ti);
 
