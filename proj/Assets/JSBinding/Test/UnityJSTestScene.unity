@@ -253,6 +253,7 @@ MonoBehaviour:
   GCInterval: 1
   jsLoader: {fileID: 1690005564}
   InitLoadScripts:
+  - Utilities
   - ErrorHandler
   - SharpKit/jsclr
 --- !u!4 &1254577081

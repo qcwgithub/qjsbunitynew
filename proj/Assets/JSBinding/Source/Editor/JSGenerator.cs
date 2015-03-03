@@ -160,7 +160,7 @@ Object.defineProperty({0}, '{1}',
          * 6 overload count
          * 7 formal parameters
          */
-        string fmt = @"{5} = function({7}) [[
+        string fmt = @"{5} = MakeNS({9}).{5} = function({7}) [[
     /* overloaded {6} */
     return CS.Call({0}, {1}, {2}, {3}, {8}{4});
 ]]";
@@ -187,7 +187,8 @@ Object.defineProperty({0}, '{1}',
             sbActualParam.AppendFormat("{2}a{0}{1}", j, (j == overloadedMaxParamCount - 1 ? "" : ", "), (j == 0 ? ", " : ""));
         }
 
-        sb.AppendFormat(fmt, (int)JSVCall.Oper.CONSTRUCTOR, slot, 0, "true", sbActualParam, className, constructors.Length, sbFormalParam, bOverload ? "true" : "false");
+        sb.AppendFormat(fmt, (int)JSVCall.Oper.CONSTRUCTOR, slot, 0, "true", sbActualParam, className, constructors.Length, sbFormalParam, bOverload ? "true" : "false", 
+            "\""+type.Namespace+"\"" /* namespace string*/);
 
         return sb;
     }
