@@ -254,6 +254,7 @@ MonoBehaviour:
   jsLoader: {fileID: 1690005564}
   InitLoadScripts:
   - ErrorHandler
+  - SharpKit/jsclr
 --- !u!4 &1254577081
 Transform:
   m_ObjectHideFlags: 0
@@ -484,7 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1759ad02b6cfa0429864a3ba728fe2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  y: 20
+  y: 50
 --- !u!4 &2146518923
 Transform:
   m_ObjectHideFlags: 0

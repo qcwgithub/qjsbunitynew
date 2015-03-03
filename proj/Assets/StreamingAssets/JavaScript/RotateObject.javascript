@@ -66,6 +66,18 @@ function Update()
     }
     mTrans.Rotate(rotateVar);
 
+    if (Input.GetMouseButtonDown(1) === true)
+    {
+        // test SharpKit jsclr.js
+        var lst = new System.Collections.Generic.List$1.ctor(System.Int32.ctor);
+        lst.Add(5);
+        lst.Add(8);
+        var arr = lst.ToArray();
+        for (var i = 0; i < arr.length; i++){
+            Debug.Log("Arr[" + i.toString() + "] = " + arr[i].toString());
+        }
+    }
+
     if (Input.GetMouseButtonDown(0) === true)
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -115,5 +127,6 @@ function Destroy()
 
 function OnGUI()
 {
-    GUILayout.TextArea('Click the big cube!', null)
+    GUILayout.TextArea('1) Left click the big cube to test basic function!', null);
+    GUILayout.TextArea('2) Right click anywhere to test SharpKit\'s jsclr!', null);
 }
