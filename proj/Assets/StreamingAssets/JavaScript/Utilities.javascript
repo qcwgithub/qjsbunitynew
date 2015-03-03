@@ -1,7 +1,9 @@
-var _G = this;
 /*
 * Make sure namespace object exists
+* Usage:
+* List = MakeNS("System.Collections.Generic").List = {};
 */
+var _G = this;
 function MakeNS(str)
 {
     var arr = str.split('.') || [];
@@ -13,8 +15,3 @@ function MakeNS(str)
     });
     return obj;
 }
-
-/*
-* Usage
-*/
-// List = MakeNS("System.Collections.Generic").List = {};

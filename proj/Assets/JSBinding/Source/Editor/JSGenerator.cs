@@ -277,6 +277,64 @@ Object.defineProperty({0}, '{1}',
         }
         return sb;
     }
+    public static string SharpKitMethodName(MethodInfo method, bool constructor, bool overloaded /* must be true */)
+    {
+        if (!overloaded) return string.Empty;
+        ParameterInfo[] paramS = method.GetParameters();
+        string name = constructor ? "ctor" : method.Name;
+        for (int i = 0; i < paramS.Length; i++)
+        {
+            name += "$$" + paramS[i].ParameterType.Name;
+        }
+        return name;
+    }
+    public static StringBuilder BuildMethods__forsharpkit(Type type, MethodInfo[] methods, int slot)
+    {
+        /*
+        * methods
+        * 0 class name
+        * 1 method name
+        * 2 formal parameters
+        * 3 slot
+        * 4 index
+        * 5 actual parameters
+        * 6 return type
+        * 7 op
+        * 8 is override
+         * 9 some information
+        */
+        string fmt = @"
+/* {6} {9} */
+{0}.prototype.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, false, this, {8}{5}); ]]";
+        string fmtStatic = @"
+/* static {6} {9} */
+{0}.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, true, {8}{5}); ]]";
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < methods.Length; i++)
+        {
+            MethodInfo method = methods[i];
+
+            if ((i > 0 && method.Name == methods[i - 1].Name) ||
+                (i < methods.Length - 1 && method.Name == methods[i + 1].Name))
+            {
+                StringBuilder sbFormalParam = new StringBuilder();
+                StringBuilder sbActualParam = new StringBuilder();
+                ParameterInfo[] paramS = method.GetParameters();
+                int L = paramS.Length;
+                for (int j = 0; j < L; j++)
+                {
+                    sbFormalParam.AppendFormat("a{0}{1}", j, (j == L - 1 ? "" : ", "));
+                    sbActualParam.AppendFormat("{2}a{0}{1}", j, (j == L - 1 ? "" : ", "), (j == 0 ? ", " : ""));
+                }
+                if (!method.IsStatic)
+                    sb.AppendFormat(fmt, className, SharpKitMethodName(method, false, true), sbFormalParam.ToString(), slot, i, sbActualParam, method.ReturnType.Name, (int)JSVCall.Oper.METHOD, "false", "");
+                else
+                    sb.AppendFormat(fmtStatic, className, SharpKitMethodName(method, false, true), sbFormalParam.ToString(), slot, i, sbActualParam, method.ReturnType.Name, (int)JSVCall.Oper.METHOD, "false", "");
+            }
+        }
+        return sb;
+    }
     public static StringBuilder BuildClass(Type type, StringBuilder sbFields, StringBuilder sbProperties, StringBuilder sbMethods, StringBuilder sbConstructors)
     {
         /*
@@ -316,6 +374,8 @@ Object.defineProperty({0}, '{1}',
         var sbFields = BuildFields(type, ti.fields, slot);
         var sbProperties = BuildProperties(type, ti.properties, slot);
         var sbMethods = BuildMethods(type, ti.methods, slot);
+        var sbMethods__forsharpkit = BuildMethods__forsharpkit(type, ti.methods, slot);
+        sbMethods.Append(sbMethods__forsharpkit);
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons);
         HandleStringFormat(sbClass);
 
