@@ -182,6 +182,15 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int JSh_SetElement(IntPtr cx, IntPtr obj, uint index, ref jsval vp);
 
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern bool JSh_GetProperty(IntPtr cx, IntPtr obj, string name, ref jsval val);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern bool JSh_SetProperty(IntPtr cx, IntPtr obj, string name, ref jsval pVal);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+    public static extern bool JSh_GetUCProperty(IntPtr cx, IntPtr obj, string name, int nameLen, ref jsval val);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+    public static extern bool JSh_SetUCProperty(IntPtr cx, IntPtr obj, string name, int nameLen, ref jsval pVal);
+
     public delegate IntPtr JSh_NewGlobalObject_Del(IntPtr cx, IntPtr clasp, IntPtr principals);
 
     //     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]

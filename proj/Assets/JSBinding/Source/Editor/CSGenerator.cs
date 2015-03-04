@@ -458,6 +458,8 @@ public static class CSGenerator
                         sbRefVariable.AppendFormat("        JSVCall.stJSCS jc{0} = vc.getJSCSObject();\n", i);
                         sbRefVariable.AppendFormat("        {0} arg{1} = ({0})jc{1}.csObj;\n", GetTypeFullName(p.ParameterType), i);
                     }
+
+                    //sbRefVariable.AppendFormat("        {0} arg{1} = ({0})vc.getRefWhatever();\n", GetTypeFullName(p.ParameterType), i);
                 }
                 else
                 {
