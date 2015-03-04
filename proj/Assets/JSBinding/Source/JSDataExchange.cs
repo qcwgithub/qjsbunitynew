@@ -19,6 +19,19 @@ public class JSDataExchange
     JSVCall vc;
 
     enum eGetType { Param, };
+
+    public double getNumberic(eGetType e = eGetType.Param) {
+        switch (e) {
+            
+        // js has only int32 and double, so...
+        int i = vc.currIndex++;
+        if (JSApi.JSh_ArgvIsDouble(vc.cx, vc.vp, i))
+            return (Double)JSApi.JSh_ArgvDouble(vc.cx, vc.vp, i);
+        else
+            return (Double)JSApi.JSh_ArgvInt(vc.cx, vc.vp, i);
+        }
+    }
+
     public Boolean getBool() { return JSApi.JSh_ArgvBool(vc.cx, vc.vp, vc.currIndex++); }
     public String getString() { return JSApi.JSh_ArgvStringS(vc.cx, vc.vp, vc.currIndex++); }
     public Char getChar() { return (Char)JSApi.JSh_ArgvInt(vc.cx, vc.vp, vc.currIndex++); }
@@ -31,23 +44,13 @@ public class JSDataExchange
     public UInt64 getUInt64() { return (UInt64)JSApi.JSh_ArgvInt(vc.cx, vc.vp, vc.currIndex++); }
     public Int64 getInt64() { return (Int64)JSApi.JSh_ArgvInt(vc.cx, vc.vp, vc.currIndex++); }
     public Int32 getEnum() { return (Int32)JSApi.JSh_ArgvInt(vc.cx, vc.vp, vc.currIndex++); }
-    public Single getFloat()
+    public Single getFloat(eGetType e = eGetType.Param)
     {
-        // js has only int32 and double, so...
-        int i = vc.currIndex++;
-        if (JSApi.JSh_ArgvIsDouble(vc.cx, vc.vp, i))
-            return (Single)JSApi.JSh_ArgvDouble(vc.cx, vc.vp, i);
-        else
-            return (Single)JSApi.JSh_ArgvInt(vc.cx, vc.vp, i);
+        return (Single)getNumberic(e);
     }
     public Double getDouble()
     {
-        // js has only int32 and double, so...
-        int i = vc.currIndex++;
-        if (JSApi.JSh_ArgvIsDouble(vc.cx, vc.vp, i))
-            return (Double)JSApi.JSh_ArgvDouble(vc.cx, vc.vp, i);
-        else
-            return (Double)JSApi.JSh_ArgvInt(vc.cx, vc.vp, i);
+        return (Double)getNumberic(e);
     }
 }
 
