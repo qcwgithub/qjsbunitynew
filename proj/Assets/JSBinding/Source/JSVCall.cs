@@ -945,7 +945,7 @@ public class JSVCall
         JSApi.JSh_SetRvalJSVAL(cx, vp, ref val);
     }
 
-    jsval rvalCallJS = new jsval();
+    public jsval rvalCallJS = new jsval();
     // better not use this function, use CallJSFunctionValue instead
     public bool CallJSFunction(IntPtr jsThis, IntPtr/* JSFunction* */ jsFunction, params object[] args)
     {
