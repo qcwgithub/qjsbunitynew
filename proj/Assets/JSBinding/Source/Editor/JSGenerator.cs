@@ -160,7 +160,8 @@ Object.defineProperty({0}, '{1}',
          * 6 overload count
          * 7 formal parameters
          */
-        string fmt = @"{5} = MakeNS({9}).{5} = function({7}) [[
+        //string fmt = @"{5} = MakeNS({9}).{5} = function({7}) [[
+        string fmt = @"{5} = function({7}) [[
     /* overloaded {6} */
     return CS.Call({0}, {1}, {2}, {3}, {8}{4});
 ]]";
@@ -431,12 +432,12 @@ Object.defineProperty({0}, '{1}',
         int slot = JSMgr.AddTypeInfo(type, out ti);
         var sbCons = BuildConstructors(type, ti.constructors, slot);
         var sbCons__forsharpkit = BuildConstructors__forsharpkit(type, ti.constructors, slot, ti.howmanyConstructors);
-        sbCons.Append(sbCons__forsharpkit);
+        //sbCons.Append(sbCons__forsharpkit);
         var sbFields = BuildFields(type, ti.fields, slot);
         var sbProperties = BuildProperties(type, ti.properties, slot);
         var sbMethods = BuildMethods(type, ti.methods, slot);
         var sbMethods__forsharpkit = BuildMethods__forsharpkit(type, ti.methods, slot);
-        sbMethods.Append(sbMethods__forsharpkit);
+        //sbMethods.Append(sbMethods__forsharpkit);
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons);
         HandleStringFormat(sbClass);
 
