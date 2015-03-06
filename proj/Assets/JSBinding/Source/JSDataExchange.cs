@@ -195,6 +195,17 @@ public class JSDataExchangeMgr
                     return csObj;
                 }
                 break;
+            case eGetType.GetARGVRefOut:
+                {
+                    jsval val = new jsval();
+                    JSApi.JSh_SetJsvalUndefined(ref val);
+                    getJSValueOfParam(ref val, vc.currIndex);
+
+                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
+                    object csObj = JSMgr.getCSObj(jsObj);
+                    return csObj;
+                }
+                break;
         }
         return null;
     }
@@ -492,16 +503,62 @@ public class JSDataExchangeMgr
                 break;
         }
     }
-    public void setObject(eSetType e)
+    public void setObject(eSetType e, string className, object csObj)
     {
         switch (e)
         {
             case eSetType.SetRval:
-                //JSApi.JSh_SetRvalDouble(vc.cx, vc.vp, v);
-                .. TO DO
+                {
+                    JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
+                    if (csObj == null)
+                    {
+                        JSApi.JSh_SetRvalJSVAL(vc.cx, vc.vp, ref vc.valReturn);
+                        return;
+                    }
+
+                    IntPtr jsObj;
+                    //jsObj = JSMgr.getJSObj(csObj);
+                    //if (jsObj == IntPtr.Zero)
+                    { // always add a new jsObj
+                        jsObj = JSApi.JSh_NewObjectAsClass(vc.cx, JSMgr.glob, /*className*/csObj.GetType().Name, JSMgr.mjsFinalizer);
+                        if (jsObj == IntPtr.Zero)
+                            jsObj = JSApi.JSh_NewObjectAsClass(vc.cx, JSMgr.glob, /*className*/csObj.GetType().BaseType.Name, JSMgr.mjsFinalizer);
+                        if (jsObj != IntPtr.Zero)
+                            JSMgr.addJSCSRelation(jsObj, csObj);
+                    }
+
+                    if (jsObj == IntPtr.Zero)
+                        JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
+                    else
+                        JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
+
+                    JSApi.JSh_SetRvalJSVAL(vc.cx, vc.vp, ref vc.valReturn);
+                }
                 break;
             case eSetType.UpdateARGVRefOut:
                 {
+                    jsval val = new jsval();
+                    JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
+                    // csObj must not be null
+
+                    IntPtr jsObj;
+                    //jsObj = JSMgr.getJSObj(csObj);
+                    //if (jsObj == IntPtr.Zero)
+                    { // always add a new jsObj
+                        jsObj = JSApi.JSh_NewObjectAsClass(vc.cx, JSMgr.glob, /*className*/csObj.GetType().Name, JSMgr.mjsFinalizer);
+                        if (jsObj == IntPtr.Zero)
+                            jsObj = JSApi.JSh_NewObjectAsClass(vc.cx, JSMgr.glob, /*className*/csObj.GetType().BaseType.Name, JSMgr.mjsFinalizer);
+                        if (jsObj != IntPtr.Zero)
+                            JSMgr.addJSCSRelation(jsObj, csObj);
+                    }
+
+
+                    if (jsObj == IntPtr.Zero)
+                        JSApi.JSh_SetJsvalUndefined(ref val);
+                    else
+                        JSApi.JSh_SetJsvalObject(ref val, jsObj);
+
+                    JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
                 break;
         }
