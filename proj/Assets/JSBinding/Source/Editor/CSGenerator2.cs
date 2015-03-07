@@ -415,97 +415,49 @@ public static class CSGenerator2
         if (!bConstructor)
             directReturn = IsDirectReturn(returnType);
 
+        var paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];        
+        for (int i = 0; i < ps.Length; i++)
+        {
+            paramHandlers[i] = JSDataExchangeMgr.Get_ParamHandler(ps[i], i);
+        }
+
         // minimal params needed
         int minNeedParams = 0;
         for (int i = 0; i < ps.Length; i++)
         {
-            if (ps[i].IsOptional)
-                break;
+            if (ps[i].IsOptional) { break; }
             minNeedParams++;
         }
 
-
         StringBuilder sb = new StringBuilder();
-
-
-
 
         sb.Append("    int len = count;\n");
         for (int j = minNeedParams; j <= ps.Length; j++)
         {
-            StringBuilder sbRefVariable = new StringBuilder();
+            StringBuilder sbGetParam = new StringBuilder();
+            StringBuilder sbActualParam = new StringBuilder();
+            StringBuilder sbUpdateRefParam = new StringBuilder();
 
             // receive ref/out first
             for (int i = 0; i < j; i++)
             {
                 ParameterInfo p = ps[i];
-                if (p.ParameterType.IsByRef || p.IsOut)
-                {
-                    if (IsDirectReturn(p.ParameterType.GetElementType()))
-                    {
-                        // Types below ref/out/[] will come here
-                        // Enum,Boolean,String,Char,Byte,SByte,UInt16,Int16,UInt32,Int32,UInt64,Int64,Single,Double
-                        sbRefVariable.AppendFormat("        JSValueWrap.Wrap wrap{0} = vc.getWrap();\n", i);
-                        sbRefVariable.AppendFormat("        {0} arg{1} = ({0})wrap{1}.obj;\n", GetTypeFullName(p.ParameterType), i);
-                    }
-                    else if (p.ParameterType.GetElementType().IsValueType)
-                    {
-                        // struct ref/out/[] will come here
-                        sbRefVariable.AppendFormat("        JSVCall.stJSCS jc{0} = vc.getJSCSObject();\n", i);
-                        sbRefVariable.AppendFormat("        {0} arg{1} = ({0})jc{1}.csObj;\n", GetTypeFullName(p.ParameterType), i);
-                    }
-                    else
-                    {   // this branch will never enter   yes  once! UnitySorrogateSelector.GetSurrogate
-                        // class(including interface) ref/out will come here
-                        sbRefVariable.AppendFormat("        JSVCall.stJSCS jc{0} = vc.getJSCSObject();\n", i);
-                        sbRefVariable.AppendFormat("        {0} arg{1} = ({0})jc{1}.csObj;\n", GetTypeFullName(p.ParameterType), i);
-                    }
-
-                    //sbRefVariable.AppendFormat("        {0} arg{1} = ({0})vc.getRefWhatever();\n", GetTypeFullName(p.ParameterType), i);
-                }
+                if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
+                    sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n", GetTypeFullName(p.ParameterType), i, GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i));
                 else
-                {
-                    if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
-                    {
-                        sbRefVariable.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n", GetTypeFullName(p.ParameterType), i, GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i));
-                    }
-                    else
-                    {
-                        sbRefVariable.AppendFormat("        {0} arg{1} = ({0}){2};\n", GetTypeFullName(p.ParameterType), i, BuildRetriveParam(p.ParameterType));
-                    }
-                }
-            }
+                    sbGetParam.Append(paramHandlers[i].getter);
 
-            // sP: actual parameters
-            StringBuilder sbP = new StringBuilder();
-            for (int i = 0; i < j; i++)
-            {
-                ParameterInfo p = ps[i];
+
                 // value type array
                 // no 'out' nor 'ref'
                 if ((p.ParameterType.IsByRef || p.IsOut) && !p.ParameterType.IsArray)
-                    sbP.AppendFormat("{0} arg{1}{2}", (p.IsOut) ? "out" : "ref", i, (i == j - 1 ? "" : ", "));
+                    sbActualParam.AppendFormat("{0} arg{1}{2}", (p.IsOut) ? "out" : "ref", i, (i == j - 1 ? "" : ", "));
                 else
-                    sbP.AppendFormat("arg{0}{1}", i, (i == j - 1 ? "" : ", "));
-            }
+                    sbActualParam.AppendFormat("arg{0}{1}", i, (i == j - 1 ? "" : ", "));
 
-            // write ref/out variables back
-            StringBuilder sbSaveRefVariable = new StringBuilder();
-            for (int i = 0; i < j; i++)
-            {
-                ParameterInfo p = ps[i];
-                if (p.ParameterType.IsByRef || p.IsOut)
+                if (paramHandlers[i].updater != string.Empty)
                 {
-                    if (IsDirectReturn(p.ParameterType.GetElementType()))
-                        sbSaveRefVariable.AppendFormat("        wrap{0}.obj = arg{0};\n", i);
-                    else if (p.ParameterType.GetElementType().IsValueType)
-                    {
-                        sbSaveRefVariable.AppendFormat("        JSMgr.changeJSObj(jc{0}.jsObj, arg{0});", i);
-                    }
-                    else
-                    {   // this branch will never enter   yes  once! UnitySorrogateSelector.GetSurrogate
-                        sbSaveRefVariable.AppendFormat("        JSMgr.changeJSObj(jc{0}.jsObj, arg{0});", i);
-                    }
+                    sbUpdateRefParam.Append(paramHandlers[i]);
                 }
             }
 
@@ -523,21 +475,32 @@ public static class CSGenerator2
         vc.returnObject( '{7}', new {1}{2}({3}) );
 {6}
     ]]
-", j, "", GetTypeFullName(type)/* can't use methodName here, it's .ctor*/, sbP.ToString(), (j == minNeedParams) ? "" : "else ", sbRefVariable, sbSaveRefVariable, type.Name);
+", 
+                 j,  // [0] param length
+                 "",
+                 GetTypeFullName(type),               // [2] method name, can't use methodName here, it's .ctor
+                 sbActualParam.ToString(),            // [3] actual params
+                 (j == minNeedParams) ? "" : "else ", // [4] else
+                 sbGetParam,        // [5] get param
+                 sbUpdateRefParam,  // [6] update ref/out param
+                 type.Name);        // [7] 
             }
             else
             {
                 StringBuilder sbCall = new StringBuilder();
                 if (bStatic)
-                    sbCall.AppendFormat("{0}.{1}({2})", GetTypeFullName(type), methodName, sbP.ToString());
+                    sbCall.AppendFormat("{0}.{1}({2})", GetTypeFullName(type), methodName, sbActualParam.ToString());
                 else if (!type.IsValueType)
-                    sbCall.AppendFormat("(({0})vc.csObj).{1}({2})", GetTypeFullName(type), methodName, sbP.ToString());
+                    sbCall.AppendFormat("(({0})vc.csObj).{1}({2})", GetTypeFullName(type), methodName, sbActualParam.ToString());
                 else
-                    sbCall.AppendFormat("argThis.{0}({1})", methodName, sbP.ToString());
-                StringBuilder sbFullCall = new StringBuilder();
-                if (returnVoid) sbFullCall.AppendFormat("{0};", sbCall);
-                else if (directReturn) sbFullCall.AppendFormat("{0};", BuildReturnObject(returnType, sbCall.ToString()));
-                else sbFullCall.AppendFormat("object ret = {0};\n{1};", sbCall, BuildReturnObject(returnType, "ret"));
+                    sbCall.AppendFormat("argThis.{0}({1})", methodName, sbActualParam.ToString());
+
+//                 StringBuilder sbFullCall = new StringBuilder();
+//                 if (returnVoid) sbFullCall.AppendFormat("{0};", sbCall);
+//                 else if (directReturn) sbFullCall.AppendFormat("{0};", BuildReturnObject(returnType, sbCall.ToString()));
+//                 else sbFullCall.AppendFormat("object ret = {0};\n{1};", sbCall, BuildReturnObject(returnType, "ret"));
+
+                string callAndReturn =  JSDataExchangeMgr.Get_Return(returnType, sbCall.ToString());
 
                 StringBuilder sbStruct = null;
                 if (type.IsValueType && !bStatic)
@@ -549,15 +512,21 @@ public static class CSGenerator2
                 sb.AppendFormat(@"    {1}if (len == {0}) 
     [[
 {5}
-        {3}
         {2}
+        {3}
         {4}
 {6}
     ]]
-", j, (j == minNeedParams) ? "" : "else ", sbFullCall, (type.IsValueType && !bStatic) ? sbStruct.ToString() : "", (type.IsValueType && !bStatic) ? "JSMgr.changeJSObj(vc.jsObj, argThis);" : "", sbRefVariable, sbSaveRefVariable);
+", 
+                 j, // [0] param count
+                 (j == minNeedParams) ? "" : "else ",  // [1] else
+                 (type.IsValueType && !bStatic) ? sbStruct.ToString() : "",  // [2] if Struct, get argThis first
+                 callAndReturn,  // [3] function call and return to js
+                 (type.IsValueType && !bStatic) ? "JSMgr.changeJSObj(vc.jsObj, argThis);" : "",  // [4] if Struct, update 'this' object
+                 sbGetParam,        // [5] get param
+                 sbUpdateRefParam); // [6] update ref/out param
 
             }
-
         }
 
         return sb;
@@ -1040,6 +1009,7 @@ using UnityEngine;
     [MenuItem("Assets/JSBinding/Generate JS and CS Bindings2")]
     public static void GenerateJSCSBindings()
     {
+        JSDataExchangeMgr.reset();
         CSGenerator2.GenerateClassBindings();
         JSGenerator.GenerateClassBindings();
         AssetDatabase.Refresh();

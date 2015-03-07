@@ -10,6 +10,10 @@ using jsval = JSApi.jsval;
 public class JSDataExchangeMgr
 {
     JSVCall vc;
+    public JSDataExchangeMgr(JSVCall vc)
+    {
+        this.vc = vc;
+    }
 
     public enum eGetType
     {
@@ -67,6 +71,9 @@ public class JSDataExchangeMgr
                         return (double)JSApi.JSh_GetJsvalInt(ref vc.rvalCallJS);
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
         return 0;
     }
@@ -88,6 +95,9 @@ public class JSDataExchangeMgr
             case eGetType.GetJSFUNRET:
                 return JSApi.JSh_GetJsvalBool(ref vc.rvalCallJS);
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
         return false;
     }
@@ -107,6 +117,9 @@ public class JSDataExchangeMgr
                 break;
             case eGetType.GetJSFUNRET:
                 return JSApi.JSh_GetJsvalStringS(vc.cx, ref vc.rvalCallJS);
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
         return string.Empty;
@@ -178,6 +191,9 @@ public class JSDataExchangeMgr
                     Debug.LogError("getFunction not support eGetType.GetJSFUNRET");
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
         return val;
     }
@@ -205,6 +221,9 @@ public class JSDataExchangeMgr
                     object csObj = JSMgr.getCSObj(jsObj);
                     return csObj;
                 }
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
         return null;
@@ -234,6 +253,9 @@ public class JSDataExchangeMgr
                     else if (JSApi.JSh_ArgvIsNullOrUndefined(vc.cx, vc.vp, i))
                         return null;
                 }
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
         return null;
@@ -267,6 +289,9 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
     }
     public void setString(eSetType e, string v)
@@ -284,6 +309,9 @@ public class JSDataExchangeMgr
                     if (jsObj == IntPtr.Zero) Debug.LogError("ref/out param must be js obj!");
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
     }
@@ -303,6 +331,9 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
     }
     public void setSByte(eSetType e, SByte v)
@@ -320,6 +351,9 @@ public class JSDataExchangeMgr
                     if (jsObj == IntPtr.Zero) Debug.LogError("ref/out param must be js obj!");
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
     }
@@ -339,6 +373,9 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
     }
     public void setInt16(eSetType e, Int16 v)
@@ -356,6 +393,9 @@ public class JSDataExchangeMgr
                     if (jsObj == IntPtr.Zero) Debug.LogError("ref/out param must be js obj!");
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
     }
@@ -375,6 +415,9 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
     }
     public void setInt32(eSetType e, Int32 v)
@@ -392,6 +435,9 @@ public class JSDataExchangeMgr
                     if (jsObj == IntPtr.Zero) Debug.LogError("ref/out param must be js obj!");
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
     }
@@ -411,6 +457,9 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
     }
     public void setInt64(eSetType e, Int64 v)
@@ -428,6 +477,9 @@ public class JSDataExchangeMgr
                     if (jsObj == IntPtr.Zero) Debug.LogError("ref/out param must be js obj!");
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
     }
@@ -447,6 +499,9 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
     }
     public void getEnum(eSetType e, int v)
@@ -464,6 +519,9 @@ public class JSDataExchangeMgr
                     if (jsObj == IntPtr.Zero) Debug.LogError("ref/out param must be js obj!");
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
     }
@@ -483,6 +541,9 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
     }
     public void getDouble(eSetType e, Double v)
@@ -500,6 +561,9 @@ public class JSDataExchangeMgr
                     if (jsObj == IntPtr.Zero) Debug.LogError("ref/out param must be js obj!");
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
+                break;
+            default:
+                Debug.LogError("Not Supported");
                 break;
         }
     }
@@ -561,6 +625,9 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetUCProperty(vc.cx, jsObj, "Value", 5, ref val);
                 }
                 break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
         }
     }
     #endregion
@@ -593,35 +660,42 @@ public class JSDataExchangeMgr
         }
     }
 
-    Dictionary<Type, JSDataExchange> dict;
-    public void init()
+    static Dictionary<Type, JSDataExchange> dict;
+    static JSDataExchange enumExchange;
+    static JSDataExchange objExchange;
+    public static void reset()
     {
         dict = new Dictionary<Type, JSDataExchange>();
-        dict.Add(typeof(String), new JSDataExchange_String());
+
         dict.Add(typeof(Boolean), new JSDataExchange_Boolean());
-        dict.Add(typeof(Char), new JSDataExchange_Char());
         dict.Add(typeof(Byte), new JSDataExchange_Byte());
         dict.Add(typeof(SByte), new JSDataExchange_SByte());
+        dict.Add(typeof(Char), new JSDataExchange_Char());
         dict.Add(typeof(Int16), new JSDataExchange_Int16());
         dict.Add(typeof(UInt16), new JSDataExchange_UInt16());
         dict.Add(typeof(Int32), new JSDataExchange_Int32());
         dict.Add(typeof(UInt32), new JSDataExchange_UInt32());
         dict.Add(typeof(Int64), new JSDataExchange_Int64());
         dict.Add(typeof(UInt64), new JSDataExchange_UInt64());
-        dict.Add(typeof(Enum), new JSDataExchange_Enum());
         dict.Add(typeof(Single), new JSDataExchange_Single());
         dict.Add(typeof(Double), new JSDataExchange_Double());
+
+        dict.Add(typeof(String), new JSDataExchange_String());
+        dict.Add(typeof(System.Object), new JSDataExchange_SystemObject());
+
+        enumExchange = new JSDataExchange_Enum();
+        objExchange = new JSDataExchange_Obj();
     }
 
     // Editor only
     public struct ParamHandler
     {
-        public string argName; // arg0, arg1, arg2...
+        public string argName; // argN
         public string getter;
         public string updater;
     }
     // Editor only
-    public ParamHandler Get_ParamHandler(Type type, int paramIndex, bool isOutOrRef)
+    public static ParamHandler Get_ParamHandler(Type type, int paramIndex, bool isOutOrRef)
     {
         ParamHandler ph = new ParamHandler();
         ph.argName = "arg" + paramIndex.ToString();
@@ -633,38 +707,50 @@ public class JSDataExchangeMgr
         }
 
         JSDataExchange xcg;
-        if (dict.TryGetValue(type, out xcg))
+        if (dict.TryGetValue(type, out xcg)) {}
+        if (xcg == null && type.IsPrimitive) { 
+            Debug.LogError("Unknown Primitive Type: " + type.ToString()); 
+        }
+        if (typeof(System.Delegate).IsAssignableFrom(type)) { 
+            Debug.LogError("Delegate should not get here"); 
+        }
+        if (type.IsEnum) xcg = enumExchange;
+        xcg = objExchange;
+
+        string typeFullName = GetTypeFullName(type);
+        string get_getParam = isOutOrRef ? xcg.Get_GetRefOutParam(type) : xcg.Get_GetParam(type);
+        if (isOutOrRef) { ph.updater = xcg.Get_ReturnRefOut(ph.argName) + ";"; }
+        if (xcg.needCast) { 
+            ph.getter = typeFullName + " " + ph.argName + " = (" + typeFullName + ")" + xcg.Get_GetParam(type) + ";"; 
+        }
+        else { 
+            ph.getter = typeFullName + " " + ph.argName + " = " + xcg.Get_GetParam(type) + ";"; 
+        }
+        
+        if (!isOutOrRef)
         {
-            if (!isOutOrRef)
-            {
-                ph.getter = ph.argName + " = " + xcg.Get_GetParam(type) + ";";
-                ph.updater = string.Empty;
-            }
-            else
-            {
-                ph.getter = ph.argName + " = " + xcg.Get_GetRefOutParam(type);
-                ph.updater = xcg.Get_ReturnRefOut(ph.argName) + ";";
-            }
+            ph.getter = typeFullName + " " + ph.argName + " = " + xcg.Get_GetParam(type) + ";";
+            ph.updater = string.Empty;
         }
         else
         {
-            if (type.IsPrimitive) { Debug.LogError("Unknown Primitive Type: " + type.ToString()); }
-            if (typeof(System.Delegate).IsAssignableFrom(type)) { }
+            ph.getter = typeFullName + " " + ph.argName + " = " + xcg.Get_GetRefOutParam(type);
+            ph.updater = xcg.Get_ReturnRefOut(ph.argName) + ";";
         }
         return ph;
     }
 
     // Editor only
-    public ParamHandler Get_ParamHandler(ParameterInfo paramInfo, int paramIndex)
+    public static ParamHandler Get_ParamHandler(ParameterInfo paramInfo, int paramIndex)
     {
         return Get_ParamHandler(paramInfo.ParameterType, paramIndex, paramInfo.ParameterType.IsByRef || paramInfo.IsOut);
     }
-    public string Get_Return(Type t, string expVar) 
+    public static string Get_Return(Type t, string expVar) 
     {
         JSDataExchange de;
         if (dict.TryGetValue(t, out de))
         {
-            return de.Get_Return(expVar);
+            return de.Get_Return(expVar) + ";";
         }
         return "";
     }
@@ -678,127 +764,129 @@ public class JSDataExchange
 
     public virtual string Get_GetRefOutParam(Type t) { Debug.LogError("X Get_GetRefOutParam "); return string.Empty; }
     public virtual string Get_ReturnRefOut(string expVar) { Debug.LogError("X Get_ReturnRefOut "); return string.Empty; }
+
+    public virtual bool needCast { get { return false; } }
 }
 
 #region Actual Data Exchange (Only for Editor)
 
-public class JSDataExchange_Object : JSDataExchange
-{
-    public override string Get_GetParam(Type t) { return "getWhatever(eGetType.GetARGV)"; }
-    //public override string Get_Return(string expVar) { return "setWhatever(eSetType.SetRval, " + expVar + ")"; }
-    //public override string Get_GetRefOutParam(Type t) { return "getWhatever(eGetType.GetARGVRefOut)"; }
-    //public override string Get_ReturnRefOut(string expVar) { return "setWhatever(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
-}
-
-public class JSDataExchange_String : JSDataExchange
-{
-    public override string Get_GetParam(Type t) { return "getString(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setString(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getString(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setString(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
-}
-
 public class JSDataExchange_Boolean : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getBoolean(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setBoolean(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getBoolean(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setBoolean(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setBoolean(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setBoolean(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
-
-public class JSDataExchange_Char : JSDataExchange
-{
-    public override string Get_GetParam(Type t) { return "getChar(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setChar(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getChar(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setChar(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
-}
-
 public class JSDataExchange_Byte : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getByte(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setByte(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getByte(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setByte(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getByte(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setByte(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getByte(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setByte(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
-
 public class JSDataExchange_SByte : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getSByte(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setSByte(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getSByte(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setSByte(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getSByte(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setSByte(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getSByte(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setSByte(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+}
+public class JSDataExchange_Char : JSDataExchange
+{
+    public override string Get_GetParam(Type t) { return "vc.datax.getChar(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setChar(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getChar(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setChar(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
 public class JSDataExchange_Int16 : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getInt16(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setInt16(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getInt16(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setInt16(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getInt16(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setInt16(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getInt16(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setInt16(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
-
 public class JSDataExchange_UInt16 : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getUInt16(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setUInt16(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getUInt16(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setUInt16(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getUInt16(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setUInt16(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getUInt16(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setUInt16(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
-
 public class JSDataExchange_Int32 : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getInt32(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setInt32(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getInt32(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setInt32(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getInt32(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setInt32(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getInt32(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setInt32(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
-
 public class JSDataExchange_UInt32 : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getUInt32(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setUInt32(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getUInt32(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setUInt32(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getUInt32(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setUInt32(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getUInt32(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setUInt32(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
-
 public class JSDataExchange_Int64 : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getInt64(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setInt64(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getInt64(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setInt64(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getInt64(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setInt64(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getInt64(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setInt64(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
-
 public class JSDataExchange_UInt64 : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getUInt64(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setUInt64(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getUInt64(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setUInt64(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getUInt64(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setUInt64(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getUInt64(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setUInt64(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
-
-public class JSDataExchange_Enum : JSDataExchange
-{
-    public override string Get_GetParam(Type t) { return "(" + JSDataExchangeMgr.GetTypeFullName(t) + ")" + "getEnum(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setEnum(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getEnum(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setEnum(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
-}
-
 public class JSDataExchange_Single : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getSingle(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setSingle(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getSingle(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setSingle(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getSingle(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setSingle(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getSingle(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setSingle(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
-
 public class JSDataExchange_Double : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "getDouble(eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "setDouble(eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetRefOutParam(Type t) { return "getDouble(eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "setDouble(eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getDouble(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setDouble(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getDouble(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setDouble(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+}
+
+// System.Object
+public class JSDataExchange_SystemObject : JSDataExchange
+{
+    public override string Get_GetParam(Type t) { return "vc.datax.getWhatever(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    //public override string Get_Return(string expVar) { return "setWhatever(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    //public override string Get_GetRefOutParam(Type t) { return "getWhatever(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    //public override string Get_ReturnRefOut(string expVar) { return "setWhatever(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override bool needCast { get { return true; } }
+}
+public class JSDataExchange_String : JSDataExchange
+{
+    public override string Get_GetParam(Type t) { return "vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setString(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setString(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+}
+public class JSDataExchange_Enum : JSDataExchange
+{
+    public override string Get_GetParam(Type t) { return "(" + JSDataExchangeMgr.GetTypeFullName(t) + ")" + "vc.datax.getEnum(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setEnum(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getEnum(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setEnum(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override bool needCast { get { return true; } }
+}
+public class JSDataExchange_Obj : JSDataExchange
+{
+    public override string Get_GetParam(Type t) { return "vc.datax.getObject(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setObject(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getObject(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setObject(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override bool needCast { get { return true; } }
+
 }
 
 #endregion

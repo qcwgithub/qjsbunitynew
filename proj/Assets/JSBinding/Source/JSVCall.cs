@@ -22,6 +22,12 @@ using jsval = JSApi.jsval;
 
 public class JSVCall
 {
+    public JSDataExchangeMgr datax;
+    public JSVCall()
+    {
+        datax = new JSDataExchangeMgr(this);
+    }
+
     public enum Consts
     {
         MaxParams = 16,
