@@ -437,7 +437,7 @@ Object.defineProperty({0}, '{1}',
         var sbProperties = BuildProperties(type, ti.properties, slot);
         var sbMethods = BuildMethods(type, ti.methods, slot);
         var sbMethods__forsharpkit = BuildMethods__forsharpkit(type, ti.methods, slot);
-        //sbMethods.Append(sbMethods__forsharpkit);
+        sbMethods.Append(sbMethods__forsharpkit);
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons);
         HandleStringFormat(sbClass);
 

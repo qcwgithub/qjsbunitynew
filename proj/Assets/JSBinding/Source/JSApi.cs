@@ -186,10 +186,37 @@ public class JSApi
     public static extern bool JSh_GetProperty(IntPtr cx, IntPtr obj, string name, ref jsval val);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool JSh_SetProperty(IntPtr cx, IntPtr obj, string name, ref jsval pVal);
+
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
     public static extern bool JSh_GetUCProperty(IntPtr cx, IntPtr obj, string name, int nameLen, ref jsval val);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
     public static extern bool JSh_SetUCProperty(IntPtr cx, IntPtr obj, string name, int nameLen, ref jsval pVal);
+
+
+    public static bool GetProperty(IntPtr cx, IntPtr obj, string name, int nameLen, ref jsval val)
+    {
+        return JSh_GetUCProperty(cx, obj, name, nameLen, ref val);
+
+        if (!JSApi.JSh_IsArrayObject(cx, obj))
+        {
+            Debug.LogError(" NOT ARRAY OBJECT ");
+            return false;
+        }
+        JSApi.JSh_GetElement(cx, obj, (uint)0, ref val);
+        return true;
+    }
+    public static bool SetProperty(IntPtr cx, IntPtr obj, string name, int nameLen, ref jsval val)
+    {
+        return JSh_SetUCProperty(cx, obj, name, nameLen, ref val);
+
+        if (!JSApi.JSh_IsArrayObject(cx, obj))
+        {
+            Debug.LogError(" NOT ARRAY OBJECT ");
+            return false;
+        }
+        JSApi.JSh_SetElement(cx, obj, (uint)0, ref val);
+        return true;
+    }
 
     public delegate IntPtr JSh_NewGlobalObject_Del(IntPtr cx, IntPtr clasp, IntPtr principals);
 

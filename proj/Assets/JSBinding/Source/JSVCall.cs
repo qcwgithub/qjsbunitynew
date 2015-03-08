@@ -40,6 +40,7 @@ public class JSVCall
         public object wrappedObj { get { return ((JSValueWrap.Wrap)csObj).obj; } set { ((JSValueWrap.Wrap)csObj).obj = value; } }
         public bool isArray;
         public bool isNull;
+        public jsval valRO; // if valRO.asBits > 0, means this JS param is {Value: XXX}
     }
     // cs function information
     public class CSParam
@@ -304,7 +305,7 @@ public class JSVCall
         if (jsObj == IntPtr.Zero) 
             return null;
         jsval val = new jsval(); val.asBits = 0;
-        JSApi.JSh_GetUCProperty(cx, jsObj, "Value", 5, ref val);
+        JSApi.JSh_GetUCProperty(cx, jsObj, "Value", 0, ref val);
 
         if (val.asBits == 0)
             return null;
@@ -447,6 +448,7 @@ public class JSVCall
             jsParam.isNull = JSApi.JSh_ArgvIsNull(cx, vp, index);
             jsParam.isArray = false;
             jsParam.csObj = null;
+            jsParam.valRO.asBits = 0;
 
             IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, index);
             if (jsObj == IntPtr.Zero)
@@ -463,8 +465,19 @@ public class JSVCall
                 object csObj = JSMgr.getCSObj(jsObj);
                 if (csObj == null)
                 {
-                    Debug.Log("ExtractJSParams: CSObject is not found");
-                    return false;
+                    jsval valo = new jsval();
+                    JSApi.JSh_SetJsvalUndefined(ref valo);
+                    JSApi.GetProperty(cx, jsObj, "Value", -1, ref valo);
+                    if (!JSApi.JSh_JsvalIsNullOrUndefined(ref valo))
+                    {
+                        jsParam.valRO = valo;
+                        jsObj = JSApi.JSh_GetJsvalObject(ref valo);
+                        csObj = JSMgr.getCSObj(jsObj);
+                    }
+                    else{
+                        Debug.Log("ExtractJSParams: CSObject is not found");
+                        return false;
+                    }
                 }
                 jsParam.csObj = csObj;
             }
@@ -492,30 +505,31 @@ public class JSVCall
                 //                     return false;
                 return true;
             }
-            else if (arrJSParam[csParamIndex].isWrap)
-            {
-                Type jsType = arrJSParam[csParamIndex].wrappedObj.GetType();
-
-                if (!csType.IsByRef)
-                {
-                    if (csType != jsType && !csType.IsAssignableFrom(jsType))
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    Type csElementType = csType.GetElementType();
-                    if (csElementType != jsType && !csElementType.IsAssignableFrom(jsType))
-                    {
-                        return false;
-                    }
-                }
-            }
+//             else if (arrJSParam[csParamIndex].isWrap)
+//             {
+//                 Type jsType = arrJSParam[csParamIndex].wrappedObj.GetType();
+// 
+//                 if (!csType.IsByRef)
+//                 {
+//                     if (csType != jsType && !csType.IsAssignableFrom(jsType))
+//                     {
+//                         return false;
+//                     }
+//                 }
+//                 else
+//                 {
+//                     Type csElementType = csType.GetElementType();
+//                     if (csElementType != jsType && !csElementType.IsAssignableFrom(jsType))
+//                     {
+//                         return false;
+//                     }
+//                 }
+//             }
             else// if (!arrJSParam[csParamIndex].isWrap)
             {
                 if (arrJSParam[csParamIndex].csObj != null)
                 {
+                    // cann't use rrJSParam[csParamIndex].index here
                     Type jsType = arrJSParam[csParamIndex].csObj.GetType();
                     if (!csType.IsByRef)
                     {
@@ -535,16 +549,33 @@ public class JSVCall
                 }
                 else
                 {
-                    if (csType == typeof(bool))
-                        return JSApi.JSh_ArgvIsBool(cx, vp, arrJSParam[csParamIndex].index);
-                    else if (csType == typeof(string))
-                        return JSApi.JSh_ArgvIsString(cx, vp, arrJSParam[csParamIndex].index);
-                    else if (csType.IsEnum || csType.IsPrimitive)
-                        return JSApi.JSh_ArgvIsNumber(cx, vp, arrJSParam[csParamIndex].index);
-                    else if (csType.IsArray)
-                        return true;
+                    if (arrJSParam[csParamIndex].valRO.asBits == 0)
+                    {
+                        if (csType == typeof(bool))
+                            return JSApi.JSh_ArgvIsBool(cx, vp, arrJSParam[csParamIndex].index);
+                        else if (csType == typeof(string))
+                            return JSApi.JSh_ArgvIsString(cx, vp, arrJSParam[csParamIndex].index);
+                        else if (csType.IsEnum || csType.IsPrimitive)
+                            return JSApi.JSh_ArgvIsNumber(cx, vp, arrJSParam[csParamIndex].index);
+                        else if (csType.IsArray)
+                            return true;
+                        else
+                            return false;
+                    }
                     else
-                        return false;
+                    {
+                        jsval val = arrJSParam[csParamIndex].valRO;
+                        if (csType == typeof(bool))
+                            return JSApi.JSh_JsvalIsBool(ref val);
+                        else if (csType == typeof(string))
+                            return JSApi.JSh_JsvalIsString(ref val);
+                        else if (csType.IsEnum || csType.IsPrimitive)
+                            return JSApi.JSh_JsvalIsNumber(ref val);
+                        else if (csType.IsArray)
+                            return true;
+                        else
+                            return false;
+                    }
                 }
             }
         }

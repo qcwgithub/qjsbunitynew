@@ -41,13 +41,14 @@ function Start()
     // expected output is 899
     // 'CS' is defined in c#
     var k = new Kekoukele();
-    var v = CS.int32(0);
+    var v = {Value: 1}
     k.getValue(v);
-    Debug.Log("ref/out changed: 0->" + v.Value().toString())
-    var arr = k.getArr();
-    for (var i = 0; i < arr.length; i++) {
-        Debug.Log("Array from C#: arr[" + i + "] = " + arr[i].toString());
-    }
+    Debug.Log("ref/out changed: 1->" + v.Value.toString())
+
+    //var arr = k.getArr();
+    //for (var i = 0; i < arr.length; i++) {
+    //    Debug.Log("Array from C#: arr[" + i + "] = " + arr[i].toString());
+    //}
 
     // not supported now.
     // k.inputIntArr([999,888,777,666,555])
@@ -84,7 +85,11 @@ function Update()
         // call function with out struct
         // must call new to create object at first
         var hit = new RaycastHit();
-        Physics.Raycast(ray, hit);
+
+		var _out = {Value: hit}
+        Physics.Raycast(ray, _out);
+		hit = _out.Value;
+
         var t = hit.transform;
         
         //if (t !== undefined)

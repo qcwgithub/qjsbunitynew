@@ -445,7 +445,7 @@ public static class CSGenerator2
                 if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
                     sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n", GetTypeFullName(p.ParameterType), i, GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i));
                 else
-                    sbGetParam.Append(paramHandlers[i].getter);
+                    sbGetParam.Append(paramHandlers[i].getter + "\n");
 
 
                 // value type array
@@ -455,10 +455,8 @@ public static class CSGenerator2
                 else
                     sbActualParam.AppendFormat("arg{0}{1}", i, (i == j - 1 ? "" : ", "));
 
-                if (paramHandlers[i].updater != string.Empty)
-                {
-                    sbUpdateRefParam.Append(paramHandlers[i]);
-                }
+                // updater
+                sbUpdateRefParam.Append(paramHandlers[i].updater);
             }
 
             /*
@@ -469,21 +467,37 @@ public static class CSGenerator2
              */
             if (bConstructor)
             {
-                sb.AppendFormat(@"    {4}if (len == {0}) 
+                StringBuilder sbCall = new StringBuilder();
+                sbCall.AppendFormat("new {0}({1})", GetTypeFullName(type), sbActualParam.ToString());
+                string callAndReturn = JSDataExchangeMgr.Get_Return(type/*don't use returnType*/, sbCall.ToString());
+                sb.AppendFormat(@"    {1}if (len == {0}) 
     [[
-{5}
-        vc.returnObject( '{7}', new {1}{2}({3}) );
-{6}
+{2}
+        {3}
+{4}
     ]]
-", 
-                 j,  // [0] param length
-                 "",
-                 GetTypeFullName(type),               // [2] method name, can't use methodName here, it's .ctor
-                 sbActualParam.ToString(),            // [3] actual params
-                 (j == minNeedParams) ? "" : "else ", // [4] else
-                 sbGetParam,        // [5] get param
-                 sbUpdateRefParam,  // [6] update ref/out param
-                 type.Name);        // [7] 
+",
+                 j,                  // [0] param length
+                 (j == minNeedParams) ? "" : "else ", // [1] else
+                 sbGetParam,         // [2] get param
+                 callAndReturn,      // [3] 
+                 sbUpdateRefParam);  // [4] update ref/out params
+
+//                 sb.AppendFormat(@"    {4}if (len == {0}) 
+//     [[
+// {5}
+//         vc.returnObject( '{7}', new {1}{2}({3}) );
+// {6}
+//     ]]
+// ", 
+//                  j,  // [0] param length
+//                  "",
+//                  GetTypeFullName(type),               // [2] method name, can't use methodName here, it's .ctor
+//                  sbActualParam.ToString(),            // [3] actual params
+//                  (j == minNeedParams) ? "" : "else ", // [4] else
+//                  sbGetParam,        // [5] get param
+//                  sbUpdateRefParam,  // [6] update ref/out param
+//                  type.Name);        // [7] 
             }
             else
             {

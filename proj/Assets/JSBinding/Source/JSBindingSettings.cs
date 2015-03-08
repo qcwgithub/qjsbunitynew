@@ -25,7 +25,9 @@ public class Kekoukele
     {
 
     }
-    public void getValue(out int v) { v = 899; }
+    public void getValue(out int v) { 
+		v = 899; 
+	}
     public int[] getArr()
     {
         return new int[] { 5,6,8};
