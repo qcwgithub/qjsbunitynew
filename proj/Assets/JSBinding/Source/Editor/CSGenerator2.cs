@@ -795,8 +795,8 @@ public class CSharpGenerated
     }
     public static void GenerateAllJSFileNames()
     {
-        if (!JSGenerator.typeClassName.ContainsKey(typeof(UnityEngine.Object)))
-            JSGenerator.typeClassName.Add(typeof(UnityEngine.Object), "UnityObject");
+        if (!JSGenerator2.typeClassName.ContainsKey(typeof(UnityEngine.Object)))
+            JSGenerator2.typeClassName.Add(typeof(UnityEngine.Object), "UnityObject");
 
         string fmt = @"
 public class JSGeneratedFileNames
@@ -811,8 +811,8 @@ public class JSGeneratedFileNames
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
             string name = JSBindingSettings.classes[i].Name;
-            if (JSGenerator.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
-                name = JSGenerator.typeClassName[JSBindingSettings.classes[i]];
+            if (JSGenerator2.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
+                name = JSGenerator2.typeClassName[JSBindingSettings.classes[i]];
             sbA.AppendFormat("        \"{0}\",\n", name);
         }
         StringBuilder sb = new StringBuilder();
@@ -1025,7 +1025,7 @@ using UnityEngine;
     {
         JSDataExchangeMgr.reset();
         CSGenerator2.GenerateClassBindings();
-        JSGenerator.GenerateClassBindings();
+        JSGenerator2.GenerateClassBindings();
         AssetDatabase.Refresh();
     }
 

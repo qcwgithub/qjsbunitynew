@@ -337,6 +337,8 @@ Object.defineProperty({0}, '{1}',
         }
         return sb;
     }
+
+    // only overloaded methods come here
     public static string SharpKitMethodName(MethodInfo method, bool constructor, bool overloaded /* must be true */)
     {
         if (!overloaded) return string.Empty;
@@ -344,7 +346,23 @@ Object.defineProperty({0}, '{1}',
         string name = constructor ? "ctor" : method.Name;
         for (int i = 0; i < paramS.Length; i++)
         {
-            name += "$$" + paramS[i].ParameterType.Name;
+            Type type = paramS[i].ParameterType;
+            if (type.IsByRef) { type = type.GetElementType(); }
+            if (!type.IsArray)
+            {
+                name += "$$" + type.Name;
+            }
+            else
+            {
+                name += "$$";
+                while (type.IsArray)
+                {
+                    Type subt = type.GetElementType();
+                    name += subt.Name + "$";
+                    type = subt;
+                }
+                name += "Array";
+            }
         }
         return name;
     }
@@ -378,6 +396,7 @@ Object.defineProperty({0}, '{1}',
             if ((i > 0 && method.Name == methods[i - 1].Name) ||
                 (i < methods.Length - 1 && method.Name == methods[i + 1].Name))
             {
+                // only overloaded functions enter here
                 StringBuilder sbFormalParam = new StringBuilder();
                 StringBuilder sbActualParam = new StringBuilder();
                 ParameterInfo[] paramS = method.GetParameters();
