@@ -12,7 +12,8 @@ public class Kekoukele
 {
     public delegate void MyFun(int v);
     public MyFun fun;
-    public int mvalue;
+    public int instValue;
+    public static int staticValue;
     public void emptyCall()
     {
 

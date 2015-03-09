@@ -78,8 +78,8 @@ Object.defineProperty({0}, '{1}',
 ";
 
         string fmt2 = @"
-_jstype.definition.get_{0} = function() [[ return CS.Call({1}, {3}, {4}, {5}{6}); ]]
-_jstype.definition.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]]
+_jstype.{7}.get_{0} = function() [[ return CS.Call({1}, {3}, {4}, {5}{6}); ]]
+_jstype.{7}.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]]
 ";
 
         var sb = new StringBuilder();
@@ -94,7 +94,8 @@ _jstype.definition.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}
                 slot, 
                 i,
                 (field.IsStatic ? "true" : "false"),
-                (field.IsStatic ? "" : ", this"));
+                (field.IsStatic ? "" : ", this"), 
+                (field.IsStatic ? "staticDefinition" : "definition"));
 
 //             if (!field.IsStatic)
 //                 sb.AppendFormat(fmt, className, field.Name, slot, i, (int)JSVCall.Oper.GET_FIELD, (int)JSVCall.Oper.SET_FIELD, field.FieldType.Name,
@@ -138,8 +139,8 @@ Object.defineProperty({0}, '{1}',
 ]]);
 ";
         string fmt2 = @"
-_jstype.definition.get_{0} = function() [[ return CS.Call({1}, {3}, {4}, {5}{6}); ]]
-_jstype.definition.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]]
+_jstype.{7}.get_{0} = function() [[ return CS.Call({1}, {3}, {4}, {5}{6}); ]]
+_jstype.{7}.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]]
 ";
 
         StringBuilder sb = new StringBuilder();
@@ -157,8 +158,9 @@ _jstype.definition.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}
                 (int)JSVCall.Oper.SET_PROPERTY, // [2] op
                 slot,                           // [3]
                 i,                              // [4]
-                (isStatic ? "true" : "false"),
-                (isStatic ? "" : ", this"));
+                (isStatic ? "true" : "false"),  // [5] isStatic
+                (isStatic ? "" : ", this"),     // [6] this
+                (isStatic ? "staticDefinition" : "definition"));                 // [7]
 
 //             sb.AppendFormat(isStatic ? fmtStatic : fmt, 
 //                 className,      // [0] class name
@@ -444,10 +446,10 @@ _jstype.definition.{4} = function({5}) [[
     {
         string fmt = @"
 /* {6} {9} */
-{0}.prototype.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, false, this, {8}{5}); ]]";
+_jstype.definition.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, false, this, {8}{5}); ]]";
         string fmtStatic = @"
 /* static {6} {9} */
-{0}.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, true, {8}{5}); ]]";
+_jstype.staticDefinition.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, true, {8}{5}); ]]";
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < methods.Length; i++)
@@ -509,14 +511,16 @@ _jstype.definition.{4} = function({5}) [[
         JSMgr.ATypeInfo ti;
         int slot = JSMgr.AddTypeInfo(type, out ti);
         var sbHeader = BuildHeader(type);
-        var sbCons = sbHeader.Append(BuildConstructors(type, ti.constructors, slot));
-        var sbCons__forsharpkit = BuildConstructors__forsharpkit(type, ti.constructors, slot, ti.howmanyConstructors);
-        sbCons.Append(sbCons__forsharpkit);
+        //var sbCons = sbHeader.Append(BuildConstructors(type, ti.constructors, slot));
+        //var sbCons__forsharpkit = BuildConstructors__forsharpkit(type, ti.constructors, slot, ti.howmanyConstructors);
+        var sbCons = sbHeader.Append(BuildConstructors__forsharpkit(type, ti.constructors, slot, ti.howmanyConstructors));
+        //sbCons.Append(sbCons__forsharpkit);
         var sbFields = BuildFields(type, ti.fields, slot);
         var sbProperties = BuildProperties(type, ti.properties, slot);
-        var sbMethods = BuildMethods(type, ti.methods, slot);
-        var sbMethods__forsharpkit = BuildMethods__forsharpkit(type, ti.methods, slot);
-        sbMethods.Append(sbMethods__forsharpkit);
+        //var sbMethods = BuildMethods(type, ti.methods, slot);
+        //var sbMethods__forsharpkit = BuildMethods__forsharpkit(type, ti.methods, slot);
+        //sbMethods.Append(sbMethods__forsharpkit);
+        var sbMethods = BuildMethods__forsharpkit(type, ti.methods, slot);
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons);
         HandleStringFormat(sbClass);
 
