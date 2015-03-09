@@ -14,6 +14,7 @@ var rotateVar = undefined
 var fAccum = 0
 function Awake()
 {   
+	return;
     // example to test value type
     // also demostrate to call function with object parameter
     // output: 100,66666
@@ -37,6 +38,7 @@ function Awake()
 }
 function Start()
 {
+	return;
     // expample to call out parameter by wrapping it
     // expected output is 899
     // 'CS' is defined in c#
@@ -56,6 +58,7 @@ function Start()
 
 function Update()
 {
+	return;
     // here
     // 'this' means a GameObject
 
@@ -127,11 +130,13 @@ function Update()
 
 function Destroy()
 {
+	return;
     Debug.Log('js Destroy Called!')
 }
 
 function OnGUI()
 {
+	return;
     GUILayout.TextArea('1) Left click the big cube to test basic function!', null);
     GUILayout.TextArea('2) Right click anywhere to test SharpKit\'s jsclr!', null);
 }

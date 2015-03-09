@@ -176,13 +176,23 @@ _jstype.{7}.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]
         }
         return sb;
     }
+    public static StringBuilder BuildTail()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append(@"
+
+
+JsTypes.push(_jstype);");
+        return sb;
+    }
     public static StringBuilder BuildHeader(Type type)
     {
-        string fmt =
-@"if (typeof(JsTypes) == 'undefined')
+        string fmt =@"if (typeof(JsTypes) == 'undefined')
     var JsTypes = [];
 
-var {0} = _jstype = [[
+// {0}
+_jstype = 
+[[
     definition: [[]],
     staticDefinition: [[]],
     assemblyName: '{1}',
@@ -296,9 +306,7 @@ var {0} = _jstype = [[
     public static StringBuilder BuildConstructors__forsharpkit(Type type, ConstructorInfo[] constructors, int slot, int howmanyConstructors)
     {
         string fmt = @"
-_jstype.definition.{4} = function({5}) [[
-    return CS.Call({0}, {1}, {2}, {3}, {6}{7});
-]]";
+_jstype.definition.{4} = function({5}) [[ return CS.Call({0}, {1}, {2}, {3}, {6}{7}); ]]";
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < constructors.Length; i++)
@@ -521,6 +529,7 @@ _jstype.staticDefinition.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, tr
         //var sbMethods__forsharpkit = BuildMethods__forsharpkit(type, ti.methods, slot);
         //sbMethods.Append(sbMethods__forsharpkit);
         var sbMethods = BuildMethods__forsharpkit(type, ti.methods, slot);
+        sbMethods.Append(BuildTail());
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons);
         HandleStringFormat(sbClass);
 

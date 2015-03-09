@@ -93,6 +93,10 @@ public static class JSMgr
         }
 
         IntPtr ptrScript = JSMgr.CompileScriptContentByte(shortName, bytes, JSMgr.glob, fullName);
+        if (ptrScript == IntPtr.Zero)
+        {
+            return;
+        }
         JSMgr.ExecuteScript(ptrScript, JSMgr.glob);
 
         loadedGeneratedJS++;

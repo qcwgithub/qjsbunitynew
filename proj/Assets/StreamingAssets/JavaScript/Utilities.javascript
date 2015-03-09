@@ -15,3 +15,25 @@ function MakeNS(str)
     });
     return obj;
 }
+
+function Compile()
+{
+	JsTypes.forEach(function(t){
+        Debug.Log("Compile: " + t.fullname);
+	});
+}
+
+Compile();
+
+var _Test = {
+    print: function() { Debug.Log(this.v); },
+	v: 5
+}
+
+var _Apple = {
+	print: _Test.print,
+	v: 9
+};
+
+_Test.print()
+_Apple.print()
