@@ -290,11 +290,14 @@ public class JSBindingSettings
          * Classes to export for demo
          * Add classes here to export
          */
-
-        typeof(UnityEngine.GameObject), 
-        typeof(UnityEngine.Object), 
-        typeof(UnityEngine.Vector3), 
+        typeof(UnityEngine.Object),
+        typeof(System.Object),
+        typeof(System.ValueType),
         typeof(Transform),
+        typeof(Component),
+        typeof(Behaviour),
+        typeof(UnityEngine.GameObject), 
+        typeof(UnityEngine.Vector3), 
         typeof(Physics),
         typeof(RaycastHit),
         typeof(Ray),

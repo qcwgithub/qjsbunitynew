@@ -246,7 +246,7 @@ _jstype =
     assemblyName: '{1}',
     Kind: '{2}',
     fullname: '{3}',
-    baseTypeName: '{4}', 
+    {4}
 ]];
 
 ";
@@ -268,7 +268,7 @@ _jstype =
             assemblyName, 
             Kind, 
             fullname, 
-            baseTypeName);
+            baseTypeName.Length > 0 ? "baseTypeName: '" + baseTypeName + "'" : "");
 
         return sb;
     }

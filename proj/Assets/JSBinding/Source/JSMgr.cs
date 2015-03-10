@@ -153,11 +153,43 @@ public static class JSMgr
             return null;
         return field.GetValue(null);
     }
+    /* test! */
+    public static void GenericTest(Type type, string s)
+    {
+        if (type.IsGenericParameter)
+            s += "IsGenericParameter: true\n";
+        else
+            s += "IsGenericParameter: false\n";
+        if (type.IsGenericType)
+            s += "IsGenericType: true\n";
+        else
+            s += "IsGenericType: false\n";
+        if (type.IsGenericTypeDefinition)
+            s += "IsGenericTypeDefinition: true\n";
+        else
+            s += "IsGenericTypeDefinition: false\n";
+
+        if (type.ContainsGenericParameters)
+            s += "ContainsGenericParameters: true\n";
+        else
+            s += "ContainsGenericParameters: false\n";
+
+        Type[] ts = type.GetGenericArguments();
+        s += "GetGenericArguments: ";
+        for (int i = 0; i < ts.Length; i++)
+        {
+            s += "\n" + ts[i].ToString() + "\n";
+        }
+
+        Debug.Log(s);
+    }
+
 
     static IntPtr oldCompartment = IntPtr.Zero;
     static JSFileLoader jsLoader;
     public static bool InitJSEngine(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
     {
+        //GenericTest(typeof(List<Component>), "List<Component> \n");
         if (!JSApi.JSh_Init())
         {
             onInitJSEngine(false);

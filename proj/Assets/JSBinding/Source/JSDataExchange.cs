@@ -639,6 +639,8 @@ public class JSDataExchangeMgr
 
     public static string GetTypeFullName(Type type)
     {
+        if (type == null) return "";
+
         if (type.IsByRef)
             type = type.GetElementType();
 
