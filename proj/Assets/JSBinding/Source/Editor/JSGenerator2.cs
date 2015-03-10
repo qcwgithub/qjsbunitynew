@@ -47,6 +47,54 @@ public static class JSGenerator2
         enumWriter.Close();
     }
 
+    public static string SharpKitTypeName(Type type)
+    {
+        string name = string.Empty;
+        if (type.IsByRef)
+        {
+            name = SharpKitTypeName(type.GetElementType());
+        }
+        else if (type.IsArray)
+        {
+            while (type.IsArray)
+            {
+                Type subt = type.GetElementType();
+                name += SharpKitTypeName(subt) + '$';
+                type = subt;
+            }
+            name += "Array";
+        }
+        else if (type.IsGenericType)
+        {
+            name = type.Name;
+            Type[] ts = type.GetGenericArguments();
+            for (int i = 0; i < ts.Length; i++)
+            {
+                name += "$" + SharpKitTypeName(ts[i]);
+            }
+        }
+        else
+        {
+            name = type.Name;
+        }
+        return name;
+
+    }
+    public static string SharpKitMethodName(string methodName, ParameterInfo[] paramS, bool overloaded)
+    {
+        string name = methodName;
+        if (overloaded)
+        {
+            for (int i = 0; i < paramS.Length; i++)
+            {
+                Type type = paramS[i].ParameterType;
+                name += "$$" + SharpKitTypeName(type);
+            }
+            name = name.Replace("`", "$");
+        }
+        return name;
+    }
+
     public static StringBuilder BuildFields(Type type, FieldInfo[] fields, int slot)
     {
         /*
@@ -203,7 +251,7 @@ _jstype =
 
 ";
         string jsTypeName = JSDataExchangeMgr.GetTypeFullName(type);
-        jsTypeName.Replace('.', '$');
+        jsTypeName = jsTypeName.Replace('.', '$');
 
         string assemblyName = "";
         string Kind = "unknown";
@@ -270,37 +318,6 @@ _jstype =
 
         return sb;
     }
-    public static string SharpKitConstructorName(ConstructorInfo constructor, int howmanyConstructors)
-    {
-        ParameterInfo[] paramS = constructor.GetParameters();
-        string name = "ctor";
-        if (howmanyConstructors == 1)
-        {
-            // if there is only one constructor in original class
-            // the constructor name is "ctor", no suffix
-            return name;
-        }
-        for (int i = 0; i < paramS.Length; i++)
-        {
-            Type t = paramS[i].ParameterType;
-            if (!t.IsArray)
-            {
-                name += "$$" + t.Name;
-            }
-            else
-            {
-                name += "$$";
-                while (t.IsArray)
-                {
-                    Type subt = t.GetElementType();
-                    name += subt.Name + "$";
-                    t = subt;
-                }
-                name += "Array";
-            }
-        }
-        return name;
-    }
     // this can handle all constructors
     // can simply delete BuildConstructors() function
     public static StringBuilder BuildConstructors__forsharpkit(Type type, ConstructorInfo[] constructors, int slot, int howmanyConstructors)
@@ -326,7 +343,7 @@ _jstype.definition.{4} = function({5}) [[ return CS.Call({0}, {1}, {2}, {3}, {6}
                 slot, 
                 i/* index */, 
                 "true"/* isStatic */,
-                SharpKitConstructorName(con, howmanyConstructors), sbFormalParam,
+                SharpKitMethodName("ctor", ps, (howmanyConstructors > 1)), sbFormalParam,
                 "false", /*isOverloaded*/ 
                 sbActualParam);
         }
@@ -419,36 +436,6 @@ _jstype.definition.{4} = function({5}) [[ return CS.Call({0}, {1}, {2}, {3}, {6}
         return sb;
     }
 
-    public static string SharpKitMethodName(MethodInfo method, bool constructor, bool overloaded /* can be false or true */)
-    {
-        ParameterInfo[] paramS = method.GetParameters();
-        string name = constructor ? "ctor" : method.Name;
-        if (!overloaded)
-        {
-            return name;
-        }
-        for (int i = 0; i < paramS.Length; i++)
-        {
-            Type type = paramS[i].ParameterType;
-            if (type.IsByRef) { type = type.GetElementType(); }
-            if (!type.IsArray)
-            {
-                name += "$$" + type.Name;
-            }
-            else
-            {
-                name += "$$";
-                while (type.IsArray)
-                {
-                    Type subt = type.GetElementType();
-                    name += subt.Name + "$";
-                    type = subt;
-                }
-                name += "Array";
-            }
-        }
-        return name;
-    }
     // can handle all methods
     public static StringBuilder BuildMethods__forsharpkit(Type type, MethodInfo[] methods, int slot)
     {
@@ -477,9 +464,9 @@ _jstype.staticDefinition.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, tr
                 sbActualParam.AppendFormat("{2}a{0}{1}", j, (j == L - 1 ? "" : ", "), (j == 0 ? ", " : ""));
             }
             if (!method.IsStatic)
-                sb.AppendFormat(fmt, className, SharpKitMethodName(method, false, bOverloaded), sbFormalParam.ToString(), slot, i, sbActualParam, method.ReturnType.Name, (int)JSVCall.Oper.METHOD, "false", "");
+                sb.AppendFormat(fmt, className, SharpKitMethodName(method.Name, paramS, bOverloaded), sbFormalParam.ToString(), slot, i, sbActualParam, method.ReturnType.Name, (int)JSVCall.Oper.METHOD, "false", "");
             else
-                sb.AppendFormat(fmtStatic, className, SharpKitMethodName(method, false, bOverloaded), sbFormalParam.ToString(), slot, i, sbActualParam, method.ReturnType.Name, (int)JSVCall.Oper.METHOD, "false", "");
+                sb.AppendFormat(fmtStatic, className, SharpKitMethodName(method.Name, paramS, bOverloaded), sbFormalParam.ToString(), slot, i, sbActualParam, method.ReturnType.Name, (int)JSVCall.Oper.METHOD, "false", "");
         }
         return sb;
     }
