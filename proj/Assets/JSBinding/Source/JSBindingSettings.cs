@@ -296,6 +296,7 @@ public class JSBindingSettings
         typeof(Transform),
         typeof(Component),
         typeof(Behaviour),
+        typeof(MonoBehaviour),
         typeof(UnityEngine.GameObject), 
         typeof(UnityEngine.Vector3), 
         typeof(Physics),
