@@ -1095,7 +1095,7 @@ public class JSVCall
 
         if (slot < 0 || slot >= JSMgr.allCallbackInfo.Count)
         {
-            Debug.LogError("Bad slot: " + slot);
+			throw(new Exception("Bad slot: " + slot));
             return JSApi.JS_FALSE;
         }
         JSMgr.CallbackInfo aInfo = JSMgr.allCallbackInfo[slot];
@@ -1104,12 +1104,16 @@ public class JSVCall
         if (!isStatic)
         {
             this.jsObj = JSApi.JSh_ArgvObject(cx, vp, 4);
-            if (this.jsObj == IntPtr.Zero)
+			if (this.jsObj == IntPtr.Zero) {
+				throw(new Exception("Invalid this jsObj"));
                 return JSApi.JS_FALSE;
+			}
 
             this.csObj = JSMgr.getCSObj(jsObj);
-            if (this.csObj == null)
+			if (this.csObj == null) {
+				throw(new Exception("Invalid this csObj"));
                 return JSApi.JS_FALSE;
+			}
 
             currentParamCount++;
         }
@@ -1176,7 +1180,7 @@ public class JSVCall
                             i++;
                             if (arrMethod[i].methodName != methodName)
                             {
-                                Debug.LogError("Overloaded function can't find match: " + methodName);
+								throw(new Exception("Overloaded function can't find match: " + methodName));
                                 return JSApi.JS_FALSE;
                             }
                         }
@@ -1253,12 +1257,16 @@ public class JSVCall
         if (!isStatic)
         {
             IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, 4);
-            if (jsObj == IntPtr.Zero)
+            if (jsObj == IntPtr.Zero) {
+				Debug.LogError("Invalid this jsObj");
                 return JSApi.JS_FALSE;
+			}
 
             csObj = JSMgr.getCSObj(jsObj);
-            if (csObj == null)
+			if (csObj == null) {
+				Debug.LogError("Invalid this csObj");
                 return JSApi.JS_FALSE;
+			}
 
             currentParamCount++;
         }

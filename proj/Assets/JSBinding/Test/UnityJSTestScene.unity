@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d34e05ff953c2740b1340fbee4f79a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: RotateObject
+  jsScriptName: RotateObject_SharpKit
 --- !u!23 &1828056889
 Renderer:
   m_ObjectHideFlags: 0

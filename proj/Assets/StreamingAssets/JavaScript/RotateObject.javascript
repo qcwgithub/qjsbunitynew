@@ -13,8 +13,7 @@ var mTrans = undefined
 var rotateVar = undefined
 var fAccum = 0
 function Awake()
-{   
-	return;
+{
     // example to test value type
     // also demostrate to call function with object parameter
     // output: 100,66666
@@ -38,7 +37,6 @@ function Awake()
 }
 function Start()
 {
-	return;
     // expample to call out parameter by wrapping it
     // expected output is 899
     // 'CS' is defined in c#
@@ -58,7 +56,6 @@ function Start()
 
 function Update()
 {
-	return;
     // here
     // 'this' means a GameObject
 

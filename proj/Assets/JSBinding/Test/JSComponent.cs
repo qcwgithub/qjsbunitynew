@@ -69,8 +69,10 @@ public class JSComponent : MonoBehaviour
         }
 
         go = JSApi.JSh_NewObjectAsClass(JSMgr.cx, JSMgr.glob, "GameObject", JSMgr.mjsFinalizer);
-        if (go == IntPtr.Zero)
+        if (go == IntPtr.Zero) {
+			Debug.LogWarning ("JSComponent: create JS GameObject object failed!");
             return;
+		}
 
         // protect from being GC
         //JSApi.JSh_AddObjectRoot(JSMgr.cx, ref go);
