@@ -582,22 +582,12 @@ public class JSDataExchangeMgr
                         return;
                     }
 
-                    IntPtr jsObj;
-                    //jsObj = JSMgr.getJSObj(csObj);
-                    //if (jsObj == IntPtr.Zero)
-                    { // always add a new jsObj
-                        jsObj = JSApi.JSh_NewObjectAsClass(vc.cx, JSMgr.glob, csObj.GetType().Name, JSMgr.mjsFinalizer);
-                        if (jsObj == IntPtr.Zero)
-                            jsObj = JSApi.JSh_NewObjectAsClass(vc.cx, JSMgr.glob, csObj.GetType().BaseType.Name, JSMgr.mjsFinalizer);
-                        if (jsObj != IntPtr.Zero)
-                            JSMgr.addJSCSRelation(jsObj, csObj);
-                    }
-
-                    if (jsObj == IntPtr.Zero)
-                        JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
-                    else
+                    IntPtr jsObj = JSDataExchangeMgr.NewJSObject(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
+                    if (jsObj != IntPtr.Zero)
+                    {
+                        JSMgr.addJSCSRelation(jsObj, csObj);
                         JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
-
+                    }
                     JSApi.JSh_SetRvalJSVAL(vc.cx, vc.vp, ref vc.valReturn);
                 }
                 break;
@@ -607,16 +597,15 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
                     // csObj must not be null
 
-                    IntPtr jsObj;
-                    //jsObj = JSMgr.getJSObj(csObj);
-                    //if (jsObj == IntPtr.Zero)
-                    { // always add a new jsObj
-                        jsObj = JSApi.JSh_NewObjectAsClass(vc.cx, JSMgr.glob, /*className*/csObj.GetType().Name, JSMgr.mjsFinalizer);
-                        if (jsObj == IntPtr.Zero)
-                            jsObj = JSApi.JSh_NewObjectAsClass(vc.cx, JSMgr.glob, /*className*/csObj.GetType().BaseType.Name, JSMgr.mjsFinalizer);
-                        if (jsObj != IntPtr.Zero)
-                            JSMgr.addJSCSRelation(jsObj, csObj);
+                    IntPtr jsObj = JSDataExchangeMgr.NewJSObject(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
+                    if (jsObj != IntPtr.Zero)
+                    {
+                        JSMgr.addJSCSRelation(jsObj, csObj);
+                        JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
                     }
+
+                    if (jsObj != IntPtr.Zero)
+                        JSMgr.addJSCSRelation(jsObj, csObj);
 
 
                     if (jsObj == IntPtr.Zero)
@@ -778,6 +767,10 @@ public class JSDataExchangeMgr
     {
         return Get_ParamHandler(paramInfo.ParameterType, paramIndex, paramInfo.ParameterType.IsByRef || paramInfo.IsOut);
     }
+    public static ParamHandler Get_ParamHandler(FieldInfo fieldInfo)
+    {
+        return Get_ParamHandler(fieldInfo.FieldType, 0, false);//fieldInfo.FieldType.IsByRef);
+    }
     public static string Get_Return(Type type, string expVar) 
     {
         if (type == typeof(void))
@@ -802,6 +795,25 @@ public class JSDataExchangeMgr
             }
         }
         return xcg.Get_Return(expVar) + ";";
+    }
+
+    // new obj, and assign prototype
+    // set __nativeObj
+    // and return
+    public static IntPtr NewJSObject(string typeFullName)
+    {
+        jsval[] valParam = new jsval[1];
+        JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam[0], typeFullName);
+
+        jsval valRet = new jsval();
+        valRet.asBits = 0;
+        JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_NewObject", 1, valParam, ref valRet);
+        if (JSApi.JSh_JsvalIsNullOrUndefined(ref valRet))
+            return IntPtr.Zero;
+
+        IntPtr jsObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
+        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref valRet);
+        return jsObj;
     }
 }
 
@@ -923,9 +935,9 @@ public class JSDataExchange_String : JSDataExchange
 public class JSDataExchange_Enum : JSDataExchange
 {
     public override string Get_GetParam(Type t) { return "vc.datax.getEnum(JSDataExchangeMgr.eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "vc.datax.setEnum(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setEnum(JSDataExchangeMgr.eSetType.SetRval, (int)" + expVar + ")"; }
     public override string Get_GetRefOutParam(Type t) { return "vc.datax.getEnum(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setEnum(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setEnum(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, (int)" + expVar + ")"; }
     public override bool isGetParamNeedCast { get { return true; } }
 }
 public class JSDataExchange_Obj : JSDataExchange

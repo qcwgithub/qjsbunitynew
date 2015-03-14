@@ -1126,7 +1126,11 @@ public class JSVCall
                     currIndex = currentParamCount;
                     this.bGet = (op == Oper.GET_FIELD);
                     JSMgr.CSCallbackField fun = aInfo.fields[index];
-                    if (fun == null) return JSApi.JS_FALSE;
+                    if (fun == null)
+                    {
+                        throw (new Exception("Field not found"));
+                        return JSApi.JS_FALSE;
+                    }
                     fun(this);
                 }
                 break;
@@ -1136,7 +1140,11 @@ public class JSVCall
                     currIndex = currentParamCount;
                     this.bGet = (op == Oper.GET_PROPERTY);
                     JSMgr.CSCallbackProperty fun = aInfo.properties[index];
-                    if (fun == null) return JSApi.JS_FALSE;
+                    if (fun == null)
+                    {
+                        throw (new Exception("Property not found"));
+                        return JSApi.JS_FALSE;
+                    }
                     fun(this);
                 }
                 break;
