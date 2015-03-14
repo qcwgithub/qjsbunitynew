@@ -143,12 +143,16 @@ public static class CSGenerator2
                 sb.Append(BuildField_DelegateFunction(type, field));
             }
 
+            
+
 
             sb.AppendFormat("static void {0}_{1}(JSVCall vc)\n[[\n", type.Name, field.Name);
 
             bool bReadOnly = (field.IsInitOnly || field.IsLiteral);
             if (!bReadOnly)
-                sb.Append("if (vc.bGet)\n");
+            {
+                sb.Append("    if (vc.bGet) [[\n");
+            }
 
             
             //if (type.IsValueType && !field.IsStatic)
@@ -159,27 +163,33 @@ public static class CSGenerator2
                 sbCall.AppendFormat("{0}.{1}", type.Name, field.Name);
             else
                 sbCall.AppendFormat("(({0})vc.csObj).{1}", type.Name, field.Name);
-            sb.AppendFormat("    {0};\n", BuildReturnObject(field.FieldType, sbCall.ToString()));
+
+            
+            sb.AppendFormat("        {0}\n", JSDataExchangeMgr.Get_Return(field.FieldType, sbCall.ToString()));
 
             // set
             if (!bReadOnly)
             {
+                sb.Append("    ]]\n    else [[\n");
+
                 if (!isDelegate)
                 {
-                    sb.Append("else\n");
+                    var paramHandler = JSDataExchangeMgr.Get_ParamHandler(field);
+                    sb.Append("        " + paramHandler.getter + "\n");
+
                     if (field.IsStatic)
-                        sb.AppendFormat("{0}.{1} = ({2}){3};\n", type.Name, field.Name, GetTypeFullName(field.FieldType), BuildRetriveParam(field.FieldType));
+                        sb.AppendFormat("        {0}.{1} = {2};\n", type.Name, field.Name, paramHandler.argName);
                     else
                     {
                         if (type.IsValueType)
                         {
-                            sb.AppendFormat("[[\n    {0} argThis = ({0})vc.csObj;\n", type.Name);
-                            sb.AppendFormat("    argThis.{0} = ({1}){2};\n", field.Name, field.FieldType, BuildRetriveParam(field.FieldType));
-                            sb.Append("    JSMgr.changeJSObj(vc.jsObj, argThis);\n]]\n");
+                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", type.Name);
+                            sb.AppendFormat("        argThis.{0} = {1};\n", field.Name, paramHandler.argName);
+                            sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
                         }
                         else
                         {
-                            sb.AppendFormat("(({0})vc.csObj).{1} = ({2});\n", GetTypeFullName(type), field.Name, BuildRetriveParam(field.FieldType));
+                            sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", GetTypeFullName(type), field.Name, paramHandler.argName);
                         }
                     }
                 }
@@ -188,7 +198,6 @@ public static class CSGenerator2
                     var getDelegateFuncitonName = new StringBuilder();
                     getDelegateFuncitonName.AppendFormat("{0}_{1}_GetDelegate", type.Name, field.Name);
 
-                    sb.Append("else\n");
                     if (field.IsStatic)
                     {
                         sb.AppendFormat("{0}.{1} = {2}(vc.getJSFunctionValue());\n", type.Name, field.Name, getDelegateFuncitonName);
@@ -197,9 +206,9 @@ public static class CSGenerator2
                     {
                         if (type.IsValueType)
                         {
-                            sb.AppendFormat("[[\n    {0} argThis = ({0})vc.csObj;\n", type.Name);
+                            sb.AppendFormat("\n    {0} argThis = ({0})vc.csObj;\n", type.Name);
                             sb.AppendFormat("    argThis.{0} = {1}(vc.getJSFunctionValue());\n", field.Name, getDelegateFuncitonName);
-                            sb.Append("    JSMgr.changeJSObj(vc.jsObj, argThis);\n]]\n");
+                            sb.Append("    JSMgr.changeJSObj(vc.jsObj, argThis);\n\n");
                         }
                         else
                         {
@@ -207,6 +216,7 @@ public static class CSGenerator2
                         }
                     }
                 }
+                sb.Append("    ]]\n");
             }
 
             sb.AppendFormat("]]\n");
@@ -241,7 +251,7 @@ public static class CSGenerator2
 
 
             if (!bReadOnly)
-                sb.Append("if (vc.bGet)\n");
+                sb.Append("    if (vc.bGet)\n");
 
 
             //if (type.IsValueType && !field.IsStatic)
@@ -252,27 +262,34 @@ public static class CSGenerator2
                 sbCall.AppendFormat("{0}.{1}", GetTypeFullName(type), property.Name);
             else
                 sbCall.AppendFormat("(({0})vc.csObj).{1}", GetTypeFullName(type), property.Name);
-            sb.AppendFormat("    {0};\n", BuildReturnObject(property.PropertyType, sbCall.ToString()));
+            sb.AppendFormat("        {0}\n", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
+
+            
 
             // set
             if (!bReadOnly)
             {
-                sb.Append("else\n");
+                sb.Append("    else [[\n");
+
+                var paramHandler = JSDataExchangeMgr.Get_ParamHandler(property.PropertyType, 0, false);
+                sb.Append("        " + paramHandler.getter + "\n");
+
                 if (isStatic)
-                    sb.AppendFormat("{0}.{1} = ({2}){3};", GetTypeFullName(type), property.Name, GetTypeFullName(property.PropertyType), BuildRetriveParam(property.PropertyType));
+                    sb.AppendFormat("{0}.{1} = {2};\n", GetTypeFullName(type), property.Name, paramHandler.argName);
                 else
                 {
                     if (type.IsValueType)
                     {
-                        sb.AppendFormat("[[\n    {0} argThis = ({0})vc.csObj;\n", GetTypeFullName(type));
-                        sb.AppendFormat("    argThis.{0} = ({1}){2};\n", property.Name, GetTypeFullName(property.PropertyType), BuildRetriveParam(property.PropertyType));
-                        sb.Append("    JSMgr.changeJSObj(vc.jsObj, argThis);\n]]\n");
+                        sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", GetTypeFullName(type));
+                        sb.AppendFormat("        argThis.{0} = {1};\n", property.Name, paramHandler.argName);
+                        sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
                     }
                     else
                     {
-                        sb.AppendFormat("(({0})vc.csObj).{1} = ({2});", GetTypeFullName(type), property.Name, BuildRetriveParam(property.PropertyType));
+                        sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", GetTypeFullName(type), property.Name, paramHandler.argName);
                     }
                 }
+                sb.Append("    ]]\n");
             }
 
             sb.AppendFormat("]]\n");
@@ -445,7 +462,7 @@ public static class CSGenerator2
                 if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
                     sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n", GetTypeFullName(p.ParameterType), i, GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i));
                 else
-                    sbGetParam.Append(paramHandlers[i].getter + "\n");
+                    sbGetParam.Append("        " + paramHandlers[i].getter + "\n");
 
 
                 // value type array
