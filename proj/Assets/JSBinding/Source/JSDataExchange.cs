@@ -581,11 +581,24 @@ public class JSDataExchangeMgr
                         JSApi.JSh_SetRvalJSVAL(vc.cx, vc.vp, ref vc.valReturn);
                         return;
                     }
-
-                    IntPtr jsObj = JSDataExchangeMgr.NewJSObject(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
-                    if (jsObj != IntPtr.Zero)
+                    //
+                    // 返回给JS的对象：需要 finalizer + prototype
+                    // 他包含的__nativeObj：不需要 finalizer，但需要和 csObj 对应
+                    //
+                    IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
+                    if (jstypeObj != IntPtr.Zero)
                     {
-                        JSMgr.addJSCSRelation(jsObj, csObj);
+                        IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", JSMgr.mjsFinalizer);
+
+                        // __nativeObj
+                        IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, null/* finalizer */);
+                        JSMgr.addJSCSRelation(__nativeObj, csObj);
+
+                        // jsObj.__nativeObj = __nativeObj
+                        jsval val = new jsval();
+                        JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
+                        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+
                         JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
                     }
                     JSApi.JSh_SetRvalJSVAL(vc.cx, vc.vp, ref vc.valReturn);
@@ -814,6 +827,23 @@ public class JSDataExchangeMgr
         IntPtr jsObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
         JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref valRet);
         return jsObj;
+    }
+
+    public static IntPtr GetJSObjectByname(string name)
+    {
+        string[] arr = name.Split('.');
+        IntPtr obj = JSMgr.glob;
+        jsval val = new jsval();
+        val.asBits = 0;
+        for (int i = 0; i < arr.Length; i++)
+        {
+            JSApi.JSh_GetUCProperty(JSMgr.cx, obj, arr[i], -1, ref val);
+            obj = JSApi.JSh_GetJsvalObject(ref val);
+            if (obj == IntPtr.Zero)
+                return IntPtr.Zero;
+            val.asBits = 0;
+        }
+        return obj;
     }
 }
 

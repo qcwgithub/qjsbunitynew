@@ -15,7 +15,8 @@ var Rotate = {
         Start: function (){
         },
         Update: function (){
-            this.get_transform().Rotate$$Vector3(UnityEngine.Vector3.op_Multiply$$Vector3$$Single(UnityEngine.Vector3.get_forward(), this.speed));
+//            this.get_transform().Rotate$$Vector3(UnityEngine.Vector3.op_Multiply$$Vector3$$Single(UnityEngine.Vector3.get_forward(), this.speed));
+            this.get_transform().Rotate$$Vector3(UnityEngine.Vector3.get_forward());
         }
     }
 };
