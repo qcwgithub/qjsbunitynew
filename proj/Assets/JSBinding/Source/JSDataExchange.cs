@@ -209,7 +209,13 @@ public class JSDataExchangeMgr
                     if (jsObj == IntPtr.Zero)
                         return null;
 
-                    object csObj = JSMgr.getCSObj(jsObj);
+                    jsval val = new jsval();
+                    JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+                    IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
+                    if (__nativeObj == IntPtr.Zero)
+                        return null;
+
+                    object csObj = JSMgr.getCSObj(__nativeObj);
                     return csObj;
                 }
                 break;

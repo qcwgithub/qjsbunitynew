@@ -332,7 +332,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 0
   port: 5086
-  GCInterval: 1
+  GCInterval: 7
   jsLoader: {fileID: 1690005564}
   InitLoadScripts:
   - Utilities
