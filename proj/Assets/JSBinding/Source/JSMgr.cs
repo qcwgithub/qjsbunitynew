@@ -1039,7 +1039,7 @@ public static class JSMgr
         //         {
         //             mDict2.Add(csObj.GetHashCode(), new JS_CS_Relation(jsObj, csObj));
         //         }
-        Debug.Log("+jsObj " + jsObj.ToString() +" "+ (mDict1.Count).ToString() + " " + csObj.GetType().Name + "/" + (typeof(UnityEngine.Object).IsAssignableFrom(csObj.GetType()) ? ((UnityEngine.Object)csObj).name : ""));
+        //Debug.Log("+jsObj " + jsObj.ToString() +" "+ (mDict1.Count).ToString() + " " + csObj.GetType().Name + "/" + (typeof(UnityEngine.Object).IsAssignableFrom(csObj.GetType()) ? ((UnityEngine.Object)csObj).name : ""));
     }
     public static object getCSObj(IntPtr jsObj)
     {
@@ -1096,7 +1096,8 @@ public static class JSMgr
         {
             // Debug.LogError("Finalizer: csObj not found: " + jsObj.ToInt64().ToString());
         }
-        Debug.Log("-jsObj " + (mDict1.Count).ToString() + " " + obj.name);
+//         if (obj != null)
+//             Debug.Log("-jsObj " + (mDict1.Count).ToString() + " " + obj.name);
 
         //if (mDict1.Count != mDict2.Count)
         //    Debug.LogError("JSObjectFinalizer / mDict1.Count != mDict2.Count");

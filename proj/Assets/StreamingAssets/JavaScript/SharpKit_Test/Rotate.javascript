@@ -9,14 +9,15 @@ var Rotate = {
     Kind: "Class",
     definition: {
         ctor: function (){
-            this.speed = 0.1;
+            this.speed = 5;
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
         },
         Update: function (){
-//            this.get_transform().Rotate$$Vector3(UnityEngine.Vector3.op_Multiply$$Vector3$$Single(UnityEngine.Vector3.get_forward(), this.speed));
-            this.get_transform().Rotate$$Vector3(UnityEngine.Vector3.get_forward());
+			var vec = UnityEngine.Vector3.op_Multiply$$Vector3$$Single(UnityEngine.Vector3.get_forward(), this.speed);
+            this.get_transform().Rotate$$Vector3(vec);
+//            this.get_transform().Rotate$$Vector3(UnityEngine.Vector3.get_forward());
         }
     }
 };

@@ -587,17 +587,19 @@ public class JSDataExchangeMgr
                         JSApi.JSh_SetRvalJSVAL(vc.cx, vc.vp, ref vc.valReturn);
                         return;
                     }
+
                     //
-                    // 返回给JS的对象：需要 finalizer + prototype
-                    // 他包含的__nativeObj：不需要 finalizer，但需要和 csObj 对应
+                    // 返回给JS的对象：需要 prototype
+                    // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
                     //
-                    IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
+                    string typeName = JSDataExchangeMgr.GetTypeFullName(csObj.GetType());
+                    IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
                     if (jstypeObj != IntPtr.Zero)
                     {
-                        IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", JSMgr.mjsFinalizer);
+                        IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
 
                         // __nativeObj
-                        IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, null/* finalizer */);
+                        IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
                         JSMgr.addJSCSRelation(__nativeObj, csObj);
 
                         // jsObj.__nativeObj = __nativeObj
@@ -612,30 +614,49 @@ public class JSDataExchangeMgr
                 break;
             case eSetType.UpdateARGVRefOut:
                 {
-                    jsval val = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
-                    // csObj must not be null
-
-                    IntPtr jsObj = JSDataExchangeMgr.NewJSObject(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
-                    if (jsObj != IntPtr.Zero)
-                    {
-                        JSMgr.addJSCSRelation(jsObj, csObj);
-                        JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
-                    }
-
-                    if (jsObj != IntPtr.Zero)
-                        JSMgr.addJSCSRelation(jsObj, csObj);
-
-
-                    if (jsObj == IntPtr.Zero)
-                        JSApi.JSh_SetJsvalUndefined(ref val);
-                    else
-                        JSApi.JSh_SetJsvalObject(ref val, jsObj);
-
-                    // JSApi.SetProperty(vc.cx, jsObj, "Value", VALUE_LEN, ref val);
+                    jsval val = new jsval(); val.asBits = 0;
                     IntPtr argvJSObj = JSApi.JSh_ArgvObject(vc.cx, vc.vp, vc.currIndex);
                     if (argvJSObj != IntPtr.Zero)
-                        JSApi.SetProperty(vc.cx, argvJSObj, "Value", VALUE_LEN, ref val);
+                    {
+                        bool success = false;
+
+                        // csObj must not be null
+                        IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
+                        if (jstypeObj != IntPtr.Zero)
+                        {
+                            // 1)
+                            // jsObj: prototype  
+                            // __nativeObj: csObj + finalizer
+                            // 
+                            IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+                            // __nativeObj
+                            IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
+                            JSMgr.addJSCSRelation(__nativeObj, csObj);
+
+                            //
+                            // 2)
+                            // jsObj.__nativeObj = __nativeObj
+                            //
+                            JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
+                            JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+
+                            // 3)
+                            // argvObj.Value = jsObj
+                            //
+                            if (argvJSObj != IntPtr.Zero)
+                            {
+                                JSApi.JSh_SetJsvalObject(ref val, jsObj);
+                                JSApi.JSh_SetUCProperty(vc.cx, argvJSObj, "Value", -1, ref val);
+                                success = true;
+                            }
+                        }
+
+                        if (!success)
+                        {
+                            JSApi.JSh_SetJsvalUndefined(ref val);
+                            JSApi.JSh_SetUCProperty(vc.cx, argvJSObj, "Value", -1, ref val);
+                        }
+                    }
                 }
                 break;
             default:

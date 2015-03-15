@@ -199,7 +199,7 @@ _jstype =
     public static StringBuilder BuildConstructors(Type type, ConstructorInfo[] constructors, int slot, int howmanyConstructors)
     {
         string fmt = @"
-_jstype.definition.{4} = function({5}) [[ {8} = CS.Call({0}, {1}, {2}, {3}, {6}{7}); ]]";
+_jstype.definition.{4} = function({5}) [[ {8} = CS.Call({0}, {1}, {2}, {3}, {6}{7}).__nativeObj; ]]";
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < constructors.Length; i++)
