@@ -315,7 +315,10 @@ _jstype.staticDefinition.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, tr
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons);
         HandleStringFormat(sbClass);
 
-        string fileName = JSBindingSettings.jsGeneratedDir + "/" + className + JSBindingSettings.jsExtension;
+
+        string fileName = JSBindingSettings.jsGeneratedDir + "/" + 
+            JSDataExchangeMgr.GetTypeFullName(JSGenerator2.type).Replace('.', '_')
+            + JSBindingSettings.jsExtension;
         var writer2 = OpenFile(fileName, false);
         writer2.Write(sbClass.ToString());
         writer2.Close();
@@ -421,8 +424,8 @@ using UnityEngine;
     //[MenuItem("JSBinding/Generate JS Bindings")]
     public static void GenerateClassBindings()
     {
-        if (!typeClassName.ContainsKey(typeof(UnityEngine.Object)))
-            typeClassName.Add(typeof(UnityEngine.Object), "UnityObject");
+//         if (!typeClassName.ContainsKey(typeof(UnityEngine.Object)))
+//             typeClassName.Add(typeof(UnityEngine.Object), "UnityObject");
 
         JSGenerator2.OnBegin();
 

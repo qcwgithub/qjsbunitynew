@@ -795,7 +795,7 @@ public class CSharpGenerated
         StringBuilder sbA = new StringBuilder();
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
-            sbA.AppendFormat("        {0}Generated.__Register();\n", JSBindingSettings.classes[i].Name);
+            sbA.AppendFormat("        {0}Generated.__Register();\n", JSDataExchangeMgr.GetTypeFullName(JSBindingSettings.classes[i]).Replace('.', '_'));
         }
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat(fmt, sbA);
@@ -810,8 +810,8 @@ public class CSharpGenerated
     }
     public static void GenerateAllJSFileNames()
     {
-        if (!JSGenerator2.typeClassName.ContainsKey(typeof(UnityEngine.Object)))
-            JSGenerator2.typeClassName.Add(typeof(UnityEngine.Object), "UnityObject");
+//         if (!JSGenerator2.typeClassName.ContainsKey(typeof(UnityEngine.Object)))
+//             JSGenerator2.typeClassName.Add(typeof(UnityEngine.Object), "UnityObject");
 
         string fmt = @"
 public class JSGeneratedFileNames
@@ -825,7 +825,7 @@ public class JSGeneratedFileNames
         StringBuilder sbA = new StringBuilder();
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
-            string name = JSBindingSettings.classes[i].Name;
+            string name = JSDataExchangeMgr.GetTypeFullName(JSBindingSettings.classes[i]).Replace('.', '_');
             if (JSGenerator2.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
                 name = JSGenerator2.typeClassName[JSBindingSettings.classes[i]];
             sbA.AppendFormat("        \"{0}\",\n", name);
@@ -905,12 +905,14 @@ public class {0}Generated
             if (nameSpaceString == "UnityEngine")
                 nameSpaceString = string.Empty;
         }
-        sbFile.AppendFormat(fmtFile, type.Name, sbClass, nameSpaceString.Length>0?"using "+nameSpaceString+";":"");
+        sbFile.AppendFormat(fmtFile, JSDataExchangeMgr.GetTypeFullName(type).Replace('.', '_'), sbClass, nameSpaceString.Length > 0 ? "using " + nameSpaceString + ";" : "");
         HandleStringFormat(sbFile);
 
         sbFile.Replace("\r\n", "\n");
 
-        string fileName = JSBindingSettings.csGeneratedDir + "/" + type.Name + "Generated.cs";
+        string fileName = JSBindingSettings.csGeneratedDir + "/" +
+            JSDataExchangeMgr.GetTypeFullName(type).Replace('.', '_') + 
+            "Generated.cs";
         var writer2 = OpenFile(fileName, false);
         writer2.Write(sbFile.ToString());
         writer2.Close();
