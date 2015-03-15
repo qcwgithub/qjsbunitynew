@@ -616,9 +616,9 @@ JsCompiler.CompileType = function (type){
                     currentType.ctor = jsCtor;
             }
             if (currentType.ctor == null && currentType.ctors != null){
-                if (currentType.baseType != null)
-                    currentType.ctor = JsCompiler.CreateBaseCtor(currentType);
-                else
+                //if (currentType.baseType != null)
+                //    currentType.ctor = JsCompiler.CreateBaseCtor(currentType);
+                //else
                     currentType.ctor = JsCompiler.CreateEmptyCtor();
             }
             if (currentType.ctor != null){
@@ -854,14 +854,23 @@ JsTypeHelper.GetDelegate = function (obj, func){
 
 
 /*
+* Before Compile:
+* Set MonoBehaviour.ctor to empty function
+*/
+// UnityEngine.MonoBehaviour.ctor = function () {}
+
+/*
 * Compile Now !!
 */
 Compile();
 
+
+print = UnityEngine.Debug.Log$$Object;
 /*
-* Set MonoBehaviour.ctor to empty function
-*/
-UnityEngine.MonoBehaviour.ctor = function () {}
+for (var v in Rotate)
+{
+	    print(v)
+}*/
 
 function jsb_NewMonoBehaviour(name, nativeObj) 
 {
