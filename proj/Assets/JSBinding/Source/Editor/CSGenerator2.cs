@@ -333,37 +333,35 @@ public static class CSGenerator2
     }
     public static StringBuilder BuildSpecialFunctionCall(ParameterInfo[] ps, string className, string methodName, bool bStatic, bool returnVoid, Type returnType)
     {
-        List<string> lstParam = new List<string>();
         StringBuilder sb = new StringBuilder();
+        var paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];
         for (int i = 0; i < ps.Length; i++)
         {
-            sb.AppendFormat("{0}", BuildRetriveParam(ps[i].ParameterType));
-            lstParam.Add(sb.ToString());
-            sb.Remove(0, sb.Length);
+            paramHandlers[i] = JSDataExchangeMgr.Get_ParamHandler(ps[i], i);
+            sb.Append("    " + paramHandlers[i].getter + "\n");
         }
-
-        // StringBuilder sbCall = new StringBuilder();
 
         string strCall = string.Empty;
 
         // must be static
         if (methodName == "op_Addition")
-            strCall = lstParam[0] + " + " + lstParam[1];
+            strCall = paramHandlers[0].argName + " + " + paramHandlers[1].argName;
         else if (methodName == "op_Subtraction")
-            strCall = lstParam[0] + " - " + lstParam[1];
+            strCall = paramHandlers[0].argName + " - " + paramHandlers[1].argName;
         else if (methodName == "op_Multiply")
-            strCall = lstParam[0] + " * " + lstParam[1];
+            strCall = paramHandlers[0].argName + " * " + paramHandlers[1].argName;
         else if (methodName == "op_Division")
-            strCall = lstParam[0] + " / " + lstParam[1];
+            strCall = paramHandlers[0].argName + " / " + paramHandlers[1].argName;
         else if (methodName == "op_Equality")
-            strCall = lstParam[0] + " == " + lstParam[1];
+            strCall = paramHandlers[0].argName + " == " + paramHandlers[1].argName;
         else if (methodName == "op_Inequality")
-            strCall = lstParam[0] + " != " + lstParam[1];
+            strCall = paramHandlers[0].argName + " != " + paramHandlers[1].argName;
 
         else if (methodName == "op_UnaryNegation")
-            strCall = "-" + lstParam[0];
+            strCall = "-" + paramHandlers[0].argName;
 
-        sb.Append("    " + BuildReturnObject(returnType, strCall) + ";");
+        string ret = JSDataExchangeMgr.Get_Return(returnType, strCall);
+        sb.Append("    " + ret);
         return sb;
     }
     // expression getting parameter
