@@ -42,21 +42,28 @@ public class JSComponent_SharpKit : MonoBehaviour
         jsval[] valParam = new jsval[2];
         jsval valRet = new jsval();
 
+        // 1)
+        // __nativeObj: csObj + finalizer
+        //
         IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-        JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam[0], this.jsScriptName);
-
         JSMgr.addJSCSRelation(__nativeObj, this);
+
+        JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam[0], this.jsScriptName);
         JSApi.JSh_SetJsvalObject(ref valParam[1], __nativeObj);
 
+        // 2)
+        // jsObj: prototype
+        // jsObj.__nativeObj = __nativeObj
+        //
         valRet.asBits = 0;
-        JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_NewMonoBehaviour", 2, valParam, ref valRet);
-        if (JSApi.JSh_JsvalIsNullOrUndefined(ref valRet))
+        bool ret = JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_NewMonoBehaviour", 2, valParam, ref valRet);
+        if (ret) jsObj = JSApi.JSh_GetJsvalObject(ref valRet);
+        if (!ret || jsObj == IntPtr.Zero)
         {
             Debug.LogError("New MonoBehaviour Fail, name: " + this.jsScriptName);
             return false;
         }
 
-        jsObj = JSApi.JSh_GetJsvalObject(ref valRet);
         JSMgr.AddRootedObject(jsObj);
 
         valAwake.asBits = 0; JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, "Awake", ref valAwake);

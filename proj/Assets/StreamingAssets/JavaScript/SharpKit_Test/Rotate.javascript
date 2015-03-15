@@ -5,19 +5,23 @@ if (typeof(JsTypes) == "undefined")
 var Rotate = {
     fullname: "Rotate",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitWebApp2",
+    assemblyName: "SharpKitWebApp1",
     Kind: "Class",
     definition: {
         ctor: function (){
-            this.speed = 5;
-            UnityEngine.MonoBehaviour.ctor.call(this);
+            this.speed = 0.1;
+            this.mTrans = null;
+            this.rotateVar = new UnityEngine.Vector3.ctor();
+            //UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
         },
         Update: function (){
-			var vec = UnityEngine.Vector3.op_Multiply$$Vector3$$Single(UnityEngine.Vector3.get_forward(), this.speed);
-            this.get_transform().Rotate$$Vector3(vec);
-//            this.get_transform().Rotate$$Vector3(UnityEngine.Vector3.get_forward());
+            if (UnityEngine.Object.op_Equality(this.mTrans, null)){
+                this.mTrans = this.get_transform();
+                this.rotateVar = new UnityEngine.Vector3.ctor$$Single$$Single$$Single(0.5, 0.5, 0);
+            }
+            this.mTrans.Rotate$$Vector3(this.rotateVar);
         }
     }
 };
