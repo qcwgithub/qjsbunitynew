@@ -167,6 +167,7 @@ _jstype =
 [[
     definition: [[]],
     staticDefinition: [[]],
+    properties: [[]],
     assemblyName: '{1}',
     Kind: '{2}',
     fullname: '{3}',

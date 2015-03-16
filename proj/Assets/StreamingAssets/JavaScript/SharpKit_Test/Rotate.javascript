@@ -12,7 +12,7 @@ var Rotate = {
             this.speed = 0.1;
             this.mTrans = null;
             this.vec = new UnityEngine.Vector3.ctor();
-            //UnityEngine.MonoBehaviour.ctor.call(this);
+            UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
         },
