@@ -232,7 +232,7 @@ GameObject:
   - 124: {fileID: 386223502}
   - 81: {fileID: 386223501}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: Main CameraNNN
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -338,6 +338,8 @@ MonoBehaviour:
   - Utilities
   - SharpKit_Test/Rotate
   - SharpKit/jsclr
+  - SharpKit/clrlibrary
+  - SharpKit/myclrhandler
 --- !u!4 &1254577081
 Transform:
   m_ObjectHideFlags: 0

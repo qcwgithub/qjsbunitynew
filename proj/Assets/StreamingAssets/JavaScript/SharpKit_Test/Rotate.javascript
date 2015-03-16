@@ -15,7 +15,12 @@ var Rotate = {
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
-            UnityEngine.Debug.Log$$Object(this.vec.z);
+            UnityEngine.Debug.Log$$Object(this.vec.x);
+            var lst = new System.Collections.Generic.List$1.ctor(UnityEngine.GameObject.ctor);
+            lst.Add(this.get_gameObject());
+            lst.Add(UnityEngine.Camera.get_main().get_gameObject());
+            UnityEngine.Debug.Log$$Object(lst.get_Item$$Int32(0).get_name());
+            UnityEngine.Debug.Log$$Object(lst.get_Item$$Int32(1).get_name());
         },
         Update: function (){
             if (UnityEngine.Object.op_Equality(this.mTrans, null)){
