@@ -5,16 +5,17 @@ if (typeof(JsTypes) == "undefined")
 var Rotate = {
     fullname: "Rotate",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitWebApp2",
+    assemblyName: "SharpKitWebApp1",
     Kind: "Class",
     definition: {
         ctor: function (){
             this.speed = 0.1;
             this.mTrans = null;
-            this.vec = new UnityEngine.Vector3.ctor();
+            this.vec = new UnityEngine.Vector3.ctor$$Single$$Single$$Single(6, 99, 888);
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
+            UnityEngine.Debug.Log$$Object(this.vec.z);
         },
         Update: function (){
             if (UnityEngine.Object.op_Equality(this.mTrans, null)){

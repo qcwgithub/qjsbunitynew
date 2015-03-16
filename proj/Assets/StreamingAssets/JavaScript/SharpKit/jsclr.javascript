@@ -448,6 +448,32 @@ JsCompiler.Compile_Phase1 = function (){
             if (jsType.baseTypeName == null)
                 jsType.baseTypeName = "System.ValueType";
         }
+
+		if (jsType.Kind == "Struct" || jsType.Kind == "Class") 
+		{
+            if (jsType.fields != undefined) 
+		    {
+				if (jsType.ctor == undefined) 
+				{
+					jsType.ctor = function () {}
+				}
+				jsType.commonPrototype = jsType.ctor.prototype;
+				for (var v in jsType.fields) 
+				{
+					var o = jsType.fields[v];
+					Object.defineProperty(jsType.commonPrototype, v, o);
+				}
+				jsType.fields = undefined;
+			}
+			if (jsType.staticFields != undefined)
+			{
+				for (var v in jsType.staticFields)
+				{
+					jsType[v] = jsType.staticFields[v];
+				}
+				jsType.staticFields = undefined;
+			}
+		}
     }
 };
 JsCompiler.Compile_Phase2 = function (){
@@ -866,6 +892,9 @@ Compile();
 
 
 print = UnityEngine.Debug.Log$$Object;
+
+//print(UnityEngine.Vector3.ctor.prototype.x);
+
 /*
 for (var v in Rotate)
 {

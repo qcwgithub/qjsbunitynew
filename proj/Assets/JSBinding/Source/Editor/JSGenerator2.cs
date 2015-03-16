@@ -98,9 +98,15 @@ public static class JSGenerator2
 
     public static StringBuilder BuildFields(Type type, FieldInfo[] fields, int slot)
     {
-        string fmt2 = @"
-_jstype.{7}.get_{0} = function() [[ return CS.Call({1}, {3}, {4}, {5}{6}); ]]
-_jstype.{7}.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]]
+//        string fmt2 = @"
+// _jstype.{7}.get_{0} = function() [[ return CS.Call({1}, {3}, {4}, {5}{6}); ]]
+// _jstype.{7}.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]]
+// "; 
+        string fmt3 = @"
+_jstype.{7}.{0} =  [[ 
+            get: function() [[ return CS.Call({1}, {3}, {4}, {5}{6}); ]], 
+            set: function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]] 
+        ]];
 ";
 
         var sb = new StringBuilder();
@@ -108,15 +114,15 @@ _jstype.{7}.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]
         {
             FieldInfo field = fields[i];
 
-            sb.AppendFormat(fmt2, 
-                field.Name,
-                (int)JSVCall.Oper.GET_FIELD,
-                (int)JSVCall.Oper.SET_FIELD, 
-                slot, 
-                i,
-                (field.IsStatic ? "true" : "false"),
-                (field.IsStatic ? "" : ", " + thisString), 
-                (field.IsStatic ? "staticDefinition" : "definition"));
+            sb.AppendFormat(fmt3, 
+                field.Name, // [0]
+                (int)JSVCall.Oper.GET_FIELD, // [1]
+                (int)JSVCall.Oper.SET_FIELD, // [2]
+                slot, //[3]
+                i,//[4]
+                (field.IsStatic ? "true" : "false"),//[5]
+                (field.IsStatic ? "" : ", " + thisString), //[6]
+                (field.IsStatic ? "staticFields" : "fields"));//[7]
         }
         return sb;
     }
@@ -159,7 +165,7 @@ JsTypes.push(_jstype);");
     }
     public static StringBuilder BuildHeader(Type type)
     {
-        string fmt =@"if (typeof(JsTypes) == 'undefined')
+        string fmt = @"if (typeof(JsTypes) == 'undefined')
     var JsTypes = [];
 
 // {0}
@@ -167,7 +173,8 @@ _jstype =
 [[
     definition: [[]],
     staticDefinition: [[]],
-    properties: [[]],
+    fields: [[]],
+    staticFields: [[]],
     assemblyName: '{1}',
     Kind: '{2}',
     fullname: '{3}',

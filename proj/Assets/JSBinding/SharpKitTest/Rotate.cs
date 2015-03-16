@@ -5,12 +5,12 @@ public class Rotate : MonoBehaviour
 {
     float speed = 0.1f;
 	Transform mTrans;
-	Vector3 vec;
+	Vector3 vec = new Vector3(6,99,888);
 
     // Use this for initialization
     void Start()
     {
-
+        Debug.Log(vec.x);
     }
 
     // Update is called once per frame
