@@ -5,13 +5,13 @@ if (typeof(JsTypes) == "undefined")
 var Rotate = {
     fullname: "Rotate",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitWebApp1",
+    assemblyName: "SharpKitWebApp2",
     Kind: "Class",
     definition: {
         ctor: function (){
             this.speed = 0.1;
             this.mTrans = null;
-            this.rotateVar = new UnityEngine.Vector3.ctor();
+            this.vec = new UnityEngine.Vector3.ctor();
             //UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
@@ -19,9 +19,12 @@ var Rotate = {
         Update: function (){
             if (UnityEngine.Object.op_Equality(this.mTrans, null)){
                 this.mTrans = this.get_transform();
-                this.rotateVar = new UnityEngine.Vector3.ctor$$Single$$Single$$Single(0.5, 0.5, 0);
+                this.vec = UnityEngine.Vector3.get_forward();
             }
-            this.mTrans.Rotate$$Vector3(this.rotateVar);
+            this.mTrans.Rotate$$Vector3(UnityEngine.Vector3.op_Multiply$$Vector3$$Single(this.vec, this.speed));
+        },
+        OnGUI: function (){
+            UnityEngine.GUILayout.TextArea$$String$$GUILayoutOption$Array("Click the big cube!");
         }
     }
 };

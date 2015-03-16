@@ -611,6 +611,11 @@ public static class JSMgr
 
         for (int i = 0; i < ti.constructors.Length; i++)
         {
+            // don't generate MonoBehaviour constructor
+            if (type == typeof(UnityEngine.MonoBehaviour)) { 
+                continue;  
+            }
+
             if (!IsMemberObsolete(ti.constructors[i]))
                 lstCons.Add(ti.constructors[i]);
         }
