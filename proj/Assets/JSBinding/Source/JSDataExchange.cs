@@ -726,7 +726,7 @@ public class JSDataExchangeMgr
     // Editor only
     public struct ParamHandler
     {
-        public string argName; // argN
+        public string argName; // argN, argtN
         public string getter;
         public string updater;
     }
@@ -871,6 +871,32 @@ public class JSDataExchangeMgr
             val.asBits = 0;
         }
         return obj;
+    }
+
+    public static MethodInfo GetGenericMethodInfo(Type type, string name, int paramCount)
+    {
+        BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static/* | BindingFlags.DeclaredOnly */;
+        MethodInfo[] methods = type.GetMethods(flags);
+        if (methods == null || methods.Length == 0) 
+            return null;
+
+        MethodInfo method = null;
+        for (int i = 0; i < methods.Length; i++)
+        {
+            if (methods[i].Name == name && 
+                methods[i].IsGenericMethodDefinition &&
+                methods[i].GetParameters().Length == paramCount)
+            {
+                if (method == null)
+                    method = methods[i];
+                else
+                {
+                    Debug.LogError("More than 1 Generic method found!!! " + GetTypeFullName(type) + "." + name);
+                    return null;
+                }
+            }
+        }
+        return method;
     }
 }
 

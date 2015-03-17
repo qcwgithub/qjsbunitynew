@@ -707,11 +707,17 @@ public static class JSMgr
             if (IsMemberObsolete(method))
                 continue;
 
-            if (method.IsGenericMethod || method.IsGenericMethodDefinition)
+            if (method.IsGenericMethodDefinition /* || method.IsGenericMethod*/)
             {
-                //Debug.Log(type.Name + "." + method.Name);
-                continue;
+//                string s = "GENERIC METHOD DEFINITION " + type.Name + "." + method.Name;
+//                foreach (var v in method.GetGenericArguments())
+//                {
+//                    s += " " + v.Name;
+//                }
+//                Debug.Log(s);
+//                continue;
             }
+
 
             if (JSBindingSettings.IsDiscard(type, method))
                 continue;
