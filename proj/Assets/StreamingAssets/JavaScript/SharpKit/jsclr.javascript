@@ -453,36 +453,40 @@ JsCompiler.Compile_Phase1 = function (){
 		if (jsType.Kind == "Struct" || jsType.Kind == "Class") 
 		{
             // add default constructor!!
-            if (jsType.ctor == undefined) {
-                jsType.ctor = function () {}
-            }
+            if (jsType.definition.ctor == undefined) {
+                jsType.definition.ctor = function () {};
+			}
+
+			//jsType.ctors = jsType.ctors || {};
+			//jsType.ctors.ctor = jsType.ctor;
+
             // add a function to obtain c# Type
-            jsType.ctor.getNativeType = function () {
-                if (this.__nativeType) {
+            jsType.definition.ctor.getNativeType = function () 
+			{
+                if (this.__nativeType != undefined) 
+				{
                     return this.__nativeType;
                 }
-                if (this.__nativeTypeFail) {
-                    return undefined;
-                }
-                var suc = false;
-                if (this._type && this._type.fullname) {
-                    this.__nativeType = todo_my_get_type(this._type.fullname);
-                    suc = (this.__nativeType != undefined);
-                }
-                if (!suc) {
-                    this.__nativeTypeFail = true;
-                }
+                if (this._type && this._type.fullname) 
+				{
+                    this.__nativeType = this._type.fullname;
+                } 
+				else
+				{
+					this.__nativeType = "ERROR_unknowntype";
+				}
+				return this.__nativeType;
             }
 
             if (jsType.fields != undefined)
 		    {
-				jsType.commonPrototype = jsType.ctor.prototype;
+				jsType.commonPrototype = jsType.definition.ctor.prototype;
 				for (var v in jsType.fields) 
 				{
 					var o = jsType.fields[v];
 					Object.defineProperty(jsType.commonPrototype, v, o);
 				}
-				jsType.fields = undefined;
+				delete jsType.fields;
 			}
 			if (jsType.staticFields != undefined)
 			{
@@ -490,7 +494,7 @@ JsCompiler.Compile_Phase1 = function (){
 				{
 					jsType[v] = jsType.staticFields[v];
 				}
-				jsType.staticFields = undefined;
+				delete jsType.staticFields;
 			}
 		}
     }

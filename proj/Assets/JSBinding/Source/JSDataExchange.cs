@@ -161,7 +161,10 @@ public class JSDataExchangeMgr
         switch (e)
         {
             case eGetType.GetARGV:
-                return JSApi.JSh_ArgvStringS(vc.cx, vc.vp, vc.currIndex++);
+		        {
+			        string s = JSApi.JSh_ArgvStringS(vc.cx, vc.vp, vc.currIndex++);
+			        return s;
+		        }
                 break;
             case eGetType.GetARGVRefOut:
                 {
@@ -795,6 +798,23 @@ public class JSDataExchangeMgr
         }
     }
 
+    static Dictionary<string, Type> typeCache = new Dictionary<string,Type>();
+    public static Type GetTypeByName(string typeName)
+    {
+        Type t = null;
+        if (!typeCache.TryGetValue(typeName, out t))
+        {
+            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                t = a.GetType(typeName);
+                if (t != null)
+                    break;
+            }
+            typeCache[typeName] = t; // perhaps null
+        }
+        return t;
+    }
+
     static Dictionary<Type, JSDataExchange> dict;
     static JSDataExchange enumExchange;
     static JSDataExchange objExchange;
@@ -833,16 +853,17 @@ public class JSDataExchangeMgr
         public string getter;
         public string updater;
     }
+    // Editor only
     public static ParamHandler Get_TType(int index)
     {
         ParamHandler ph = new ParamHandler();
         ph.argName = "t" + index.ToString();
 
         string get_getParam = dict[typeof(string)].Get_GetParam(null);
-        ph.getter = "typeof
+        ph.getter = "System.Type " + ph.argName + " = JSDataExchangeMgr.GetTypeByName(" + get_getParam + ");";
 
-        string get_getParam = objExchange.Get_GetParam(typeof(Type));
-        ph.getter = "System.Type " + ph.argName + " = (System.Type)" + get_getParam + ";";
+//         string get_getParam = objExchange.Get_GetParam(typeof(Type));
+//         ph.getter = "System.Type " + ph.argName + " = (System.Type)" + get_getParam + ";";
         return ph;
     }
     // Editor only

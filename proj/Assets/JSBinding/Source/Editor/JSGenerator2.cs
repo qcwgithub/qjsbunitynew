@@ -81,11 +81,13 @@ public static class JSGenerator2
         return name;
 
     }
-    public static string SharpKitMethodName(string methodName, ParameterInfo[] paramS, bool overloaded)
+    public static string SharpKitMethodName(string methodName, ParameterInfo[] paramS, bool overloaded, int TCounts = 0)
     {
         string name = methodName;
         if (overloaded)
         {
+            if (TCounts > 0)
+                name += "$" + TCounts.ToString();
             for (int i = 0; i < paramS.Length; i++)
             {
                 Type type = paramS[i].ParameterType;
@@ -288,10 +290,12 @@ _jstype.staticDefinition.{1} = function({2}) [[
                 sbActualParam.AppendFormat(", a{0}", j);
             }
 
+            //int TCount = method.GetGenericArguments().Length;
+
             if (!method.IsStatic)
                 sb.AppendFormat(fmt,
                     className,
-                    SharpKitMethodName(method.Name, paramS, bOverloaded), // [1] method name
+                    SharpKitMethodName(method.Name, paramS, bOverloaded, TCount), // [1] method name
                     sbFormalParam.ToString(),  // [2] formal param
                     slot,                      // [3] slot
                     i,                         // [4] index
@@ -304,8 +308,8 @@ _jstype.staticDefinition.{1} = function({2}) [[
                     );
             else
                 sb.AppendFormat(fmtStatic, 
-                    className, 
-                    SharpKitMethodName(method.Name, paramS, bOverloaded), 
+                    className,
+                    SharpKitMethodName(method.Name, paramS, bOverloaded, TCount), 
                     sbFormalParam.ToString(), 
                     slot, 
                     i, 

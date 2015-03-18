@@ -17,6 +17,8 @@ public class Rotate : MonoBehaviour
 		vec.x = 3333;
         Debug.Log(vec.x);
 
+        Debug.Log(this.GetComponent<Transform>().position.ToString());
+
         //var cam = Camera.main.gameObject.GetComponent<Camera>();
         //Debug.Log(cam.name);
 

@@ -456,6 +456,7 @@ public static class CSGenerator2
                 tHandlers[i] = JSDataExchangeMgr.Get_TType(i);
 
                 sbt.Append("    " + tHandlers[i].getter + "\n");
+                sbt.AppendFormat("    if ({0} == null)\n        return true;\n", tHandlers[i].argName);
 
                 actualParam += tHandlers[i].argName;
                 if (i != TCount - 1) 
