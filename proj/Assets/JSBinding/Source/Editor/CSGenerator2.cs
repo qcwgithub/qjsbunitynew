@@ -424,8 +424,66 @@ public static class CSGenerator2
         else if (paramType == typeof(Double)) return true;
         else return false;
     }
-    public static StringBuilder BuildNormalFunctionCall(int methodIndex, ParameterInfo[] ps, string className, string methodName, bool bStatic, bool returnVoid, Type returnType, bool bConstructor)
+    public static StringBuilder BuildNormalFunctionCall(int methodIndex, ParameterInfo[] ps, string className, string methodName, bool bStatic, bool returnVoid, Type returnType, bool bConstructor,
+        int TCount = 0)
     {
+        StringBuilder sb = new StringBuilder();
+        var tHandlers = new JSDataExchangeMgr.ParamHandler[TCount];
+
+        if (TCount > 0)
+        {
+            StringBuilder sbt = new StringBuilder();
+
+            /*
+             * Get Method T
+             */
+            sbt.Append("    // Get generic method by name and param count.\n");
+            sbt.AppendFormat("    MethodInfo methodT = JSDataExchangeMgr.GetGenericMethodInfo(typeof({0}), \"{1}\", {2});\n",
+                GetTypeFullName(type), // [0] type full name
+                methodName,            // [1] method name
+                ps.Length);            // [2] parameter count
+
+            sbt.AppendFormat("    if (methodT == null)\n        return true;\n");
+            sbt.Append("\n");
+            sbt.Append("    // Get generic types from js.\n");
+
+            /*
+             * Make Generic Method
+             */
+            string actualParam = string.Empty;
+            for (int i = 0; i < TCount; i++) 
+            {
+                tHandlers[i] = JSDataExchangeMgr.Get_TType(i);
+
+                sbt.Append("    " + tHandlers[i].getter + "\n");
+
+                actualParam += tHandlers[i].argName;
+                if (i != TCount - 1) 
+                    actualParam += ", ";
+            }
+            sbt.Append("\n");
+            sbt.Append("    // Make generic method.\n");
+            sbt.AppendFormat("    MethodInfo method = methodT.MakeGenericMethod(new Type[][[{0}]]);\n", actualParam);
+            sbt.AppendFormat("    if (method == null)\n        return true;\n");
+            sbt.Append("\n");
+
+            /*
+             * if there is T in params
+             * call method.getparameters
+             */
+            for (int i = 0; i < ps.Length; i++)
+            {
+                if (ps[i].ParameterType.IsGenericParameter)
+                {
+                    sbt.Append("    ParameterInfo[] ps = method.GetParameters();\n");
+                    break;
+                }
+            }
+
+            sb.Append(sbt);
+        }
+
+
         bool directReturn = true;
         if (!bConstructor)
             directReturn = IsDirectReturn(returnType);
@@ -433,7 +491,15 @@ public static class CSGenerator2
         var paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];        
         for (int i = 0; i < ps.Length; i++)
         {
-            paramHandlers[i] = JSDataExchangeMgr.Get_ParamHandler(ps[i], i);
+            if (true /* !ps[i].ParameterType.IsGenericParameter */ )
+            {
+                // use original method's parameterinfo
+                paramHandlers[i] = JSDataExchangeMgr.Get_ParamHandler(ps[i], i);
+                if (ps[i].ParameterType.IsGenericParameter)
+                {
+                    paramHandlers[i].getter = "    vc.datax.setTemp(ps[" + i.ToString() + "]);\n" + paramHandlers[i].getter;
+                }
+            }
         }
 
         // minimal params needed
@@ -444,16 +510,19 @@ public static class CSGenerator2
             minNeedParams++;
         }
 
-        StringBuilder sb = new StringBuilder();
 
-        sb.Append("    int len = count;\n");
+        if (TCount == 0)
+            sb.AppendFormat("    int len = count;\n");
+        else
+            sb.AppendFormat("    int len = count - {0};\n", TCount);
+
         for (int j = minNeedParams; j <= ps.Length; j++)
         {
             StringBuilder sbGetParam = new StringBuilder();
             StringBuilder sbActualParam = new StringBuilder();
             StringBuilder sbUpdateRefParam = new StringBuilder();
 
-            // receive ref/out first
+            // receive arguments first
             for (int i = 0; i < j; i++)
             {
                 ParameterInfo p = ps[i];
@@ -461,7 +530,6 @@ public static class CSGenerator2
                     sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n", GetTypeFullName(p.ParameterType), i, GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i));
                 else
                     sbGetParam.Append("        " + paramHandlers[i].getter + "\n");
-
 
                 // value type array
                 // no 'out' nor 'ref'
@@ -497,39 +565,40 @@ public static class CSGenerator2
                  sbGetParam,         // [2] get param
                  callAndReturn,      // [3] 
                  sbUpdateRefParam);  // [4] update ref/out params
-
-//                 sb.AppendFormat(@"    {4}if (len == {0}) 
-//     [[
-// {5}
-//         vc.returnObject( '{7}', new {1}{2}({3}) );
-// {6}
-//     ]]
-// ", 
-//                  j,  // [0] param length
-//                  "",
-//                  GetTypeFullName(type),               // [2] method name, can't use methodName here, it's .ctor
-//                  sbActualParam.ToString(),            // [3] actual params
-//                  (j == minNeedParams) ? "" : "else ", // [4] else
-//                  sbGetParam,        // [5] get param
-//                  sbUpdateRefParam,  // [6] update ref/out param
-//                  type.Name);        // [7] 
             }
             else
             {
                 StringBuilder sbCall = new StringBuilder();
-                if (bStatic)
-                    sbCall.AppendFormat("{0}.{1}({2})", GetTypeFullName(type), methodName, sbActualParam.ToString());
-                else if (!type.IsValueType)
-                    sbCall.AppendFormat("(({0})vc.csObj).{1}({2})", GetTypeFullName(type), methodName, sbActualParam.ToString());
+
+                if (TCount == 0)
+                {
+                    if (bStatic)
+                        sbCall.AppendFormat("{0}.{1}({2})", GetTypeFullName(type), methodName, sbActualParam.ToString());
+                    else if (!type.IsValueType)
+                        sbCall.AppendFormat("(({0})vc.csObj).{1}({2})", GetTypeFullName(type), methodName, sbActualParam.ToString());
+                    else
+                        sbCall.AppendFormat("argThis.{0}({1})", methodName, sbActualParam.ToString());
+                }
                 else
-                    sbCall.AppendFormat("argThis.{0}({1})", methodName, sbActualParam.ToString());
+                {
+                    var sbActualParamT = new StringBuilder();
+                    if (ps.Length > 0) sbActualParamT.AppendFormat("new object[][[{0}]]", sbActualParam);
+                    else sbActualParamT.Append("null");
 
-//                 StringBuilder sbFullCall = new StringBuilder();
-//                 if (returnVoid) sbFullCall.AppendFormat("{0};", sbCall);
-//                 else if (directReturn) sbFullCall.AppendFormat("{0};", BuildReturnObject(returnType, sbCall.ToString()));
-//                 else sbFullCall.AppendFormat("object ret = {0};\n{1};", sbCall, BuildReturnObject(returnType, "ret"));
+                    if (bStatic) {
+                        sbCall.AppendFormat("method.Invoke(null, {0})", sbActualParamT);
+                    }
+                    else if (!type.IsValueType)
+                    {
+                        sbCall.AppendFormat("method.Invoke(({1})vc.csObj, {0})", sbActualParamT, GetTypeFullName(type));
+                    }
+                    else
+                    {
+                        sbCall.AppendFormat("method.Invoke(argThis, {0})", sbActualParamT);
+                    }
+                }
 
-                string callAndReturn =  JSDataExchangeMgr.Get_Return(returnType, sbCall.ToString());
+                string callAndReturn = JSDataExchangeMgr.Get_Return(returnType, sbCall.ToString());
 
                 StringBuilder sbStruct = null;
                 if (type.IsValueType && !bStatic)
@@ -546,7 +615,7 @@ public static class CSGenerator2
         {4}
 {6}
     ]]
-", 
+",
                  j, // [0] param count
                  (j == minNeedParams) ? "" : "else ",  // [1] else
                  (type.IsValueType && !bStatic) ? sbStruct.ToString() : "",  // [2] if Struct, get argThis first
@@ -670,10 +739,16 @@ static bool {0}(JSVCall vc, int start, int count)
 
             string functionName = type.Name + "_" + method.Name + (olIndex > 0 ? olIndex.ToString() : "") + (method.IsStatic ? "_S" : "");
 
+            int TCount = 0;
+            if (method.IsGenericMethodDefinition) {
+                TCount = method.GetGenericArguments().Length;
+            }
+
+
             sb.AppendFormat(fmt, functionName,
                 
                 method.IsSpecialName ? BuildSpecialFunctionCall(paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType)
-                : BuildNormalFunctionCall(i, paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType, false));
+                : BuildNormalFunctionCall(i, paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType, false, TCount));
 
             ccbn.methods.Add(functionName);
             ccbn.methodsCSParam.Add(GenListCSParam2(paramS).ToString());
@@ -888,6 +963,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 {2}
 
 using jsval = JSApi.jsval;

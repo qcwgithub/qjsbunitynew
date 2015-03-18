@@ -24,7 +24,60 @@ public class JSDataExchangeMgr
         GetJSFUNRET
     }
 
+    System.Object mTempObj;
+    public void setTemp(System.Object obj)
+    {
+        mTempObj = obj;
+    }
+
     #region Get Operation
+
+    public object getByType(eGetType e)
+    {
+        Type type = (Type)mTempObj;
+        if (type.IsByRef)
+            type = type.GetElementType();
+
+        if (type == typeof(string))
+            return getString(e);
+        else if (type.IsEnum)
+            return getEnum(e);
+        else if (type.IsPrimitive)
+        {
+            if (type == typeof(System.Boolean))
+                return getBoolean(e);
+            else if (type == typeof(System.Char))
+                return getChar(e);
+            else if (type == typeof(System.Byte))
+                return getByte(e);
+            else if (type == typeof(System.SByte))
+                return getSByte(e);
+            else if (type == typeof(System.UInt16))
+                return getUInt16(e);
+            else if (type == typeof(System.Int16))
+                return getInt16(e);
+            else if (type == typeof(System.UInt32))
+                return getUInt32(e);
+            else if (type == typeof(System.Int32))
+                return getInt32(e);
+            else if (type == typeof(System.UInt64))
+                return getUInt64(e);
+            else if (type == typeof(System.Int64))
+                return getInt64(e);
+            else if (type == typeof(System.Single))
+                return getSingle(e);
+            else if (type == typeof(System.Double))
+                return getDouble(e);
+            else
+                Debug.LogError("Unknown primitive type");
+        }
+        else
+        {
+            return getObject(e);
+        }
+        return null;
+    }
+
 
     public void getJSValueOfParam(ref jsval val, int pIndex)
     {
@@ -280,6 +333,52 @@ public class JSDataExchangeMgr
     }
 
     #region Set Operation
+
+    public void setByType(eSetType e, object obj)
+    {
+        Type type = (Type)mTempObj;
+        if (type.IsByRef)
+            type = type.GetElementType();
+
+        if (type == typeof(string))
+            setString(e, (string)obj);
+        else if (type.IsEnum)
+            setEnum(e, (int)obj);
+        else if (type.IsPrimitive)
+        {
+            if (type == typeof(System.Boolean))
+                setBoolean(e, (bool)obj);
+            else if (type == typeof(System.Char))
+                setChar(e, (char)obj);
+            else if (type == typeof(System.Byte))
+                setByte(e, (Byte)obj);
+            else if (type == typeof(System.SByte))
+                setSByte(e, (SByte)obj);
+            else if (type == typeof(System.UInt16))
+                setUInt16(e, (UInt16)obj);
+            else if (type == typeof(System.Int16))
+                setInt16(e, (Int16)obj);
+            else if (type == typeof(System.UInt32))
+                setUInt32(e, (UInt32)obj);
+            else if (type == typeof(System.Int32))
+                setInt32(e, (Int32)obj);
+            else if (type == typeof(System.UInt64))
+                setUInt64(e, (UInt64)obj);
+            else if (type == typeof(System.Int64))
+                setInt64(e, (Int64)obj);
+            else if (type == typeof(System.Single))
+                setSingle(e, (Single)obj);
+            else if (type == typeof(System.Double))
+                setDouble(e, (Double)obj);
+            else
+                Debug.LogError("Unknown primitive type");
+        }
+        else
+        {
+            setObject(e, obj);
+        }
+    }
+
 
     public void setBoolean(eSetType e, bool v)
     {
@@ -699,6 +798,9 @@ public class JSDataExchangeMgr
     static Dictionary<Type, JSDataExchange> dict;
     static JSDataExchange enumExchange;
     static JSDataExchange objExchange;
+    static JSDataExchange t_Exchange;
+
+    // Editor only
     public static void reset()
     {
         dict = new Dictionary<Type, JSDataExchange>();
@@ -721,14 +823,27 @@ public class JSDataExchangeMgr
 
         enumExchange = new JSDataExchange_Enum();
         objExchange = new JSDataExchange_Obj();
+        t_Exchange = new JSDataExchange_T();
     }
 
     // Editor only
     public struct ParamHandler
     {
-        public string argName; // argN, argtN
+        public string argName; // argN
         public string getter;
         public string updater;
+    }
+    public static ParamHandler Get_TType(int index)
+    {
+        ParamHandler ph = new ParamHandler();
+        ph.argName = "t" + index.ToString();
+
+        string get_getParam = dict[typeof(string)].Get_GetParam(null);
+        ph.getter = "typeof
+
+        string get_getParam = objExchange.Get_GetParam(typeof(Type));
+        ph.getter = "System.Type " + ph.argName + " = (System.Type)" + get_getParam + ";";
+        return ph;
     }
     // Editor only
     public static ParamHandler Get_ParamHandler(Type type, int paramIndex, bool isOutOrRef)
@@ -754,7 +869,14 @@ public class JSDataExchangeMgr
         }
 
         JSDataExchange xcg = null;
-        dict.TryGetValue(type, out xcg);
+        if (type.IsGenericParameter) 
+        {
+            xcg = t_Exchange;
+        }
+        if (xcg == null)
+        {
+            dict.TryGetValue(type, out xcg);
+        }
 
         if (xcg == null) 
         { 
@@ -807,10 +929,12 @@ public class JSDataExchangeMgr
     {
         return Get_ParamHandler(paramInfo.ParameterType, paramIndex, paramInfo.ParameterType.IsByRef || paramInfo.IsOut);
     }
+    // Editor only
     public static ParamHandler Get_ParamHandler(FieldInfo fieldInfo)
     {
         return Get_ParamHandler(fieldInfo.FieldType, 0, false);//fieldInfo.FieldType.IsByRef);
     }
+    // Editor only
     public static string Get_Return(Type type, string expVar) 
     {
         if (type == typeof(void))
@@ -1029,6 +1153,16 @@ public class JSDataExchange_Obj : JSDataExchange
     public override string Get_Return(string expVar) { return "vc.datax.setObject(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
     public override string Get_GetRefOutParam(Type t) { return "vc.datax.getObject(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
     public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setObject(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override bool isGetParamNeedCast { get { return true; } }
+
+}
+// generic 
+public class JSDataExchange_T : JSDataExchange
+{
+    public override string Get_GetParam(Type t) { return "vc.datax.getByType(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setByType(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getByType(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setByType(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
     public override bool isGetParamNeedCast { get { return true; } }
 
 }

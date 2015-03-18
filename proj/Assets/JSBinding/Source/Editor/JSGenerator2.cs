@@ -240,10 +240,16 @@ _jstype.definition.{4} = function({5}) [[ {8} = CS.Call({0}, {1}, {2}, {3}, {6}{
     {
         string fmt = @"
 /* {6} */
-_jstype.definition.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, false, {9}, {8}{5}); ]]";
+_jstype.definition.{1} = function({2}) [[ 
+    {10}
+    return CS.Call({7}, {3}, {4}, false, {9}, {8}{5}); 
+]]";
         string fmtStatic = @"
 /* static {6} {9} */
-_jstype.staticDefinition.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, true, {8}{5}); ]]";
+_jstype.staticDefinition.{1} = function({2}) [[ 
+    {10}
+    return CS.Call({7}, {3}, {4}, true, {8}{5}); 
+]]";
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < methods.Length; i++)
@@ -256,14 +262,48 @@ _jstype.staticDefinition.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, tr
             StringBuilder sbFormalParam = new StringBuilder();
             StringBuilder sbActualParam = new StringBuilder();
             ParameterInfo[] paramS = method.GetParameters();
+            StringBuilder sbInitT = new StringBuilder();
+            int TCount = 0;
+
+            // add T to formal param
+            if (method.IsGenericMethodDefinition)
+            {
+                TCount = method.GetGenericArguments().Length;
+                for (int j = 0; j < TCount; j++)
+                {
+                    sbFormalParam.AppendFormat("t{0}", j);
+                    if (j < TCount - 1 || paramS.Length > 0)
+                        sbFormalParam.Append(", ");
+
+
+                    sbInitT.AppendFormat("    var native_t{0} = t{0}.getNativeType();\n", j);
+                    sbActualParam.AppendFormat(", native_t{0}", j);
+                }
+            }
+
             int L = paramS.Length;
             for (int j = 0; j < L; j++)
             {
-                sbFormalParam.AppendFormat("a{0}/* {1} */{2}", j, paramS[j].ParameterType.Name, (j == L - 1 ? "" : ", "));
-                sbActualParam.AppendFormat("{2}a{0}{1}", j, (j == L - 1 ? "" : ", "), (j == 0 ? ", " : ""));
+                sbFormalParam.AppendFormat("a{0}/*{1}*/{2}", j, paramS[j].ParameterType.Name, (j == L - 1 ? "" : ", "));
+                sbActualParam.AppendFormat(", a{0}", j);
             }
+
             if (!method.IsStatic)
-                sb.AppendFormat(fmt, 
+                sb.AppendFormat(fmt,
+                    className,
+                    SharpKitMethodName(method.Name, paramS, bOverloaded), // [1] method name
+                    sbFormalParam.ToString(),  // [2] formal param
+                    slot,                      // [3] slot
+                    i,                         // [4] index
+                    sbActualParam,             // [5] actual param
+                    method.ReturnType.Name,    // [6] return type name
+                    (int)JSVCall.Oper.METHOD,  // [7] OP
+                    "false",                   // [8] isOverloaded
+                    thisString,                // [9] this.__nativeObj
+                    sbInitT                    //[10] generic types init
+                    );
+            else
+                sb.AppendFormat(fmtStatic, 
                     className, 
                     SharpKitMethodName(method.Name, paramS, bOverloaded), 
                     sbFormalParam.ToString(), 
@@ -273,9 +313,8 @@ _jstype.staticDefinition.{1} = function({2}) [[ return CS.Call({7}, {3}, {4}, tr
                     method.ReturnType.Name, 
                     (int)JSVCall.Oper.METHOD, 
                     "false", 
-                    thisString);
-            else
-                sb.AppendFormat(fmtStatic, className, SharpKitMethodName(method.Name, paramS, bOverloaded), sbFormalParam.ToString(), slot, i, sbActualParam, method.ReturnType.Name, (int)JSVCall.Oper.METHOD, "false", "");
+                    "",
+                    sbInitT);
         }
         return sb;
     }

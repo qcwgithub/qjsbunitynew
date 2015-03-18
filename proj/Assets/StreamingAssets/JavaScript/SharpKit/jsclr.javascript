@@ -449,14 +449,33 @@ JsCompiler.Compile_Phase1 = function (){
                 jsType.baseTypeName = "System.ValueType";
         }
 
+
 		if (jsType.Kind == "Struct" || jsType.Kind == "Class") 
 		{
-            if (jsType.fields != undefined) 
+            // add default constructor!!
+            if (jsType.ctor == undefined) {
+                jsType.ctor = function () {}
+            }
+            // add a function to obtain c# Type
+            jsType.ctor.getNativeType = function () {
+                if (this.__nativeType) {
+                    return this.__nativeType;
+                }
+                if (this.__nativeTypeFail) {
+                    return undefined;
+                }
+                var suc = false;
+                if (this._type && this._type.fullname) {
+                    this.__nativeType = todo_my_get_type(this._type.fullname);
+                    suc = (this.__nativeType != undefined);
+                }
+                if (!suc) {
+                    this.__nativeTypeFail = true;
+                }
+            }
+
+            if (jsType.fields != undefined)
 		    {
-				if (jsType.ctor == undefined) 
-				{
-					jsType.ctor = function () {}
-				}
 				jsType.commonPrototype = jsType.ctor.prototype;
 				for (var v in jsType.fields) 
 				{

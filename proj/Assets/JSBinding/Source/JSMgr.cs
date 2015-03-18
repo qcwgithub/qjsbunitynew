@@ -716,6 +716,18 @@ public static class JSMgr
 //                }
 //                Debug.Log(s);
 //                continue;
+
+                bool bDiscard = false;
+                var ps = method.GetParameters();
+                for (int k = 0; k < ps.Length; k++)
+                {
+                    if (ps[k].ParameterType.ContainsGenericParameters) {
+                        bDiscard = true;
+                        break;
+                    }
+                }
+                if (bDiscard)
+                    continue;
             }
 
 
