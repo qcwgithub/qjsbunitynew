@@ -14,7 +14,7 @@ public class Rotate : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-		vec.x = 3333;
+        vec.x = 3333;
         Debug.Log(vec.x);
 
         Debug.Log(this.GetComponent<Transform>().position.ToString());
@@ -29,13 +29,13 @@ public class Rotate : MonoBehaviour
         Debug.Log(lst[0].name);
         Debug.Log(lst[1].name);
 
-//         Camera[] cams = gameObject.GetComponentsInChildren<Camera>(true);
-// 
-//         var arrObjs = GameObject.FindGameObjectsWithTag("Respawn");
-//         for (var i = 0; i < arrObjs.Length; i++)
-//         {
-//             Debug.Log("GameObject.FindGameObjectsWithTag(\"Respawn\"): [" + i + "] = " + arrObjs[i].name);
-//         }
+        //         Camera[] cams = gameObject.GetComponentsInChildren<Camera>(true);
+        // 
+        //         var arrObjs = GameObject.FindGameObjectsWithTag("Respawn");
+        //         for (var i = 0; i < arrObjs.Length; i++)
+        //         {
+        //             Debug.Log("GameObject.FindGameObjectsWithTag(\"Respawn\"): [" + i + "] = " + arrObjs[i].name);
+        //         }
     }
 
     // Update is called once per frame

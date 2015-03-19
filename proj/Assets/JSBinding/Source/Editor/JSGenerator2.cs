@@ -253,6 +253,8 @@ _jstype.staticDefinition.{1} = function({2}) [[
     return CS.Call({7}, {3}, {4}, true, {8}{5}); 
 ]]";
 
+        bool bIsSystemObject = (type == typeof(System.Object));
+
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < methods.Length; i++)
         {
@@ -292,10 +294,13 @@ _jstype.staticDefinition.{1} = function({2}) [[
 
             //int TCount = method.GetGenericArguments().Length;
 
+            string methodName = method.Name;
+            if (methodName == "ToString") { methodName = "toString"; }
+
             if (!method.IsStatic)
                 sb.AppendFormat(fmt,
                     className,
-                    SharpKitMethodName(method.Name, paramS, bOverloaded, TCount), // [1] method name
+                    SharpKitMethodName(methodName, paramS, bOverloaded, TCount), // [1] method name
                     sbFormalParam.ToString(),  // [2] formal param
                     slot,                      // [3] slot
                     i,                         // [4] index
@@ -309,7 +314,7 @@ _jstype.staticDefinition.{1} = function({2}) [[
             else
                 sb.AppendFormat(fmtStatic, 
                     className,
-                    SharpKitMethodName(method.Name, paramS, bOverloaded, TCount), 
+                    SharpKitMethodName(methodName, paramS, bOverloaded, TCount), 
                     sbFormalParam.ToString(), 
                     slot, 
                     i, 

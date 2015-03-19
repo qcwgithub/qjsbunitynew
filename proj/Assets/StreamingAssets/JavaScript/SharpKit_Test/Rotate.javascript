@@ -16,13 +16,13 @@ var Rotate = {
         },
         Start: function (){
             this.vec.x = 3333;
-            //UnityEngine.Debug.Log$$Object(this.vec.x);
-            UnityEngine.Debug.Log$$Object(this.GetComponent$1(UnityEngine.Transform.ctor).get_position());
+            UnityEngine.Debug.Log$$Object(this.vec.x);
+            UnityEngine.Debug.Log$$Object(this.GetComponent$1(UnityEngine.Transform.ctor).get_position().toString());
             var lst = new System.Collections.Generic.List$1.ctor(UnityEngine.GameObject.ctor);
             lst.Add(this.get_gameObject());
             lst.Add(UnityEngine.Camera.get_main().get_gameObject());
-            //UnityEngine.Debug.Log$$Object(lst.get_Item$$Int32(0).get_name());
-            //UnityEngine.Debug.Log$$Object(lst.get_Item$$Int32(1).get_name());
+            UnityEngine.Debug.Log$$Object(lst.get_Item$$Int32(0).get_name());
+            UnityEngine.Debug.Log$$Object(lst.get_Item$$Int32(1).get_name());
         },
         Update: function (){
             if (UnityEngine.Object.op_Equality(this.mTrans, null)){
