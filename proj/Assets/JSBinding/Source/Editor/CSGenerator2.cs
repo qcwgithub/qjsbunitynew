@@ -252,7 +252,10 @@ public static class CSGenerator2
                 sbActualParam = new StringBuilder();
                 paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];
                 for (int j = 0; j < ps.Length; j++)
-                    paramHandlers[j] = JSDataExchangeMgr.Get_ParamHandler(ps[j].ParameterType, j);
+                {
+                    paramHandlers[j] = JSDataExchangeMgr.Get_ParamHandler(ps[j].ParameterType, j, false);
+                    sbActualParam.AppendFormat("[{0}]", paramHandlers[j].argName);
+                }
             }
 
             sb.AppendFormat("static void {0}_{1}(JSVCall vc)\n[[\n", type.Name, property.Name);
@@ -270,13 +273,29 @@ public static class CSGenerator2
             //if (type.IsValueType && !field.IsStatic)
             //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
 
-            // get
-            if (isStatic)
-                sbCall.AppendFormat("{0}.{1}", GetTypeFullName(type), property.Name);
-            //else if (bIndexer)
-            //    sbCall.AppendFormat("(({0})vc.csObj)[{1}]", GetTypeFullName(type), property.Name);
+            if (bIndexer)
+            {
+                for (int j = 0; j < ps.Length; j++)
+                {
+                    sb.Append("        " + paramHandlers[j].getter + "\n");
+                }
+                if (isStatic)
+                {
+                    sbCall.AppendFormat("{0}{1}", GetTypeFullName(type), sbActualParam);
+                }
+                else
+                {
+                    sbCall.AppendFormat("(({0})vc.csObj){1}", GetTypeFullName(type), sbActualParam);
+                }
+            }
             else
-                sbCall.AppendFormat("(({0})vc.csObj).{1}", GetTypeFullName(type), property.Name);
+            {
+                // get
+                if (isStatic)
+                    sbCall.AppendFormat("{0}.{1}", GetTypeFullName(type), property.Name);
+                else
+                    sbCall.AppendFormat("(({0})vc.csObj).{1}", GetTypeFullName(type), property.Name);
+            }
 
             sb.AppendFormat("        {0}\n    ]]\n", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
 
