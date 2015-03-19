@@ -701,7 +701,7 @@ public static class JSMgr
                 }
                 else
                 {
-                    // Debug.LogWarning("IGNORE special-name function:" + type.Name + "." + method.Name);
+                     Debug.LogWarning("IGNORE special-name function:" + type.Name + "." + method.Name);
                     continue;
                 }
             }
