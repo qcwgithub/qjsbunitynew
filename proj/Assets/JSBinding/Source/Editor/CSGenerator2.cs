@@ -242,6 +242,19 @@ public static class CSGenerator2
 
             PropertyInfo property = properties[i];
 
+            // check to see if this is a indexer
+            ParameterInfo[] ps = property.GetIndexParameters();
+            bool bIndexer = (ps.Length > 0);
+            StringBuilder sbActualParam = null;
+            JSDataExchangeMgr.ParamHandler[] paramHandlers = null;
+            if (bIndexer)
+            {
+                sbActualParam = new StringBuilder();
+                paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];
+                for (int j = 0; j < ps.Length; j++)
+                    paramHandlers[j] = JSDataExchangeMgr.Get_ParamHandler(ps[j].ParameterType, j);
+            }
+
             sb.AppendFormat("static void {0}_{1}(JSVCall vc)\n[[\n", type.Name, property.Name);
 
             MethodInfo[] accessors = property.GetAccessors();
@@ -251,7 +264,7 @@ public static class CSGenerator2
 
 
             if (!bReadOnly)
-                sb.Append("    if (vc.bGet)\n");
+                sb.Append("    if (vc.bGet) [[ \n");
 
 
             //if (type.IsValueType && !field.IsStatic)
@@ -260,11 +273,12 @@ public static class CSGenerator2
             // get
             if (isStatic)
                 sbCall.AppendFormat("{0}.{1}", GetTypeFullName(type), property.Name);
+            //else if (bIndexer)
+            //    sbCall.AppendFormat("(({0})vc.csObj)[{1}]", GetTypeFullName(type), property.Name);
             else
                 sbCall.AppendFormat("(({0})vc.csObj).{1}", GetTypeFullName(type), property.Name);
-            sb.AppendFormat("        {0}\n", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
 
-            
+            sb.AppendFormat("        {0}\n    ]]\n", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
 
             // set
             if (!bReadOnly)
@@ -359,6 +373,8 @@ public static class CSGenerator2
 
         else if (methodName == "op_UnaryNegation")
             strCall = "-" + paramHandlers[0].argName;
+        else
+            Debug.LogError("Unknown special name: " + methodName);
 
         string ret = JSDataExchangeMgr.Get_Return(returnType, strCall);
         sb.Append("    " + ret);

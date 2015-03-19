@@ -648,8 +648,11 @@ public static class JSMgr
                     proAccessors.Add(v.Name, 0);
             }
 
-            if (pro.Name == "Item") //[] not support
-                continue;
+
+//            if (pro.GetIndexParameters().Length > 0)
+//                continue;
+//            if (pro.Name == "Item") //[] not support
+//                continue;
 
             // Skip Obsolete
             if (IsMemberObsolete(pro))
