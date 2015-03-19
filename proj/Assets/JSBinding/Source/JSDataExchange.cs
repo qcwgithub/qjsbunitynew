@@ -299,27 +299,26 @@ public class JSDataExchangeMgr
         {
             case eGetType.GetARGV:
                 {
-                    int i = vc.currIndex++;
-                    if (JSApi.JSh_ArgvIsBool(vc.cx, vc.vp, i))
-                        return JSApi.JSh_ArgvBool(vc.cx, vc.vp, i);
+                    int i = vc.currIndex;
+                    if (JSApi.JSh_ArgvIsNullOrUndefined(vc.cx, vc.vp, i))
+                        return null;
+                    else if (JSApi.JSh_ArgvIsBool(vc.cx, vc.vp, i))
+                        return getBoolean(e);
                     else if (JSApi.JSh_ArgvIsInt32(vc.cx, vc.vp, i))
-                        return JSApi.JSh_ArgvInt(vc.cx, vc.vp, i);
+                        return getInt32(e);
                     else if (JSApi.JSh_ArgvIsDouble(vc.cx, vc.vp, i))
-                        return JSApi.JSh_ArgvDouble(vc.cx, vc.vp, i);
+                        return getDouble(e);
                     else if (JSApi.JSh_ArgvIsString(vc.cx, vc.vp, i))
-                        return JSApi.JSh_ArgvStringS(vc.cx, vc.vp, i);
+                        return getString(e);
                     else if (JSApi.JSh_ArgvIsObject(vc.cx, vc.vp, i))
                     {
-                        IntPtr jsObj = JSApi.JSh_ArgvObject(vc.cx, vc.vp, i);
-                        object csObj = JSMgr.getCSObj(jsObj);
-                        return csObj;
+                        return getObject(e);
                     }
-                    else if (JSApi.JSh_ArgvIsNullOrUndefined(vc.cx, vc.vp, i))
-                        return null;
+                    return null;
                 }
                 break;
             default:
-                Debug.LogError("Not Supported");
+                Debug.LogError("getWhatever ////// Not Supported");
                 break;
         }
         return null;
