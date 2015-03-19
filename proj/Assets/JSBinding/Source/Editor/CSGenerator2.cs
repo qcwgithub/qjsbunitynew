@@ -298,7 +298,9 @@ public static class CSGenerator2
             //if (type.IsValueType && !field.IsStatic)
             //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
                         
-            sb.AppendFormat("        {0}\n    ]]\n", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
+            sb.AppendFormat("        {0}", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
+            if (!bReadOnly)
+                sb.Append("\n    ]]\n");
 
             // set
             if (!bReadOnly)
@@ -319,7 +321,7 @@ public static class CSGenerator2
                         if (type.IsValueType)
                         {
                             sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", GetTypeFullName(type));
-                            sbCall.AppendFormat("argThis{0} = {1};", sbActualParam, paramHandler.argName);
+                            sb.AppendFormat("argThis{0} = {1};", sbActualParam, paramHandler.argName);
                             sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
                         }
                         else

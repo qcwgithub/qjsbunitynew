@@ -81,6 +81,21 @@ public static class JSGenerator2
         return name;
 
     }
+    public static string SharpKitPropertyName(PropertyInfo property)
+    {
+        string name = property.Name;
+        ParameterInfo[] ps = property.GetIndexParameters();
+        if (ps.Length > 0)
+        {
+            for (int i = 0; i < ps.Length; i++)
+            {
+                Type type = ps[i].ParameterType;
+                name += "$$" + SharpKitTypeName(type);
+            }
+            name = name.Replace("`", "$");
+        }
+        return name;
+    }
     public static string SharpKitMethodName(string methodName, ParameterInfo[] paramS, bool overloaded, int TCounts = 0)
     {
         string name = methodName;
@@ -131,28 +146,43 @@ _jstype.{7}.{0} =  [[
     public static StringBuilder BuildProperties(Type type, PropertyInfo[] properties, int slot)
     {
         string fmt2 = @"
-_jstype.{7}.get_{0} = function() [[ return CS.Call({1}, {3}, {4}, {5}{6}); ]]
-_jstype.{7}.set_{0} = function(v) [[ return CS.Call({2}, {3}, {4}, {5}{6}, v); ]]
+_jstype.{7}.get_{0} = function({9}) [[ return CS.Call({1}, {3}, {4}, {5}{6}{8}); ]]
+_jstype.{7}.set_{0} = function({10}v) [[ return CS.Call({2}, {3}, {4}, {5}{6}{8}, v); ]]
 ";
-
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < properties.Length; i++)
         {
             PropertyInfo property = properties[i];
-            if (property.Name == "Item") //[] not support
-                continue;
+//             if (property.Name == "Item") //[] not support
+//                 continue;
+
+            ParameterInfo[] ps = property.GetIndexParameters();
+            string indexerParamA = string.Empty;
+            string indexerParamB = string.Empty;
+            string indexerParamC = string.Empty;
+            for (int j = 0; j < ps.Length; j++)
+            {
+                indexerParamA += "ind" + j.ToString();
+                indexerParamB += "ind" + j.ToString() + ", ";
+                if (j < ps.Length - 1) indexerParamA += ", ";
+                indexerParamC += ", ind" + j.ToString();
+            }
+
 
             MethodInfo[] accessors = property.GetAccessors();
             bool isStatic = accessors[0].IsStatic;
-            sb.AppendFormat(fmt2, 
-                property.Name,                  // [0]
+            sb.AppendFormat(fmt2,
+                SharpKitPropertyName(property), // [0]
                 (int)JSVCall.Oper.GET_PROPERTY, // [1] op
                 (int)JSVCall.Oper.SET_PROPERTY, // [2] op
                 slot,                           // [3]
                 i,                              // [4]
                 (isStatic ? "true" : "false"),  // [5] isStatic
                 (isStatic ? "" : ", " + thisString),     // [6] this
-                (isStatic ? "staticDefinition" : "definition"));                 // [7]
+                (isStatic ? "staticDefinition" : "definition"),                // [7]
+                indexerParamC, // [8]
+                indexerParamA, 
+                indexerParamB);
         }
         return sb;
     }

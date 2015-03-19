@@ -14,8 +14,8 @@ public class Rotate : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        vec.x = 3333;
-        Debug.Log(vec.x);
+        vec.x = 88;
+        Debug.Log("vec[0] = " + vec[0].ToString());
 
         Debug.Log(this.GetComponent<Transform>().position.ToString());
 

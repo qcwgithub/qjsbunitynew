@@ -15,8 +15,8 @@ var Rotate = {
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
-            this.vec.x = 3333;
-            UnityEngine.Debug.Log$$Object(this.vec.x);
+            this.vec.x = 88;
+            UnityEngine.Debug.Log$$Object("vec[0] = " + this.vec.get_Item$$Int32(0).toString());
             UnityEngine.Debug.Log$$Object(this.GetComponent$1(UnityEngine.Transform.ctor).get_position().toString());
             var lst = new System.Collections.Generic.List$1.ctor(UnityEngine.GameObject.ctor);
             lst.Add(this.get_gameObject());
