@@ -30,6 +30,7 @@ public class JSDataExchangeMgr
         mTempObj = obj;
     }
 
+
     #region Get Operation
 
     public object getByType(eGetType e)
@@ -1016,19 +1017,120 @@ public class JSDataExchangeMgr
         }
         return obj;
     }
+    /*
+    // Runtime Only
+    // type: class type
+    // methodName: method name
+    // TCount: generic parameter count
+    // vc: JSVCall instance
+    public static MethodInfo MakeGenericConstructor(Type type, int TCount, int paramCount, JSVCall vc)
+    {
+        // Get generic method by name and param count.
+        ConstructorInfo conT = JSDataExchangeMgr.GetGenericConstructorInfo(type, TCount, paramCount);
+        if (conT == null)
+        {
+            return null;
+        }
 
-    public static MethodInfo GetGenericMethodInfo(Type type, string name, int paramCount)
+        // get T types
+        Type[] genericTypes = new Type[TCount];
+        for (int i = 0; i < TCount; i++)
+        {
+            // Get generic types from js.
+            System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV));
+            genericTypes[i] = t;
+            if (t == null)
+            {
+                return null;
+            }
+        }
+
+        // Make generic method.
+        MethodInfo method = methodT.MakeGenericMethod(genericTypes);
+        return method;
+    }
+    // Runtime Only
+    // called by MakeGenericConstructor
+    // get generic Constructor by matching TCount,paramCount, if more than 1 match, return null.
+    static ConstructorInfo GetGenericConstructorInfo(Type type, int TCount, int paramCount)
+    {
+        ConstructorInfo[] constructors = type.GetConstructors();
+        if (constructors == null || constructors.Length == 0)
+        {
+            return null;
+        }
+
+        ConstructorInfo con = null;
+        for (int i = 0; i < constructors.Length; i++)
+        {
+            if (constructors[i].IsGenericMethodDefinition &&
+                constructors[i].GetGenericArguments().Length == TCount &&
+                constructors[i].GetParameters().Length == paramCount)
+            {
+                if (con == null)
+                    con = constructors[i];
+                else
+                {
+                    Debug.LogError("More than 1 Generic Constructor found!!! " + GetTypeFullName(type) + "." + name);
+                    return null;
+                }
+            }
+        }
+        if (con == null)
+        {
+            Debug.LogError("No generic constructor found! " + GetTypeFullName(type));
+        }
+        return con;
+    }*/
+    // Runtime Only
+    // type: class type
+    // methodName: method name
+    // TCount: generic parameter count
+    // vc: JSVCall instance
+    public static MethodInfo MakeGenericFunction(Type type, string methodName, int TCount, int paramCount, JSVCall vc)
+    {
+        // Get generic method by name and param count.
+        MethodInfo methodT = JSDataExchangeMgr.GetGenericMethodInfo(type, methodName, TCount, paramCount);
+        if (methodT == null)
+        {
+            return null;
+        }
+
+        // get T types
+        Type[] genericTypes = new Type[TCount];
+        for (int i = 0; i < TCount; i++)
+        {
+            // Get generic types from js.
+            System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV));
+            genericTypes[i] = t;
+            if (t == null)
+            {
+                return null;
+            }
+        }
+
+        // Make generic method.
+        MethodInfo method = methodT.MakeGenericMethod(genericTypes);
+        return method;
+    }
+    // Runtime Only
+    // called by MakeGenericFunction
+    // get generic method by matching name,TCount,paramCount, if more than 1 match, return null.
+    static MethodInfo GetGenericMethodInfo(Type type, string name, int TCount, int paramCount)
     {
         BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static/* | BindingFlags.DeclaredOnly */;
         MethodInfo[] methods = type.GetMethods(flags);
-        if (methods == null || methods.Length == 0) 
+        if (methods == null || methods.Length == 0)
+        {
             return null;
+        }
 
         MethodInfo method = null;
         for (int i = 0; i < methods.Length; i++)
         {
             if (methods[i].Name == name && 
                 methods[i].IsGenericMethodDefinition &&
+                methods[i].GetGenericArguments().Length == TCount &&
                 methods[i].GetParameters().Length == paramCount)
             {
                 if (method == null)
@@ -1039,6 +1141,10 @@ public class JSDataExchangeMgr
                     return null;
                 }
             }
+        }
+        if (method == null)
+        {
+            Debug.LogError("No generic method found! " + GetTypeFullName(type) + "." + name);
         }
         return method;
     }

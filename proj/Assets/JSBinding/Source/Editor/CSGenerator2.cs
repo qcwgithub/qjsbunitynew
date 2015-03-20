@@ -421,7 +421,7 @@ public static class CSGenerator2
 
         else if (methodName == "op_LessThan")
             strCall = paramHandlers[0].argName + " < " + paramHandlers[1].argName;
-        else if (methodName == "op_LessTanOrEqual")
+        else if (methodName == "op_LessThanOrEqual")
             strCall = paramHandlers[0].argName + " <= " + paramHandlers[1].argName;
         else if (methodName == "op_GreaterThan")
             strCall = paramHandlers[0].argName + " > " + paramHandlers[1].argName;
@@ -499,60 +499,70 @@ public static class CSGenerator2
         int TCount = 0)
     {
         StringBuilder sb = new StringBuilder();
-        var tHandlers = new JSDataExchangeMgr.ParamHandler[TCount];
-
         if (TCount > 0)
         {
             StringBuilder sbt = new StringBuilder();
-
-            /*
-             * Get Method T
-             */
             sbt.Append("    // Get generic method by name and param count.\n");
-            sbt.AppendFormat("    MethodInfo methodT = JSDataExchangeMgr.GetGenericMethodInfo(typeof({0}), \"{1}\", {2});\n",
-                GetTypeFullName(type), // [0] type full name
+            sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(typeof({0}), \"{1}\", {2}, {3}, vc); \n",
+                GetTypeFullName(type), // [0] typeName
                 methodName,            // [1] method name
-                ps.Length);            // [2] parameter count
-
-            sbt.AppendFormat("    if (methodT == null)\n        return true;\n");
-            sbt.Append("\n");
-            sbt.Append("    // Get generic types from js.\n");
-
-            /*
-             * Make Generic Method
-             */
-            string actualParam = string.Empty;
-            for (int i = 0; i < TCount; i++) 
-            {
-                tHandlers[i] = JSDataExchangeMgr.Get_TType(i);
-
-                sbt.Append("    " + tHandlers[i].getter + "\n");
-                sbt.AppendFormat("    if ({0} == null)\n        return true;\n", tHandlers[i].argName);
-
-                actualParam += tHandlers[i].argName;
-                if (i != TCount - 1) 
-                    actualParam += ", ";
-            }
-            sbt.Append("\n");
-            sbt.Append("    // Make generic method.\n");
-            sbt.AppendFormat("    MethodInfo method = methodT.MakeGenericMethod(new Type[][[{0}]]);\n", actualParam);
+                TCount,                // [2] t count
+                ps.Length);            // [3] param count
             sbt.AppendFormat("    if (method == null)\n        return true;\n");
             sbt.Append("\n");
 
-            /*
-             * if there is T in params
-             * call method.getparameters
-             */
-            for (int i = 0; i < ps.Length; i++)
-            {
-                if (ps[i].ParameterType.IsGenericParameter)
-                {
-                    sbt.Append("    ParameterInfo[] ps = method.GetParameters();\n");
-                    break;
-                }
-            }
-
             sb.Append(sbt);
+
+//            var tHandlers = new JSDataExchangeMgr.ParamHandler[TCount];
+//
+//            /*
+//             * Get Method T
+//             */
+//            sbt.Append("    // Get generic method by name and param count.\n");
+//            sbt.AppendFormat("    MethodInfo methodT = JSDataExchangeMgr.GetGenericMethodInfo(typeof({0}), \"{1}\", {2});\n",
+//                GetTypeFullName(type), // [0] type full name
+//                methodName,            // [1] method name
+//                ps.Length);            // [2] parameter count
+//
+//            sbt.AppendFormat("    if (methodT == null)\n        return true;\n");
+//            sbt.Append("\n");
+//            sbt.Append("    // Get generic types from js.\n");
+//
+//            /*
+//             * Make Generic Method
+//             */
+//            string actualParam = string.Empty;
+//            for (int i = 0; i < TCount; i++) 
+//            {
+//                tHandlers[i] = JSDataExchangeMgr.Get_TType(i);
+//
+//                sbt.Append("    " + tHandlers[i].getter + "\n");
+//                sbt.AppendFormat("    if ({0} == null)\n        return true;\n", tHandlers[i].argName);
+//
+//                actualParam += tHandlers[i].argName;
+//                if (i != TCount - 1) 
+//                    actualParam += ", ";
+//            }
+//            sbt.Append("\n");
+//            sbt.Append("    // Make generic method.\n");
+//            sbt.AppendFormat("    MethodInfo method = methodT.MakeGenericMethod(new Type[][[{0}]]);\n", actualParam);
+//            sbt.AppendFormat("    if (method == null)\n        return true;\n");
+//            sbt.Append("\n");
+//
+//            /*
+//             * if there is T in params
+//             * call method.getparameters
+//             */
+//            for (int i = 0; i < ps.Length; i++)
+//            {
+//                if (ps[i].ParameterType.IsGenericParameter)
+//                {
+//                    sbt.Append("    ParameterInfo[] ps = method.GetParameters();\n");
+//                    break;
+//                }
+//            }
+//
+//            sb.Append(sbt);
         }
 
 
