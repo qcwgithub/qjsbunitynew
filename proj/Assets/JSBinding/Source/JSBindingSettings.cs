@@ -8,6 +8,224 @@ using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 
+namespace RockAssets
+{
+    class TestOp
+    {
+        public TestOp()
+        {
+            UnityEngine.Debug.Log("Test op-------------");
+            Card a = new Card(RANK.ACE, SUIT.DIAMONDS);
+            Card b = new Card(RANK.ACE, SUIT.CLUBS);
+
+            UnityEngine.Debug.Log(a > b);
+            UnityEngine.Debug.Log(a < b);
+            UnityEngine.Debug.Log(a == b);
+            UnityEngine.Debug.Log(a != b);
+        }
+    }
+
+
+    public enum RANK
+    {
+        TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE
+    }
+    public enum SUIT
+    {
+        DIAMONDS = 1,//钻石
+        CLUBS,//美化
+        HEARTS,//栏角
+        SPADES//大魁
+    }
+    /// <summary>
+    /// THIS IS THE CLASS THAT STARTED EVERYTHING AND MADE THIS GAME POSSIBLE
+    /// </summary>
+    public class Card
+    {
+        private int rank, suit;
+
+        private bool faceUp;
+        private bool highlight;
+        public bool FaceUp
+        {
+            get { return faceUp; }
+            set
+            {
+                faceUp = value;
+
+            }
+        }
+        //default two of diamonds
+        public Card()
+        {
+            rank = (int)RANK.TWO;
+            suit = (int)SUIT.DIAMONDS;
+            faceUp = false;
+            highlight = false;
+        }
+        public Card(RANK rank, SUIT suit)
+        {
+            this.rank = (int)rank;
+            this.suit = (int)suit;
+            faceUp = false;
+            highlight = false;
+        }
+        public Card(int rank, int suit)
+        {
+            if (rank < 1 || rank > 14 || suit < 1 || suit > 4)
+                throw new ArgumentOutOfRangeException();
+            this.rank = rank;
+            this.suit = suit;
+            faceUp = false;
+            highlight = false;
+        }
+        public Card(RANK rank, SUIT suit, bool faceUp)
+        {
+            this.rank = (int)rank;
+            this.suit = (int)suit;
+            this.faceUp = faceUp;
+            highlight = false;
+        }
+        public Card(int rank, int suit, bool faceUp)
+        {
+            if (rank < 1 || rank > 14 || suit < 1 || suit > 4)
+                throw new ArgumentOutOfRangeException();
+            this.rank = rank;
+            this.suit = suit;
+            this.faceUp = faceUp;
+            highlight = false;
+        }
+        public Card(Card card)
+        {
+            this.rank = card.rank;
+            this.suit = card.suit;
+            this.faceUp = card.faceUp;
+            highlight = false;
+        }
+        public static string rankToString(int rank)
+        {
+            switch (rank)
+            {
+                case 11:
+                    return "Jack";
+                case 12:
+                    return "Queen";
+                case 13:
+                    return "King";
+                case 14:
+                    return "Ace";
+                default:
+                    return rank.ToString();
+            }
+        }
+        public static string suitToString(int suit)
+        {
+            switch (suit)
+            {
+                case 1:
+                    return "Diamonds";
+                case 2:
+                    return "Clubs";
+                case 3:
+                    return "Hearts";
+                default:
+                    return "Spades";
+            }
+        }
+        public int getRank()
+        {
+            return rank;
+        }
+        public int getSuit()
+        {
+            return suit;
+        }
+
+        public void setRank(RANK rank)
+        {
+            this.rank = (int)rank;
+        }
+        public void setCard(RANK rank, SUIT suit)
+        {
+            this.rank = (int)rank;
+            this.suit = (int)suit;
+        }
+        public void setCard(int rank, int suit)
+        {
+            if (rank < 1 || rank > 14 || suit < 1 || suit > 4)
+                throw new ArgumentOutOfRangeException();
+            this.rank = rank;
+            this.suit = suit;
+        }
+        public override string ToString()
+        {
+            if (faceUp == true)
+                return rankToString(rank) + " of " + suitToString(suit);
+            return "The card is facedown, you cannot see it!";
+        }
+
+        //extract green channel from image to highlight image
+        public void Highlight()
+        {
+
+        }
+        //reload original image to unhighlight
+        public void UnHighlight()
+        {
+
+        }
+        public bool isHighlighted()
+        {
+            return this.highlight;
+        }
+
+        //compare rank of cards
+        public static bool operator ==(Card a, Card b)
+        {
+            if (a.rank == b.rank)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator !=(Card a, Card b)
+        {
+            if (a.rank != b.rank)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator <(Card a, Card b)
+        {
+            if (a.rank < b.rank)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator >(Card a, Card b)
+        {
+            if (a.rank > b.rank)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator <=(Card a, Card b)
+        {
+            if (a.rank <= b.rank)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator >=(Card a, Card b)
+        {
+            if (a.rank >= b.rank)
+                return true;
+            else
+                return false;
+        }
+    }
+}
+
+
 public class Kekoukele
 {
     public delegate void MyFun(int v);
@@ -286,6 +504,9 @@ public class JSBindingSettings
 
     public static Type[] classes = new Type[]
     {
+        typeof(RockAssets.TestOp),
+        typeof(RockAssets.Card),
+
         /*
          * Classes to export for demo
          * Add classes here to export

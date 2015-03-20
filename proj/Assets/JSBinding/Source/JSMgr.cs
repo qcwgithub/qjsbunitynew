@@ -681,7 +681,9 @@ public static class JSMgr
             // skip property accessor
             if (method.IsSpecialName &&
                 proAccessors.ContainsKey(method.Name))
+            {
                 continue;
+            }
 
             if (method.IsSpecialName)
             {
@@ -691,17 +693,22 @@ public static class JSMgr
                     method.Name == "op_Multiply" ||
                     method.Name == "op_Division" ||
                     method.Name == "op_Equality" ||
-                    method.Name == "op_Inequality")
+                    method.Name == "op_Inequality" ||
+
+                    method.Name == "op_LessThan" ||
+                    method.Name == "op_LessThanOrEqual" ||
+                    method.Name == "op_GreaterThan" ||
+                    method.Name == "op_GreaterThanOrEqual")
                 {
                     if (!method.IsStatic)
                     {
-                        // Debug.LogWarning("IGNORE not-static special-name function: " + type.Name + "." + method.Name);
+                        Debug.LogWarning("IGNORE not-static special-name function: " + type.Name + "." + method.Name);
                         continue;
                     }
                 }
                 else
                 {
-                     Debug.LogWarning("IGNORE special-name function:" + type.Name + "." + method.Name);
+                    Debug.LogWarning("IGNORE special-name function:" + type.Name + "." + method.Name);
                     continue;
                 }
             }

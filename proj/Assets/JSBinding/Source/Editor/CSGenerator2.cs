@@ -418,6 +418,16 @@ public static class CSGenerator2
 
         else if (methodName == "op_UnaryNegation")
             strCall = "-" + paramHandlers[0].argName;
+
+        else if (methodName == "op_LessThan")
+            strCall = paramHandlers[0].argName + " < " + paramHandlers[1].argName;
+        else if (methodName == "op_LessTanOrEqual")
+            strCall = paramHandlers[0].argName + " <= " + paramHandlers[1].argName;
+        else if (methodName == "op_GreaterThan")
+            strCall = paramHandlers[0].argName + " > " + paramHandlers[1].argName;
+        else if (methodName == "op_GreaterThanOrEqual")
+            strCall = paramHandlers[0].argName + " >= " + paramHandlers[1].argName;
+
         else
             Debug.LogError("Unknown special name: " + methodName);
 
