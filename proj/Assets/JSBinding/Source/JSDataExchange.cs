@@ -337,6 +337,8 @@ public class JSDataExchangeMgr
 
     #region Set Operation
 
+    // for generic type
+    // type is assigned during runtime
     public void setByType(eSetType e, object obj)
     {
         Type type = (Type)mTempObj;
@@ -387,6 +389,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalBool(ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalBool(vc.cx, vc.vp, v);
                 break;
@@ -408,6 +413,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalString(vc.cx, ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalString(vc.cx, vc.vp, v);
                 break;
@@ -429,6 +437,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalInt(ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalInt(vc.cx, vc.vp, v);
                 break;
@@ -450,6 +461,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalInt(ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalInt(vc.cx, vc.vp, v);
                 break;
@@ -471,6 +485,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalInt(ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalInt(vc.cx, vc.vp, v);
                 break;
@@ -492,6 +509,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalInt(ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalInt(vc.cx, vc.vp, v);
                 break;
@@ -513,6 +533,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalInt(ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalInt(vc.cx, vc.vp, v);
                 break;
@@ -534,6 +557,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalInt(ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalInt(vc.cx, vc.vp, v);
                 break;
@@ -555,6 +581,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalUInt(ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalDouble(vc.cx, vc.vp, v);
                 break;
@@ -576,6 +605,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalDouble(ref vc.valTemp, (Double)v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalDouble(vc.cx, vc.vp, v);
                 break;
@@ -597,6 +629,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalDouble(ref vc.valTemp, (Double)v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalDouble(vc.cx, vc.vp, v);
                 break;
@@ -618,6 +653,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalInt(ref vc.valTemp, v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalInt(vc.cx, vc.vp, v);
                 break;
@@ -639,6 +677,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalDouble(ref vc.valTemp, (Double)v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalDouble(vc.cx, vc.vp, v);
                 break;
@@ -660,6 +701,9 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalDouble(ref vc.valTemp, (Double)v);
+                break;
             case eSetType.SetRval:
                 JSApi.JSh_SetRvalDouble(vc.cx, vc.vp, v);
                 break;
@@ -681,37 +725,39 @@ public class JSDataExchangeMgr
     {
         switch (e)
         {
+            case eSetType.Jsval:
             case eSetType.SetRval:
                 {
                     JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
-                    if (csObj == null)
+                    if (csObj != null)
                     {
+                        //
+                        // 返回给JS的对象：需要 prototype
+                        // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
+                        //
+                        string typeName = JSDataExchangeMgr.GetTypeFullName(csObj.GetType());
+                        IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
+                        if (jstypeObj != IntPtr.Zero)
+                        {
+                            IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+
+                            // __nativeObj
+                            IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
+                            JSMgr.addJSCSRelation(__nativeObj, csObj);
+
+                            // jsObj.__nativeObj = __nativeObj
+                            jsval val = new jsval();
+                            JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
+                            JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+
+                            JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
+                        }
+                    }
+
+                    if (e == eSetType.Jsval)
+                        vc.valTemp = vc.valReturn;
+                    else if (e == eSetType.SetRval)
                         JSApi.JSh_SetRvalJSVAL(vc.cx, vc.vp, ref vc.valReturn);
-                        return;
-                    }
-
-                    //
-                    // 返回给JS的对象：需要 prototype
-                    // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
-                    //
-                    string typeName = JSDataExchangeMgr.GetTypeFullName(csObj.GetType());
-                    IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
-                    if (jstypeObj != IntPtr.Zero)
-                    {
-                        IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
-
-                        // __nativeObj
-                        IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-                        JSMgr.addJSCSRelation(__nativeObj, csObj);
-
-                        // jsObj.__nativeObj = __nativeObj
-                        jsval val = new jsval();
-                        JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
-                        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-
-                        JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
-                    }
-                    JSApi.JSh_SetRvalJSVAL(vc.cx, vc.vp, ref vc.valReturn);
                 }
                 break;
             case eSetType.UpdateARGVRefOut:
@@ -764,6 +810,24 @@ public class JSDataExchangeMgr
             default:
                 Debug.LogError("Not Supported");
                 break;
+        }
+    }
+
+    public void setArray(eSetType e, jsval[] arrVal)
+    {
+        switch (e)
+        {
+           case eSetType.SetRval:
+           {
+               JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
+               IntPtr jsArr = JSApi.JSh_NewArrayObjectS(vc.cx, arrVal.Length);
+               for (int i = 0; i < arrVal.Length; i++)
+                {
+                    JSApi.JSh_SetElement(vc.cx, jsArr, (uint)i, ref arrVal[i]);
+                }
+                JSApi.JSh_SetRvalObject(vc.cx, vc.vp, jsArr);
+            }
+           break;
         }
     }
     #endregion
@@ -819,6 +883,7 @@ public class JSDataExchangeMgr
     static JSDataExchange enumExchange;
     static JSDataExchange objExchange;
     static JSDataExchange t_Exchange;
+    static JSDataExchange_Arr arrayExchange;
 
     // Editor only
     public static void reset()
@@ -844,6 +909,7 @@ public class JSDataExchangeMgr
         enumExchange = new JSDataExchange_Enum();
         objExchange = new JSDataExchange_Obj();
         t_Exchange = new JSDataExchange_T();
+        arrayExchange = new JSDataExchange_Arr();
     }
 
     // Editor only
@@ -970,7 +1036,23 @@ public class JSDataExchangeMgr
                 Debug.LogError("Unknown Primitive Type: " + type.ToString());
                 return "";
             }
-            if (type.IsEnum)
+
+            if (type.IsArray)
+            {
+                xcg = arrayExchange;
+                arrayExchange.elementType = type.GetElementType();
+                if (arrayExchange.elementType.IsArray)
+                {
+                    Debug.LogError("Return [][] not supported");
+                    return "";
+                }
+                else if (arrayExchange.elementType.ContainsGenericParameters)
+                {
+                    Debug.LogError(" Return T[] not supported");
+                    return "/* Return T[] is not supported */";
+                }
+            }
+            else if (type.IsEnum)
             {
                 xcg = enumExchange;
             }
@@ -1162,7 +1244,7 @@ public class JSDataExchange
     public virtual string Get_ReturnRefOut(string expVar) { Debug.LogError("X Get_ReturnRefOut "); return string.Empty; }
 }
 
-#region Actual Data Exchange (Only for Editor)
+#region Primitive Exchange (Editor Only)
 
 public class JSDataExchange_Boolean : JSDataExchange
 {
@@ -1249,6 +1331,8 @@ public class JSDataExchange_Double : JSDataExchange
     public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setDouble(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
 
+#endregion
+
 // System.Object
 public class JSDataExchange_SystemObject : JSDataExchange
 {
@@ -1293,4 +1377,70 @@ public class JSDataExchange_T : JSDataExchange
 
 }
 
-#endregion
+public class JSDataExchange_Arr : JSDataExchange
+{
+    public Type elementType = null;
+    public override string Get_Return(string expVar)
+    {
+        if (elementType == null)
+        {
+            Debug.LogError("JSDataExchange_Arr elementType == null !!");
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        string getValMethod = "";
+
+        if (elementType == typeof(string))
+            getValMethod = "setString";
+        else if (elementType.IsEnum)
+            getValMethod = "setEnum";
+        else if (elementType.IsPrimitive)
+        {
+            if (elementType == typeof(System.Boolean))
+                getValMethod = "setBoolean";
+            else if (elementType == typeof(System.Char))
+                getValMethod = "setChar";
+            else if (elementType == typeof(System.Byte))
+                getValMethod = "setByte";
+            else if (elementType == typeof(System.SByte))
+                getValMethod = "setSByte";
+            else if (elementType == typeof(System.UInt16))
+                getValMethod = "setUInt16";
+            else if (elementType == typeof(System.Int16))
+                getValMethod = "setInt16";
+            else if (elementType == typeof(System.UInt32))
+                getValMethod = "setUInt32";
+            else if (elementType == typeof(System.Int32))
+                getValMethod = "setInt32";
+            else if (elementType == typeof(System.UInt64))
+                getValMethod = "setUInt64";
+            else if (elementType == typeof(System.Int64))
+                getValMethod = "setInt64";
+            else if (elementType == typeof(System.Single))
+                getValMethod = "setSingle";
+            else if (elementType == typeof(System.Double))
+                getValMethod = "setDouble";
+            else
+                Debug.LogError("Unknown primitive type");
+        }
+        else
+        {
+            getValMethod = "setObject";
+        }
+
+        sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSDataExchangeMgr.GetTypeFullName(elementType), expVar);
+        sb.AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar);
+        sb.AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n");
+        sb.AppendFormat("        vc.datax.{0}(JSDataExchangeMgr.eSetType.Jsval, arrRet[i]);\n", getValMethod);
+        sb.AppendFormat("        arrVal[i] = vc.valTemp;\n");
+        sb.AppendFormat("    ]]\n");
+        sb.AppendFormat("    vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal)"); // no ;
+
+        sb.Replace("[[", "{");
+        sb.Replace("]]", "}");
+
+        return sb.ToString();
+    }
+
+}

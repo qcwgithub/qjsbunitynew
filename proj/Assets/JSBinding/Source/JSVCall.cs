@@ -77,6 +77,7 @@ public class JSVCall
     public IntPtr vp;
     public int currIndex = 0;
     public jsval valReturn = new jsval();
+    public jsval valTemp = new jsval();
 
     public void Reset(IntPtr cx, IntPtr vp)
     {

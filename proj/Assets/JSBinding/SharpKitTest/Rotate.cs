@@ -19,6 +19,22 @@ public class Rotate : MonoBehaviour
 
         Debug.Log(this.GetComponent<Transform>().position.ToString());
 
+        //
+        // test return [] from c#
+        //
+        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("TESTTAG");
+        if (gameObjects.Length == 0)
+        {
+            Debug.Log("game objects not found.");
+        }
+        else
+        {
+            for (int i = 0; i < gameObjects.Length; i++)
+            {
+                Debug.Log("GameObject.FindGameObjectsWithTag(\"TESTTAG\"): [" + i + "] = " + gameObjects[i].name);
+            }
+        }
+
         //var cam = Camera.main.gameObject.GetComponent<Camera>();
         //Debug.Log(cam.name);
 

@@ -18,6 +18,15 @@ var Rotate = {
             this.vec.x = 88;
             UnityEngine.Debug.Log$$Object("vec[0] = " + this.vec.get_Item$$Int32(0).toString());
             UnityEngine.Debug.Log$$Object(this.GetComponent$1(UnityEngine.Transform.ctor).get_position().toString());
+            var gameObjects = UnityEngine.GameObject.FindGameObjectsWithTag("TESTTAG");
+            if (gameObjects.length == 0){
+                UnityEngine.Debug.Log$$Object("game objects not found.");
+            }
+            else {
+                for (var i = 0; i < gameObjects.length; i++){
+                    UnityEngine.Debug.Log$$Object("GameObject.FindGameObjectsWithTag(\"TESTTAG\"): [" + i + "] = " + gameObjects[i].get_name());
+                }
+            }
             var lst = new System.Collections.Generic.List$1.ctor(UnityEngine.GameObject.ctor);
             lst.Add(this.get_gameObject());
             lst.Add(UnityEngine.Camera.get_main().get_gameObject());
