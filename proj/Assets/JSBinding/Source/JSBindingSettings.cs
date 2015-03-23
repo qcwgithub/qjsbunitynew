@@ -518,20 +518,43 @@ public class JSBindingSettings
         typeof(Component),
         typeof(Behaviour),
         typeof(MonoBehaviour),
+
+        typeof(AudioSource), 
+        typeof(AudioClip), 
+        typeof(ParticleSystem), 
+        typeof(UnityEngine.Random), 
         typeof(UnityEngine.GameObject), 
+        typeof(UnityEngine.Vector2), 
         typeof(UnityEngine.Vector3), 
-        typeof(Physics),
         typeof(RaycastHit),
         typeof(Ray),
         typeof(Camera),
         typeof(Debug),
         typeof(UnityEngine.GUILayout),
         typeof(Input),
+        typeof(Quaternion), 
         typeof(Time),
         typeof(Kekoukele),
         typeof(UnityEngine.Random),
+        typeof(LayerMask), 
 
         typeof(XueBi),
+
+        //
+        typeof(System.DateTime), 
+        typeof(UnityEngine.Mathf), 
+
+        typeof(Renderer), 
+        typeof(SpriteRenderer), 
+
+        // Physics
+        typeof(Collider2D), 
+        typeof(Rigidbody2D), 
+        typeof(Physics2D), 
+        typeof(Physics),
+
+        //
+        typeof(Animator), 
 
         /*
 

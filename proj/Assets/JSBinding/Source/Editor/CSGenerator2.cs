@@ -1195,6 +1195,11 @@ using UnityEngine;
         Debug.Log("Generate CS Bindings OK. total = " + JSBindingSettings.classes.Length.ToString());
     }
 
+    [MenuItem("Assets/JSBinding/Read serialized data test")]
+    public static void ReadSerializedDataTest()
+    {
+        AssetDatabase.FindAssets("backgrounds", new string[]{"Assets/Prefabs/Environment"});
+    }
     [MenuItem("Assets/JSBinding/Generate JS and CS Bindings2")]
     public static void GenerateJSCSBindings()
     {

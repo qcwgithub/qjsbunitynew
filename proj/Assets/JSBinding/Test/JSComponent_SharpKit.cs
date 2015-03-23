@@ -28,11 +28,24 @@ public class JSComponent_SharpKit : MonoBehaviour
 
     jsval valAwake = new jsval();
     jsval valStart = new jsval();
+    jsval valFixedUpdate = new jsval();
     jsval valUpdate = new jsval();
     jsval valDestroy = new jsval();
     jsval valOnGUI = new jsval();
+    jsval valOnTriggerEnter2D = new jsval();
 
     bool inited = false;
+
+    void initVal(ref jsval val, string jsFunName)
+    {
+        val.asBits = 0;
+        JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, jsFunName, ref val);
+    }
+    void callIfExist(ref jsval val, params object[] args)
+    {
+        if (val.asBits > 0)
+            JSMgr.vCall.CallJSFunctionValue(jsObj, ref val, args);
+    }
 
     public bool initJS()
     {
@@ -64,13 +77,19 @@ public class JSComponent_SharpKit : MonoBehaviour
             return false;
         }
 
+        // TODO:
+        // handle serialization here
+        //
+
         JSMgr.AddRootedObject(jsObj);
 
-        valAwake.asBits = 0; JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, "Awake", ref valAwake);
-        valStart.asBits = 0; JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, "Start", ref valStart);
-        valUpdate.asBits = 0; JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, "Update", ref valUpdate);
-        valDestroy.asBits = 0; JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, "Destroy", ref valDestroy);
-        valOnGUI.asBits = 0; JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, "OnGUI", ref valOnGUI);
+        initVal(ref valAwake, "Awake");
+        initVal(ref valStart, "Start");
+        initVal(ref valFixedUpdate, "FixedUpdate");
+        initVal(ref valUpdate, "Update");
+        initVal(ref valDestroy, "Destroy");
+        initVal(ref valOnGUI, "OnGUI");
+        initVal(ref valOnTriggerEnter2D, "OnTriggerEnter2D");
 
         inited = true;
         return true;
@@ -85,34 +104,39 @@ public class JSComponent_SharpKit : MonoBehaviour
             return;
         }
 
-        if (inited && valAwake.asBits > 0)
-            JSMgr.vCall.CallJSFunctionValue(jsObj, ref valAwake);
+        callIfExist(ref valAwake);
     }
 
-    void Start()
+    void Start() 
     {
-        if (inited && valStart.asBits > 0)
-            JSMgr.vCall.CallJSFunctionValue(jsObj, ref valStart);
+        callIfExist(ref valStart);
     }
-
+    void FixedUpdate()
+    {
+        callIfExist(ref valFixedUpdate);
+    }
     void Update()
     {
-        if (valUpdate.asBits > 0)
-        {
-            JSMgr.vCall.CallJSFunctionValue(jsObj, ref valUpdate);
-        }
+        callIfExist(ref valUpdate);
     }
 
     void OnDestroy()
     {
-        if (JSMgr.isShutDown) return;
+        if (JSMgr.isShutDown)
+        {
+            return;
+        }
 
-        if (inited && valDestroy.asBits > 0)
-            JSMgr.vCall.CallJSFunctionValue(jsObj, ref valDestroy);
+        callIfExist(ref valDestroy);
 
         if (inited)
         {
             JSMgr.RemoveRootedObject(jsObj);
         }
+    }
+
+    void OnTriggerEnter2D (Collider2D other)
+    {
+        callIfExist(ref valOnTriggerEnter2D, other);
     }
 }
