@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Text;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 public class ExtraHelper : MonoBehaviour
 {
     public string[] arrString = null;
-    public UnityEngine.Object[] objs = new UnityEngine.Object[1];
+    public UnityEngine.Object[] arrObject = new UnityEngine.Object[1];
 
 
     enum SType
@@ -87,6 +88,7 @@ public class ExtraHelper : MonoBehaviour
 
         List<string> lstString = new List<string>();
         List<UnityEngine.Object> lstObjs = new List<UnityEngine.Object>();
+        StringBuilder sb = new StringBuilder();
 
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
         foreach (var field in fields)
@@ -98,17 +100,34 @@ public class ExtraHelper : MonoBehaviour
                 return;
             }
 
-            if (fieldType.IsPrimitive)
-            { 
+            sb.Remove(0, sb.Length);
 
+            if (fieldType.IsPrimitive)
+            {
+                sb.AppendFormat("{0}/{1}={2}", (int)eType, field.Name, field.GetValue(behaviour).ToString());
+                lstString.Add(sb.ToString());
             }
             else if (fieldType.IsEnum)
             {
+                sb.AppendFormat("{0}/{1}={2}", (int)eType, field.Name, field.GetValue(behaviour).ToString());
+                lstString.Add(sb.ToString());
+            }
+            else if (fieldType == typeof(string))
+            {
+                sb.AppendFormat("{0}/{1}={2}", (int)eType, field.Name, field.GetValue(behaviour).ToString());
+                lstString.Add(sb.ToString());
             }
             else if (typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
             {
+                lstObjs.Add((UnityEngine.Object)field.GetValue(behaviour));
+            }
+            else
+            {
+                return;
             }
         }
-        Debug.Log(fields.Length);
+
+        this.arrString = lstString.ToArray();
+        this.arrObject = lstObjs.ToArray();
     }
 }
