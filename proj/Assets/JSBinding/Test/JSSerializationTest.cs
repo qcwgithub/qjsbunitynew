@@ -11,14 +11,14 @@ public class JSSerializationTest : MonoBehaviour
     }
     public TESTENUM enum1;
     public float floatV;
-    public int intV;
+    public int[] arrIntV;
 
 	// Use this for initialization
 	void Start () {
         // test enum
         Debug.Log(enum1.ToString());
         Debug.Log(floatV.ToString());
-        Debug.Log(intV.ToString());
+        //Debug.Log(intV.ToString());
 	}
 	
 	// Update is called once per frame

@@ -20,7 +20,7 @@ using jsval = JSApi.jsval;
  */
 public class JSComponent_SharpKit : ExtraHelper
 {
-    public string jsScriptName = string.Empty;
+    //public string jsScriptName = string.Empty;
 
     [HideInInspector]
     [NonSerialized]

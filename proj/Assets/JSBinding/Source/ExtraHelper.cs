@@ -14,7 +14,7 @@ public class ExtraHelper : MonoBehaviour
     [HideInInspector]
     public bool AutoDelete = false;
 
-    public string scriptName;
+    public string jsScriptName;
     public string[] arrString = null;
     public UnityEngine.Object[] arrObject = null;
 
@@ -44,6 +44,8 @@ public class ExtraHelper : MonoBehaviour
 
         ST_Vector2,
         ST_Vector3,
+
+        ST_MAX = 100,
     }
 
     public void initSerializedData(IntPtr cx, IntPtr jsObj)
@@ -190,10 +192,42 @@ public class ExtraHelper : MonoBehaviour
         SType ret = SType.ST_Unknown;
         if (!sDict.TryGetValue(type, out ret)) 
         {
-            Debug.LogError("GetIndex: Unknown type: " + type.Name);
+            // Debug.LogError("GetIndex: Unknown type: " + type.Name);
             return SType.ST_Unknown;
         }
         return ret;
+    }
+
+    static string ValueToString(object value, Type type, SType eType, string name)
+    {
+        StringBuilder sb = new StringBuilder();
+        if (type.IsPrimitive)
+        {
+            sb.AppendFormat("{0}/{1}/{2}", (int)eType, name, value.ToString());
+        }
+        else if (type.IsEnum)
+        {
+            sb.AppendFormat("{0}/{1}/{2}", (int)eType, name, (int)Enum.Parse(type, value.ToString()));
+        }
+        else if (type == typeof(string))
+        {
+            sb.AppendFormat("{0}/{1}/{2}", (int)eType, name, value.ToString());
+        }
+        else if (type == typeof(Vector2))
+        {
+            Vector2 v2 = (Vector2)value;
+            sb.AppendFormat("{0}/{1}/{2}/{3}", (int)eType, name, v2.x, v2.y);
+        }
+        else if (type == typeof(Vector3))
+        {
+            Vector3 v3 = (Vector3)value;
+            sb.AppendFormat("{0}/{1}/{2}/{3}/{4}", (int)eType, name, v3.x, v3.y, v3.z);
+        }
+        return sb.ToString();
+//         else if (typeof(UnityEngine.Object).IsAssignableFrom(type))
+//         {
+//             lstObjs.Add((UnityEngine.Object)value);
+//         }
     }
 
     static void CopyBehaviour(MonoBehaviour behaviour, ExtraHelper helper)
@@ -208,59 +242,57 @@ public class ExtraHelper : MonoBehaviour
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
         foreach (var field in fields)
         {
-			Type fieldType = field.FieldType;
-            if (fieldType.IsArray)
+            if (field.FieldType.IsArray)
             {
-                continue;
-            }
+                Type elementType = field.FieldType.GetElementType();
+                SType eType = GetTypeIndex(elementType);
+                if (eType == SType.ST_Unknown)
+                {
+                    continue;
+                }
+                
+                Array arr = (Array)field.GetValue(behaviour);
 
-            SType eType = GetTypeIndex(fieldType);
-            if (eType == SType.ST_Unknown)
-            {
-                continue;
-            }
+                // Array / fildName / eType / Count
+                lstString.Add("Array/" + field.Name + "/" + ((int)eType).ToString() + "/" + arr.Length.ToString());
 
-            sb.Remove(0, sb.Length);
-
-            if (fieldType.IsPrimitive)
-            {
-                sb.AppendFormat("{0}/{1}/{2}", (int)eType, field.Name, field.GetValue(behaviour).ToString());
-                lstString.Add(sb.ToString());
-            }
-            else if (fieldType.IsEnum)
-            {
-                sb.AppendFormat("{0}/{1}/{2}", (int)eType, field.Name, (int)Enum.Parse(fieldType, field.GetValue(behaviour).ToString()));
-                lstString.Add(sb.ToString());
-            }
-            else if (fieldType == typeof(string))
-            {
-                sb.AppendFormat("{0}/{1}/{2}", (int)eType, field.Name, field.GetValue(behaviour).ToString());
-                lstString.Add(sb.ToString());
-            }
-            else if (fieldType == typeof(Vector2))
-            {
-                Vector2 v2 = (Vector2)field.GetValue(behaviour);
-				sb.AppendFormat("{0}/{1}/{2}/{3}", (int)eType, field.Name, v2.x, v2.y);
-				lstString.Add(sb.ToString());
-			}
-			else if (fieldType == typeof(Vector3))
-            {
-                Vector3 v3 = (Vector3)field.GetValue(behaviour);
-				sb.AppendFormat("{0}/{1}/{2}/{3}/{4}", (int)eType, field.Name, v3.x, v3.y, v3.z);
-				lstString.Add(sb.ToString());
-			}
-			else if (typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
-            {
-                lstObjs.Add((UnityEngine.Object)field.GetValue(behaviour));
+                for (var i = 0; i < arr.Length; i++)
+                {
+                    object value = arr.GetValue(i);
+                    if (typeof(UnityEngine.Object).IsAssignableFrom(elementType))
+                    {
+                        // lstObjs.Add((UnityEngine.Object)field.GetValue(behaviour));
+                    }
+                    else
+                    {
+                        string str = ValueToString(value, elementType, eType, "[" + i.ToString() + "]");
+                        lstString.Add(str);
+                    }
+                }
             }
             else
             {
-                return;
+                SType eType = GetTypeIndex(field.FieldType);
+                if (eType == SType.ST_Unknown)
+                {
+                    continue;
+                }
+
+                sb.Remove(0, sb.Length);
+                if (typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
+                {
+                    lstObjs.Add((UnityEngine.Object)field.GetValue(behaviour));
+                }
+                else
+                {
+                    string str = ValueToString(field.GetValue(behaviour), field.FieldType, eType, field.Name);
+                    lstString.Add(str);
+                }
             }
         }
 
         helper.AutoDelete = true;
-        helper.scriptName = behaviour.GetType().Name;
+        helper.jsScriptName = behaviour.GetType().Name;
         helper.arrString = lstString.ToArray();
         helper.arrObject = lstObjs.ToArray();
     }
