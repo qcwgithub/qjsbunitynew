@@ -1194,6 +1194,12 @@ using UnityEngine;
 
         Debug.Log("Generate CS Bindings OK. total = " + JSBindingSettings.classes.Length.ToString());
     }
+    [MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
+    public static void CopyGameObjectMonoBehaviours()
+    {
+        GameObject go = Selection.activeGameObject;
+        ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
+    }
 
     [MenuItem("Assets/JSBinding/Read serialized data test")]
     public static void ReadSerializedDataTest()
