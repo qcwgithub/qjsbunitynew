@@ -239,30 +239,39 @@ _jstype =
     public static StringBuilder BuildConstructors(Type type, ConstructorInfo[] constructors, int slot, int howmanyConstructors)
     {
         string fmt = @"
-_jstype.definition.{4} = function({5}) [[ {8} = CS.Call({0}, {1}, {2}, {3}, {6}{7}).__nativeObj; ]]";
+_jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
 
         StringBuilder sb = new StringBuilder();
+        var argActual = new cg.args();
+        var argFormal = new cg.args();
+
         for (int i = 0; i < constructors.Length; i++)
         {
             ConstructorInfo con = constructors[i];
             ParameterInfo[] ps = con.GetParameters();
 
+            argActual.Clear().Add(
+                (int)JSVCall.Oper.CONSTRUCTOR, // OP
+                slot, 
+                i, 
+                "true", // IsStatics
+                "false" // IsOverloaded
+                );
+
+            argFormal.Clear();
+
             StringBuilder sbFormalParam = new StringBuilder();
             StringBuilder sbActualParam = new StringBuilder();
             for (int j = 0; j < ps.Length; j++)
             {
-                sbFormalParam.AppendFormat("a{0}{1}", j, (j == ps.Length - 1 ? "" : ", "));
-                sbActualParam.AppendFormat("{2}a{0}{1}", j, (j == ps.Length - 1 ? "" : ", "), (j == 0 ? ", " : ""));
+                argActual.Add("a" + j.ToString());
+                argFormal.Add("a" + j.ToString());
             }
             sb.AppendFormat(fmt, 
-                (int)JSVCall.Oper.CONSTRUCTOR,  // [1]
-                slot,                           // [2]
-                i/* index */,                   // [3]
-                "true"/* isStatic */,           // [4]
-                SharpKitMethodName("ctor", ps, (howmanyConstructors > 1)), sbFormalParam, // [5]
-                "false", /*isOverloaded*/   // [6] isOverloaded
-                sbActualParam,              // [7] actual param
-                thisString);                // [8] thisString
+                SharpKitMethodName("ctor", ps, (howmanyConstructors > 1)), // [0]
+                argFormal,    // [1]
+                argActual,    // [2]
+                thisString);  // [3] thisString
         }
         return sb;
     }
