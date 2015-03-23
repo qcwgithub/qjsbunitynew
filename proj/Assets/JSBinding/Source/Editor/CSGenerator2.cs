@@ -1194,6 +1194,8 @@ using UnityEngine;
 
         Debug.Log("Generate CS Bindings OK. total = " + JSBindingSettings.classes.Length.ToString());
     }
+
+    // Alt + Shift + Q
     [MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
     public static void CopyGameObjectMonoBehaviours()
     {

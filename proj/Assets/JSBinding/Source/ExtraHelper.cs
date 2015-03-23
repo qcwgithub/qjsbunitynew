@@ -7,9 +7,16 @@ using System.Collections.Generic;
 
 public class ExtraHelper : MonoBehaviour
 {
+    /*
+     * AutoDelete: if true  will be automatically deleted when needed (when press Alt + Shift + Q)
+     * DON'T change this manually
+     */
+    [HideInInspector]
+    public bool AutoDelete = false;
+
     public string scriptName;
     public string[] arrString = null;
-    public UnityEngine.Object[] arrObject = new UnityEngine.Object[1];
+    public UnityEngine.Object[] arrObject = null;
 
     enum SType
     {
@@ -47,8 +54,8 @@ public class ExtraHelper : MonoBehaviour
             int x = s.IndexOf('/');
             int y = s.IndexOf('/', x + 1);
             int eType = int.Parse(s.Substring(0, x));
-            string name = s.Substring(x + 1, y - x);
-            string strValue = s.Substring(y + 1, s.Length - y);
+            string name = s.Substring(x + 1, y - x - 1);
+            string strValue = s.Substring(y + 1, s.Length - y - 1);
 
             switch ((SType)eType)
             {
@@ -65,10 +72,10 @@ public class ExtraHelper : MonoBehaviour
             case SType.ST_Int16:
             case SType.ST_Int32:
                     {
-                        uint v;
-                        if (uint.TryParse(strValue, out v))
+                        int v;
+                        if (int.TryParse(strValue, out v))
                         {
-                            JSMgr.vCall.datax.setUInt32(JSDataExchangeMgr.eSetType.Jsval, v);
+                            JSMgr.vCall.datax.setInt32(JSDataExchangeMgr.eSetType.Jsval, v);
                             JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
                         }
                     }
@@ -79,10 +86,10 @@ public class ExtraHelper : MonoBehaviour
             case SType.ST_UInt32:
             case SType.ST_Enum:
                     {
-                        int v;
-                        if (int.TryParse(strValue, out v))
+                        uint v;
+                        if (uint.TryParse(strValue, out v))
                         {
-                            JSMgr.vCall.datax.setInt32(JSDataExchangeMgr.eSetType.Jsval, v);
+                            JSMgr.vCall.datax.setUInt32(JSDataExchangeMgr.eSetType.Jsval, v);
                             JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
                         }
                     }
@@ -222,7 +229,7 @@ public class ExtraHelper : MonoBehaviour
             }
             else if (fieldType.IsEnum)
             {
-                sb.AppendFormat("{0}/{1}/{2}", (int)eType, field.Name, field.GetValue(behaviour).ToString());
+                sb.AppendFormat("{0}/{1}/{2}", (int)eType, field.Name, (int)Enum.Parse(fieldType, field.GetValue(behaviour).ToString()));
                 lstString.Add(sb.ToString());
             }
             else if (fieldType == typeof(string))
@@ -252,6 +259,7 @@ public class ExtraHelper : MonoBehaviour
             }
         }
 
+        helper.AutoDelete = true;
         helper.scriptName = behaviour.GetType().Name;
         helper.arrString = lstString.ToArray();
         helper.arrObject = lstObjs.ToArray();
@@ -261,13 +269,21 @@ public class ExtraHelper : MonoBehaviour
         // delete original ExtraHelper(s)
         foreach (var eh in go.GetComponents<ExtraHelper>()) 
         {
-            DestroyImmediate(eh);
+            if (eh.AutoDelete)
+            {
+                // only delete when Auto is true
+                DestroyImmediate(eh);
+            }
         }
 
         var coms = go.GetComponents<MonoBehaviour>();
         for (var i = 0; i < coms.Length; i++)
         {
             var com = coms[i];
+            // must ignore ExtraHandler here
+            if (com is ExtraHelper) 
+                continue;
+
             ExtraHelper helper = (ExtraHelper)go.AddComponent<T>();
             CopyBehaviour(com, helper);
         }

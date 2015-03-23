@@ -535,7 +535,6 @@ public class JSBindingSettings
         typeof(Quaternion), 
         typeof(Time),
         typeof(Kekoukele),
-        typeof(UnityEngine.Random),
         typeof(LayerMask), 
 
         typeof(XueBi),
