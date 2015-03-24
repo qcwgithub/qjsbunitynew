@@ -390,7 +390,7 @@ public static class JSMgr
         IntPtrClass ptrClass = new IntPtrClass(ptr);
         bool b = JSApi.JSh_AddNamedScriptRoot(JSMgr.cx, ptrClass.pptr, shortName);
         if (!b) Debug.LogWarning("JSh_AddNamedScriptRoot fail!!");
-        Debug.Log("``````" + shortName);
+        //Debug.Log("``````" + shortName);
         compiledScript.Add(shortName, ptrClass);
         return ptr;
     }
