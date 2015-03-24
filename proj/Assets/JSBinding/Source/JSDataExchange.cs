@@ -731,11 +731,14 @@ public class JSDataExchangeMgr
                     JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
                     if (csObj != null)
                     {
+                        Type csType = csObj.GetType();
+                        if (csType.IsClass) { }
+
                         //
                         // 返回给JS的对象：需要 prototype
                         // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
                         //
-                        string typeName = JSDataExchangeMgr.GetTypeFullName(csObj.GetType());
+                        string typeName = JSDataExchangeMgr.GetTypeFullName(csType);
                         IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
                         if (jstypeObj != IntPtr.Zero)
                         {
@@ -743,7 +746,7 @@ public class JSDataExchangeMgr
 
                             // __nativeObj
                             IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-                            JSMgr.addJSCSRelation(__nativeObj, csObj);
+                            JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
 
                             // jsObj.__nativeObj = __nativeObj
                             jsval val = new jsval();
