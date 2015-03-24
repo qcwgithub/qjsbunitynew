@@ -219,7 +219,7 @@ public class ExtraHelper : MonoBehaviour
 
     
     static Dictionary<Type, SType> sDict;
-    static SType GetTypeIndex(Type type)
+    static SType GetSType(Type type)
     {
         if (sDict == null)
         {
@@ -310,37 +310,9 @@ public class ExtraHelper : MonoBehaviour
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
         foreach (var field in fields)
         {
-            if (field.FieldType.IsArray)
+            if (!field.FieldType.IsArray)
             {
-                Type elementType = field.FieldType.GetElementType();
-                SType eType = GetTypeIndex(elementType);
-                if (eType == SType.ST_Unknown)
-                {
-                    continue;
-                }
-                
-                Array arr = (Array)field.GetValue(behaviour);
-
-                // Array / eType / fildName / Count
-                lstString.Add("Array/" + ((int)eType).ToString() + "/" + field.Name + "/" + arr.Length.ToString());
-
-                for (var i = 0; i < arr.Length; i++)
-                {
-                    object value = arr.GetValue(i);
-                    if (typeof(UnityEngine.Object).IsAssignableFrom(elementType))
-                    {
-                        lstObjs.Add((UnityEngine.Object)field.GetValue(behaviour));
-                    }
-                    else
-                    {
-                        string str = ValueToString(value, elementType, eType, "[" + i.ToString() + "]");
-                        lstString.Add(str);
-                    }
-                }
-            }
-            else
-            {
-                SType eType = GetTypeIndex(field.FieldType);
+                SType eType = GetSType(field.FieldType);
                 if (eType == SType.ST_Unknown)
                 {
                     continue;
@@ -355,6 +327,34 @@ public class ExtraHelper : MonoBehaviour
                 {
                     string str = ValueToString(field.GetValue(behaviour), field.FieldType, eType, field.Name);
                     lstString.Add(str);
+                }
+            }
+            else
+            {
+                Type elementType = field.FieldType.GetElementType();
+                SType eType = GetSType(elementType);
+                if (eType == SType.ST_Unknown)
+                {
+                    continue;
+                }
+
+                Array arr = (Array)field.GetValue(behaviour);
+
+                // Array / eType / fildName / Count
+                lstString.Add("Array/" + ((int)eType).ToString() + "/" + field.Name + "/" + arr.Length.ToString());
+
+                for (var i = 0; i < arr.Length; i++)
+                {
+                    object value = arr.GetValue(i);
+                    if (typeof(UnityEngine.Object).IsAssignableFrom(elementType))
+                    {
+                        lstObjs.Add((UnityEngine.Object)value);
+                    }
+                    else
+                    {
+                        string str = ValueToString(value, elementType, eType, "[" + i.ToString() + "]");
+                        lstString.Add(str);
+                    }
                 }
             }
         }
