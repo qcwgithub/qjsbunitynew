@@ -84,7 +84,7 @@ public static class CSGenerator2
             sb.Append("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction);\n");
 
         if (returnType != typeof(void))
-            sb.Append("        return " + BuildRetriveJSReturnValue(returnType) + ";\n");
+            sb.Append("        return (" + GetTypeFullName(returnType) + ")" + JSDataExchangeMgr.Get_GetJSReturn(returnType) + ";\n");
 
         sb.AppendFormat("    ]];\n");
         sb.Append("    return action;\n");
@@ -121,7 +121,7 @@ public static class CSGenerator2
             sb.Append("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction);\n");
 
         if (returnType != typeof(void))
-            sb.Append("        return " + BuildRetriveJSReturnValue(returnType) + ";\n");
+            sb.Append("        return (" + GetTypeFullName(returnType) + ")" + JSDataExchangeMgr.Get_GetJSReturn(returnType) + ";\n");
 
         sb.AppendFormat("    ]];\n");
         sb.Append("    return action;\n");

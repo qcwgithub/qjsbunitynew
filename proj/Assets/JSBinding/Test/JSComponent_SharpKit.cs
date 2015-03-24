@@ -59,7 +59,6 @@ public class JSComponent_SharpKit : ExtraHelper
         // __nativeObj: csObj + finalizer
         //
         IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-        JSMgr.addJSCSRelation(__nativeObj, this);
 
         JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam[0], this.jsScriptName);
         JSApi.JSh_SetJsvalObject(ref valParam[1], __nativeObj);
@@ -76,6 +75,7 @@ public class JSComponent_SharpKit : ExtraHelper
             Debug.LogError("New MonoBehaviour Fail, name: " + this.jsScriptName);
             return false;
         }
+        JSMgr.addJSCSRelation(jsObj, __nativeObj, this);
 
         // TODO:
         // handle serialization here

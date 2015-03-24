@@ -223,7 +223,7 @@ public static class JSMgr
 
         // Resources.Load
         JSMgr.RegisterCS(cx, glob);
-        JSValueWrap.Register(CSOBJ, cx);
+        //JSValueWrap.Register(CSOBJ, cx);
         //         if (useReflection)
         //         {
         //             for (int i = 0; i < JSBindingSettings.classes.Length; i++)
@@ -1046,27 +1046,38 @@ public static class JSMgr
      */
     class JS_CS_Relation
     {
-        public IntPtr nativeObj;
-        public IntPtr jsObj;        
+        //
+        // JS  jsObj
+        //       -- __nativeObj
+        //
+        //  mDict1  __nativeObj -> csObj
+        //  mDict2  csObj -> jsObj
+        //
+        //
+        public IntPtr jsObj;   
         public object csObj;
         public string name;
-        public JS_CS_Relation(IntPtr _jsObj, IntPtr _nativeObj, object _csObj)
+        public JS_CS_Relation(IntPtr _jsObj, object _csObj)
         {
             jsObj = _jsObj;
-            nativeObj = _nativeObj;
             csObj = _csObj;
             name = csObj.ToString();
         }
     }
 
+    // 
     public static void addJSCSRelation(IntPtr jsObj, IntPtr nativeObj, object csObj)
     {
-        if (mDict1.ContainsKey(jsObj.ToInt64()))
-            Debug.LogError("mDict1 already contains key for: " + jsObj.ToString());
+        if (mDict1.ContainsKey(nativeObj.ToInt64()))
+        {
+            Debug.LogError("mDict1 already contains key for: " + nativeObj.ToString());
+        }
 
-        mDict1.Add(jsObj.ToInt64(), new JS_CS_Relation(jsObj, nativeObj, csObj));
-        if (csObj.GetType().IsClass) {
-            mDict2.Add(csObj, new JS_CS_Relation(jsObj, nativeObj, csObj));
+        mDict1.Add(nativeObj.ToInt64(), new JS_CS_Relation(nativeObj, csObj));
+
+        if (csObj.GetType().IsClass) 
+        {
+            mDict2.Add(csObj, new JS_CS_Relation(jsObj, csObj));
         }
 
         //         if (!csObj.GetType().IsValueType)
@@ -1075,27 +1086,28 @@ public static class JSMgr
         //         }
         //Debug.Log("+jsObj " + jsObj.ToString() +" "+ (mDict1.Count).ToString() + " " + csObj.GetType().Name + "/" + (typeof(UnityEngine.Object).IsAssignableFrom(csObj.GetType()) ? ((UnityEngine.Object)csObj).name : ""));
     }
-    public static object getCSObj(IntPtr jsObj)
+    public static object getCSObj(IntPtr nativeObj)
     {
         JS_CS_Relation obj;
-        if (mDict1.TryGetValue(jsObj.ToInt64(), out obj))
+        if (mDict1.TryGetValue(nativeObj.ToInt64(), out obj))
             return obj.csObj;
         return null;
     }
-//     public static IntPtr getJSObj(object csObj)
-//     {
-//         if (csObj.GetType().IsValueType)
-//             return IntPtr.Zero;
-// 
-//         JS_CS_Relation obj;
-//         if (mDict2.TryGetValue(csObj.GetHashCode(), out obj))
-//             return obj.jsObj;
-//         return IntPtr.Zero;
-//     }
-    public static void changeJSObj(IntPtr jsObj, object csObjNew)
+    public static IntPtr getJSObj(object csObj)
     {
-        mDict1.Remove(jsObj.ToInt64());
-        addJSCSRelation(jsObj, csObjNew);
+        if (csObj.GetType().IsValueType)
+            return IntPtr.Zero;
+
+        JS_CS_Relation Rel;
+        if (mDict2.TryGetValue(csObj, out Rel))
+            return Rel.jsObj;
+        return IntPtr.Zero;
+    }
+    public static void changeJSObj(IntPtr nativeObj, object csObjNew)
+    {
+        mDict1.Remove(nativeObj.ToInt64());
+        mDict1.Add(nativeObj.ToInt64(), new JS_CS_Relation(nativeObj, csObjNew));
+//        addJSCSRelation(nativeObj, csObjNew);
     }
     //     public static void changeCSObj(object csObj, object csObjNew)
     //     {
@@ -1109,8 +1121,11 @@ public static class JSMgr
     //     }
     public static void ClearJSCSRelation() {
         mDict1.Clear();
+        mDict2.Clear();
     }
+    // JS's __nativeObj -> CS csObj
     static Dictionary<long, JS_CS_Relation> mDict1 = new Dictionary<long, JS_CS_Relation>(); // key = jsObj.ToInt64()
+    // CS csobj -> JS's jsObj
     static Dictionary<object, JS_CS_Relation> mDict2 = new Dictionary<object, JS_CS_Relation>(); // key = object
 
     // dict2 stores hashCode as key, may cause problems (2 object may share same hashCode)
@@ -1119,13 +1134,18 @@ public static class JSMgr
     //static Dictionary<int, JS_CS_Relation> mDict2 = new Dictionary<int, JS_CS_Relation>(); // key = nativeObj.hashCode()
 
     [MonoPInvokeCallbackAttribute(typeof(JSApi.SC_FINALIZE))]
-    static void JSObjectFinalizer(IntPtr freeOp, IntPtr jsObj)
+    static void JSObjectFinalizer(IntPtr freeOp, IntPtr nativeObj)
     {
-        JS_CS_Relation obj;
-        if (mDict1.TryGetValue(jsObj.ToInt64(), out obj))
+        JS_CS_Relation Rel;
+        if (mDict1.TryGetValue(nativeObj.ToInt64(), out Rel))
         {
-            mDict1.Remove(jsObj.ToInt64());
-            //mDict2.Remove(obj.csHashCode);
+            mDict1.Remove(nativeObj.ToInt64());
+
+            object csObj = Rel.csObj;
+            if (csObj != null && csObj.GetType().IsClass)
+            {
+                mDict2.Remove(csObj);
+            }
         }
         else
         {

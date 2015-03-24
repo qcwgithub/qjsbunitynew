@@ -78,7 +78,8 @@ public class JSComponent : MonoBehaviour
         //JSApi.JSh_AddObjectRoot(JSMgr.cx, ref go);
         JSMgr.AddRootedObject(go);
 
-        JSMgr.addJSCSRelation(go, gameObject);
+        // TODO
+        // JSMgr.addJSCSRelation(go, gameObject);
 
         if (!JSMgr.ExecuteScript(ptrScript, go))
         {
