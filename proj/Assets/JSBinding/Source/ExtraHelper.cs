@@ -48,100 +48,168 @@ public class ExtraHelper : MonoBehaviour
         ST_MAX = 100,
     }
 
-    public void initSerializedData(IntPtr cx, IntPtr jsObj)
+    bool ToJsval(SType eType, string strValue)
     {
-        for (var i = 0; i < arrString.Length; i++)
+        bool ret = true;
+        switch ((SType)eType)
         {
-            string s = arrString[i];
-            int x = s.IndexOf('/');
-            int y = s.IndexOf('/', x + 1);
-            int eType = int.Parse(s.Substring(0, x));
-            string name = s.Substring(x + 1, y - x - 1);
-            string strValue = s.Substring(y + 1, s.Length - y - 1);
-
-            switch ((SType)eType)
-            {
             case SType.ST_Boolean:
-                    {
-                        bool v = strValue == "True";
-                        JSMgr.vCall.datax.setBoolean(JSDataExchangeMgr.eSetType.Jsval, v);
-                        JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
-                    }
-                    break;
+                {
+                    bool v = strValue == "True";
+                    JSMgr.vCall.datax.setBoolean(JSDataExchangeMgr.eSetType.Jsval, v);
+                }
+                break;
 
             case SType.ST_SByte:
             case SType.ST_Char:
             case SType.ST_Int16:
             case SType.ST_Int32:
+                {
+                    int v;
+                    if (int.TryParse(strValue, out v))
                     {
-                        int v;
-                        if (int.TryParse(strValue, out v))
-                        {
-                            JSMgr.vCall.datax.setInt32(JSDataExchangeMgr.eSetType.Jsval, v);
-                            JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
-                        }
+                        JSMgr.vCall.datax.setInt32(JSDataExchangeMgr.eSetType.Jsval, v);
                     }
-                    break;
+                    else ret = false;
+                }
+                break;
 
             case SType.ST_Byte:
             case SType.ST_UInt16:
             case SType.ST_UInt32:
             case SType.ST_Enum:
+                {
+                    uint v;
+                    if (uint.TryParse(strValue, out v))
                     {
-                        uint v;
-                        if (uint.TryParse(strValue, out v))
-                        {
-                            JSMgr.vCall.datax.setUInt32(JSDataExchangeMgr.eSetType.Jsval, v);
-                            JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
-                        }
+                        JSMgr.vCall.datax.setUInt32(JSDataExchangeMgr.eSetType.Jsval, v);
                     }
-                    break;
+                    else ret = false;
+                }
+                break;
             case SType.ST_Int64:
             case SType.ST_UInt64:
             case SType.ST_Single:
             case SType.ST_Double:
+                {
+                    double v;
+                    if (double.TryParse(strValue, out v))
                     {
-                        double v;
-                        if (double.TryParse(strValue, out v))
-                        {
-                            JSMgr.vCall.datax.setDouble(JSDataExchangeMgr.eSetType.Jsval, v);
-                            JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
-                        }
+                        JSMgr.vCall.datax.setDouble(JSDataExchangeMgr.eSetType.Jsval, v);
                     }
-                    break;
+                    else ret = false;
+                }
+                break;
             case SType.ST_String:
-                    {
-                        JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
-                        JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
-                    }
-                    break;
+                {
+                    JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
+                }
+                break;
             case SType.ST_Vector2:
-                    {
-                        string[] xy = strValue.Split('/');
-                        var v = new Vector2();
-                        float.TryParse(xy[0], out v.x);
-                        float.TryParse(xy[1], out v.y);
-                        JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, v);
-                        JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
-                    }
-                    break;
+                {
+                    string[] xy = strValue.Split('/');
+                    var v = new Vector2();
+                    float.TryParse(xy[0], out v.x);
+                    float.TryParse(xy[1], out v.y);
+                    JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, v);
+                }
+                break;
             case SType.ST_Vector3:
+                {
+                    string[] xyz = strValue.Split('/');
+                    var v = new Vector3();
+                    float.TryParse(xyz[0], out v.x);
+                    float.TryParse(xyz[1], out v.y);
+                    float.TryParse(xyz[2], out v.z);
+                    JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, v);
+                }
+                break;
+            default:
+                ret = false;
+                break;
+        }
+        return ret;
+    }
+    string help_ThirdS(string s)
+    {
+        int x = s.IndexOf('/');
+        int y = s.IndexOf('/', x + 1);
+        string strValue = s.Substring(y + 1, s.Length - y - 1);
+        return strValue;
+    }
+    public void initSerializedData(IntPtr cx, IntPtr jsObj)
+    {
+        int arrObjectIndex = 0;
+
+        //
+        // handle arrString first
+        //
+        for (var i = 0; i < arrString.Length; i++)
+        {
+            string s = arrString[i];
+            int x = s.IndexOf('/');
+            int y = s.IndexOf('/', x + 1);
+
+            if (x < 0 || y < 0) continue;
+
+            string s0 = s.Substring(0, x);
+            string s1 = s.Substring(x + 1, y - x - 1);
+
+            if (s0 != "Array")
+            {
+                SType eType = (SType)int.Parse(s0);
+                string name = s1;
+                string strValue = s.Substring(y + 1, s.Length - y - 1);
+
+                if (ToJsval(eType, strValue))
+                {
+                    JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
+                }
+            }
+            else
+            {
+                SType eType = (SType)int.Parse(s1);
+                string[] s2 = s.Substring(y + 1, s.Length - y - 1).Split('/');
+                if (s2.Length != 2)
+                {
+                    // !
+                    return;
+                }
+                string name = s2[0];
+                int Count = 0;
+                if (!int.TryParse(s2[1], out Count))
+                {
+                    // !
+                    return;
+                }
+
+                var arrVal = new JSApi.jsval[Count];
+                for (int j = 0; j < Count; j++)
+                {
+                    if (eType == SType.ST_UnityEngineObject)
                     {
-                        string[] xyz = strValue.Split('/');
-                        var v = new Vector3();
-                        float.TryParse(xyz[0], out v.x);
-                        float.TryParse(xyz[1], out v.y);
-                        float.TryParse(xyz[2], out v.z);
-                        JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, v);
-                        JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
+                        // arrObjectIndex++ here
+                        UnityEngine.Object obj = arrObject[arrObjectIndex++];
+                        JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, obj);
                     }
-                    break;
-                default:
-                    break;
+                    else
+                    {
+                        string strValue = help_ThirdS(arrString[i + 1 + j]);
+                        ToJsval(eType, strValue);
+                    }
+                    arrVal[j] = JSMgr.vCall.valTemp;
+                }
+                JSMgr.vCall.datax.setArray(JSDataExchangeMgr.eSetType.Jsval, arrVal);
+                JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
+
+                if (eType != SType.ST_UnityEngineObject)
+                {
+                    i += Count;
+                }
             }
         }
 
-        for (var i = 0; i < arrObject.Length; i++)
+        for (var i = arrObjectIndex; i < arrObject.Length; i++)
         {
             UnityEngine.Object obj = arrObject[i];
             JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, obj);
@@ -253,15 +321,15 @@ public class ExtraHelper : MonoBehaviour
                 
                 Array arr = (Array)field.GetValue(behaviour);
 
-                // Array / fildName / eType / Count
-                lstString.Add("Array/" + field.Name + "/" + ((int)eType).ToString() + "/" + arr.Length.ToString());
+                // Array / eType / fildName / Count
+                lstString.Add("Array/" + ((int)eType).ToString() + "/" + field.Name + "/" + arr.Length.ToString());
 
                 for (var i = 0; i < arr.Length; i++)
                 {
                     object value = arr.GetValue(i);
                     if (typeof(UnityEngine.Object).IsAssignableFrom(elementType))
                     {
-                        // lstObjs.Add((UnityEngine.Object)field.GetValue(behaviour));
+                        lstObjs.Add((UnityEngine.Object)field.GetValue(behaviour));
                     }
                     else
                     {

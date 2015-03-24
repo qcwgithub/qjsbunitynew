@@ -170,7 +170,6 @@ GameObject:
   - 65: {fileID: 816054764}
   - 23: {fileID: 816054763}
   - 114: {fileID: 816054762}
-  - 114: {fileID: 816054767}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -186,12 +185,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 816054761}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd48ade064a8f4b448dc9a48bd809bac, type: 3}
+  m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enum1: 8
-  floatV: -8.98999977
-  arrIntV: 0700000008000000090000000500000021000000
+  AutoDelete: 1
+  jsScriptName: JSSerializationTest
+  arrString:
+  - 14/enum1/8
+  - 11/floatV/-8.99
+  - Array/7/arrIntV/5
+  - 7/[0]/7
+  - 7/[1]/8
+  - 7/[2]/9
+  - 7/[3]/5
+  - 7/[4]/33
+  arrObject: []
 --- !u!23 &816054763
 Renderer:
   m_ObjectHideFlags: 0
@@ -243,29 +251,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
---- !u!114 &816054767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 816054761}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AutoDelete: 1
-  jsScriptName: JSSerializationTest
-  arrString:
-  - 14/enum1/8
-  - 11/floatV/-8.99
-  - ArrayStart/arrIntV/5
-  - 7/[0]/7
-  - 7/[1]/8
-  - 7/[2]/9
-  - 7/[3]/5
-  - 7/[4]/33
-  arrObject: []
 --- !u!1001 &1287759021
 Prefab:
   m_ObjectHideFlags: 0
