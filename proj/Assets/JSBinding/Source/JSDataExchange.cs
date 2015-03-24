@@ -733,7 +733,7 @@ public class JSDataExchangeMgr
                     {
                         IntPtr jsObj = IntPtr.Zero;
                         Type csType = csObj.GetType();
-                        if (csType.IsClass && (jsObj = JSMgr.getJSObj(csObj)) != null)
+                        if (csType.IsClass && (jsObj = JSMgr.getJSObj(csObj)) != IntPtr.Zero)
                         {
                             JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
                         }
@@ -777,31 +777,42 @@ public class JSDataExchangeMgr
                     {
                         bool success = false;
 
-                        // csObj must not be null
-                        IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
-                        if (jstypeObj != IntPtr.Zero)
+                        IntPtr jsObj = IntPtr.Zero;
+                        Type csType = csObj.GetType();
+                        if (csType.IsClass && (jsObj = JSMgr.getJSObj(csObj)) != IntPtr.Zero)
                         {
-                            // 1)
-                            // jsObj: prototype  
-                            // __nativeObj: csObj + finalizer
-                            // 
-                            IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
-                            // __nativeObj
-                            IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-                            JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
-
-                            //
-                            // 2)
-                            // jsObj.__nativeObj = __nativeObj
-                            //
-                            JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
-                            JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-
                             // 3)
                             // argvObj.Value = jsObj
                             //
-                            if (argvJSObj != IntPtr.Zero)
+                            JSApi.JSh_SetJsvalObject(ref val, jsObj);
+                            JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
+                            success = true;
+                        }
+                        else
+                        {
+                            // csObj must not be null
+                            IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
+                            if (jstypeObj != IntPtr.Zero)
                             {
+                                // 1)
+                                // jsObj: prototype  
+                                // __nativeObj: csObj + finalizer
+                                // 
+                                jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+                                // __nativeObj
+                                IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
+                                JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
+
+                                //
+                                // 2)
+                                // jsObj.__nativeObj = __nativeObj
+                                //
+                                JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
+                                JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+
+                                // 3)
+                                // argvObj.Value = jsObj
+                                //
                                 JSApi.JSh_SetJsvalObject(ref val, jsObj);
                                 JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
                                 success = true;
