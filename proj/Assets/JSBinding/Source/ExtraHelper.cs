@@ -14,7 +14,7 @@ public class ExtraHelper : MonoBehaviour
     [HideInInspector]
     public bool AutoDelete = false;
 
-    public string jsScriptName;
+    public string jsScriptName = string.Empty;
     public string[] arrString = null;
     public UnityEngine.Object[] arrObject = null;
 

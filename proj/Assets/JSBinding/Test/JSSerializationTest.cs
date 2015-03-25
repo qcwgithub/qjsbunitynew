@@ -46,6 +46,9 @@ public class JSSerializationTest : MonoBehaviour
             s += arrVec[i].ToString() + ", ";
         }
         Debug.Log(s);
+
+        // 
+        GetComponent<QiucwAttribute>().Print();
 	}
 
     // Update is called once per frame

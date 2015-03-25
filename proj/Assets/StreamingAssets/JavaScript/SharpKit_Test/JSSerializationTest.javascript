@@ -32,6 +32,7 @@ var JSSerializationTest = {
                 s += this.arrVec[i].toString() + ", ";
             }
             UnityEngine.Debug.Log$$Object(s);
+            this.GetComponent$1(QiucwAttribute.ctor).Print();
         },
         Update: function (){
         }

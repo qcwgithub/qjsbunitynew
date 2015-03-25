@@ -39,6 +39,56 @@ public static class CSGenerator2
     {
 
     }
+    public static string SharpKitTypeName(Type type)
+    {
+        string name = string.Empty;
+        if (type.IsByRef)
+        {
+            name = SharpKitTypeName(type.GetElementType());
+        }
+        else if (type.IsArray)
+        {
+            while (type.IsArray)
+            {
+                Type subt = type.GetElementType();
+                name += SharpKitTypeName(subt) + '$';
+                type = subt;
+            }
+            name += "Array";
+        }
+        else if (type.IsGenericType)
+        {
+            name = type.Name;
+            Type[] ts = type.GetGenericArguments();
+            for (int i = 0; i < ts.Length; i++)
+            {
+                name += "$" + SharpKitTypeName(ts[i]);
+            }
+        }
+        else
+        {
+            name = type.Name;
+        }
+        return name;
+
+    }
+    public static string SharpKitMethodName(string methodName, ParameterInfo[] paramS, bool overloaded, int TCounts = 0)
+    {
+        string name = methodName;
+        if (overloaded)
+        {
+            if (TCounts > 0)
+                name += "T" + TCounts.ToString();
+            for (int i = 0; i < paramS.Length; i++)
+            {
+                Type type = paramS[i].ParameterType;
+                name += "$$" + SharpKitTypeName(type);
+            }
+            name = name.Replace("`", "T");
+        }
+        name = name.Replace("$", "_");
+        return name;
+    }
     public static string BuildRetriveJSReturnValue(Type paramType)
     {
         if (paramType == typeof(object)) return "JSMgr.vCall.getRtObject()";
@@ -778,6 +828,7 @@ static bool {0}(JSVCall vc, int start, int count)
 
             string functionName = type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : "");
 
+
             sb.AppendFormat(fmt, functionName,
                 BuildNormalFunctionCall(i, paramS, type.Name, cons.Name, cons.IsStatic, returnVoid, null, true));
 
@@ -820,17 +871,24 @@ static bool {0}(JSVCall vc, int start, int count)
             bool returnVoid = (method.ReturnType == typeof(void));
 
             string functionName = type.Name + "_" + method.Name + (olIndex > 0 ? olIndex.ToString() : "") + (method.IsStatic ? "_S" : "");
-
+            
             int TCount = 0;
             if (method.IsGenericMethodDefinition) {
                 TCount = method.GetGenericArguments().Length;
             }
 
+            functionName = type.Name + "_" + SharpKitMethodName(method.Name, paramS, true, TCount);
+            if (UnityEngineManual.isManual(functionName))
+            {
+                sb.AppendFormat(fmt, functionName, "    UnityEngineManual." + functionName + "(vc, start, count);");
+            }
+            else
+            {
+                sb.AppendFormat(fmt, functionName,
 
-            sb.AppendFormat(fmt, functionName,
-                
-                method.IsSpecialName ? BuildSpecialFunctionCall(paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType)
-                : BuildNormalFunctionCall(i, paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType, false, TCount));
+                    method.IsSpecialName ? BuildSpecialFunctionCall(paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType)
+                    : BuildNormalFunctionCall(i, paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType, false, TCount));
+            }
 
             ccbn.methods.Add(functionName);
             ccbn.methodsCSParam.Add(GenListCSParam2(paramS).ToString());
@@ -1212,13 +1270,15 @@ using UnityEngine;
     public static void GenerateJSCSBindings()
     {
         JSDataExchangeMgr.reset();
+        UnityEngineManual.initManual();
         CSGenerator2.GenerateClassBindings();
         JSGenerator2.GenerateClassBindings();
+        UnityEngineManual.afterUse();
         AssetDatabase.Refresh();
     }
 
     
-    [MenuItem("Assets/JSBinding/Output All T Functions")]
+    [MenuItem("Assets/JSBinding/1Output All T Functions")]
     public static void OutputAllTFunctionsInUnityEngine()
     {
         var writer = new StreamWriter(tempFile, false, Encoding.UTF8);

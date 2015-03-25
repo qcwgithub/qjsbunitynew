@@ -72,6 +72,7 @@ public class JSComponent_SharpKit : ExtraHelper
         if (ret) jsObj = JSApi.JSh_GetJsvalObject(ref valRet);
         if (!ret || jsObj == IntPtr.Zero)
         {
+            jsObj = IntPtr.Zero;
             Debug.LogError("New MonoBehaviour Fail, name: " + this.jsScriptName);
             return false;
         }

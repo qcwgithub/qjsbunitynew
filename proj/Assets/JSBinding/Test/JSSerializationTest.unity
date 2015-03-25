@@ -169,8 +169,8 @@ GameObject:
   - 33: {fileID: 816054765}
   - 65: {fileID: 816054764}
   - 23: {fileID: 816054763}
-  - 114: {fileID: 816054762}
   - 114: {fileID: 816054767}
+  - 114: {fileID: 816054762}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -186,19 +186,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 816054761}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd48ade064a8f4b448dc9a48bd809bac, type: 3}
+  m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enum1: 1380
-  floatV: .230000004
-  arrIntV: 05000000030000004d010000
-  arrGameObject:
-  - {fileID: 1225964563}
-  - {fileID: 1314804659}
-  - {fileID: 1620187317}
-  arrVec:
-  - {x: 6, y: 7, z: 8}
-  - {x: 9, y: 10, z: 11}
+  AutoDelete: 1
+  jsScriptName: QiucwAttribute
+  arrString:
+  - 7/age/28
+  - 13/name/Allen Iverson
+  - 14/sex/1
+  arrObject: []
 --- !u!23 &816054763
 Renderer:
   m_ObjectHideFlags: 0
@@ -366,7 +363,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
       propertyPath: InitLoadScripts.Array.data[2]
-      value: SharpKit_Test/Rotate
+      value: SharpKit_Test/QiucwAttribute
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
       propertyPath: InitLoadScripts.Array.data[1]
@@ -479,7 +476,7 @@ MonoBehaviour:
   InitLoadScripts:
   - Utilities
   - SharpKit_Test/JSSerializationTest
-  - SharpKit_Test/Rotate
+  - SharpKit_Test/QiucwAttribute
   - SharpKit/jsclr
   - SharpKit/clrlibrary
   - SharpKit/myclrhandler
