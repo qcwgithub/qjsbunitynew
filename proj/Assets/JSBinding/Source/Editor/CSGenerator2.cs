@@ -1217,6 +1217,33 @@ using UnityEngine;
         AssetDatabase.Refresh();
     }
 
+    
+    [MenuItem("Assets/JSBinding/Output All T Functions")]
+    public static void OutputAllTFunctionsInUnityEngine()
+    {
+        var writer = new StreamWriter(tempFile, false, Encoding.UTF8);
+        var asm = typeof(GameObject).Assembly;
+        var alltypes = asm.GetTypes();
+
+        for (int i = 0; i < alltypes.Length; i++)
+        {
+            Type type = alltypes[i];
+            // if (type.IsClass)
+            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
+            for (int j = 0; j < methods.Length; j++)
+            {
+                var method = methods[j];
+                if (method.IsGenericMethod || method.IsGenericMethodDefinition)
+                {
+                    writer.WriteLine(type.ToString() + "." + method.Name + "\n");
+                }
+            }
+        }
+        writer.Close();
+
+        Debug.Log("Output All T Functions finish, file: " + tempFile);
+    }
+
     [MenuItem("Assets/JSBinding/Output All Types in UnityEngine2")]
     public static void OutputAllTypesInUnityEngine()
     {
