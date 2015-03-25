@@ -527,6 +527,7 @@ public class JSBindingSettings
         typeof(UnityEngine.Vector2), 
         typeof(UnityEngine.Vector3), 
         typeof(RaycastHit),
+        typeof(RaycastHit2D),
         typeof(Ray),
         typeof(Camera),
         typeof(Debug),
@@ -544,7 +545,8 @@ public class JSBindingSettings
         typeof(UnityEngine.Mathf), 
 
         typeof(Renderer), 
-        typeof(SpriteRenderer), 
+        typeof(SpriteRenderer),                 
+        typeof(UnityEngine.ParticleSystemRenderer),
 
         // Physics
         typeof(Collider2D), 
@@ -553,9 +555,12 @@ public class JSBindingSettings
         typeof(Physics),
 
         //
-        typeof(Animator), 
-
-        /*
+		typeof(Animator),                                      
+		typeof(UnityEngine.GUIText),    
+		typeof(UnityEngine.GUIElement), 
+		typeof(UnityEngine.GUITexture), 
+		
+		/*
 
         typeof(UIEventListener),
         typeof(JSComponent),
