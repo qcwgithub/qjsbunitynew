@@ -109,14 +109,19 @@ public class JSComponent_SharpKit : ExtraHelper
         {
             return;
         }
-
-        callIfExist(ref valAwake);
     }
 
+    private bool firstStart = true;
     void Start() 
     {
+        if (firstStart)
+        {
+            firstStart = false;
+            callIfExist(ref valAwake);
+        }
         callIfExist(ref valStart);
     }
+
     void FixedUpdate()
     {
         callIfExist(ref valFixedUpdate);
