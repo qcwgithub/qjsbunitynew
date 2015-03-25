@@ -388,4 +388,17 @@ public class ExtraHelper : MonoBehaviour
             CopyBehaviour(com, helper);
         }
     }
+    public static void RemoveOtherMonoBehaviours(GameObject go)
+    {
+        var coms = go.GetComponents<MonoBehaviour>();
+        for (var i = 0; i < coms.Length; i++)
+        {
+            var com = coms[i];
+            // must ignore ExtraHandler here
+            if (com is ExtraHelper)
+                continue;
+
+            DestroyImmediate(com);
+        }
+    }
 }

@@ -1260,6 +1260,13 @@ using UnityEngine;
         GameObject go = Selection.activeGameObject;
         ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
     }
+    // Alt + Shift + W
+    [MenuItem("JSB/Remove Other MonoBehaviours &#w")]
+    public static void RemoveOtherMonoBehaviours()
+    {
+        GameObject go = Selection.activeGameObject;
+        ExtraHelper.RemoveOtherMonoBehaviours(go);
+    }
 
     [MenuItem("Assets/JSBinding/Read serialized data test")]
     public static void ReadSerializedDataTest()

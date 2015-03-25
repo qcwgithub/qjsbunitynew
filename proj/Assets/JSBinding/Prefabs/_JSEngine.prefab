@@ -74,7 +74,7 @@ MonoBehaviour:
   jsLoader: {fileID: 11400002}
   InitLoadScripts:
   - Utilities
-  - SharpKit_Test/Rotate
+  - includes
   - SharpKit/jsclr
   - SharpKit/clrlibrary
   - SharpKit/myclrhandler

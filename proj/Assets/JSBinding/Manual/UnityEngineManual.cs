@@ -93,6 +93,12 @@ public class UnityEngineManual
         vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal);
     }
 
+    static bool isCSType(System.Type type)
+    {
+        // return (type != null);
+        return !typeof(MonoBehaviour).IsAssignableFrom(type);
+    }
+
 /// <summary>
     /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //    Game Object
@@ -124,7 +130,7 @@ public class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (type != null)
+        if (isCSType(type))
         {
             Component com = go.AddComponent(type);
             vc.datax.setObject(JSDataExchangeMgr.eSetType.SetRval, com);
@@ -153,7 +159,7 @@ public class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (type != null)
+        if (isCSType(type))
         {
             Component com = go.GetComponent(type);
             vc.datax.setObject(JSDataExchangeMgr.eSetType.SetRval, com);
@@ -179,7 +185,7 @@ public class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (type != null)
+        if (isCSType(type))
         {
             Component[] arrRet = go.GetComponents(type);
             help_retComArr(vc, arrRet);
@@ -205,7 +211,7 @@ public class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (type != null)
+        if (isCSType(type))
         {
             Component com = go.GetComponentInChildren(type);
             vc.datax.setObject(JSDataExchangeMgr.eSetType.SetRval, com);
@@ -231,7 +237,7 @@ public class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (type != null)
+        if (isCSType(type))
         {
             Component[] arrRet = go.GetComponentsInChildren(type);
             help_retComArr(vc, arrRet);
@@ -258,7 +264,7 @@ public class UnityEngineManual
         help_getGoAndType(vc);
         bool includeInactive = vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
 
-        if (type != null)
+        if (isCSType(type))
         {
             Component[] arrRet = go.GetComponentsInChildren(type, includeInactive);
             help_retComArr(vc, arrRet);
@@ -284,7 +290,7 @@ public class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (type != null)
+        if (isCSType(type))
         {
             Component com = go.GetComponentInParent(type);
             vc.datax.setObject(JSDataExchangeMgr.eSetType.SetRval, com);
@@ -310,7 +316,7 @@ public class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (type != null)
+        if (isCSType(type))
         {
             Component[] arrRet = go.GetComponentsInParent(type);
             help_retComArr(vc, arrRet);
@@ -337,7 +343,7 @@ public class UnityEngineManual
         help_getGoAndType(vc);
         bool includeInactive = vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
 
-        if (type != null)
+        if (isCSType(type))
         {
             Component[] arrRet = go.GetComponentsInParent(type, includeInactive);
             help_retComArr(vc, arrRet);
