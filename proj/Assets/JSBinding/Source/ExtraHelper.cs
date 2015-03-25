@@ -16,7 +16,8 @@ public class ExtraHelper : MonoBehaviour
 
     public string jsScriptName = string.Empty;
     public string[] arrString = null;
-    public UnityEngine.Object[] arrObject = null;
+    public UnityEngine.Object[] arrObjectSingle = null;
+    public UnityEngine.Object[] arrObjectArray = null;
 
     enum SType
     {
@@ -140,6 +141,7 @@ public class ExtraHelper : MonoBehaviour
     public void initSerializedData(IntPtr cx, IntPtr jsObj)
     {
         int arrObjectIndex = 0;
+        int arrObjectIndexOfArray = 0;
 
         //
         // handle arrString first
@@ -158,12 +160,20 @@ public class ExtraHelper : MonoBehaviour
             if (s0 != "Array")
             {
                 SType eType = (SType)int.Parse(s0);
-                string name = s1;
-                string strValue = s.Substring(y + 1, s.Length - y - 1);
+                string valName = s1;
 
-                if (ToJsval(eType, strValue))
+                if (eType == SType.ST_UnityEngineObject)
                 {
-                    JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
+                    // arrObjectIndex++ here
+                    UnityEngine.Object obj = arrObjectSingle[arrObjectIndex++];
+                    JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, obj);
+                    JSApi.JSh_SetUCProperty(cx, jsObj, valName, -1, ref JSMgr.vCall.valTemp);
+                }
+                else
+                {
+                    string strValue = s.Substring(y + 1, s.Length - y - 1);
+                    if (ToJsval(eType, strValue))
+                        JSApi.JSh_SetUCProperty(cx, jsObj, valName, -1, ref JSMgr.vCall.valTemp);
                 }
             }
             else
@@ -175,7 +185,7 @@ public class ExtraHelper : MonoBehaviour
                     // !
                     return;
                 }
-                string name = s2[0];
+                string valName = s2[0];
                 int Count = 0;
                 if (!int.TryParse(s2[1], out Count))
                 {
@@ -189,7 +199,7 @@ public class ExtraHelper : MonoBehaviour
                     if (eType == SType.ST_UnityEngineObject)
                     {
                         // arrObjectIndex++ here
-                        UnityEngine.Object obj = arrObject[arrObjectIndex++];
+                        UnityEngine.Object obj = arrObjectArray[arrObjectIndexOfArray++];
                         JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, obj);
                     }
                     else
@@ -200,7 +210,7 @@ public class ExtraHelper : MonoBehaviour
                     arrVal[j] = JSMgr.vCall.valTemp;
                 }
                 JSMgr.vCall.datax.setArray(JSDataExchangeMgr.eSetType.Jsval, arrVal);
-                JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
+                JSApi.JSh_SetUCProperty(cx, jsObj, valName, -1, ref JSMgr.vCall.valTemp);
 
                 if (eType != SType.ST_UnityEngineObject)
                 {
@@ -209,12 +219,22 @@ public class ExtraHelper : MonoBehaviour
             }
         }
 
-        for (var i = arrObjectIndex; i < arrObject.Length; i++)
+        if (arrObjectIndex == arrObjectSingle.Length &&
+            arrObjectIndexOfArray == arrObjectArray.Length)
         {
-            UnityEngine.Object obj = arrObject[i];
-            JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, obj);
-            JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
+            Debug.Log(name + " serialized perfect");
         }
+        else
+        {
+            Debug.LogError(name + " serialized FAIL");
+        }
+
+//         for (var i = arrObjectIndex; i < arrObjectSingle.Length; i++)
+//         {
+//             UnityEngine.Object obj = arrObjectSingle[i];
+//             JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, obj);
+//             JSApi.JSh_SetUCProperty(cx, jsObj, name, -1, ref JSMgr.vCall.valTemp);
+//         }
     }
 
     
@@ -268,6 +288,9 @@ public class ExtraHelper : MonoBehaviour
 
     static string ValueToString(object value, Type type, SType eType, string name)
     {
+        //
+        // eType / name / value
+        //
         StringBuilder sb = new StringBuilder();
         if (type.IsPrimitive)
         {
@@ -303,9 +326,10 @@ public class ExtraHelper : MonoBehaviour
         GameObject go = behaviour.gameObject;
         Type type = behaviour.GetType();
 
-        List<string> lstString = new List<string>();
-        List<UnityEngine.Object> lstObjs = new List<UnityEngine.Object>();
-        StringBuilder sb = new StringBuilder();
+        var lstString = new List<string>();
+        var lstObjsSingle = new List<UnityEngine.Object>();
+        var lstObjsArray = new List<UnityEngine.Object>();
+        var sb = new StringBuilder();
 
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
         foreach (var field in fields)
@@ -321,7 +345,9 @@ public class ExtraHelper : MonoBehaviour
                 sb.Remove(0, sb.Length);
                 if (typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
                 {
-                    lstObjs.Add((UnityEngine.Object)field.GetValue(behaviour));
+                    // eType / Name / lstObjsSingle's Index
+                    lstString.Add(((int)eType).ToString() + "/" + field.Name + "/" + lstObjsSingle.Count.ToString());
+                    lstObjsSingle.Add((UnityEngine.Object)field.GetValue(behaviour));
                 }
                 else
                 {
@@ -348,7 +374,7 @@ public class ExtraHelper : MonoBehaviour
                     object value = arr.GetValue(i);
                     if (typeof(UnityEngine.Object).IsAssignableFrom(elementType))
                     {
-                        lstObjs.Add((UnityEngine.Object)value);
+                        lstObjsArray.Add((UnityEngine.Object)value);
                     }
                     else
                     {
@@ -362,7 +388,8 @@ public class ExtraHelper : MonoBehaviour
         helper.AutoDelete = true;
         helper.jsScriptName = behaviour.GetType().Name;
         helper.arrString = lstString.ToArray();
-        helper.arrObject = lstObjs.ToArray();
+        helper.arrObjectSingle = lstObjsSingle.ToArray();
+        helper.arrObjectArray = lstObjsArray.ToArray();
     }
     public static void CopyGameObject<T>(GameObject go) where T : ExtraHelper
     {
