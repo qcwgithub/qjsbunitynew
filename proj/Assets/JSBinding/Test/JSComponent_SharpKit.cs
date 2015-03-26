@@ -148,6 +148,10 @@ public class JSComponent_SharpKit : ExtraHelper
 
     void OnTriggerEnter2D (Collider2D other)
     {
+//        if (other == null)
+//            Debug.Log("OnTriggerEnter2D(null)");
+//        else
+//            Debug.Log("OnTriggerEnter2D(" + other.GetType().Name + ")");
         callIfExist(ref valOnTriggerEnter2D, other);
     }
 }

@@ -550,6 +550,10 @@ public class JSBindingSettings
 
         // Physics
         typeof(Collider2D), 
+        typeof(UnityEngine.CircleCollider2D),
+        typeof(UnityEngine.BoxCollider2D),
+        typeof(UnityEngine.EdgeCollider2D),
+        typeof(UnityEngine.PolygonCollider2D),
         typeof(Rigidbody2D), 
         typeof(Physics2D), 
         typeof(Physics),
