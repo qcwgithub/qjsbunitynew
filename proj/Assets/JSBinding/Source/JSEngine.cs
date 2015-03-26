@@ -122,4 +122,32 @@ public class JSEngine : MonoBehaviour
             JSApi.JSh_CleanupDebugger();
         Debug.Log("----------JSEngine Destroy ---");
     }
-}
+
+    // OUTPUT object mappings
+//     void OnGUI()
+//     {
+//         int countDict1, countDict2;
+//         JSMgr.GetDictCount(out countDict1, out countDict2);
+//         GUI.TextArea(new Rect(0, 10, 400, 20), "C#<->JS Object Total: " + countDict1.ToString() + ", Class: " + countDict2.ToString());
+// 
+//         Dictionary<long, JSMgr.JS_CS_Relation> dict1 = JSMgr.GetDict1();
+//         Dictionary<string, int> tj = new Dictionary<string, int>();
+//         foreach (var v in dict1)
+//         {
+//             var jscs = v.Value;
+//             if (tj.ContainsKey(jscs.name))
+//             {
+//                 tj[jscs.name]++;
+//             }
+//             else
+//             {
+//                 tj[jscs.name] = 1;
+//             }
+//         }
+//         float y = 40;
+//        foreach (var v in tj)
+//         {
+//             GUI.TextArea(new Rect(0, y, 400, 20), v.Key + ": " + v.Value);
+//             y += 20;
+//         }
+   }

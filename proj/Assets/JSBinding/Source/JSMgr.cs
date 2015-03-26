@@ -1051,7 +1051,7 @@ public static class JSMgr
     /*
      * record js/cs relation
      */
-    class JS_CS_Relation
+    public class JS_CS_Relation
     {
         //
         // JS  jsObj
@@ -1068,7 +1068,7 @@ public static class JSMgr
         {
             jsObj = _jsObj;
             csObj = _csObj;
-            name = csObj.ToString();
+            name = csObj.GetType().Name;// csObj.ToString();
         }
     }
 
@@ -1134,6 +1134,13 @@ public static class JSMgr
     static Dictionary<long, JS_CS_Relation> mDict1 = new Dictionary<long, JS_CS_Relation>(); // key = jsObj.ToInt64()
     // CS csobj -> JS's jsObj
     static Dictionary<object, JS_CS_Relation> mDict2 = new Dictionary<object, JS_CS_Relation>(); // key = object
+
+    public static void GetDictCount(out int countDict1, out int countDict2)
+    {
+        countDict1 = mDict1.Count;
+        countDict2 = mDict2.Count;
+    }
+    public static Dictionary<long, JS_CS_Relation> GetDict1() { return mDict1;  }
 
     // dict2 stores hashCode as key, may cause problems (2 object may share same hashCode)
     // but if use object as key, after calling 'UnityObject.Destroy(this)' in js, 
