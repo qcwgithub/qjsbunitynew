@@ -1035,7 +1035,9 @@ public class JSVCall
             {
                 for (int i = 0; i < args.Length; i++)
                 {
-                    vals[i + 2] = CSObject_2_JSValue(args[i]);
+                    // vals[i + 2] = CSObject_2_JSValue(args[i]);
+                    this.datax.setByType(JSDataExchangeMgr.eSetType.Jsval, args[i]);
+                    vals[i + 2] = valTemp;
                 }
             }
 
@@ -1051,7 +1053,9 @@ public class JSVCall
             jsval[] vals = new jsval[argsLen];
             for (int i = 0; i < argsLen; i++)
             {
-                vals[i] = CSObject_2_JSValue(args[i]);
+                // vals[i] = CSObject_2_JSValue(args[i]);
+                this.datax.setByType(JSDataExchangeMgr.eSetType.Jsval, args[i]);
+                vals[i] = valTemp;
             }
 
             return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, (UInt32)argsLen, vals, ref rvalCallJS);
