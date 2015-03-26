@@ -48,7 +48,14 @@ public class JSFileLoader : MonoBehaviour
         }
         bytes = w.bytes;
 #else
-        bytes = File.ReadAllBytes(fullName);
+        try
+        {
+            bytes = File.ReadAllBytes(fullName);
+        }
+        catch (System.Exception exp) 
+        {
+            Debug.LogError(exp.ToString());
+        }
         //
         // FileStream does not work on iOS, UnauthorizedAccessException
         // I don't know why

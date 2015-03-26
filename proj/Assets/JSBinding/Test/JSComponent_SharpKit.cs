@@ -73,7 +73,7 @@ public class JSComponent_SharpKit : ExtraHelper
         if (!ret || jsObj == IntPtr.Zero)
         {
             jsObj = IntPtr.Zero;
-            Debug.LogError("New MonoBehaviour Fail, name: " + this.jsScriptName);
+            Debug.LogError("New MonoBehaviour Fail, name: " + this.jsScriptName + ". Did you forget to export that class?");
             return false;
         }
         JSMgr.addJSCSRelation(jsObj, __nativeObj, this);

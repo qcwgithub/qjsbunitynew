@@ -1258,6 +1258,7 @@ using UnityEngine;
     [MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
     public static void CopyGameObjectMonoBehaviours()
     {
+        Debug.Log("CopyGameObjectMonoBehaviours");
         GameObject go = Selection.activeGameObject;
         ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
     }
@@ -1265,6 +1266,7 @@ using UnityEngine;
     [MenuItem("JSB/Remove Other MonoBehaviours &#w")]
     public static void RemoveOtherMonoBehaviours()
     {
+        Debug.Log("RemoveOtherMonoBehaviours");
         GameObject go = Selection.activeGameObject;
         ExtraHelper.RemoveOtherMonoBehaviours(go);
     }

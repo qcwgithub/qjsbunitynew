@@ -255,7 +255,7 @@ MonoBehaviour:
   jsLoader: {fileID: 1690005564}
   InitLoadScripts:
   - Utilities
-  - SharpKit_Test/Rotate
+  - includes
   - SharpKit/jsclr
   - SharpKit/clrlibrary
   - SharpKit/myclrhandler
@@ -352,10 +352,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AutoDelete: 0
-  scriptName: 
-  arrString: []
-  arrObject: []
   jsScriptName: Rotate
+  arrString: []
+  arrObjectSingle: []
+  arrObjectArray: []
 --- !u!23 &1647909211
 Renderer:
   m_ObjectHideFlags: 0

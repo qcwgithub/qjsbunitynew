@@ -380,9 +380,9 @@ public static class JSMgr
 
     public static IntPtr CompileScriptContentByte(string shortName, byte[] content, IntPtr obj, string fullName)
     {
-        if (content.Length == 0)
+        if (content == null || content.Length == 0)
         {
-            Debug.Log(shortName + " content length = 0");
+            Debug.Log(shortName + "CompileScriptContentByte content is null or length = 0");
             return IntPtr.Zero;
         }
 
