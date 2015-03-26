@@ -477,7 +477,8 @@ public static class CSGenerator2
             strCall = paramHandlers[0].argName + " > " + paramHandlers[1].argName;
         else if (methodName == "op_GreaterThanOrEqual")
             strCall = paramHandlers[0].argName + " >= " + paramHandlers[1].argName;
-
+        else if (methodName == "op_Implicit")
+            strCall = "(" + GetTypeFullName(returnType) + ")" + paramHandlers[0].argName;
         else
             Debug.LogError("Unknown special name: " + methodName);
 

@@ -699,7 +699,9 @@ public static class JSMgr
                     method.Name == "op_LessThan" ||
                     method.Name == "op_LessThanOrEqual" ||
                     method.Name == "op_GreaterThan" ||
-                    method.Name == "op_GreaterThanOrEqual")
+                    method.Name == "op_GreaterThanOrEqual" ||
+                    
+                    method.Name == "op_Implicit")
                 {
                     if (!method.IsStatic)
                     {
