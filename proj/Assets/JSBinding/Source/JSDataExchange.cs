@@ -760,6 +760,10 @@ public class JSDataExchangeMgr
 
                                 JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
                             }
+                            else
+                            {
+                                Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
+                            }
                         }
                     }
 
@@ -816,6 +820,10 @@ public class JSDataExchangeMgr
                                 JSApi.JSh_SetJsvalObject(ref val, jsObj);
                                 JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
                                 success = true;
+                            }
+                            else
+                            {
+                                Debug.LogError("Return a \"" + JSDataExchangeMgr.GetTypeFullName(csObj.GetType()) + "\" to JS failed. Did you forget to export that class?");
                             }
                         }
 
