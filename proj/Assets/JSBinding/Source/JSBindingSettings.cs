@@ -563,6 +563,8 @@ public class JSBindingSettings
 		typeof(UnityEngine.GUIText),    
 		typeof(UnityEngine.GUIElement), 
 		typeof(UnityEngine.GUITexture), 
+
+        typeof(UnityEngine.Sprite),
 		
 		/*
 

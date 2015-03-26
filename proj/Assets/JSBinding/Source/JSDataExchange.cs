@@ -33,6 +33,14 @@ public class JSDataExchangeMgr
 
     #region Get Operation
 
+    /*
+     * for concrete type e.g. setInt32 setString
+     * they know type 
+     * 
+     * but for T parameters   type is known until run-time
+     * so this method need a 'Type' argument
+     * it is passed through mTempObj
+     */
     public object getByType(eGetType e)
     {
         Type type = (Type)mTempObj;
@@ -341,9 +349,18 @@ public class JSDataExchangeMgr
     // type is assigned during runtime
     public void setByType(eSetType e, object obj)
     {
-        Type type = (Type)mTempObj;
-        if (type.IsByRef)
-            type = type.GetElementType();
+//         Type type = (Type)mTempObj;
+//         if (type.IsByRef)
+//             type = type.GetElementType();
+
+        // ?? TODO use mTempObj or not?
+
+        if (obj == null)
+        {
+            JSApi.JSh_SetJsvalUndefined(ref vc.valTemp);
+            return;
+        }
+        Type type = obj.GetType();
 
         if (type == typeof(string))
             setString(e, (string)obj);

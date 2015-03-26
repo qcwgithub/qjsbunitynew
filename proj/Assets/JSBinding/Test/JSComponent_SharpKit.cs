@@ -34,6 +34,11 @@ public class JSComponent_SharpKit : ExtraHelper
     jsval valOnGUI = new jsval();
     jsval valOnTriggerEnter2D = new jsval();
 
+    jsval valDestroyChildGameObject = new jsval();
+    jsval valDisableChildGameObject = new jsval();
+    jsval valDestroyGameObject = new jsval();
+
+
     bool inited = false;
 
     void initVal(ref jsval val, string jsFunName)
@@ -97,6 +102,13 @@ public class JSComponent_SharpKit : ExtraHelper
         initVal(ref valOnGUI, "OnGUI");
         initVal(ref valOnTriggerEnter2D, "OnTriggerEnter2D");
 
+
+        // TODO
+        // ??
+        initVal(ref valDestroyChildGameObject, "DestroyChildGameObject");
+        initVal(ref valDisableChildGameObject, "DisableChildGameObject");
+        initVal(ref valDestroyGameObject, "DestroyGameObject");
+
         inited = true;
         return true;
     }
@@ -153,5 +165,20 @@ public class JSComponent_SharpKit : ExtraHelper
 //        else
 //            Debug.Log("OnTriggerEnter2D(" + other.GetType().Name + ")");
         callIfExist(ref valOnTriggerEnter2D, other);
+    }
+
+    void DestroyChildGameObject()
+    {
+        callIfExist(ref valDestroyChildGameObject);
+    }
+
+    void DisableChildGameObject()
+    {
+        callIfExist(ref valDisableChildGameObject);
+    }
+
+    void DestroyGameObject()
+    {
+        callIfExist(ref valDestroyGameObject);
     }
 }
