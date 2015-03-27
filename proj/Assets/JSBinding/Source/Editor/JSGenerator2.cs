@@ -268,7 +268,7 @@ _jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
                 argFormal.Add("a" + j.ToString());
             }
             sb.AppendFormat(fmt, 
-                SharpKitMethodName("ctor", ps, (howmanyConstructors > 1)), // [0]
+                SharpKitMethodName("ctor", ps, (type.IsValueType || howmanyConstructors > 1)), // [0]
                 argFormal,    // [1]
                 argActual,    // [2]
                 thisString);  // [3] thisString
