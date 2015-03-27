@@ -1254,6 +1254,67 @@ using UnityEngine;
         Debug.Log("Generate CS Bindings OK. total = " + JSBindingSettings.classes.Length.ToString());
     }
 
+    public static void OuputGameObjectHierachy(StringBuilder sb, GameObject go, int tab)
+    {
+        for (var t = 0; t < tab; t++)
+            sb.Append("    ");
+        sb.Append(go.name + "  (");
+
+        var coms = go.GetComponents(typeof(Component));
+        for (var c = 0; c < coms.Length; c++)
+        {
+            sb.Append(coms[c].GetType().Name);
+            if (c != coms.Length - 1)
+            {
+                sb.Append(" | ");
+            }
+        }
+        sb.Append(")\n");
+
+        var childCount = go.transform.childCount;
+        for (var i = 0; i < childCount; i++)
+        {
+            Transform child = go.transform.GetChild(i);
+            OuputGameObjectHierachy(sb, child.gameObject, tab + 1);
+        }
+    }
+
+    [MenuItem("JSB/IterateAllPrefabs")]
+    public static void IterateAllPrefabs()
+    {
+        StringBuilder sb = new StringBuilder();
+//         UnityEngine.Object[] objs = AssetDatabase.LoadAllAssetsAtPath("Assets/Prefabs/");
+//         StringBuilder sb = new StringBuilder();
+//         foreach (var obj in objs)
+        {
+//             sb.Append(obj.name + "\n");
+        }
+//         Debug.Log(sb.ToString());
+
+
+//         Debug.Log(sb.ToString());
+
+        string[] GUIDs = AssetDatabase.FindAssets("t:prefab");
+        foreach (var guid in GUIDs)
+        {
+            //UnityEngine.Object obj = AssetDatabase.LoadMainAssetAtPath(path);
+            //sb.Append(obj.name + "\n");
+
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+
+            UnityEngine.Object mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
+            if (mainAsset is GameObject)
+            {
+                // sb.Append(mainAsset.GetType().Name + " / " + mainAsset.name + "\n");
+                OuputGameObjectHierachy(sb, (GameObject)mainAsset, 1);
+            }
+
+            sb.Append("\n");
+        }
+        Debug.Log(sb);
+        
+    }
+
     // Alt + Shift + Q
     [MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
     public static void CopyGameObjectMonoBehaviours()
