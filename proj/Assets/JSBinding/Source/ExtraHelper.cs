@@ -321,6 +321,13 @@ public class ExtraHelper : MonoBehaviour
 //         }
     }
 
+    public static FieldInfo[] GetMonoBehaviourSerializedFields(MonoBehaviour behaviour)
+    {
+        Type type = behaviour.GetType();
+        var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
+        return fields;
+    }
+
     static void CopyBehaviour(MonoBehaviour behaviour, ExtraHelper helper)
     {
         GameObject go = behaviour.gameObject;
@@ -331,8 +338,8 @@ public class ExtraHelper : MonoBehaviour
         var lstObjsArray = new List<UnityEngine.Object>();
         var sb = new StringBuilder();
 
-        var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
-        foreach (var field in fields)
+        FieldInfo[] fields = GetMonoBehaviourSerializedFields(behaviour);
+        foreach (FieldInfo field in fields)
         {
             if (!field.FieldType.IsArray)
             {
