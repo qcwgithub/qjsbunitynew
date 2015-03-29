@@ -291,7 +291,15 @@ public class JSDataExchangeMgr
                     getJSValueOfParam(ref val, vc.currIndex++);
 
                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
-                    object csObj = JSMgr.getCSObj(jsObj);
+                    if (jsObj == IntPtr.Zero)
+                        return null;
+
+                    JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+                    IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
+                    if (__nativeObj == IntPtr.Zero)
+                        return null;
+
+                    object csObj = JSMgr.getCSObj(__nativeObj);
                     return csObj;
                 }
                 break;
