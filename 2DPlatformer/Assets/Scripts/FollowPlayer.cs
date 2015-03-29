@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "FollowPlayer.javascript")]
 public class FollowPlayer : MonoBehaviour
 {
 	public Vector3 offset;			// The offset at which the Health Bar follows the player.

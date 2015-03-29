@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "ScoreShadow.javascript")]
 public class ScoreShadow : MonoBehaviour
 {
 	public GameObject guiCopy;		// A copy of the score.

@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "BombPickup.javascript")]
 public class BombPickup : MonoBehaviour
 {
 	public AudioClip pickupClip;		// Sound for when the bomb crate is picked up.

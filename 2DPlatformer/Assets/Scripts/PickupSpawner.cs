@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "PickupSpawner.javascript")]
 public class PickupSpawner : MonoBehaviour
 {
 	public GameObject[] pickups;				// Array of pickup prefabs with the bomb pickup first and health second.
@@ -24,15 +27,29 @@ public class PickupSpawner : MonoBehaviour
 	void Start ()
 	{
 		// Start the first delivery.
-		StartCoroutine(DeliverPickup());
+		// StartCoroutine(DeliverPickup());
+        Pre_DeliverPickup();
 	}
 
+    float _pickupDeliveryTime = 0f;
+    void Update()
+    {
+        if (_pickupDeliveryTime > 0)
+        {
+            _pickupDeliveryTime -= Time.deltaTime;
+            if (_pickupDeliveryTime <= 0)
+            {
+                DeliverPickup();
+            }
+        }
+    }
+    public void Pre_DeliverPickup()
+    {
+        _pickupDeliveryTime = pickupDeliveryTime;
+    }
 
-	public IEnumerator DeliverPickup()
+	public void DeliverPickup()
 	{
-		// Wait for the delivery delay.
-		yield return new WaitForSeconds(pickupDeliveryTime);
-
 		// Create a random x coordinate for the delivery in the drop range.
 		float dropPosX = Random.Range(dropRangeLeft, dropRangeRight);
 

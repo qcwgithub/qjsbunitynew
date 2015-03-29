@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "Bomb.javascript")]
 public class Bomb : MonoBehaviour
 {
 	public float bombRadius = 10f;			// Radius within which enemies are killed.
@@ -30,18 +33,35 @@ public class Bomb : MonoBehaviour
 		
 		// If the bomb has no parent, it has been laid by the player and should detonate.
 		if(transform.root == transform)
-			StartCoroutine(BombDetonation());
+		{	
+            //StartCoroutine(BombDetonation());
+            Pre_BombDetonation();
+        }
 	}
 
+    void Update()
+    {
+        if (_fuseTime > 0)
+        {
+            _fuseTime -= Time.deltaTime;
+            if (_fuseTime <= 0)
+            {
+                BombDetonation();
+            }
+        }
+    }
 
-	IEnumerator BombDetonation()
+    void Pre_BombDetonation()
+    {
+        // Play the fuse audioclip.
+        AudioSource.PlayClipAtPoint(fuse, transform.position);
+
+        _fuseTime = fuseTime;
+    }
+
+    float _fuseTime;
+	void BombDetonation()
 	{
-		// Play the fuse audioclip.
-		AudioSource.PlayClipAtPoint(fuse, transform.position);
-
-		// Wait for 2 seconds.
-		yield return new WaitForSeconds(fuseTime);
-
 		// Explode the bomb.
 		Explode();
 	}
@@ -54,7 +74,8 @@ public class Bomb : MonoBehaviour
 		layBombs.bombLaid = false;
 
 		// Make the pickup spawner start to deliver a new pickup.
-		pickupSpawner.StartCoroutine(pickupSpawner.DeliverPickup());
+		//pickupSpawner.StartCoroutine(pickupSpawner.DeliverPickup());
+        pickupSpawner.Pre_DeliverPickup();
 
 		// Find all the colliders on the Enemies layer within the bombRadius.
 		Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, bombRadius, 1 << LayerMask.NameToLayer("Enemies"));

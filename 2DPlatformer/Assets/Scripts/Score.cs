@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "Score.javascript")]
 public class Score : MonoBehaviour
 {
 	public int score = 0;					// The player's score.
@@ -24,8 +27,11 @@ public class Score : MonoBehaviour
 
 		// If the score has changed...
 		if(previousScore != score)
-			// ... play a taunt.
-			playerControl.StartCoroutine(playerControl.Taunt());
+        {
+            // ... play a taunt.
+            //playerControl.StartCoroutine(playerControl.Taunt());
+            playerControl.PreTaunt();
+        }
 
 		// Set the previous score to this frame's score.
 		previousScore = score;

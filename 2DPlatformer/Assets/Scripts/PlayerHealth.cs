@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "PlayerHealth.javascript")]
 public class PlayerHealth : MonoBehaviour
 {	
 	public float health = 100f;					// The player's health.

@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "CameraFollow.javascript")]
 public class CameraFollow : MonoBehaviour 
 {
 	public float xMargin = 1f;		// Distance in the x axis the player can move before the camera follows.

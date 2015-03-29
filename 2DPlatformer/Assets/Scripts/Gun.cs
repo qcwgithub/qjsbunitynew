@@ -1,21 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "Gun.javascript")]
 public class Gun : MonoBehaviour
 {
-	public Rigidbody2D rocket;				// Prefab of the rocket.
+	public GameObject rocketGO;				// Prefab of the rocket.
 	public float speed = 20f;				// The speed the rocket will fire at.
 
 
 	private PlayerControl playerCtrl;		// Reference to the PlayerControl script.
 	private Animator anim;					// Reference to the Animator component.
 
-
+    private Rigidbody2D rocket;
 	void Awake()
 	{
 		// Setting up the references.
 		anim = transform.root.gameObject.GetComponent<Animator>();
 		playerCtrl = transform.root.GetComponent<PlayerControl>();
+        rocket = rocketGO.rigidbody2D;
+        
 	}
 
 

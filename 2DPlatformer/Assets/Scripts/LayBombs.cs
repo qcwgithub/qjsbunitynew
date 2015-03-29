@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using SharpKit.JavaScript;
 
+[JsType(JsMode.Clr, "LayBombs.javascript")]
 public class LayBombs : MonoBehaviour
 {
 	[HideInInspector]

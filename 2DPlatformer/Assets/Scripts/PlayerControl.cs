@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "PlayerControl.javascript")]
 public class PlayerControl : MonoBehaviour
 {
 	[HideInInspector]
@@ -32,16 +35,7 @@ public class PlayerControl : MonoBehaviour
 	}
 
 
-	void Update()
-	{
-		// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
-		grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));  
-
-		// If the jump button is pressed and the player is grounded then the player should jump.
-		if(Input.GetButtonDown("Jump") && grounded)
-			jump = true;
-	}
-
+	
 
 	void FixedUpdate ()
 	{
@@ -100,26 +94,53 @@ public class PlayerControl : MonoBehaviour
 		transform.localScale = theScale;
 	}
 
+    void Update()
+    {
+        // The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
+        grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-	public IEnumerator Taunt()
+        // If the jump button is pressed and the player is grounded then the player should jump.
+        if (Input.GetButtonDown("Jump") && grounded)
+            jump = true;
+
+
+        if (_tauntDelay > 0)
+        {
+            _tauntDelay -= Time.deltaTime;
+            if (_tauntDelay <= 0)
+            {
+                Taunt();
+            }
+        }
+        
+    }
+    float _tauntDelay;
+
+    public void PreTaunt()
+    {
+        float tauntChance = Random.Range(0f, 100f);
+		if (tauntChance > tauntProbability)
+		{
+            _tauntDelay = tauntDelay;
+        }
+    }
+
+	public void Taunt()
 	{
 		// Check the random chance of taunting.
-		float tauntChance = Random.Range(0f, 100f);
-		if(tauntChance > tauntProbability)
-		{
+		
 			// Wait for tauntDelay number of seconds.
-			yield return new WaitForSeconds(tauntDelay);
+			//yield return new WaitForSeconds(tauntDelay);
 
-			// If there is no clip currently playing.
-			if(!audio.isPlaying)
-			{
-				// Choose a random, but different taunt.
-				tauntIndex = TauntRandom();
+		// If there is no clip currently playing.
+		if(!audio.isPlaying)
+		{
+			// Choose a random, but different taunt.
+			tauntIndex = TauntRandom();
 
-				// Play the new taunt.
-				audio.clip = taunts[tauntIndex];
-				audio.Play();
-			}
+			// Play the new taunt.
+			audio.clip = taunts[tauntIndex];
+			audio.Play();
 		}
 	}
 

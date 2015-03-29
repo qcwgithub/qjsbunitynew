@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "Remover.javascript")]
 public class Remover : MonoBehaviour
 {
 	public GameObject splash;
@@ -25,7 +28,8 @@ public class Remover : MonoBehaviour
 			// ... destroy the player.
 			Destroy (col.gameObject);
 			// ... reload the level.
-			StartCoroutine("ReloadGame");
+			// StartCoroutine("ReloadGame");
+            Pre_ReloadGame();
 		}
 		else
 		{
@@ -37,11 +41,26 @@ public class Remover : MonoBehaviour
 		}
 	}
 
-	IEnumerator ReloadGame()
-	{			
-		// ... pause briefly
-		yield return new WaitForSeconds(2);
-		// ... and then reload the level.
+    void Update()
+    {
+        if (_reload > 0)
+        {
+            _reload -= Time.deltaTime;
+            if (_reload <= 0)
+            {
+                ReloadGame();
+            }
+        }
+    }
+
+    float _reload = 0;
+    void Pre_ReloadGame()
+    {
+        _reload = 2f;
+    }
+
+	void ReloadGame()
+	{
 		Application.LoadLevel(Application.loadedLevel);
 	}
 }

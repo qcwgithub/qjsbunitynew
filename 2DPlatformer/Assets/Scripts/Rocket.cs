@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "Rocket.javascript")]
 public class Rocket : MonoBehaviour 
 {
 	public GameObject explosion;		// Prefab of explosion effect.

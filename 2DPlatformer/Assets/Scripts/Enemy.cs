@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Enemy : MonoBehaviour
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "Enemy_Data.javascript")]
+public class Enemy_Data : MonoBehaviour
 {
 	public float moveSpeed = 2f;		// The speed the enemy moves at.
 	public int HP = 2;					// How many times the enemy can be hit before it dies.
@@ -12,7 +15,11 @@ public class Enemy : MonoBehaviour
 	public float deathSpinMin = -100f;			// A value to give the minimum amount of Torque when dying
 	public float deathSpinMax = 100f;			// A value to give the maximum amount of Torque when dying
 
+}
 
+[JsType(JsMode.Clr, "Enemy.javascript")]
+public class Enemy : Enemy_Data
+{
 	private SpriteRenderer ren;			// Reference to the sprite renderer.
 	private Transform frontCheck;		// Reference to the position of the gameobject used for checking if something is in front.
 	private bool dead = false;			// Whether or not the enemy is dead.
@@ -30,7 +37,7 @@ public class Enemy : MonoBehaviour
 	void FixedUpdate ()
 	{
 		// Create an array of all the colliders in front of the enemy.
-		Collider2D[] frontHits = Physics2D.OverlapPointAll(frontCheck.position, 1);
+        Collider2D[] frontHits = Physics2D.OverlapPointAll(frontCheck.position, 1);
 
 		// Check each of the colliders.
 		foreach(Collider2D c in frontHits)

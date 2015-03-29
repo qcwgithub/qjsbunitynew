@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SharpKit.JavaScript;
+
+[JsType(JsMode.Clr, "HealthPickup.javascript")]
 public class HealthPickup : MonoBehaviour
 {
 	public float healthBonus;				// How much health the crate gives the player.
@@ -36,7 +39,8 @@ public class HealthPickup : MonoBehaviour
 			playerHealth.UpdateHealthBar();
 
 			// Trigger a new delivery.
-			pickupSpawner.StartCoroutine(pickupSpawner.DeliverPickup());
+			//pickupSpawner.StartCoroutine(pickupSpawner.DeliverPickup());
+            pickupSpawner.Pre_DeliverPickup();
 
 			// Play the collection sound.
 			AudioSource.PlayClipAtPoint(collect,transform.position);
