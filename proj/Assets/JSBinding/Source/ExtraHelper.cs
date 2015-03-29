@@ -4,6 +4,7 @@ using System.Text;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using SharpKit.JavaScript;
 
 public class ExtraHelper : MonoBehaviour
 {
@@ -19,6 +20,15 @@ public class ExtraHelper : MonoBehaviour
     public UnityEngine.Object[] arrObjectSingle = null;
     public UnityEngine.Object[] arrObjectArray = null;
 
+
+    private struct GameObject_JSComponentName
+    {
+        public string valName;
+        public GameObject go;
+        public string scriptName;
+        public GameObject_JSComponentName(string _valName, GameObject _go, string _scriptName) { valName = _valName;  go = _go; scriptName = _scriptName; }
+    }
+    private List<GameObject_JSComponentName> cachedRefJSComponent = new List<GameObject_JSComponentName>();
     enum SType
     {
         ST_Unknown,
@@ -42,6 +52,7 @@ public class ExtraHelper : MonoBehaviour
 
         ST_Enum,
         ST_UnityEngineObject,
+        ST_MonoBehaviour,
 
         ST_Vector2,
         ST_Vector3,
@@ -138,6 +149,29 @@ public class ExtraHelper : MonoBehaviour
         string strValue = s.Substring(y + 1, s.Length - y - 1);
         return strValue;
     }
+    // this function is called in Start
+    public void initSerializedRefMonoBehaviour(IntPtr cx, IntPtr jsObj)
+    {
+        foreach (var rel in cachedRefJSComponent)
+        {
+            GameObject go = rel.go;
+            JSComponent_SharpKit[] jsComs = go.GetComponents<JSComponent_SharpKit>();
+            foreach (var com in jsComs)
+            {
+                if (com.jsScriptName == rel.scriptName)
+                {
+                    // 注意：最多只能绑同 一个名字的脚本一次  
+                    // 现在只能支持这样
+					// 数组也不行  要注意
+					JSApi.JSh_SetJsvalObject(ref JSMgr.vCall.valTemp, com.jsObj);
+                    JSApi.JSh_SetUCProperty(cx, jsObj, rel.valName, -1, ref JSMgr.vCall.valTemp);
+                    break;
+                }
+            }
+        }
+        cachedRefJSComponent.Clear();
+    }
+    // this function is called in Awake
     public void initSerializedData(IntPtr cx, IntPtr jsObj)
     {
         int arrObjectIndex = 0;
@@ -168,6 +202,21 @@ public class ExtraHelper : MonoBehaviour
                     UnityEngine.Object obj = arrObjectSingle[arrObjectIndex++];
                     JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, obj);
                     JSApi.JSh_SetUCProperty(cx, jsObj, valName, -1, ref JSMgr.vCall.valTemp);
+                }
+                else if (eType == SType.ST_MonoBehaviour)
+                {
+                    // eType / Name / lstObjsSingle's Index / Monobehaviour name
+                    //
+                    //
+                    string strValue = s.Substring(y + 1, s.Length - y - 1);
+
+					x = strValue.IndexOf('/');
+                    s0 = strValue.Substring(0, x);
+                    if (arrObjectIndex != int.Parse(s0)) Debug.LogError("Serialize MonoBehaviour Error: arrObjectIndex != int.Parse(s0)");
+                    string scriptName = strValue.Substring(x + 1, strValue.Length - x - 1);
+
+                    UnityEngine.Object obj = arrObjectSingle[arrObjectIndex++];
+                    cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
                 }
                 else
                 {
@@ -269,6 +318,10 @@ public class ExtraHelper : MonoBehaviour
             return SType.ST_Enum;        
         }
 
+        if ((typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type)))
+        {
+            return SType.ST_MonoBehaviour;
+        }
         if ((typeof(UnityEngine.Object).IsAssignableFrom(type)))
         {
             return SType.ST_UnityEngineObject;
@@ -352,9 +405,26 @@ public class ExtraHelper : MonoBehaviour
                 sb.Remove(0, sb.Length);
                 if (typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
                 {
-                    // eType / Name / lstObjsSingle's Index
-                    lstString.Add(((int)eType).ToString() + "/" + field.Name + "/" + lstObjsSingle.Count.ToString());
-                    lstObjsSingle.Add((UnityEngine.Object)field.GetValue(behaviour));
+                    if (typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(field.FieldType))
+                    {
+                        // if a monobehaviour is refer
+                        // and this monobehaviour will be translated to js later
+                        //  ST_MonoBehaviour
+                        if (WillTypeBeTranslatedToJavaScript(field.FieldType))
+                        {
+                            // eType / Name / lstObjsSingle's Index / Monobehaviour name
+                            lstString.Add(((int)eType).ToString() + "/" + field.Name + "/" + lstObjsSingle.Count.ToString() + "/" +
+                                field.FieldType.Name);
+                            MonoBehaviour mb = (MonoBehaviour)field.GetValue(behaviour);
+                            lstObjsSingle.Add(mb.gameObject);// add game object
+                        }
+                    }
+                    else
+                    {
+                        // eType / Name / lstObjsSingle's Index
+                        lstString.Add(((int)eType).ToString() + "/" + field.Name + "/" + lstObjsSingle.Count.ToString());
+                        lstObjsSingle.Add((UnityEngine.Object)field.GetValue(behaviour));
+                    }
                 }
                 else
                 {
@@ -398,6 +468,25 @@ public class ExtraHelper : MonoBehaviour
         helper.arrObjectSingle = lstObjsSingle.ToArray();
         helper.arrObjectArray = lstObjsArray.ToArray();
     }
+    public static bool WillTypeBeAvailableInJavaScript(Type type)
+    {
+        return WillTypeBeTranslatedToJavaScript(type) || WillTypeBeExportedToJavaScript(type);
+    }
+    public static bool WillTypeBeTranslatedToJavaScript(Type type)
+    {
+        System.Object[] attrs = type.GetCustomAttributes(typeof(JsTypeAttribute), false);
+        bool bToJS = attrs.Length > 0;
+        return bToJS;
+    }
+    public static bool WillTypeBeExportedToJavaScript(Type type)
+    {
+        foreach (var t in JSBindingSettings.classes)
+        {
+            if (t == type)
+                return true;
+        }
+        return false;
+    }
     public static void CopyGameObject<T>(GameObject go) where T : ExtraHelper
     {
         // delete original ExtraHelper(s)
@@ -410,16 +499,23 @@ public class ExtraHelper : MonoBehaviour
             }
         }
 
-        var coms = go.GetComponents<MonoBehaviour>();
-        for (var i = 0; i < coms.Length; i++)
+        var behaviours = go.GetComponents<MonoBehaviour>();
+        for (var i = 0; i < behaviours.Length; i++)
         {
-            var com = coms[i];
+            var behav = behaviours[i];
             // must ignore ExtraHandler here
-            if (com is ExtraHelper) 
+            if (behav is ExtraHelper)
+            {
                 continue;
+            }
 
-            ExtraHelper helper = (ExtraHelper)go.AddComponent<T>();
-            CopyBehaviour(com, helper);
+            if (WillTypeBeTranslatedToJavaScript(behav.GetType()))
+            {   // if this MonoBehaviour is going to be translated to JavaScript
+                // replace this behaviour with JSComponent_SharpKit
+                // copy the serialized data if needed
+                ExtraHelper helper = (ExtraHelper)go.AddComponent<T>();
+                CopyBehaviour(behav, helper);
+            }
         }
     }
     public static void RemoveOtherMonoBehaviours(GameObject go)

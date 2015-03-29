@@ -1,4 +1,4 @@
-CS.require("2DPlatformer/BackgroundParallax");
+/*CS.require("2DPlatformer/BackgroundParallax");
 CS.require("2DPlatformer/BackgroundPropSpawner");
 CS.require("2DPlatformer/Bomb");
 CS.require("2DPlatformer/BombPickup");
@@ -19,4 +19,6 @@ CS.require("2DPlatformer/Rocket");
 CS.require("2DPlatformer/Score");
 CS.require("2DPlatformer/ScoreShadow");
 CS.require("2DPlatformer/SetParticleSortingLayer");
-CS.require("2DPlatformer/Spawner");
+CS.require("2DPlatformer/Spawner");*/
+
+CS.require("PersonalInfo")

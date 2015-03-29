@@ -90,7 +90,7 @@ public static class JSAnalyzer
         return lstProblem;
     }
 
-    public static void OuputGameObjectHierachy(StringBuilder sb, GameObject go, int tab)
+    public static void TraverseGameObject(StringBuilder sb, GameObject go, int tab)
     {
         for (var t = 0; t < tab; t++)
         {
@@ -126,18 +126,11 @@ public static class JSAnalyzer
         for (var i = 0; i < childCount; i++)
         {
             Transform child = go.transform.GetChild(i);
-            OuputGameObjectHierachy(sb, child.gameObject, tab + 1);
+            TraverseGameObject(sb, child.gameObject, tab + 1);
         }
     }
 
-    [MenuItem("JSB/Iterate All GameObjects In the Scene")]
-    public static void IterateAllGameObjectsInTheScene()
-    {
-        GameObject goWhatever = GameObject.FindObjectOfType <GameObject>();
-    }
-
-    [MenuItem("JSB/Iterate All Prefabs")]
-    public static void IterateAllPrefabs()
+    static void initAnalyze()
     {
         dictExport.Clear();
         foreach (var type in JSBindingSettings.classes)
@@ -147,11 +140,29 @@ public static class JSAnalyzer
                 dictExport.Add(type, true);
             }
         }
-
-
         sbHierachy.Remove(0, sbHierachy.Length);
+    }
 
+    [MenuItem("JSB/Iterate All GameObjects In the Scene")]
+    public static void IterateAllGameObjectsInTheScene()
+    {
+        initAnalyze();
+        GameObject[] gameObjects = GameObject.FindObjectsOfType <GameObject>();
+        foreach (GameObject go in gameObjects)
+        {
+            if (go.transform.root == go.transform)
+            {
+                TraverseGameObject(sbHierachy, go, 0);
+                //sbHierachy.Append("\n");
+            }
+        }
+        Debug.Log(sbHierachy);
+    }
 
+    [MenuItem("JSB/Iterate All Prefabs")]
+    public static void IterateAllPrefabs()
+    {
+        initAnalyze();
         string[] GUIDs = AssetDatabase.FindAssets("t:prefab");
         foreach (var guid in GUIDs)
         {
@@ -159,12 +170,10 @@ public static class JSAnalyzer
             UnityEngine.Object mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
             if (mainAsset is GameObject)
             {
-                OuputGameObjectHierachy(sbHierachy, (GameObject)mainAsset, 1);
+                TraverseGameObject(sbHierachy, (GameObject)mainAsset, 1);
             }
-
             sbHierachy.Append("\n");
         }
         Debug.Log(sbHierachy);
-
     }
 }

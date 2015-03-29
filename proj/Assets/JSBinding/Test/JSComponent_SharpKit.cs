@@ -130,6 +130,7 @@ public class JSComponent_SharpKit : ExtraHelper
         {
             firstStart = false;
             callIfExist(ref valAwake);
+            initSerializedRefMonoBehaviour(JSMgr.cx, jsObj);
         }
         callIfExist(ref valStart);
     }

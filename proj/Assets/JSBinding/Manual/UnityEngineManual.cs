@@ -64,13 +64,15 @@ public class UnityEngineManual
         }
         vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal);
     }
-    static void help_searchAndRetCom(JSVCall vc, JSComponent_SharpKit[] com, string typeString)
+    static void help_searchAndRetCom(JSVCall vc, JSComponent_SharpKit[] jsComs, string typeString)
     {
-        foreach (var c in com)
+        foreach (var jsCom in jsComs)
         {
-            if (c.jsScriptName == typeString)
+            if (jsCom.jsScriptName == typeString)
             {
-                vc.datax.setObject(JSDataExchangeMgr.eSetType.SetRval, c);
+                // vc.datax.setObject(JSDataExchangeMgr.eSetType.SetRval, jsCom);
+                JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsCom.jsObj);
+                JSApi.JSh_SetRvalJSVAL(JSMgr.cx, vc.vp, ref vc.valReturn);
                 break;
             }
         }
