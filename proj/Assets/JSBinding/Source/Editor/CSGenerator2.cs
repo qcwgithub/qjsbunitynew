@@ -1279,59 +1279,30 @@ using UnityEngine;
         }
     }
 
-    [MenuItem("JSB/IterateAllPrefabs")]
-    public static void IterateAllPrefabs()
-    {
-        StringBuilder sb = new StringBuilder();
-//         UnityEngine.Object[] objs = AssetDatabase.LoadAllAssetsAtPath("Assets/Prefabs/");
+//     [MenuItem("JSB/IterateAllPrefabs")]
+//     public static void IterateAllPrefabs()
+//     {
 //         StringBuilder sb = new StringBuilder();
-//         foreach (var obj in objs)
-        {
-//             sb.Append(obj.name + "\n");
-        }
-//         Debug.Log(sb.ToString());
-
-
-//         Debug.Log(sb.ToString());
-
-        string[] GUIDs = AssetDatabase.FindAssets("t:prefab");
-        foreach (var guid in GUIDs)
-        {
-            //UnityEngine.Object obj = AssetDatabase.LoadMainAssetAtPath(path);
-            //sb.Append(obj.name + "\n");
-
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-
-            UnityEngine.Object mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
-            if (mainAsset is GameObject)
-            {
-                // sb.Append(mainAsset.GetType().Name + " / " + mainAsset.name + "\n");
-                OuputGameObjectHierachy(sb, (GameObject)mainAsset, 1);
-            }
-
-            sb.Append("\n");
-        }
-        Debug.Log(sb);
-        
-    }
-
-    // Alt + Shift + Q
-    [MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
-    public static void CopyGameObjectMonoBehaviours()
-    {
-        Debug.Log("CopyGameObjectMonoBehaviours");
-        GameObject go = Selection.activeGameObject;
-        ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
-    }
-    // Alt + Shift + W
-    [MenuItem("JSB/Remove Other MonoBehaviours &#w")]
-    public static void RemoveOtherMonoBehaviours()
-    {
-        Debug.Log("RemoveOtherMonoBehaviours");
-        GameObject go = Selection.activeGameObject;
-        ExtraHelper.RemoveOtherMonoBehaviours(go);
-    }
-
+//         string[] GUIDs = AssetDatabase.FindAssets("t:prefab");
+//         foreach (var guid in GUIDs)
+//         {
+//             //UnityEngine.Object obj = AssetDatabase.LoadMainAssetAtPath(path);
+//             //sb.Append(obj.name + "\n");
+// 
+//             string path = AssetDatabase.GUIDToAssetPath(guid);
+// 
+//             UnityEngine.Object mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
+//             if (mainAsset is GameObject)
+//             {
+//                 // sb.Append(mainAsset.GetType().Name + " / " + mainAsset.name + "\n");
+//                 OuputGameObjectHierachy(sb, (GameObject)mainAsset, 1);
+//             }
+// 
+//             sb.Append("\n");
+//         }
+//         Debug.Log(sb);
+//        
+//    }
     [MenuItem("Assets/JSBinding/Read serialized data test")]
     public static void ReadSerializedDataTest()
     {

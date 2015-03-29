@@ -96,7 +96,11 @@ public static class JSAnalyzer
         {
             sb.Append("    ");
         }
-        sb.Append(go.name);
+        sb.Append(go.name + "   -->("+go.tag+")");
+
+
+        ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
+        ExtraHelper.RemoveOtherMonoBehaviours(go);
 
         var coms = go.GetComponents(typeof(Component));
         bool hasProblem = false;
@@ -175,5 +179,21 @@ public static class JSAnalyzer
             sbHierachy.Append("\n");
         }
         Debug.Log(sbHierachy);
+    }
+    // Alt + Shift + Q
+    [MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
+    public static void CopyGameObjectMonoBehaviours()
+    {
+        Debug.Log("CopyGameObjectMonoBehaviours");
+        GameObject go = Selection.activeGameObject;
+        ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
+    }
+    // Alt + Shift + W
+    [MenuItem("JSB/Remove Other MonoBehaviours &#w")]
+    public static void RemoveOtherMonoBehaviours()
+    {
+        Debug.Log("RemoveOtherMonoBehaviours");
+        GameObject go = Selection.activeGameObject;
+        ExtraHelper.RemoveOtherMonoBehaviours(go);
     }
 }

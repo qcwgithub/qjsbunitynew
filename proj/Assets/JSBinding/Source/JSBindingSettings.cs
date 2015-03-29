@@ -554,6 +554,10 @@ public class JSBindingSettings
         typeof(UnityEngine.BoxCollider2D),
         typeof(UnityEngine.EdgeCollider2D),
         typeof(UnityEngine.PolygonCollider2D),
+        typeof(UnityEngine.Collider),
+        typeof(UnityEngine.SphereCollider),
+        typeof(UnityEngine.BoxCollider),
+        typeof(UnityEngine.MeshCollider),
         typeof(Rigidbody2D), 
         typeof(Physics2D), 
         typeof(Physics),
@@ -565,6 +569,16 @@ public class JSBindingSettings
 		typeof(UnityEngine.GUITexture), 
 
         typeof(UnityEngine.Sprite),
+
+        typeof(UnityEngine.Light),
+        typeof(UnityEngine.MeshRenderer),
+        typeof(UnityEngine.LineRenderer),
+        typeof(UnityEngine.Material),
+        typeof(UnityEngine.Rect),
+        typeof(UnityEngine.NavMeshAgent),
+        typeof(UnityEngine.Color),
+        typeof(UnityEngine.Screen),
+        typeof(UnityEngine.AnimatorStateInfo),
 		
 		/*
 

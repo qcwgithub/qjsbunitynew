@@ -33,6 +33,10 @@ public class JSComponent_SharpKit : ExtraHelper
     jsval valDestroy = new jsval();
     jsval valOnGUI = new jsval();
     jsval valOnTriggerEnter2D = new jsval();
+    jsval valOnTriggerStay = new jsval();
+    jsval valOnTriggerExit = new jsval();
+    jsval valOnAnimatorMove = new jsval();
+    jsval valOnAnimatorIK = new jsval();
 
     jsval valDestroyChildGameObject = new jsval();
     jsval valDisableChildGameObject = new jsval();
@@ -78,7 +82,7 @@ public class JSComponent_SharpKit : ExtraHelper
         if (!ret || jsObj == IntPtr.Zero)
         {
             jsObj = IntPtr.Zero;
-            Debug.LogError("New MonoBehaviour Fail, name: " + this.jsScriptName + ". Did you forget to export that class?");
+            Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");
             return false;
         }
         JSMgr.addJSCSRelation(jsObj, __nativeObj, this);
@@ -101,6 +105,10 @@ public class JSComponent_SharpKit : ExtraHelper
         initVal(ref valDestroy, "Destroy");
         initVal(ref valOnGUI, "OnGUI");
         initVal(ref valOnTriggerEnter2D, "OnTriggerEnter2D");
+        initVal(ref valOnTriggerStay, "OnTriggerStay");
+        initVal(ref valOnTriggerExit, "OnTriggerExit");
+        initVal(ref valOnAnimatorMove, "OnAnimatorMove");
+        initVal(ref valOnAnimatorIK, "OnAnimatorIK");
 
 
         // TODO
@@ -166,6 +174,22 @@ public class JSComponent_SharpKit : ExtraHelper
 //        else
 //            Debug.Log("OnTriggerEnter2D(" + other.GetType().Name + ")");
         callIfExist(ref valOnTriggerEnter2D, other);
+    }
+    void OnTriggerStay(Collider other)
+    {
+        callIfExist(ref valOnTriggerStay, other);
+    }
+    void OnTriggerExit(Collider other)
+    {
+        callIfExist(ref valOnTriggerExit, other);
+    }
+    void OnAnimatorMove()
+    {
+        callIfExist(ref valOnAnimatorMove);
+    }
+    void OnAnimatorIK(int layerIndex)
+    {
+        callIfExist(ref valOnAnimatorIK);
     }
 
     void DestroyChildGameObject()
