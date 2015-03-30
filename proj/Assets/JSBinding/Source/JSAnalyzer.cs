@@ -147,6 +147,25 @@ public static class JSAnalyzer
         sbHierachy.Remove(0, sbHierachy.Length);
     }
 
+    [MenuItem("JSB/Gen JsType file list")]
+    public static void OutputAllTypesWithJsTypeAttribute()
+    {
+        var sb = new StringBuilder();
+        foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            Type[] types = a.GetTypes();
+            foreach (Type t in types)
+            {
+                if (ExtraHelper.WillTypeBeTranslatedToJavaScript(t))
+                {
+                    sb.AppendFormat("CS.require(\"SharpKitGenerated/{0}\");\n", t.Name);
+                }
+            }
+        }
+
+        Debug.Log(sb);
+    }
+
     [MenuItem("JSB/Iterate All GameObjects In the Scene")]
     public static void IterateAllGameObjectsInTheScene()
     {
