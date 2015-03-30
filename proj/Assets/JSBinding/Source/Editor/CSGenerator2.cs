@@ -304,7 +304,7 @@ public static class CSGenerator2
                 paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];
                 for (int j = 0; j < ps.Length; j++)
                 {
-                    paramHandlers[j] = JSDataExchangeMgr.Get_ParamHandler(ps[j].ParameterType, j, false);
+                    paramHandlers[j] = JSDataExchangeMgr.Get_ParamHandler(ps[j].ParameterType, j, false, false);
                     sbActualParam.AppendFormat("[{0}]", paramHandlers[j].argName);
                 }
             }
@@ -359,7 +359,7 @@ public static class CSGenerator2
 
                 int ParamIndex = ps.Length;
 
-                var paramHandler = JSDataExchangeMgr.Get_ParamHandler(property.PropertyType, ParamIndex, false);
+                var paramHandler = JSDataExchangeMgr.Get_ParamHandler(property.PropertyType, ParamIndex, false, false);
                 sb.Append("        " + paramHandler.getter + "\n");
 
                 if (bIndexer)

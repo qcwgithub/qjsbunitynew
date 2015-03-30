@@ -993,7 +993,7 @@ public class JSDataExchangeMgr
         return ph;
     }
     // Editor only
-    public static ParamHandler Get_ParamHandler(Type type, int paramIndex, bool isOutOrRef)
+    public static ParamHandler Get_ParamHandler(Type type, int paramIndex, bool isRef, bool isOut)
     {
         ParamHandler ph = new ParamHandler();
         ph.argName = "arg" + paramIndex.ToString();
@@ -1010,7 +1010,7 @@ public class JSDataExchangeMgr
             return ph;
         }
 
-        if (isOutOrRef)
+        if (isRef || isOut)
         {
             type = type.GetElementType();
         }
@@ -1044,7 +1044,13 @@ public class JSDataExchangeMgr
 
         string typeFullName = GetTypeFullName(type);
         string get_getParam = string.Empty;
-        if (isOutOrRef)
+        if (isOut)
+        {
+            // don't need to get param but simply add index
+            // get_getParam = xcg.Get_GetRefOutParam(type);
+            ph.getter = "int r_arg" + paramIndex.ToString() + " = vc.currIndex++;\n";
+        }
+        else if (isRef)
         {
             get_getParam = xcg.Get_GetRefOutParam(type);
             ph.getter = "int r_arg" + paramIndex.ToString() + " = vc.currIndex;\n";
@@ -1054,7 +1060,11 @@ public class JSDataExchangeMgr
             get_getParam = xcg.Get_GetParam(type);
             ph.getter = string.Empty;
         }
-        if (xcg.isGetParamNeedCast)
+        if (isOut)
+        {
+            ph.getter += typeFullName + " " + ph.argName + ";";
+        }
+        else if (xcg.isGetParamNeedCast)
         {
             ph.getter += typeFullName + " " + ph.argName + " = (" + typeFullName + ")" + get_getParam + ";";
         }
@@ -1063,7 +1073,7 @@ public class JSDataExchangeMgr
             ph.getter += typeFullName + " " + ph.argName + " = " + get_getParam + ";";
         }
 
-        if (isOutOrRef)
+        if (isOut)
         {
             ph.updater = "vc.currIndex = r_arg" + paramIndex.ToString() + ";\n";
             ph.updater += xcg.Get_ReturnRefOut(ph.argName) + ";";
@@ -1074,12 +1084,12 @@ public class JSDataExchangeMgr
     // Editor only
     public static ParamHandler Get_ParamHandler(ParameterInfo paramInfo, int paramIndex)
     {
-        return Get_ParamHandler(paramInfo.ParameterType, paramIndex, paramInfo.ParameterType.IsByRef || paramInfo.IsOut);
+        return Get_ParamHandler(paramInfo.ParameterType, paramIndex, paramInfo.ParameterType.IsByRef, paramInfo.IsOut);
     }
     // Editor only
     public static ParamHandler Get_ParamHandler(FieldInfo fieldInfo)
     {
-        return Get_ParamHandler(fieldInfo.FieldType, 0, false);//fieldInfo.FieldType.IsByRef);
+        return Get_ParamHandler(fieldInfo.FieldType, 0, false, false);//fieldInfo.FieldType.IsByRef);
     }
     
     // Editor only

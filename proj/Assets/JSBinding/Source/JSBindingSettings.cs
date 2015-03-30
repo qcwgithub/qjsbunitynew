@@ -579,6 +579,8 @@ public class JSBindingSettings
         typeof(UnityEngine.Color),
         typeof(UnityEngine.Screen),
         typeof(UnityEngine.AnimatorStateInfo),
+        typeof(UnityEngine.CapsuleCollider),
+        typeof(UnityEngine.Rigidbody),
 		
 		/*
 
