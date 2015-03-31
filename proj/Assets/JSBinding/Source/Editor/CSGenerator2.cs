@@ -554,10 +554,11 @@ public static class CSGenerator2
         {
             StringBuilder sbt = new StringBuilder();
             sbt.Append("    // Get generic method by name and param count.\n");
-            sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(typeof({0}), {1}, {2}, vc); \n",
+            sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(typeof({0}), \"{1}\", {2}, {3}, vc); \n",
                 GetTypeFullName(type), // [0] type
-                TCount,                // [1] TCount
-                methodArrIndex);       // [2] methodArrIndex
+                methodName,
+                TCount,                // [2] TCount
+                methodArrIndex);       // [3] methodArrIndex
             sbt.AppendFormat("    if (method == null)\n        return true;\n");
             sbt.Append("\n");
 

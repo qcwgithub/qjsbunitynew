@@ -1282,7 +1282,7 @@ public class JSDataExchangeMgr
     // methodName: method name
     // TCount: generic parameter count
     // vc: JSVCall instance
-    public static MethodInfo MakeGenericFunction(Type type, int TCount, int methodArrIndex, JSVCall vc)
+    public static MethodInfo MakeGenericFunction(Type type, string methodName, int TCount, int methodArrIndex, JSVCall vc)
     {
         // Get generic method by name and param count.
 //         MethodInfo methodT = JSDataExchangeMgr.GetGenericMethodInfo(type, methodName, TCount, paramCount);
@@ -1292,6 +1292,11 @@ public class JSDataExchangeMgr
 //         }
 
         MethodInfo methodT = JSMgr.RuntimeGetMethodInfo(type, methodArrIndex);
+        if (methodT.Name != methodName)
+        {
+            Debug.LogError("MakeGenericFunction Name different! " + methodName + "/" + methodT.Name);
+            return null;
+        }
 
         // get T types
         Type[] genericTypes = new Type[TCount];
