@@ -510,6 +510,37 @@ public static class JSMgr
     }
     public static List<CallbackInfo> allCallbackInfo = new List<CallbackInfo>();
 
+    ////////
+    ////////
+    ////////
+    // used for generic methods
+    public static Dictionary<Type, MethodInfo[]> dictTypeMI;
+    public static MethodInfo RuntimeGetMethodInfo(Type type, int i)
+    {
+        if (dictTypeMI == null)
+        {
+            dictTypeMI = new Dictionary<Type, MethodInfo[]>();
+        }
+        MethodInfo[] arrMI;
+        if (!dictTypeMI.TryGetValue(type, out arrMI))
+        {
+            // flags must be the same as AddATypeInfo
+            arrMI = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
+            dictTypeMI.Add(type, arrMI);
+        }
+        if (i < arrMI.Length)
+        {
+            return arrMI[i];
+        }
+        else
+        {
+            Debug.LogError("RuntimeGetMethodInfo ERROR: index = " + i.ToString() + " out of range");
+            return null;
+        }
+    }
+
+
+
     /// <summary>
     /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// type info list
@@ -525,6 +556,7 @@ public static class JSMgr
         public PropertyInfo[] properties;
         public ConstructorInfo[] constructors;
         public MethodInfo[] methods;
+        public int[] methodsIndex; // index of the method in array of type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
         public int[] methodsOLInfo;//0 not overloaded >0 overloaded index
         public int howmanyConstructors;//how many constructors actually, (before filtering).
     }
@@ -571,8 +603,11 @@ public static class JSMgr
         }
         return false;
     }
-    public static int MethodInfoComparison(MethodInfo m1, MethodInfo m2)
+    public static int MethodInfoComparison(MethodInfoAndIndex mi1, MethodInfoAndIndex mi2)
     {
+        MethodInfo m1 = mi1.method;
+        MethodInfo m2 = mi2.method;
+
         if (!m1.IsStatic && m2.IsStatic)
             return -1;
         if (m1.IsStatic && !m2.IsStatic)
@@ -605,6 +640,13 @@ public static class JSMgr
         if (max2 > max1) return 1;
         return 0;
     }
+
+    public struct MethodInfoAndIndex
+    {
+        public MethodInfo method;
+        public int index;
+        public MethodInfoAndIndex(MethodInfo _m, int _i) { method = _m; index = _i; }
+    }
     public static void FilterTypeInfo(Type type, ATypeInfo ti)
     {
         bool bIsStaticClass = (type.IsClass && type.IsAbstract && type.IsSealed);
@@ -613,7 +655,7 @@ public static class JSMgr
         List<FieldInfo> lstField = new List<FieldInfo>();
         List<PropertyInfo> lstPro = new List<PropertyInfo>();
         Dictionary<string, int> proAccessors = new Dictionary<string, int>();
-        List<MethodInfo> lstMethod = new List<MethodInfo>();
+        List<MethodInfoAndIndex> lstMethod = new List<MethodInfoAndIndex>();
 
         for (int i = 0; i < ti.constructors.Length; i++)
         {
@@ -752,7 +794,7 @@ public static class JSMgr
             if (JSBindingSettings.IsDiscard(type, method))
                 continue;
 
-            lstMethod.Add(method);
+            lstMethod.Add(new MethodInfoAndIndex(method, i));
         }
 
         if (lstMethod.Count == 0)
@@ -774,8 +816,9 @@ public static class JSMgr
                 ti.methodsOLInfo[i] = overloadedIndex;
             }
 
-            if (i < lstMethod.Count - 1 && lstMethod[i].Name == lstMethod[i + 1].Name &&
-                ((lstMethod[i].IsStatic && lstMethod[i + 1].IsStatic) || (!lstMethod[i].IsStatic && !lstMethod[i + 1].IsStatic)))
+            if (i < lstMethod.Count - 1 && lstMethod[i].method.Name == lstMethod[i + 1].method.Name &&
+                ((lstMethod[i].method.IsStatic && lstMethod[i + 1].method.IsStatic) ||
+                (!lstMethod[i].method.IsStatic && !lstMethod[i + 1].method.IsStatic)))
             {
                 if (!bOL)
                 {
@@ -795,7 +838,14 @@ public static class JSMgr
         ti.constructors = lstCons.ToArray();
         ti.fields = lstField.ToArray();
         ti.properties = lstPro.ToArray();
-        ti.methods = lstMethod.ToArray();
+        ti.methods = new MethodInfo[lstMethod.Count];
+        ti.methodsIndex = new int[lstMethod.Count];
+
+        for (var k = 0; k < lstMethod.Count; k++)
+        {
+            ti.methods[k] = lstMethod[k].method;
+            ti.methodsIndex[k] = lstMethod[k].index;
+        }
     }
 
     public static IntPtr CSOBJ = IntPtr.Zero;

@@ -365,7 +365,7 @@ public static class CSGenerator2
                 if (bIndexer)
                 {
                     if (isStatic)
-                        sb.AppendFormat("{0} = {2};\n", sbCall, paramHandler.argName);
+                        sb.AppendFormat("{0} = {1};\n", sbCall, paramHandler.argName);
                     else
                     {
                         if (type.IsValueType)
@@ -376,7 +376,7 @@ public static class CSGenerator2
                         }
                         else
                         {
-                            sb.AppendFormat("        {0} = {2};\n", sbCall, paramHandler.argName);
+                            sb.AppendFormat("        {0} = {1};\n", sbCall, paramHandler.argName);
                         }
                     }
                 }
@@ -547,18 +547,17 @@ public static class CSGenerator2
         else return false;
     }
     public static StringBuilder BuildNormalFunctionCall(int methodIndex, ParameterInfo[] ps, string className, string methodName, bool bStatic, bool returnVoid, Type returnType, bool bConstructor,
-        int TCount = 0)
+        int TCount = 0, int methodArrIndex = -1)
     {
         StringBuilder sb = new StringBuilder();
         if (TCount > 0)
         {
             StringBuilder sbt = new StringBuilder();
             sbt.Append("    // Get generic method by name and param count.\n");
-            sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(typeof({0}), \"{1}\", {2}, {3}, vc); \n",
-                GetTypeFullName(type), // [0] typeName
-                methodName,            // [1] method name
-                TCount,                // [2] t count
-                ps.Length);            // [3] param count
+            sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(typeof({0}), {1}, {2}, vc); \n",
+                GetTypeFullName(type), // [0] type
+                TCount,                // [1] TCount
+                methodArrIndex);       // [2] methodArrIndex
             sbt.AppendFormat("    if (method == null)\n        return true;\n");
             sbt.Append("\n");
 
@@ -615,11 +614,6 @@ public static class CSGenerator2
 //
 //            sb.Append(sbt);
         }
-
-
-        bool directReturn = true;
-        if (!bConstructor)
-            directReturn = IsDirectReturn(returnType);
 
         var paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];        
         for (int i = 0; i < ps.Length; i++)
@@ -838,7 +832,7 @@ static bool {0}(JSVCall vc, int start, int count)
         }
         return sb;
     }
-    public static StringBuilder BuildMethods(Type type, MethodInfo[] methods, int[] olInfo, ClassCallbackNames ccbn)
+    public static StringBuilder BuildMethods(Type type, MethodInfo[] methods, int[] methodsIndex, int[] olInfo, ClassCallbackNames ccbn)
     {
         /*
         * methods
@@ -888,7 +882,10 @@ static bool {0}(JSVCall vc, int start, int count)
                 sb.AppendFormat(fmt, functionName,
 
                     method.IsSpecialName ? BuildSpecialFunctionCall(paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType)
-                    : BuildNormalFunctionCall(i, paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType, false, TCount));
+                    : BuildNormalFunctionCall(i, paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType, 
+                    false/* is constructor */, 
+                    TCount, 
+                    methodsIndex[i]));
             }
 
             ccbn.methods.Add(functionName);
@@ -1088,7 +1085,7 @@ public class JSGeneratedFileNames
 
         var sbFields = BuildFields(type, ti.fields, ccbn);
         var sbProperties = BuildProperties(type, ti.properties, ccbn);
-        var sbMethods = BuildMethods(type, ti.methods, ti.methodsOLInfo, ccbn);
+        var sbMethods = BuildMethods(type, ti.methods, ti.methodsIndex, ti.methodsOLInfo, ccbn);
         var sbCons = BuildConstructors(type, ti.constructors, ccbn);
         var sbRegister = BuildRegisterFunction(ccbn, ti);
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons, sbRegister);

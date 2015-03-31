@@ -581,6 +581,8 @@ public class JSBindingSettings
         typeof(UnityEngine.AnimatorStateInfo),
         typeof(UnityEngine.CapsuleCollider),
         typeof(UnityEngine.Rigidbody),
+
+        //typeof(List<Vector3>),
 		
 		/*
 

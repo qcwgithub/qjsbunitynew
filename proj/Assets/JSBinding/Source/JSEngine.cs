@@ -79,6 +79,9 @@ public class JSEngine : MonoBehaviour
 
     void Awake()
     {
+// 		string tname = typeof(List<string>).GetGenericTypeDefinition().FullName;
+// 		Type type = typeof(List<string>).Assembly.GetType (tname);
+
         /*
          * Don't destroy this GameObject on load
          */
