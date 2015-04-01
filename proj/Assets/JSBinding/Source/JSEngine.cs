@@ -77,10 +77,24 @@ public class JSEngine : MonoBehaviour
 
     }
 
+    public class Apple<T>
+    {
+        public void Print(T t)
+        {
+            Debug.Log(t.ToString());
+        }
+    }
+
     void Awake()
     {
 // 		string tname = typeof(List<string>).GetGenericTypeDefinition().FullName;
 // 		Type type = typeof(List<string>).Assembly.GetType (tname);
+        //T//ype type = typeof(List<T>);
+        Apple<int> a = new Apple<int>();
+        MethodInfo method = typeof(Apple<string>).GetGenericTypeDefinition().GetMethod("Print");
+        Debug.Log("haha"+method.ContainsGenericParameters);
+        //method.MakeGenericMethod(typeof(int)).Invoke(a, new object[] { 6677 });
+        //method.Invoke(a, new object[]{6677});
 
         /*
          * Don't destroy this GameObject on load

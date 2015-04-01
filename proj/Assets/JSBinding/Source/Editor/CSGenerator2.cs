@@ -685,33 +685,6 @@ public static class CSGenerator2
 
         return sb;
     }
-    public static string GetTypeFullName(Type type)
-    {
-        if (type.IsByRef)
-            type = type.GetElementType();
-
-        if (!type.IsGenericType)
-        {
-            string rt = type.FullName;
-            rt = rt.Replace('+', '.');
-            return rt;
-        }
-        else
-        {
-            string fatherName = type.Name.Substring(0, type.Name.Length - 2);
-            Type[] ts = type.GetGenericArguments();
-            fatherName += "<";
-            for (int i = 0; i < ts.Length; i++)
-            {
-                fatherName += ts[i].Name;
-                if (i != ts.Length - 1)
-                    fatherName += ", ";
-            }
-            fatherName += ">";
-            fatherName.Replace('+', '.');
-            return fatherName;
-        }
-    }
     public static StringBuilder BuildConstructors(Type type, ConstructorInfo[] constructors, int[] constructorsIndex, ClassCallbackNames ccbn)
     {
         /*

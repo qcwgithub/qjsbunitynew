@@ -291,6 +291,11 @@ public class FanXing<T,U>
     {
         Debug.Log(t.ToString());
     }
+    public void ShowList(List<T> l)
+    {
+
+
+    }
 }
 
 public class XueBi
@@ -516,9 +521,8 @@ public class JSBindingSettings
          * Classes to export for demo
          * Add classes here to export
          */
-        typeof(UnityEngine.GameObject), 
+        //typeof(UnityEngine.GameObject), 
         /*
-         * 
         typeof(RockAssets.TestOp),
         typeof(RockAssets.Card),
 
@@ -529,7 +533,7 @@ public class JSBindingSettings
         typeof(Component),
         typeof(Behaviour),
         typeof(MonoBehaviour),
-
+        
         typeof(AudioSource), 
         typeof(AudioClip), 
         typeof(ParticleSystem), 
@@ -592,7 +596,7 @@ public class JSBindingSettings
         typeof(UnityEngine.CapsuleCollider),
         typeof(UnityEngine.Rigidbody),*/
 
-        // typeof(List<>),
+        typeof(List<>),
         typeof(FanXing<,>),
 		
 		/*

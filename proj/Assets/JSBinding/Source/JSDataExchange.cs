@@ -911,7 +911,7 @@ public class JSDataExchangeMgr
             type = type.GetElementType();
 
         if (type.IsGenericParameter)
-        {
+        {  // T
             return "object";
         }
         else if (!type.IsGenericType && !type.IsGenericTypeDefinition)
