@@ -142,14 +142,16 @@ public static class CSGenerator2
 
         return sb;
     }
-    public static string GetFunctionArg_DelegateFuncionName(string className, string functionName, int methodIndex, int argIndex)
+    public static string GetFunctionArg_DelegateFuncionName(string className, string methodName, int methodIndex, int argIndex)
     {
-        return className + "_" + functionName + methodIndex.ToString() + "_" + argIndex.ToString() + "_GetDelegate";
+        return JSDataExchangeMgr.HandleFunctionName(className + "_" + methodName + methodIndex.ToString() + "_" + argIndex.ToString() + "_GetDelegate");
     }
-    public static StringBuilder BuildFunctionArg_DelegateFunction(string className, string functionName, Type delType, int methodIndex, int argIndex)
+    public static StringBuilder BuildFunctionArg_DelegateFunction(string className, string methodName, Type delType, int methodIndex, int argIndex)
     {
         // building a closure
         // a function having a up-value: jsFunction
+
+        methodName = JSDataExchangeMgr.HandleFunctionName(methodName);
 
         var sb = new StringBuilder();
         var sbParamList = new StringBuilder();
@@ -161,7 +163,7 @@ public static class CSGenerator2
         }
 
         // this function name is used in BuildFields, don't change
-        sb.AppendFormat("static {0} {1}(jsval jsFunction)\n[[\n", GetTypeFullName(delType), GetFunctionArg_DelegateFuncionName(className, functionName, methodIndex, argIndex));
+        sb.AppendFormat("static {0} {1}(jsval jsFunction)\n[[\n", GetTypeFullName(delType), GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, argIndex));
         sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");
         sb.AppendFormat("    {0} action = ({1}) => \n", GetTypeFullName(delType), sbParamList);
         sb.AppendFormat("    [[\n");
@@ -309,7 +311,9 @@ public static class CSGenerator2
                 }
             }
 
-            sb.AppendFormat("static void {0}_{1}(JSVCall vc)\n[[\n", type.Name, property.Name);            
+            string functionName = JSDataExchangeMgr.HandleFunctionName(type.Name + "_" + property.Name);
+
+            sb.AppendFormat("static void {0}(JSVCall vc)\n[[\n", functionName);
 
             MethodInfo[] accessors = property.GetAccessors();
             bool isStatic = accessors[0].IsStatic;
@@ -403,7 +407,7 @@ public static class CSGenerator2
 
             sb.AppendFormat("]]\n");
 
-            ccbn.properties.Add(type.Name + "_" + property.Name);
+            ccbn.properties.Add(functionName);
         }
         return sb;
     }
@@ -433,7 +437,7 @@ public static class CSGenerator2
         {
             ParameterInfo p = ps[i];
             Type t = p.ParameterType;
-            sb.AppendFormat(fmt, t.IsByRef ? "true" : "false", p.IsOptional ? "true" : "false", t.IsArray ? "true" : "false", "typeof(" + GetTypeFullName(t) + ")", t.IsByRef ? ".MakeByRefType()" : "", "null");
+            sb.AppendFormat(fmt, t.IsByRef ? "true" : "false", p.IsOptional ? "true" : "false", t.IsArray ? "true" : "false", "typeof(" + JSDataExchangeMgr.GetTypeFullName(t) + ")", t.IsByRef ? ".MakeByRefType()" : "", "null");
         }
         fmt = "new JSVCall.CSParam[][[{0}]]";
         StringBuilder sbX = new StringBuilder();
@@ -486,67 +490,15 @@ public static class CSGenerator2
         sb.Append("    " + ret);
         return sb;
     }
-    // expression getting parameter
-    public static string BuildRetriveParam(Type paramType)
-    {
-        if (paramType == typeof(object)) return "vc.getWhatever()";
-        else if (paramType == typeof(Boolean)) return "vc.getBool()";
-        else if (paramType == typeof(String)) return "vc.getString()";
-        else if (paramType == typeof(Char)) return "vc.getChar()";
-        else if (paramType == typeof(Byte)) return "vc.getByte()";
-        else if (paramType == typeof(SByte)) return "vc.getSByte()";
-        else if (paramType == typeof(UInt16)) return "vc.getUInt16()";
-        else if (paramType == typeof(Int16)) return "vc.getInt16()";
-        else if (paramType == typeof(UInt32)) return "vc.getUInt32()";
-        else if (paramType == typeof(Int32)) return "vc.getInt32()";
-        else if (paramType == typeof(UInt64)) return "vc.getUInt64()";
-        else if (paramType == typeof(Int64)) return "vc.getInt64()";
-        else if (paramType.IsEnum) return "(" + GetTypeFullName(paramType) + ")" + "vc.getEnum()";
-        else if (paramType == typeof(Single)) return "vc.getFloat()";
-        else if (paramType == typeof(Double)) return "vc.getDouble()";
-        else if (paramType.IsArray) return "(" + GetTypeFullName(paramType) + ")" + "vc.getObject(typeof(" + GetTypeFullName(paramType) + "))";
-        else return "(" + GetTypeFullName(paramType) + ")" + "vc.getObject()";
-    }
-    public static string BuildReturnObject(Type paramType, string callString)
-    {
-        if (paramType == typeof(Boolean)) return "vc.returnBool(" + callString + ")";
-        else if (paramType == typeof(String)) return "vc.returnString(" + callString + ")";
-        else if (paramType == typeof(Char)) return "vc.returnChar(" + callString + ")";
-        else if (paramType == typeof(Byte)) return "vc.returnByte(" + callString + ")";
-        else if (paramType == typeof(SByte)) return "vc.returnSByte(" + callString + ")";
-        else if (paramType == typeof(UInt16)) return "vc.returnUInt16(" + callString + ")";
-        else if (paramType == typeof(Int16)) return "vc.returnInt16(" + callString + ")";
-        else if (paramType == typeof(UInt32)) return "vc.returnUInt32(" + callString + ")";
-        else if (paramType == typeof(Int32)) return "vc.returnInt32(" + callString + ")";
-        else if (paramType == typeof(UInt64)) return "vc.returnUInt64(" + callString + ")";
-        else if (paramType == typeof(Int64)) return "vc.returnInt64(" + callString + ")";
-        else if (paramType.IsEnum) return "vc.returnEnum((Int32)" + callString + ")";
-        else if (paramType == typeof(Single)) return "vc.returnFloat(" + callString + ")";
-        else if (paramType == typeof(Double)) return "vc.returnDouble(" + callString + ")";
-        else return "vc.returnObject(\"" + paramType.Name + "\", " + callString + ")";
-    }
-    // is directly return
-    // true -> 'returnBool(...)' or 'returnInt(...)'
-    // false -> a name must be specified for 'returnObject(name, ...)'
-    public static bool IsDirectReturn(Type paramType)
-    {
-        if (paramType == typeof(Boolean)) return true;
-        else if (paramType == typeof(String)) return true;
-        else if (paramType == typeof(Char)) return true;
-        else if (paramType == typeof(Byte)) return true;
-        else if (paramType == typeof(SByte)) return true;
-        else if (paramType == typeof(UInt16)) return true;
-        else if (paramType == typeof(Int16)) return true;
-        else if (paramType == typeof(UInt32)) return true;
-        else if (paramType == typeof(Int32)) return true;
-        else if (paramType == typeof(UInt64)) return true;
-        else if (paramType == typeof(Int64)) return true;
-        else if (paramType.IsEnum) return true;
-        else if (paramType == typeof(Single)) return true;
-        else if (paramType == typeof(Double)) return true;
-        else return false;
-    }
-    public static StringBuilder BuildNormalFunctionCall(int methodIndex, ParameterInfo[] ps, string className, string methodName, bool bStatic, bool returnVoid, Type returnType, bool bConstructor,
+    public static StringBuilder BuildNormalFunctionCall(
+        int methodIndex, 
+        ParameterInfo[] ps, 
+        string className, 
+        string methodName, 
+        bool bStatic, 
+        bool returnVoid, 
+        Type returnType, 
+        bool bConstructor,
         int TCount = 0, int methodArrIndex = -1)
     {
         StringBuilder sb = new StringBuilder();
@@ -554,66 +506,53 @@ public static class CSGenerator2
         {
             StringBuilder sbt = new StringBuilder();
             sbt.Append("    // Get generic method by name and param count.\n");
-            sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(typeof({0}), \"{1}\", {2}, {3}, vc); \n",
-                GetTypeFullName(type), // [0] type
-                methodName,
-                TCount,                // [2] TCount
-                methodArrIndex);       // [3] methodArrIndex
+
+            if (!bStatic) // instance method
+            {
+                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(vc.csObj.GetType(), \"{0}\", {1} /* method index */, {2} /* T Count */, vc); \n",
+                    methodName,            // [0] 函数名
+                    methodArrIndex,        // [1] methodArrIndex
+                    TCount);               // [2] TCount
+            }
+            else // static method
+            {
+                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(typeof({0}), \"{1}\", {2} /* method index */, {3} /* T Count */, vc); \n",
+                    GetTypeFullName(type), // [0] type
+                    methodName,            // [1] 函数名
+                    methodArrIndex,        // [2] methodArrIndex
+                    TCount);               // [3] TCount
+            }
             sbt.AppendFormat("    if (method == null)\n        return true;\n");
             sbt.Append("\n");
 
             sb.Append(sbt);
+        }
+        else if (type.IsGenericTypeDefinition)
+        {
+            // 不是 T 函数，但是类带T
+            StringBuilder sbt = new StringBuilder();
+            sbt.Append("    // Get generic method by name and param count.\n");
 
-//            var tHandlers = new JSDataExchangeMgr.ParamHandler[TCount];
-//
-//            /*
-//             * Get Method T
-//             */
-//            sbt.Append("    // Get generic method by name and param count.\n");
-//            sbt.AppendFormat("    MethodInfo methodT = JSDataExchangeMgr.GetGenericMethodInfo(typeof({0}), \"{1}\", {2});\n",
-//                GetTypeFullName(type), // [0] type full name
-//                methodName,            // [1] method name
-//                ps.Length);            // [2] parameter count
-//
-//            sbt.AppendFormat("    if (methodT == null)\n        return true;\n");
-//            sbt.Append("\n");
-//            sbt.Append("    // Get generic types from js.\n");
-//
-//            /*
-//             * Make Generic Method
-//             */
-//            string actualParam = string.Empty;
-//            for (int i = 0; i < TCount; i++) 
-//            {
-//                tHandlers[i] = JSDataExchangeMgr.Get_TType(i);
-//
-//                sbt.Append("    " + tHandlers[i].getter + "\n");
-//                sbt.AppendFormat("    if ({0} == null)\n        return true;\n", tHandlers[i].argName);
-//
-//                actualParam += tHandlers[i].argName;
-//                if (i != TCount - 1) 
-//                    actualParam += ", ";
-//            }
-//            sbt.Append("\n");
-//            sbt.Append("    // Make generic method.\n");
-//            sbt.AppendFormat("    MethodInfo method = methodT.MakeGenericMethod(new Type[][[{0}]]);\n", actualParam);
-//            sbt.AppendFormat("    if (method == null)\n        return true;\n");
-//            sbt.Append("\n");
-//
-//            /*
-//             * if there is T in params
-//             * call method.getparameters
-//             */
-//            for (int i = 0; i < ps.Length; i++)
-//            {
-//                if (ps[i].ParameterType.IsGenericParameter)
-//                {
-//                    sbt.Append("    ParameterInfo[] ps = method.GetParameters();\n");
-//                    break;
-//                }
-//            }
-//
-//            sb.Append(sbt);
+            if (!bStatic) // instance method
+            {
+                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.GetMethodOfGenericClass(vc.csObj.GetType(), \"{0}\", {1}); \n",
+                    methodName,            // [0] 函数名
+                    methodArrIndex);        // [1] methodArrIndex
+            }
+            else // static method
+            {
+                Debug.LogError("=================================ERROR");
+            }
+            sbt.AppendFormat("    if (method == null)\n        return true;\n");
+            sbt.Append("\n");
+
+            sb.Append(sbt);
+        }
+        else if (type.IsGenericType)
+        {
+            /////////////////////
+            /// ERROR ///////////
+            /////////////////////
         }
 
         var paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];        
@@ -625,7 +564,7 @@ public static class CSGenerator2
                 paramHandlers[i] = JSDataExchangeMgr.Get_ParamHandler(ps[i], i);
                 if (ps[i].ParameterType.IsGenericParameter)
                 {
-                    paramHandlers[i].getter = "    vc.datax.setTemp(ps[" + i.ToString() + "]);\n" + paramHandlers[i].getter;
+                    paramHandlers[i].getter = "    vc.datax.setTemp(method.GetParameters()[" + i.ToString() + "].ParameterType);\n" + paramHandlers[i].getter;
                 }
             }
         }
@@ -698,7 +637,7 @@ public static class CSGenerator2
             {
                 StringBuilder sbCall = new StringBuilder();
 
-                if (TCount == 0)
+                if (TCount == 0 && !type.IsGenericTypeDefinition)
                 {
                     if (bStatic)
                         sbCall.AppendFormat("{0}.{1}({2})", GetTypeFullName(type), methodName, sbActualParam.ToString());
@@ -718,7 +657,7 @@ public static class CSGenerator2
                     }
                     else if (!type.IsValueType)
                     {
-                        sbCall.AppendFormat("method.Invoke(({1})vc.csObj, {0})", sbActualParamT, GetTypeFullName(type));
+                        sbCall.AppendFormat("method.Invoke(vc.csObj, {0})", sbActualParamT);
                     }
                     else
                     {
@@ -822,8 +761,7 @@ static bool {0}(JSVCall vc, int start, int count)
             int olIndex = i + 1; // for constuctors, they are always overloaded
             bool returnVoid = false;
 
-            string functionName = type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : "");
-
+            string functionName = JSDataExchangeMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : ""));
 
             sb.AppendFormat(fmt, functionName,
                 BuildNormalFunctionCall(i, paramS, type.Name, cons.Name, cons.IsStatic, returnVoid, null, true));
@@ -873,7 +811,7 @@ static bool {0}(JSVCall vc, int start, int count)
                 TCount = method.GetGenericArguments().Length;
             }
 
-            functionName = type.Name + "_" + SharpKitMethodName(method.Name, paramS, true, TCount);
+            functionName = JSDataExchangeMgr.HandleFunctionName(type.Name + "_" + SharpKitMethodName(method.Name, paramS, true, TCount));
             if (UnityEngineManual.isManual(functionName))
             {
                 sb.AppendFormat(fmt, functionName, "    UnityEngineManual." + functionName + "(vc, start, count);");
@@ -992,7 +930,7 @@ public static void __Register()
                 ti.methods[i].Name);
         }
 
-        sb.AppendFormat(fmt, GetTypeFullName(ccbn.type), sbField, sbProperty, sbCons, sbMethod);
+        sb.AppendFormat(fmt, JSDataExchangeMgr.GetTypeFullName(ccbn.type), sbField, sbProperty, sbCons, sbMethod);
         return sb;
     }
     public static void GenerateRegisterAll()
@@ -1009,7 +947,7 @@ public class CSharpGenerated
         StringBuilder sbA = new StringBuilder();
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
-            sbA.AppendFormat("        {0}Generated.__Register();\n", JSDataExchangeMgr.GetTypeFullName(JSBindingSettings.classes[i]).Replace('.', '_'));
+            sbA.AppendFormat("        {0}Generated.__Register();\n", JSDataExchangeMgr.GetTypeFileName(JSBindingSettings.classes[i]));
         }
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat(fmt, sbA);
@@ -1120,13 +1058,13 @@ public class {0}Generated
             if (nameSpaceString == "UnityEngine")
                 nameSpaceString = string.Empty;
         }
-        sbFile.AppendFormat(fmtFile, JSDataExchangeMgr.GetTypeFullName(type).Replace('.', '_'), sbClass, nameSpaceString.Length > 0 ? "using " + nameSpaceString + ";" : "");
+        sbFile.AppendFormat(fmtFile, JSDataExchangeMgr.GetTypeFileName(type), sbClass, nameSpaceString.Length > 0 ? "using " + nameSpaceString + ";" : "");
         HandleStringFormat(sbFile);
 
         sbFile.Replace("\r\n", "\n");
 
         string fileName = JSBindingSettings.csGeneratedDir + "/" +
-            JSDataExchangeMgr.GetTypeFullName(type).Replace('.', '_') + 
+            JSDataExchangeMgr.GetTypeFileName(type) + 
             "Generated.cs";
         var writer2 = OpenFile(fileName, false);
         writer2.Write(sbFile.ToString());

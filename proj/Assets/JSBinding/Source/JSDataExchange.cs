@@ -892,6 +892,17 @@ public class JSDataExchangeMgr
     }
     #endregion
 
+    public static string GetTypeFileName(Type type)
+    {
+        string fullName = GetTypeFullName(type);
+        return fullName.Replace('.', '_').Replace('<','7').Replace('>','7').Replace(',','_');
+    }
+
+    public static string HandleFunctionName(string functionName)
+    {
+        return functionName.Replace('<', '7').Replace('>', '7').Replace('`', 'A');
+    }
+
     public static string GetTypeFullName(Type type)
     {
         if (type == null) return "";
@@ -899,14 +910,86 @@ public class JSDataExchangeMgr
         if (type.IsByRef)
             type = type.GetElementType();
 
-        if (!type.IsGenericType)
+        if (type.IsGenericParameter)
+        {
+            return "object";
+        }
+        else if (!type.IsGenericType && !type.IsGenericTypeDefinition)
         {
             string rt = type.FullName;
+            if (rt == null)
+            {
+                rt = ">>>>>>>>>>>?????????????????/";
+            }
+            rt = rt.Replace('+', '.');
+            return rt;
+        }
+        else if (type.IsGenericTypeDefinition)
+        {
+            // 后面是 `1 或 `2 之类的
+            string rt = type.FullName;
+            rt = rt.Substring(0, rt.Length - 2);
+            rt += "<";
+            int TCount = type.GetGenericArguments().Length;
+            for (int i = 0; i < TCount - 1; i++)
+            {
+                //这里不要加空格了
+                rt += ",";
+            }
+            rt += ">";
             rt = rt.Replace('+', '.');
             return rt;
         }
         else
         {
+            // 通常不会进这里
+            string fatherName = type.Name.Substring(0, type.Name.Length - 2);
+            Type[] ts = type.GetGenericArguments();
+            fatherName += "<";
+            for (int i = 0; i < ts.Length; i++)
+            {
+                fatherName += ts[i].Name;
+                if (i != ts.Length - 1)
+                    fatherName += ", ";
+            }
+            fatherName += ">";
+            fatherName.Replace('+', '.');
+            return fatherName;
+        }
+    }
+    public static string GetJSTypeFullName(Type type)
+    {
+        if (type == null) return "";
+
+        if (type.IsByRef)
+            type = type.GetElementType();
+
+        if (type.IsGenericParameter)
+        {
+            return "object";
+        }
+        else if (!type.IsGenericType && !type.IsGenericTypeDefinition)
+        {
+            string rt = type.FullName;
+            if (rt == null)
+            {
+                rt = ">>>>>>>>>>>?????????????????/";
+            }
+            rt = rt.Replace('+', '.');
+            return rt;
+        }
+        else if (type.IsGenericTypeDefinition)
+        {
+            // 后面是 `1 或 `2 之类的
+            string rt = type.FullName;
+            rt = rt.Substring(0, rt.Length - 2);
+            int TCount = type.GetGenericArguments().Length;
+            rt += "$" + TCount.ToString();
+            return rt;
+        }
+        else
+        {
+            // 通常不会进这里
             string fatherName = type.Name.Substring(0, type.Name.Length - 2);
             Type[] ts = type.GetGenericArguments();
             fatherName += "<";
@@ -1042,7 +1125,12 @@ public class JSDataExchangeMgr
             }
         }
 
-        string typeFullName = GetTypeFullName(type);
+        string typeFullName;
+        if (type.IsGenericParameter)
+            typeFullName = "object";
+        else 
+            typeFullName = GetTypeFullName(type);
+
         string get_getParam = string.Empty;
         if (isOut)
         {
@@ -1277,12 +1365,22 @@ public class JSDataExchangeMgr
         }
         return con;
     }*/
+    public static MethodInfo GetMethodOfGenericClass(Type type, string methodName, int methodArrIndex)
+    {
+        MethodInfo method = JSMgr.RuntimeGetMethodInfo(type, methodArrIndex);
+        if (method.Name != methodName)
+        {
+            Debug.LogError("GetMethodOfGenericClass Name different! " + methodName + "/" + method.Name);
+            return null;
+        }
+        return method;
+    }
     // Runtime Only
     // type: class type
     // methodName: method name
     // TCount: generic parameter count
     // vc: JSVCall instance
-    public static MethodInfo MakeGenericFunction(Type type, string methodName, int TCount, int methodArrIndex, JSVCall vc)
+    public static MethodInfo MakeGenericFunction(Type type, string methodName, int methodArrIndex, int TCount, JSVCall vc)
     {
         // Get generic method by name and param count.
 //         MethodInfo methodT = JSDataExchangeMgr.GetGenericMethodInfo(type, methodName, TCount, paramCount);

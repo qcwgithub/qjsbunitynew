@@ -769,25 +769,18 @@ public static class JSMgr
 
             if (method.IsGenericMethodDefinition /* || method.IsGenericMethod*/)
             {
-//                string s = "GENERIC METHOD DEFINITION " + type.Name + "." + method.Name;
-//                foreach (var v in method.GetGenericArguments())
+//                bool bDiscard = false;
+//
+//                var ps = method.GetParameters();
+//                for (int k = 0; k < ps.Length; k++)
 //                {
-//                    s += " " + v.Name;
+//                    if (ps[k].ParameterType.ContainsGenericParameters) {
+//                        bDiscard = true;
+//                        break;
+//                    }
 //                }
-//                Debug.Log(s);
-//                continue;
-
-                bool bDiscard = false;
-                var ps = method.GetParameters();
-                for (int k = 0; k < ps.Length; k++)
-                {
-                    if (ps[k].ParameterType.ContainsGenericParameters) {
-                        bDiscard = true;
-                        break;
-                    }
-                }
-                if (bDiscard)
-                    continue;
+//                if (bDiscard)
+//                    continue;
             }
 
 

@@ -50,6 +50,8 @@ public static class JSGenerator2
 
     public static string SharpKitTypeName(Type type)
     {
+        if (type == null)
+            return "";
         string name = string.Empty;
         if (type.IsByRef)
         {
@@ -111,6 +113,10 @@ public static class JSGenerator2
             name = name.Replace("`", "$");
         }
         return name;
+    }
+    public static string SharpKitClassName(Type type)
+    {
+        return JSDataExchangeMgr.GetJSTypeFullName(type);
     }
 
     public static StringBuilder BuildFields(Type type, FieldInfo[] fields, int slot)
@@ -223,15 +229,15 @@ _jstype =
         else if (type.IsEnum) { Kind = "Enum"; }
         else if (type.IsValueType) { Kind = "Struct"; }
 
-        string fullname = JSDataExchangeMgr.GetTypeFullName(type);
-        string baseTypeName = JSDataExchangeMgr.GetTypeFullName(type.BaseType);
+        string fullname = SharpKitClassName(type);
+        string baseTypeName = SharpKitClassName(type.BaseType);
 
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat(fmt, 
-            jsTypeName, 
-            assemblyName, 
-            Kind, 
-            fullname, 
+            jsTypeName,   // [0]
+            assemblyName, // [1]
+            Kind,         // [2] 
+            fullname,     // [3] full name
             baseTypeName.Length > 0 ? "baseTypeName: '" + baseTypeName + "'" : "");
 
         return sb;
@@ -412,7 +418,7 @@ _jstype.staticDefinition.{1} = function({2}) [[
 
 
         string fileName = JSBindingSettings.jsGeneratedDir + "/" + 
-            JSDataExchangeMgr.GetTypeFullName(JSGenerator2.type).Replace('.', '_')
+            JSDataExchangeMgr.GetTypeFileName(JSGenerator2.type)
             + JSBindingSettings.jsExtension;
         var writer2 = OpenFile(fileName, false);
         writer2.Write(sbClass.ToString());

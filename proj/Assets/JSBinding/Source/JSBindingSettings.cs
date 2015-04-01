@@ -285,6 +285,14 @@ public class Kekoukele
     }
 }
 
+public class FanXing<T,U>
+{
+    public void Print<T,U>(T t)
+    {
+        Debug.Log(t.ToString());
+    }
+}
+
 public class XueBi
 {
     public delegate bool A();
@@ -504,13 +512,15 @@ public class JSBindingSettings
 
     public static Type[] classes = new Type[]
     {
-        typeof(RockAssets.TestOp),
-        typeof(RockAssets.Card),
-
         /*
          * Classes to export for demo
          * Add classes here to export
          */
+        /*
+         * 
+        typeof(RockAssets.TestOp),
+        typeof(RockAssets.Card),
+
         typeof(UnityEngine.Object),
         typeof(System.Object),
         typeof(System.ValueType),
@@ -580,9 +590,10 @@ public class JSBindingSettings
         typeof(UnityEngine.Screen),
         typeof(UnityEngine.AnimatorStateInfo),
         typeof(UnityEngine.CapsuleCollider),
-        typeof(UnityEngine.Rigidbody),
+        typeof(UnityEngine.Rigidbody),*/
 
-        //typeof(List<Vector3>),
+        // typeof(List<>),
+        typeof(FanXing<,>),
 		
 		/*
 
