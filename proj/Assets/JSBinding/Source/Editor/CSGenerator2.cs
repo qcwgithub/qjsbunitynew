@@ -89,26 +89,6 @@ public static class CSGenerator2
         name = name.Replace("$", "_");
         return name;
     }
-    public static string BuildRetriveJSReturnValue(Type paramType)
-    {
-        if (paramType == typeof(object)) return "JSMgr.vCall.getRtObject()";
-        else if (paramType == typeof(Boolean)) return "JSMgr.vCall.getRtBool()";
-        else if (paramType == typeof(String)) return "JSMgr.vCall.getRtString()";
-        else if (paramType == typeof(Char)) return "JSMgr.vCall.getRtChar()";
-        else if (paramType == typeof(Byte)) return "JSMgr.vCall.getRtByte()";
-        else if (paramType == typeof(SByte)) return "JSMgr.vCall.getRtSByte()";
-        else if (paramType == typeof(UInt16)) return "JSMgr.vCall.getRtUInt16()";
-        else if (paramType == typeof(Int16)) return "JSMgr.vCall.getRtInt16()";
-        else if (paramType == typeof(UInt32)) return "JSMgr.vCall.getRtUInt32()";
-        else if (paramType == typeof(Int32)) return "JSMgr.vCall.getRtInt32()";
-        else if (paramType == typeof(UInt64)) return "JSMgr.vCall.getRtUInt64()";
-        else if (paramType == typeof(Int64)) return "JSMgr.vCall.getRtInt64()";
-        else if (paramType.IsEnum) return "(" + GetTypeFullName(paramType) + ")" + "JSMgr.vCall.getRtEnum()";
-        else if (paramType == typeof(Single)) return "JSMgr.vCall.getRtFloat()";
-        else if (paramType == typeof(Double)) return "JSMgr.vCall.getRtDouble()";
-        else if (paramType.IsArray) return "(" + GetTypeFullName(paramType) + ")" + "JSMgr.vCall.getRtObject(typeof(" + GetTypeFullName(paramType) + "))";
-        else return "(" + GetTypeFullName(paramType) + ")" + "JSMgr.vCall.getRtObject()";
-    }
     public static StringBuilder BuildField_DelegateFunction(Type type, FieldInfo field)
     {
         // building a closure
@@ -124,9 +104,9 @@ public static class CSGenerator2
         }
 
         // this function name is used in BuildFields, don't change
-        sb.AppendFormat("static {0} {1}_{2}_GetDelegate(jsval jsFunction)\n[[\n", GetTypeFullName(field.FieldType), type.Name, field.Name);
+        sb.AppendFormat("static {0} {1}_{2}_GetDelegate(jsval jsFunction)\n[[\n", JSDataExchangeMgr.GetTypeFullName(field.FieldType), type.Name, field.Name);
         sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");
-        sb.AppendFormat("    {0} action = ({1}) => \n", GetTypeFullName(field.FieldType), sbParamList);
+        sb.AppendFormat("    {0} action = ({1}) => \n", JSDataExchangeMgr.GetTypeFullName(field.FieldType), sbParamList);
         sb.AppendFormat("    [[\n");
         if (sbParamList.Length > 0)
             sb.AppendFormat("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction, {0});\n", sbParamList);
@@ -134,7 +114,7 @@ public static class CSGenerator2
             sb.Append("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction);\n");
 
         if (returnType != typeof(void))
-            sb.Append("        return (" + GetTypeFullName(returnType) + ")" + JSDataExchangeMgr.Get_GetJSReturn(returnType) + ";\n");
+            sb.Append("        return (" + JSDataExchangeMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeMgr.Get_GetJSReturn(returnType) + ";\n");
 
         sb.AppendFormat("    ]];\n");
         sb.Append("    return action;\n");
@@ -163,9 +143,9 @@ public static class CSGenerator2
         }
 
         // this function name is used in BuildFields, don't change
-        sb.AppendFormat("static {0} {1}(jsval jsFunction)\n[[\n", GetTypeFullName(delType), GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, argIndex));
+        sb.AppendFormat("static {0} {1}(jsval jsFunction)\n[[\n", JSDataExchangeMgr.GetTypeFullName(delType), GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, argIndex));
         sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");
-        sb.AppendFormat("    {0} action = ({1}) => \n", GetTypeFullName(delType), sbParamList);
+        sb.AppendFormat("    {0} action = ({1}) => \n", JSDataExchangeMgr.GetTypeFullName(delType), sbParamList);
         sb.AppendFormat("    [[\n");
         if (sbParamList.Length > 0)
             sb.AppendFormat("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction, {0});\n", sbParamList);
@@ -173,7 +153,7 @@ public static class CSGenerator2
             sb.Append("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction);\n");
 
         if (returnType != typeof(void))
-            sb.Append("        return (" + GetTypeFullName(returnType) + ")" + JSDataExchangeMgr.Get_GetJSReturn(returnType) + ";\n");
+            sb.Append("        return (" + JSDataExchangeMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeMgr.Get_GetJSReturn(returnType) + ";\n");
 
         sb.AppendFormat("    ]];\n");
         sb.Append("    return action;\n");
@@ -241,7 +221,7 @@ public static class CSGenerator2
                         }
                         else
                         {
-                            sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", GetTypeFullName(type), field.Name, paramHandler.argName);
+                            sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", JSDataExchangeMgr.GetTypeFullName(type), field.Name, paramHandler.argName);
                         }
                     }
                 }
@@ -264,7 +244,7 @@ public static class CSGenerator2
                         }
                         else
                         {
-                            sb.AppendFormat("(({0})vc.csObj).{1} = {2}(vc.getJSFunctionValue());\n", GetTypeFullName(type), field.Name, getDelegateFuncitonName);
+                            sb.AppendFormat("(({0})vc.csObj).{1} = {2}(vc.getJSFunctionValue());\n", JSDataExchangeMgr.GetTypeFullName(type), field.Name, getDelegateFuncitonName);
                         }
                     }
                 }
@@ -327,11 +307,11 @@ public static class CSGenerator2
                 }
                 if (isStatic)
                 {
-                    sbCall.AppendFormat("{0}{1}", GetTypeFullName(type), sbActualParam);
+                    sbCall.AppendFormat("{0}{1}", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
                 }
                 else
                 {
-                    sbCall.AppendFormat("(({0})vc.csObj){1}", GetTypeFullName(type), sbActualParam);
+                    sbCall.AppendFormat("(({0})vc.csObj){1}", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
                 }
             }
             
@@ -344,9 +324,9 @@ public static class CSGenerator2
             {
                 // get
                 if (isStatic)
-                    sbCall.AppendFormat("{0}.{1}", GetTypeFullName(type), property.Name);
+                    sbCall.AppendFormat("{0}.{1}", JSDataExchangeMgr.GetTypeFullName(type), property.Name);
                 else
-                    sbCall.AppendFormat("(({0})vc.csObj).{1}", GetTypeFullName(type), property.Name);
+                    sbCall.AppendFormat("(({0})vc.csObj).{1}", JSDataExchangeMgr.GetTypeFullName(type), property.Name);
             }
 
             //if (type.IsValueType && !field.IsStatic)
@@ -374,7 +354,7 @@ public static class CSGenerator2
                     {
                         if (type.IsValueType)
                         {
-                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", GetTypeFullName(type));
+                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSDataExchangeMgr.GetTypeFullName(type));
                             sb.AppendFormat("argThis{0} = {1};", sbActualParam, paramHandler.argName);
                             sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
                         }
@@ -387,18 +367,18 @@ public static class CSGenerator2
                 else
                 {
                     if (isStatic)
-                        sb.AppendFormat("{0}.{1} = {2};\n", GetTypeFullName(type), property.Name, paramHandler.argName);
+                        sb.AppendFormat("{0}.{1} = {2};\n", JSDataExchangeMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
                     else
                     {
                         if (type.IsValueType)
                         {
-                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", GetTypeFullName(type));
+                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSDataExchangeMgr.GetTypeFullName(type));
                             sb.AppendFormat("        argThis.{0} = {1};\n", property.Name, paramHandler.argName);
                             sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
                         }
                         else
                         {
-                            sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", GetTypeFullName(type), property.Name, paramHandler.argName);
+                            sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", JSDataExchangeMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
                         }
                     }
                 }
@@ -412,22 +392,6 @@ public static class CSGenerator2
         return sb;
     }
     
-    static StringBuilder GenListCSParam(ParameterInfo[] ps)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.Append(@"    vc.lstCSParam.Clear();
-");
-
-        string fmt = @"    vc.lstCSParam.Add(new JSVCall.CSParam({0}, {1}, {2}, {3}{4}, {5}));
-";
-        for (int i = 0; i < ps.Length; i++)
-        {
-            ParameterInfo p = ps[i];
-            Type t = p.ParameterType;
-            sb.AppendFormat(fmt, t.IsByRef?"true":"false", p.IsOptional?"true":"false", t.IsArray?"true":"false", "typeof("+GetTypeFullName(t)+")", t.IsByRef?".MakeByRefType()":"","null");
-        }
-        return sb;
-    }
     static StringBuilder GenListCSParam2(ParameterInfo[] ps)
     {
         StringBuilder sb = new StringBuilder();
@@ -482,7 +446,7 @@ public static class CSGenerator2
         else if (methodName == "op_GreaterThanOrEqual")
             strCall = paramHandlers[0].argName + " >= " + paramHandlers[1].argName;
         else if (methodName == "op_Implicit")
-            strCall = "(" + GetTypeFullName(returnType) + ")" + paramHandlers[0].argName;
+            strCall = "(" + JSDataExchangeMgr.GetTypeFullName(returnType) + ")" + paramHandlers[0].argName;
         else
             Debug.LogError("Unknown special name: " + methodName);
 
@@ -502,7 +466,25 @@ public static class CSGenerator2
         int TCount = 0, int methodArrIndex = -1)
     {
         StringBuilder sb = new StringBuilder();
-        if (TCount > 0)
+
+        if (bConstructor)
+        {
+            if (type.IsGenericTypeDefinition)
+            {
+                // 不是 T 函数，但是类带T
+                StringBuilder sbt = new StringBuilder();
+
+                sbt.AppendFormat("    ConstructorInfo constructor = JSDataExchangeMgr.GetConstructorOfGenericClass(vc.csObj.GetType(), {0}); \n",
+                        methodArrIndex);        // [0] methodArrIndex
+
+                sbt.AppendFormat("    if (constructor == null)\n        return true;\n");
+                sbt.Append("\n");
+
+                sb.Append(sbt);
+            }
+        }
+        
+        else if (TCount > 0)
         {
             StringBuilder sbt = new StringBuilder();
             sbt.Append("    // Get generic method by name and param count.\n");
@@ -517,7 +499,7 @@ public static class CSGenerator2
             else // static method
             {
                 sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(typeof({0}), \"{1}\", {2} /* method index */, {3} /* T Count */, vc); \n",
-                    GetTypeFullName(type), // [0] type
+                    JSDataExchangeMgr.GetTypeFullName(type), // [0] type
                     methodName,            // [1] 函数名
                     methodArrIndex,        // [2] methodArrIndex
                     TCount);               // [3] TCount
@@ -594,7 +576,7 @@ public static class CSGenerator2
             {
                 ParameterInfo p = ps[i];
                 if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
-                    sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n", GetTypeFullName(p.ParameterType), i, GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i));
+                    sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n", JSDataExchangeMgr.GetTypeFullName(p.ParameterType), i, GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i));
                 else
                     sbGetParam.Append("        " + paramHandlers[i].getter + "\n");
 
@@ -618,7 +600,14 @@ public static class CSGenerator2
             if (bConstructor)
             {
                 StringBuilder sbCall = new StringBuilder();
-                sbCall.AppendFormat("new {0}({1})", GetTypeFullName(type), sbActualParam.ToString());
+
+                if (!type.IsGenericTypeDefinition)
+                    sbCall.AppendFormat("new {0}({1})", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam.ToString());
+                else
+                {
+                    sbCall.AppendFormat("constructor.Invoke(null, new object[][[{0}]])", sbActualParam);
+                }
+
                 string callAndReturn = JSDataExchangeMgr.Get_Return(type/*don't use returnType*/, sbCall.ToString());
                 sb.AppendFormat(@"    {1}if (len == {0}) 
     [[
@@ -640,9 +629,9 @@ public static class CSGenerator2
                 if (TCount == 0 && !type.IsGenericTypeDefinition)
                 {
                     if (bStatic)
-                        sbCall.AppendFormat("{0}.{1}({2})", GetTypeFullName(type), methodName, sbActualParam.ToString());
+                        sbCall.AppendFormat("{0}.{1}({2})", JSDataExchangeMgr.GetTypeFullName(type), methodName, sbActualParam.ToString());
                     else if (!type.IsValueType)
-                        sbCall.AppendFormat("(({0})vc.csObj).{1}({2})", GetTypeFullName(type), methodName, sbActualParam.ToString());
+                        sbCall.AppendFormat("(({0})vc.csObj).{1}({2})", JSDataExchangeMgr.GetTypeFullName(type), methodName, sbActualParam.ToString());
                     else
                         sbCall.AppendFormat("argThis.{0}({1})", methodName, sbActualParam.ToString());
                 }
@@ -671,7 +660,7 @@ public static class CSGenerator2
                 if (type.IsValueType && !bStatic)
                 {
                     sbStruct = new StringBuilder();
-                    sbStruct.AppendFormat("{0} argThis = ({0})vc.csObj;", GetTypeFullName(type));
+                    sbStruct.AppendFormat("{0} argThis = ({0})vc.csObj;", JSDataExchangeMgr.GetTypeFullName(type));
                 }
 
                 sb.AppendFormat(@"    {1}if (len == {0}) 
@@ -723,7 +712,7 @@ public static class CSGenerator2
             return fatherName;
         }
     }
-    public static StringBuilder BuildConstructors(Type type, ConstructorInfo[] constructors, ClassCallbackNames ccbn)
+    public static StringBuilder BuildConstructors(Type type, ConstructorInfo[] constructors, int[] constructorsIndex, ClassCallbackNames ccbn)
     {
         /*
         * methods
@@ -764,7 +753,7 @@ static bool {0}(JSVCall vc, int start, int count)
             string functionName = JSDataExchangeMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : ""));
 
             sb.AppendFormat(fmt, functionName,
-                BuildNormalFunctionCall(i, paramS, type.Name, cons.Name, cons.IsStatic, returnVoid, null, true));
+                BuildNormalFunctionCall(i, paramS, type.Name, cons.Name, cons.IsStatic, returnVoid, null, true, 0, constructorsIndex[i]));
 
             ccbn.constructors.Add(functionName);
             ccbn.constructorsCSParam.Add(GenListCSParam2(paramS).ToString());
@@ -1025,7 +1014,7 @@ public class JSGeneratedFileNames
         var sbFields = BuildFields(type, ti.fields, ccbn);
         var sbProperties = BuildProperties(type, ti.properties, ccbn);
         var sbMethods = BuildMethods(type, ti.methods, ti.methodsIndex, ti.methodsOLInfo, ccbn);
-        var sbCons = BuildConstructors(type, ti.constructors, ccbn);
+        var sbCons = BuildConstructors(type, ti.constructors, ti.constructorsIndex, ccbn);
         var sbRegister = BuildRegisterFunction(ccbn, ti);
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons, sbRegister);
 

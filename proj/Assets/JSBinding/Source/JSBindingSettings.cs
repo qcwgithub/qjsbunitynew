@@ -516,6 +516,7 @@ public class JSBindingSettings
          * Classes to export for demo
          * Add classes here to export
          */
+        typeof(UnityEngine.GameObject), 
         /*
          * 
         typeof(RockAssets.TestOp),
@@ -533,7 +534,6 @@ public class JSBindingSettings
         typeof(AudioClip), 
         typeof(ParticleSystem), 
         typeof(UnityEngine.Random), 
-        typeof(UnityEngine.GameObject), 
         typeof(UnityEngine.Vector2), 
         typeof(UnityEngine.Vector3), 
         typeof(RaycastHit),

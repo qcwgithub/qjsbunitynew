@@ -768,7 +768,7 @@ public class JSDataExchangeMgr
                             // 返回给JS的对象：需要 prototype
                             // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
                             //
-                            string typeName = JSDataExchangeMgr.GetTypeFullName(csType);
+                            string typeName = JSDataExchangeMgr.GetJSTypeFullName(csType);
                             IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
                             if (jstypeObj != IntPtr.Zero)
                             {
@@ -1126,7 +1126,7 @@ public class JSDataExchangeMgr
         }
 
         string typeFullName;
-        if (type.IsGenericParameter)
+        if (type.IsGenericParameter || type.ContainsGenericParameters)
             typeFullName = "object";
         else 
             typeFullName = GetTypeFullName(type);
@@ -1365,8 +1365,16 @@ public class JSDataExchangeMgr
         }
         return con;
     }*/
+    public static ConstructorInfo GetConstructorOfGenericClass(Type type, int constructorIndex)
+    {
+        if (constructorIndex < 0) return null;
+        return type.GetConstructors()[constructorIndex];
+    }
+
     public static MethodInfo GetMethodOfGenericClass(Type type, string methodName, int methodArrIndex)
     {
+        if (methodArrIndex < 0) return null;
+
         MethodInfo method = JSMgr.RuntimeGetMethodInfo(type, methodArrIndex);
         if (method.Name != methodName)
         {
@@ -1609,7 +1617,7 @@ public class JSDataExchange_T : JSDataExchange
     public override string Get_GetJSReturn() { return "JSMgr.vCall.datax.getByType(JSDataExchangeMgr.eGetType.GetJSFUNRET)"; }
     public override string Get_GetRefOutParam(Type t) { return "vc.datax.getByType(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
     public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setByType(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
-    public override bool isGetParamNeedCast { get { return true; } }
+    public override bool isGetParamNeedCast { get { return false; } }
 
 }
 

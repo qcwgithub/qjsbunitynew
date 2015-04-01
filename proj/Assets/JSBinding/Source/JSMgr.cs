@@ -555,6 +555,7 @@ public static class JSMgr
         public FieldInfo[] fields;
         public PropertyInfo[] properties;
         public ConstructorInfo[] constructors;
+        public int[] constructorsIndex;
         public MethodInfo[] methods;
         public int[] methodsIndex; // index of the method in array of type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
         public int[] methodsOLInfo;//0 not overloaded >0 overloaded index
@@ -647,11 +648,17 @@ public static class JSMgr
         public int index;
         public MethodInfoAndIndex(MethodInfo _m, int _i) { method = _m; index = _i; }
     }
+    public struct ConstructorInfoAndIndex
+    {
+        public ConstructorInfo method;
+        public int index;
+        public ConstructorInfoAndIndex(ConstructorInfo _m, int _i) { method = _m; index = _i; }
+    }
     public static void FilterTypeInfo(Type type, ATypeInfo ti)
     {
         bool bIsStaticClass = (type.IsClass && type.IsAbstract && type.IsSealed);
 
-        List<ConstructorInfo> lstCons = new List<ConstructorInfo>();
+        List<ConstructorInfoAndIndex> lstCons = new List<ConstructorInfoAndIndex>();
         List<FieldInfo> lstField = new List<FieldInfo>();
         List<PropertyInfo> lstPro = new List<PropertyInfo>();
         Dictionary<string, int> proAccessors = new Dictionary<string, int>();
@@ -665,7 +672,7 @@ public static class JSMgr
             }
 
             if (!IsMemberObsolete(ti.constructors[i]))
-                lstCons.Add(ti.constructors[i]);
+                lstCons.Add(new ConstructorInfoAndIndex(ti.constructors[i], i));
         }
 
         for (int i = 0; i < ti.fields.Length; i++)
@@ -828,7 +835,14 @@ public static class JSMgr
             }
         }
 
-        ti.constructors = lstCons.ToArray();
+        ti.constructors = new ConstructorInfo[lstCons.Count];
+        ti.constructorsIndex = new int[lstCons.Count];
+        for (var k = 0; k < lstCons.Count; k++)
+        {
+            ti.constructors[k] = lstCons[k].method;
+            ti.constructorsIndex[k] = lstCons[k].index;
+        }
+
         ti.fields = lstField.ToArray();
         ti.properties = lstPro.ToArray();
         ti.methods = new MethodInfo[lstMethod.Count];
