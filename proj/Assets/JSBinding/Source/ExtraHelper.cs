@@ -417,7 +417,7 @@ public class ExtraHelper : MonoBehaviour
                         {
                             // eType / Name / lstObjsSingle's Index / Monobehaviour name
                             lstString.Add(((int)eType).ToString() + "/" + field.Name + "/" + lstObjsSingle.Count.ToString() + "/" +
-                                field.FieldType.Name);
+                                JSDataExchangeMgr.GetTypeFullName(field.FieldType));
                             MonoBehaviour mb = (MonoBehaviour)field.GetValue(behaviour);
                             lstObjsSingle.Add(mb.gameObject);// add game object
                         }
