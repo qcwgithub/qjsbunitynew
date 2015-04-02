@@ -466,7 +466,7 @@ public class ExtraHelper : MonoBehaviour
         }
 
         helper.AutoDelete = true;
-        helper.jsScriptName = behaviour.GetType().Name;
+        helper.jsScriptName = JSDataExchangeMgr.GetTypeFullName(behaviour.GetType());
         helper.arrString = lstString.ToArray();
         helper.arrObjectSingle = lstObjsSingle.ToArray();
         helper.arrObjectArray = lstObjsArray.ToArray();
