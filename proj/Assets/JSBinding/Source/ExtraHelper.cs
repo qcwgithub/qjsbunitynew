@@ -177,6 +177,9 @@ public class ExtraHelper : MonoBehaviour
         int arrObjectIndex = 0;
         int arrObjectIndexOfArray = 0;
 
+        if (arrString == null)
+            return;
+
         //
         // handle arrString first
         //
