@@ -774,6 +774,10 @@ static bool {0}(JSVCall vc, int start, int count)
             }
 
             functionName = JSDataExchangeMgr.HandleFunctionName(type.Name + "_" + SharpKitMethodName(method.Name, paramS, true, TCount));
+            if (method.IsSpecialName && method.Name == "op_Implicit" && paramS.Length > 0)
+            {
+                functionName += "_to_" + method.ReturnType.Name;
+            }
             if (UnityEngineManual.isManual(functionName))
             {
                 sb.AppendFormat(fmt, functionName, "    UnityEngineManual." + functionName + "(vc, start, count);");
@@ -1201,12 +1205,12 @@ using UnityEngine;
 //         Debug.Log(sb);
 //        
 //    }
-    [MenuItem("Assets/JSBinding/Read serialized data test")]
+    //[MenuItem("Assets/JSBinding/Read serialized data test")]
     public static void ReadSerializedDataTest()
     {
         AssetDatabase.FindAssets("backgrounds", new string[]{"Assets/Prefabs/Environment"});
     }
-    [MenuItem("Assets/JSBinding/Generate JS and CS Bindings2")]
+    [MenuItem("JSB/Generate JS and CS Bindings")]
     public static void GenerateJSCSBindings()
     {
         JSDataExchangeMgr.reset();
@@ -1218,7 +1222,7 @@ using UnityEngine;
     }
 
     
-    [MenuItem("Assets/JSBinding/1Output All T Functions")]
+    //[MenuItem("Assets/JSBinding/1Output All T Functions")]
     public static void OutputAllTFunctionsInUnityEngine()
     {
         var writer = new StreamWriter(tempFile, false, Encoding.UTF8);
@@ -1244,10 +1248,23 @@ using UnityEngine;
         Debug.Log("Output All T Functions finish, file: " + tempFile);
     }
 
-    [MenuItem("Assets/JSBinding/Output All Types in UnityEngine2")]
+    [MenuItem("JSB/Output All Types in UnityEngine.dll")]
     public static void OutputAllTypesInUnityEngine()
     {
         var asm = typeof(GameObject).Assembly;
+        OutputAllTypesInAssembly(asm);
+    }
+
+
+    [MenuItem("JSB/Output All Types in UnityEngine.UI.dll")]
+    public static void OutputAllTypesInUnityEngineUI()
+    {
+        var asm = typeof(UnityEngine.EventSystems.UIBehaviour).Assembly;
+        OutputAllTypesInAssembly(asm);
+    }
+
+    public static void OutputAllTypesInAssembly(Assembly asm)
+    {
         var alltypes = asm.GetTypes();
         var writer = new StreamWriter(tempFile, false, Encoding.UTF8);
 
@@ -1286,7 +1303,13 @@ using UnityEngine;
 
             if ((!alltypes[i].IsEnum && !alltypes[i].IsInterface) &&
                 alltypes[i].IsClass)
-                writer.WriteLine(alltypes[i].ToString());
+            {
+                string s = alltypes[i].GetConstructors().Length.ToString() 
+                    + "/" +
+                    alltypes[i].GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static).Length.ToString();
+
+                writer.WriteLine(alltypes[i].ToString() + " " + s);
+            }
         }
 
 
