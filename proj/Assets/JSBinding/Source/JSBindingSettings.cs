@@ -1088,7 +1088,8 @@ public class JSBindingSettings
             (type == typeof(StreamReader) && (memberName == "CreateObjRef" || memberName == "GetLifetimeService" || memberName == "InitializeLifetimeService")) ||
             (type == typeof(StreamWriter) && (memberName == "CreateObjRef" || memberName == "GetLifetimeService" || memberName == "InitializeLifetimeService")) ||
             (type == typeof(UnityEngine.EventSystems.PointerEventData) && memberName == "lastPress") ||
-            (type == typeof(UnityEngine.Font) && memberName == "textureRebuildCallback")
+            (type == typeof(UnityEngine.Font) && memberName == "textureRebuildCallback") ||
+            (type == typeof(UnityEngine.UI.InputField) && memberName == "onValidateInput") // property delegate FUCK
             )
         {
             return true;
