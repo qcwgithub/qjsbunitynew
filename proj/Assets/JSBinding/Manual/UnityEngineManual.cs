@@ -98,6 +98,8 @@ public class UnityEngineManual
     static bool isCSType(System.Type type)
     {
         // return (type != null);
+        if (type.Namespace.IndexOf("UnityEngine") >= 0)
+            return true;
         return !typeof(MonoBehaviour).IsAssignableFrom(type);
     }
 
