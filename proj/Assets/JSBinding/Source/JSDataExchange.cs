@@ -1004,6 +1004,14 @@ public class JSDataExchangeMgr
             return fatherName;
         }
     }
+    // return true if don't generate default constructor
+//    public static bool DontGenDefaultConstructor(Type type)
+//    {
+//        bool bDontGenDefaultConstructor =
+//            // type.GetConstructors().Length == 0 && 
+//            type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).Length > 0;
+//        return bDontGenDefaultConstructor;
+//    }
 
     static Dictionary<string, Type> typeCache = new Dictionary<string,Type>();
     public static Type GetTypeByName(string typeName)

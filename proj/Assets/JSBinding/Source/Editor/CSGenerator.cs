@@ -1035,7 +1035,7 @@ using UnityEngine;
         Debug.Log("Generate CS Bindings OK. total = " + JSBindingSettings.classes.Length.ToString());
     }
 
-    [MenuItem("Assets/JSBinding/Generate JS and CS Bindings")]
+    //[MenuItem("Assets/JSBinding/Generate JS and CS Bindings")]
     public static void GenerateJSCSBindings()
     {
         CSGenerator.GenerateClassBindings();
@@ -1043,7 +1043,7 @@ using UnityEngine;
         AssetDatabase.Refresh();
     }
 
-    [MenuItem("Assets/JSBinding/Output All Types in UnityEngine")]
+    //[MenuItem("Assets/JSBinding/Output All Types in UnityEngine")]
     public static void OutputAllTypesInUnityEngine()
     {
         var asm = typeof(GameObject).Assembly;

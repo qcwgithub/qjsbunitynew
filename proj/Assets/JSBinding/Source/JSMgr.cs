@@ -681,6 +681,8 @@ public static class JSMgr
             {
                 //Debug.Log("[field]" + type.ToString() + "." + ti.fields[i].Name + "is delegate!");
             }
+            if (ti.fields[i].FieldType.ContainsGenericParameters)
+                continue;
 
             if (!IsMemberObsolete(ti.fields[i]) && !JSBindingSettings.IsDiscard(type, ti.fields[i]))
                 lstField.Add(ti.fields[i]);
@@ -776,18 +778,18 @@ public static class JSMgr
 
             if (method.IsGenericMethodDefinition /* || method.IsGenericMethod*/)
             {
-//                bool bDiscard = false;
-//
-//                var ps = method.GetParameters();
-//                for (int k = 0; k < ps.Length; k++)
-//                {
-//                    if (ps[k].ParameterType.ContainsGenericParameters) {
-//                        bDiscard = true;
-//                        break;
-//                    }
-//                }
-//                if (bDiscard)
-//                    continue;
+                bool bDiscard = false;
+
+                var ps = method.GetParameters();
+                for (int k = 0; k < ps.Length; k++)
+                {
+                    if (ps[k].ParameterType.ContainsGenericParameters) {
+                        bDiscard = true;
+                        break;
+                    }
+                }
+                if (bDiscard)
+                    continue;
             }
 
 

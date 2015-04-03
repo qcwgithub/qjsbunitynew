@@ -498,7 +498,7 @@ public class ExtraHelper : MonoBehaviour
             if (eh.AutoDelete)
             {
                 // only delete when Auto is true
-                DestroyImmediate(eh);
+                DestroyImmediate(eh, true);
             }
         }
 
@@ -531,7 +531,7 @@ public class ExtraHelper : MonoBehaviour
             if (com is ExtraHelper)
                 continue;
 
-            DestroyImmediate(com);
+            DestroyImmediate(com, true);
         }
     }
 }

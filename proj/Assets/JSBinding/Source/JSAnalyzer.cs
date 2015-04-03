@@ -90,7 +90,7 @@ public static class JSAnalyzer
         return lstProblem;
     }
 
-    public static void TraverseGameObject(StringBuilder sb, GameObject go, int tab)
+    public static void TraverseGameObject(StringBuilder sb, GameObject go, int tab, bool Execute)
     {
         for (var t = 0; t < tab; t++)
         {
@@ -98,19 +98,21 @@ public static class JSAnalyzer
         }
         sb.Append(go.name + "   -->("+go.tag+")");
 
-
-        ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
-        ExtraHelper.RemoveOtherMonoBehaviours(go);
+        if (Execute)
+        {
+            ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
+            ExtraHelper.RemoveOtherMonoBehaviours(go);
+        }
 
         var coms = go.GetComponents(typeof(Component));
         bool hasProblem = false;
         for (var c = 0; c < coms.Length; c++)
         {
-//             sb.Append(coms[c].GetType().Name);
-//             if (c != coms.Length - 1)
-//             {
-//                 sb.Append(" | ");
-//             }
+             sb.Append(coms[c].GetType().Name);
+             if (c != coms.Length - 1)
+             {
+                 sb.Append(" | ");
+             }
 
             List<string> lstError = ExamComponent(coms[c]);
             for (var x = 0; x < lstError.Count; x++ )
@@ -130,7 +132,7 @@ public static class JSAnalyzer
         for (var i = 0; i < childCount; i++)
         {
             Transform child = go.transform.GetChild(i);
-            TraverseGameObject(sb, child.gameObject, tab + 1);
+            TraverseGameObject(sb, child.gameObject, tab + 1, Execute);
         }
     }
 
@@ -166,7 +168,47 @@ public static class JSAnalyzer
         Debug.Log(sb);
     }
 
-    [MenuItem("JSB/Iterate All GameObjects In the Scene")]
+    // [MenuItem("JSB/Analyze current scene")]
+    public static void AnalyzeCurrentScene()
+    {
+        initAnalyze();
+        GameObject[] gameObjects = GameObject.FindObjectsOfType<GameObject>();
+        foreach (GameObject go in gameObjects)
+        {
+            if (go.transform.root == go.transform)
+            {
+                TraverseGameObject(sbHierachy, go, 0, false);
+            }
+        }
+        Debug.Log(sbHierachy);
+    }
+    static bool FileNameBeginsWithUnderscore(string path)
+    {
+        string shortName = path.Substring(Math.Max(path.LastIndexOf('/'), path.LastIndexOf('\\')) + 1);
+        // 忽略以_开头的prefab
+        return (shortName[0] == '_');
+    }
+
+
+    [MenuItem("JSB/One Key Replace All")]
+    public static void OneKeyReplaceAll()
+    {
+        IterateAllPrefabs();
+
+        string[] GUIDs = AssetDatabase.FindAssets("t:Scene");
+        foreach (var guid in GUIDs)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (FileNameBeginsWithUnderscore(path))
+            {
+                continue;
+            }
+            EditorApplication.OpenScene(path);
+            IterateAllGameObjectsInTheScene();
+        }
+    }
+
+    // [MenuItem("JSB/Replace MonoBehaviours of all scenes")]
     public static void IterateAllGameObjectsInTheScene()
     {
         initAnalyze();
@@ -175,32 +217,37 @@ public static class JSAnalyzer
         {
             if (go.transform.root == go.transform)
             {
-                TraverseGameObject(sbHierachy, go, 0);
+                TraverseGameObject(sbHierachy, go, 0, true);
                 //sbHierachy.Append("\n");
             }
         }
         Debug.Log(sbHierachy);
     }
 
-    [MenuItem("JSB/Iterate All Prefabs")]
+    // [MenuItem("JSB/Replace MonoBehaviours of all prefabs")]
     public static void IterateAllPrefabs()
     {
         initAnalyze();
-        string[] GUIDs = AssetDatabase.FindAssets("t:prefab");
+        string[] GUIDs = AssetDatabase.FindAssets("t:Prefab");
         foreach (var guid in GUIDs)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (FileNameBeginsWithUnderscore(path))
+            {
+                continue;
+            }
+
             UnityEngine.Object mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
             if (mainAsset is GameObject)
             {
-                TraverseGameObject(sbHierachy, (GameObject)mainAsset, 1);
+                TraverseGameObject(sbHierachy, (GameObject)mainAsset, 1, true);
             }
             sbHierachy.Append("\n");
         }
         Debug.Log(sbHierachy);
     }
     // Alt + Shift + Q
-    [MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
+    //[MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
     public static void CopyGameObjectMonoBehaviours()
     {
         Debug.Log("CopyGameObjectMonoBehaviours");
@@ -208,7 +255,7 @@ public static class JSAnalyzer
         ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
     }
     // Alt + Shift + W
-    [MenuItem("JSB/Remove Other MonoBehaviours &#w")]
+    //[MenuItem("JSB/Remove Other MonoBehaviours &#w")]
     public static void RemoveOtherMonoBehaviours()
     {
         Debug.Log("RemoveOtherMonoBehaviours");
