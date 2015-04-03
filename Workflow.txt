@@ -1,0 +1,17 @@
+准备工作：
+
+1. 将 Demo 代码加入到工程中的 Src 文件夹中
+2. 修改要转换成 JS 的 CS 文件，重写 Coroutine，InvokeRepeating 等 js 无法支持的代码
+3. 运行菜单 JSB/Add JsType Attribute for all files in Src Folder(Beta)。运行之后，Src 文件夹下的 class, struct 都会自动加上 [JsType()] 属性。
+   然后要做一下人工检查。
+4. 运行菜单 JSB/Gen JsType file list。将会自动生成 includes.javascript。里面的文件列表应该和步骤3产生的文件列表一一对应。（目前只能人工检查）
+5. 运行菜单 JSB/JSB/Analyze all scenes and all prefabs。将会检查 Prefab，所有场景的所有物件，的 Component 是否符合替换要求（和下面的步骤1是对应的）。
+   这一步只是检查而已，并不会做任何改动，是安全的。
+
+开始转换：
+
+1. Copy 一份整个工程，以下步骤都在拷贝的工程中进行
+2. 执行菜单：JSB/One Key Replace All (Danger!)。这一步将把所有 Prefab，所有场景的所有物件，的 MonoBehaviour 都替换成 JSComponent_SharpKit
+3. 打开 SharpKit 工程。配置好的话应该是已经把 Src 下的所有文件都加进去了。然后编译，生成JS文件。上面的步骤 3 已经配置好JS会生成到    StreamingAsset/JavaScript/SharpKitGenerated 文件夹下。
+4. 运行游戏。如果运气好就一切搞定了，继续下一步。
+5. 删除 Src 文件夹，不需要这些 cs 源代码了。
