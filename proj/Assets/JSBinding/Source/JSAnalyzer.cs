@@ -192,7 +192,7 @@ public static class JSAnalyzer
     }
 
 
-    [MenuItem("JSB/One Key Replace All")]
+    [MenuItem("JSB/One Key Replace All (Danger!)")]
     public static void OneKeyReplaceAll()
     {
         IterateAllPrefabs();
@@ -267,29 +267,38 @@ public static class JSAnalyzer
 
     public static string MyMatchEvaluator(Match m)
     {
+        matched = true;
         var sb = new StringBuilder();
-        sb.AppendFormat("\n[JsType(JsMode.Clr,\"../StreamingAssets/JavaScript/SharpKitGenerated/{0}/{1}.javascript\")]\n{2}", nextPath, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
+        sb.AppendFormat("\n[JsType(JsMode.Clr,\"../StreamingAssets/JavaScript/SharpKitGenerated/{0}{1}.javascript\")]\n{2}", nextPath, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
         return sb.ToString();
     }
 
-    // 不包含/
+    // 包含/
     static string nextPath = string.Empty;
+    static bool matched = false;
 
-    [MenuItem("JSB/Make JsType Attribute In Src Folder(Beta)")]
+    [MenuItem("JSB/Add JsType Attribute for all files in Src Folder(Beta)")]
     public static void MakeJsTypeAttributeInSrc()
     {
-        string srcPath = Application.dataPath + "/Src";
-        string[] files = Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories);
+        string srcFolder = Application.dataPath + "/Src";
+        string[] files = Directory.GetFiles(srcFolder, "*.cs", SearchOption.AllDirectories);
         foreach (var f in files)
         {
             var path = f.Replace('\\', '/');
 
-            nextPath = f.Substring(srcPath.Length + 1, f.LastIndexOf('/') - srcPath.Length - 1);
+            matched = false;
+            nextPath = path.Substring(srcFolder.Length + 1, path.LastIndexOf('/') - srcFolder.Length);
 
             string content = File.ReadAllText(path);
-            var reg = new Regex(@"(?<DefinedJsType>^\s*\[\s*JsType\s*\(.*$)?\s*(?<ClassDefinition>^(?:(?:public|protected|private|static|partial|abstract|internal)*\s*)*(?:class|struct)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);
+            var reg = new Regex(@"(?>^\s*\[\s*JsType.*$)?\s*(?<ClassDefinition>^(?>(?>public|protected|private|static|partial|abstract|internal)*\s*)*(?>class|struct)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);
             content = reg.Replace(content, MyMatchEvaluator);
+
+            if (matched && content.IndexOf("using SharpKit.JavaScript;") < 0)
+            {
+                content = "using SharpKit.JavaScript;\n" + content;
+            }
             File.WriteAllText(path, content);
         }
+        Debug.Log("Make JsType Attribute OK.");
     }
 }
