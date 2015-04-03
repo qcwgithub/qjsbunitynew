@@ -284,14 +284,25 @@ public static class CSGenerator2
             {
                 sbActualParam = new StringBuilder();
                 paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];
+                sbActualParam.Append("[");
                 for (int j = 0; j < ps.Length; j++)
                 {
                     paramHandlers[j] = JSDataExchangeMgr.Get_ParamHandler(ps[j].ParameterType, j, false, false);
-                    sbActualParam.AppendFormat("[{0}]", paramHandlers[j].argName);
+                    sbActualParam.AppendFormat("{0}", paramHandlers[j].argName);
+                    if (j != ps.Length - 1)
+                        sbActualParam.Append(", ");
                 }
+                sbActualParam.Append("]");
             }
 
             string functionName = JSDataExchangeMgr.HandleFunctionName(type.Name + "_" + property.Name);
+            if (bIndexer)
+            {
+                foreach (var p in ps)
+                {
+                    functionName += "_" + p.ParameterType.Name;
+                }
+            }
 
             sb.AppendFormat("static void {0}(JSVCall vc)\n[[\n", functionName);
 
