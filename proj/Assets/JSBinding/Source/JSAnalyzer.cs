@@ -4,8 +4,10 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using SharpKit.JavaScript;
+using System.IO;
 
 public static class JSAnalyzer
 {
@@ -261,5 +263,33 @@ public static class JSAnalyzer
         Debug.Log("RemoveOtherMonoBehaviours");
         GameObject go = Selection.activeGameObject;
         ExtraHelper.RemoveOtherMonoBehaviours(go);
+    }
+
+    public static string MyMatchEvaluator(Match m)
+    {
+        var sb = new StringBuilder();
+        sb.AppendFormat("\n[JsType(JsMode.Clr,\"../StreamingAssets/JavaScript/SharpKitGenerated/{0}/{1}.javascript\")]\n{2}", nextPath, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
+        return sb.ToString();
+    }
+
+    // 不包含/
+    static string nextPath = string.Empty;
+
+    [MenuItem("JSB/Make JsType Attribute In Src Folder(Beta)")]
+    public static void MakeJsTypeAttributeInSrc()
+    {
+        string srcPath = Application.dataPath + "/Src";
+        string[] files = Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories);
+        foreach (var f in files)
+        {
+            var path = f.Replace('\\', '/');
+
+            nextPath = f.Substring(srcPath.Length + 1, f.LastIndexOf('/') - srcPath.Length - 1);
+
+            string content = File.ReadAllText(path);
+            var reg = new Regex(@"(?<DefinedJsType>^\s*\[\s*JsType\s*\(.*$)?\s*(?<ClassDefinition>^(?:(?:public|protected|private|static|partial|abstract|internal)*\s*)*(?:class|struct)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);
+            content = reg.Replace(content, MyMatchEvaluator);
+            File.WriteAllText(path, content);
+        }
     }
 }
