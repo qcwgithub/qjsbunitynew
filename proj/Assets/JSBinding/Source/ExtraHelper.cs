@@ -493,20 +493,20 @@ public class ExtraHelper : MonoBehaviour
     public static void CopyGameObject<T>(GameObject go) where T : ExtraHelper
     {
         // delete original ExtraHelper(s)
-        foreach (var eh in go.GetComponents<ExtraHelper>()) 
-        {
-            if (eh.AutoDelete)
-            {
-                // only delete when Auto is true
-                DestroyImmediate(eh, true);
-            }
-        }
+//         foreach (var eh in go.GetComponents<ExtraHelper>()) 
+//         {
+//             if (eh.AutoDelete)
+//             {
+//                 // only delete when Auto is true
+//                 DestroyImmediate(eh, true);
+//             }
+//         }
 
         var behaviours = go.GetComponents<MonoBehaviour>();
         for (var i = 0; i < behaviours.Length; i++)
         {
             var behav = behaviours[i];
-            // must ignore ExtraHandler here
+            // ignore ExtraHandler here
             if (behav is ExtraHelper)
             {
                 continue;

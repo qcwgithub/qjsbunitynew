@@ -91,7 +91,14 @@ public static class JSAnalyzer
         return lstProblem;
     }
 
-    public static void TraverseGameObject(StringBuilder sb, GameObject go, int tab, bool Execute)
+    public enum TraverseOp
+    {
+        CopyMonoBehaviour,
+        RemoveOldBehaviour, 
+        Analyze
+    }
+
+    public static void TraverseGameObject(StringBuilder sb, GameObject go, int tab, TraverseOp op)
     {
         for (var t = 0; t < tab; t++)
         {
@@ -99,10 +106,17 @@ public static class JSAnalyzer
         }
         sb.Append(go.name + "   -->("+go.tag+")");
 
-        if (Execute)
+        switch (op)
         {
-            ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
-            ExtraHelper.RemoveOtherMonoBehaviours(go);
+            case TraverseOp.CopyMonoBehaviour:
+                ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
+                break;
+            case TraverseOp.RemoveOldBehaviour:
+                ExtraHelper.RemoveOtherMonoBehaviours(go);
+                break;
+            case TraverseOp.Analyze:
+            default:
+                break;
         }
 
         var coms = go.GetComponents(typeof(Component));
@@ -133,7 +147,7 @@ public static class JSAnalyzer
         for (var i = 0; i < childCount; i++)
         {
             Transform child = go.transform.GetChild(i);
-            TraverseGameObject(sb, child.gameObject, tab + 1, Execute);
+            TraverseGameObject(sb, child.gameObject, tab + 1, op);
         }
     }
 
@@ -183,7 +197,7 @@ public static class JSAnalyzer
         {
             if (go.transform.root == go.transform)
             {
-                TraverseGameObject(sbHierachy, go, 0, false);
+                TraverseGameObject(sbHierachy, go, 0, TraverseOp.Analyze);
             }
         }
         Debug.Log(sbHierachy);
@@ -199,32 +213,45 @@ public static class JSAnalyzer
     [MenuItem("JSB/One Key Replace All (Danger!)")]
     public static void OneKeyReplaceAll()
     {
-        bool bContinue = EditorUtility.DisplayDialog("WARNING", "This action may cause data loss. You must backup whole project before executing this action.", "Continue", "Cancel");
+        bool bContinue = EditorUtility.DisplayDialog("WARNING", 
+            "This action may cause data loss. You must backup whole project before executing this action.", 
+            "Continue", 
+            "Cancel");
+
         if (!bContinue)
         {
             Debug.Log("Operation canceled.");
             return;
         }
 
-        IterateAllPrefabs();
-
-        string[] GUIDs = AssetDatabase.FindAssets("t:Scene");
-        foreach (var guid in GUIDs)
+        // first copy
+        // then remove
+        var ops = new TraverseOp[] { TraverseOp.CopyMonoBehaviour, TraverseOp.RemoveOldBehaviour};
+        foreach (var op in ops)
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            if (FileNameBeginsWithUnderscore(path))
+            IterateAllPrefabs(op);
+            EditorApplication.SaveAssets();
+
+            string[] GUIDs = AssetDatabase.FindAssets("t:Scene");
+            foreach (var guid in GUIDs)
             {
-                continue;
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (FileNameBeginsWithUnderscore(path))
+                {
+                    continue;
+                }
+                // Debug.Log("Replace Scene: " + path);
+                EditorApplication.OpenScene(path);
+                IterateAllGameObjectsInTheScene(op);
+                EditorApplication.SaveScene();
             }
-            EditorApplication.OpenScene(path);
-            IterateAllGameObjectsInTheScene();
         }
         Debug.Log("Replace all OK.");
         AssetDatabase.Refresh();
     }
 
     // [MenuItem("JSB/Replace MonoBehaviours of all scenes")]
-    public static void IterateAllGameObjectsInTheScene()
+    public static void IterateAllGameObjectsInTheScene(TraverseOp op)
     {
         initAnalyze();
         GameObject[] gameObjects = GameObject.FindObjectsOfType <GameObject>();
@@ -232,7 +259,7 @@ public static class JSAnalyzer
         {
             if (go.transform.root == go.transform)
             {
-                TraverseGameObject(sbHierachy, go, 0, true);
+                TraverseGameObject(sbHierachy, go, 0, op);
                 //sbHierachy.Append("\n");
             }
         }
@@ -240,7 +267,7 @@ public static class JSAnalyzer
     }
 
     // [MenuItem("JSB/Replace MonoBehaviours of all prefabs")]
-    public static void IterateAllPrefabs()
+    public static void IterateAllPrefabs(TraverseOp op)
     {
         initAnalyze();
         string[] GUIDs = AssetDatabase.FindAssets("t:Prefab");
@@ -255,7 +282,7 @@ public static class JSAnalyzer
             UnityEngine.Object mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
             if (mainAsset is GameObject)
             {
-                TraverseGameObject(sbHierachy, (GameObject)mainAsset, 1, true);
+                TraverseGameObject(sbHierachy, (GameObject)mainAsset, 1, op);
             }
             sbHierachy.Append("\n");
         }
