@@ -545,7 +545,7 @@ public class JSBindingSettings
 
         typeof(UnityEngine.Security),
 
-        typeof(UnityEngine.StackTraceUtility),
+//        typeof(UnityEngine.StackTraceUtility),
 
         typeof(UnityEngine.UnityException),
         typeof(UnityEngine.MissingComponentException),
@@ -559,7 +559,7 @@ public class JSBindingSettings
 
 
         typeof(UnityEngine.Serialization.UnitySurrogateSelector),
-        typeof(UnityEngineInternal.GenericStack),
+//        typeof(UnityEngineInternal.GenericStack),
         typeof(UnityEngine.Physics),
         typeof(UnityEngine.Rigidbody),
         typeof(UnityEngine.Joint),
@@ -648,13 +648,14 @@ public class JSBindingSettings
         typeof(UnityEngine.WaitForSeconds),                                    
         typeof(UnityEngine.WaitForFixedUpdate),                                
         typeof(UnityEngine.WaitForEndOfFrame),                                 
-        typeof(UnityEngine.Coroutine),                                         
-        typeof(UnityEngine.DisallowMultipleComponent),                         
-        typeof(UnityEngine.RequireComponent),                                  
-        typeof(UnityEngine.AddComponentMenu),                                  
-        typeof(UnityEngine.ContextMenu),                                       
-        typeof(UnityEngine.ExecuteInEditMode),                                 
-        typeof(UnityEngine.HideInInspector),                                   
+        typeof(UnityEngine.Coroutine),     
+        // attributes                            
+        // typeof(UnityEngine.DisallowMultipleComponent),                         
+        //typeof(UnityEngine.RequireComponent),                                  
+        //typeof(UnityEngine.AddComponentMenu),                                  
+        //typeof(UnityEngine.ContextMenu),                                       
+        //typeof(UnityEngine.ExecuteInEditMode),                                 
+        //typeof(UnityEngine.HideInInspector),                                   
         typeof(UnityEngine.ScriptableObject),                                  
         typeof(UnityEngine.Resources),                                         
         typeof(UnityEngine.Profiler),                                          
@@ -690,8 +691,8 @@ public class JSBindingSettings
         typeof(UnityEngine.GL),                                                
         typeof(UnityEngine.MeshRenderer),                                      
         typeof(UnityEngine.StaticBatchingUtility),                             
-        typeof(UnityEngine.ImageEffectTransformsToLDR),                        
-        typeof(UnityEngine.ImageEffectOpaque),                                 
+        //typeof(UnityEngine.ImageEffectTransformsToLDR),                        
+        //typeof(UnityEngine.ImageEffectOpaque),                                 
         typeof(UnityEngine.Texture),                                           
 //        typeof(UnityEngine.Texture2D),                                         
         typeof(UnityEngine.Cubemap),                                           
@@ -724,14 +725,14 @@ public class JSBindingSettings
         typeof(UnityEngine.NetworkView),                             
         typeof(UnityEngine.Network),                                 
         typeof(UnityEngine.BitStream),                               
-        typeof(UnityEngine.RPC),                                     
+        //typeof(UnityEngine.RPC),                                     
         typeof(UnityEngine.HostData),                                
         typeof(UnityEngine.MasterServer),                            
         typeof(UnityEngine.ParticleSystem),                          
         typeof(UnityEngine.ParticleSystemRenderer),                  
         typeof(UnityEngine.TextAsset),                               
                     
-        typeof(UnityEngine.SerializeField),                          
+        //typeof(UnityEngine.SerializeField),                          
         typeof(UnityEngine.Shader),                                  
         typeof(UnityEngine.Material),                                
         typeof(UnityEngine.ProceduralPropertyDescription),           
@@ -930,7 +931,7 @@ public class JSBindingSettings
 
         //////////////////////////////////////////////////////
         // not exist (why? see IsDiscard)
-        // typeof(UnityEngine.Motion),
+        typeof(UnityEngine.Motion),
 
         //typeof(UnityEngine.SamsungTV),
 
@@ -948,6 +949,8 @@ public class JSBindingSettings
         //
         //
         //
+
+#if UNITY_4_6
         
         // interface
 
@@ -1058,6 +1061,8 @@ public class JSBindingSettings
         // delegates
         // typeof(UnityEngine.UI.InputField.OnValidateInput),
 
+#endif
+
     };
 
     
@@ -1087,10 +1092,12 @@ public class JSBindingSettings
             (type == typeof(WebCamTexture) && (memberName == "isReadable" || memberName == "MarkNonReadable")) ||
             (type == typeof(StreamReader) && (memberName == "CreateObjRef" || memberName == "GetLifetimeService" || memberName == "InitializeLifetimeService")) ||
             (type == typeof(StreamWriter) && (memberName == "CreateObjRef" || memberName == "GetLifetimeService" || memberName == "InitializeLifetimeService")) ||
-            (type == typeof(UnityEngine.EventSystems.PointerEventData) && memberName == "lastPress") ||
-            (type == typeof(UnityEngine.Font) && memberName == "textureRebuildCallback") ||
+            (type == typeof(UnityEngine.Font) && memberName == "textureRebuildCallback")
+#if UNITY_4_6
+             || (type == typeof(UnityEngine.EventSystems.PointerEventData) && memberName == "lastPress") ||
             (type == typeof(UnityEngine.UI.InputField) && memberName == "onValidateInput") // property delegate FUCK
-            )
+#endif
+)
         {
             return true;
         }

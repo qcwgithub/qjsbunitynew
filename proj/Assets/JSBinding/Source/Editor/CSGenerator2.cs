@@ -1119,11 +1119,14 @@ using UnityEngine;
             if (dict.ContainsKey(type))
             {
                 sb.AppendFormat(
-                    "Operation fail. There are more than 1 \"{0}\" in JSBindingSettings.classes, please check.\n",                     
+                    "Operation fail. There are more than 1 \"{0}\" in JSBindingSettings.classes, please check.\n",
                     JSDataExchangeMgr.GetTypeFullName(type));
                 ret = false;
             }
-            dict.Add(type, true);
+            else
+            {
+                dict.Add(type, true);
+            }
         }
 
         // 检查有没有基类没导出

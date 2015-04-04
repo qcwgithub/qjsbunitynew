@@ -15,7 +15,6 @@ public static class JSAnalyzer
     static Dictionary<string, List<string>> dictProblem;
     static Dictionary<Type, bool> dictExport = new Dictionary<Type,bool>();
 
-
     static List<string> ExamComponent(Component com)
     {
         List<string> lstProblem = new List<string>();
@@ -168,6 +167,11 @@ public static class JSAnalyzer
         }
 
         Debug.Log(sb);
+
+        string path = JSBindingSettings.jsDir + "/includes.javascript";
+        File.WriteAllText(path, sb.ToString());
+        Debug.Log("OK. File: " + path);
+        // AssetDatabase.Refresh();
     }
 
     // [MenuItem("JSB/Analyze current scene")]
@@ -195,6 +199,13 @@ public static class JSAnalyzer
     [MenuItem("JSB/One Key Replace All (Danger!)")]
     public static void OneKeyReplaceAll()
     {
+        bool bContinue = EditorUtility.DisplayDialog("WARNING", "This action may cause data loss. You must backup whole project before executing this action.", "Continue", "Cancel");
+        if (!bContinue)
+        {
+            Debug.Log("Operation canceled.");
+            return;
+        }
+
         IterateAllPrefabs();
 
         string[] GUIDs = AssetDatabase.FindAssets("t:Scene");
@@ -208,6 +219,8 @@ public static class JSAnalyzer
             EditorApplication.OpenScene(path);
             IterateAllGameObjectsInTheScene();
         }
+        Debug.Log("Replace all OK.");
+        AssetDatabase.Refresh();
     }
 
     // [MenuItem("JSB/Replace MonoBehaviours of all scenes")]
@@ -269,7 +282,7 @@ public static class JSAnalyzer
     {
         matched = true;
         var sb = new StringBuilder();
-        sb.AppendFormat("\n[JsType(JsMode.Clr,\"../StreamingAssets/JavaScript/SharpKitGenerated/{0}{1}.javascript\")]\n{2}", nextPath, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
+        sb.AppendFormat("\n[JsType(JsMode.Clr,\"../StreamingAssets/JavaScript/SharpKitGenerated/{0}{1}.javascript\")]\n{2}", ""/*nextPath*/, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
         return sb.ToString();
     }
 
@@ -300,5 +313,6 @@ public static class JSAnalyzer
             File.WriteAllText(path, content);
         }
         Debug.Log("Make JsType Attribute OK.");
+        AssetDatabase.Refresh();
     }
 }
