@@ -97,7 +97,10 @@ public class UnityEngineManual
 
     static bool isCSType(System.Type type)
     {
-        // return (type != null);
+        if (type == null)
+        {
+            return false;
+        }
         if (type.Namespace != null && type.Namespace.IndexOf("UnityEngine") >= 0)
         {
             return true;
