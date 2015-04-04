@@ -1095,6 +1095,68 @@ using UnityEngine;
     {
 
     }
+    
+    public static bool CheckClassBindings()
+    {
+        Dictionary<Type, bool> clrLibrary = new Dictionary<Type, bool>();
+        {
+            //
+            // these types are defined in clrlibrary.javascript
+            //
+            clrLibrary.Add(typeof(System.Object), true);
+            clrLibrary.Add(typeof(System.Exception), true);
+            clrLibrary.Add(typeof(System.SystemException), true);
+            clrLibrary.Add(typeof(System.ValueType), true);
+        }
+
+        Dictionary<Type, bool> dict = new Dictionary<Type, bool>();
+        var sb = new StringBuilder();
+        bool ret = true;
+
+        // 检查类型有没有重复
+        foreach (var type in JSBindingSettings.classes)
+        {
+            if (dict.ContainsKey(type))
+            {
+                sb.AppendFormat(
+                    "Operation fail. There are more than 1 \"{0}\" in JSBindingSettings.classes, please check.\n",                     
+                    JSDataExchangeMgr.GetTypeFullName(type));
+                ret = false;
+            }
+            dict.Add(type, true);
+        }
+
+        // 检查有没有基类没导出
+        foreach (var typeb in dict)
+        {
+            Type type = typeb.Key;
+            // System.Object is already defined in SharpKit clrlibrary
+            if (!clrLibrary.ContainsKey(type.BaseType) && !dict.ContainsKey(type.BaseType))
+            {
+                sb.AppendFormat("\"{0}\"\'s base type \"{1}\" must also be in JSBindingSettings.classes.\n",
+                    JSDataExchangeMgr.GetTypeFullName(type),
+                    JSDataExchangeMgr.GetTypeFullName(type.BaseType));
+                ret = false;
+            }
+//             foreach (var Interface in type.GetInterfaces())
+//             {
+//                 if (!dict.ContainsKey(Interface))
+//                 {
+//                     sb.AppendFormat("Interface \"{0}\" of \"{1}\" must also be in JSBindingSettings.classes.",
+//                         JSDataExchangeMgr.GetTypeFullName(Interface),
+//                         JSDataExchangeMgr.GetTypeFullName(type));
+//                     Debug.LogError(sb);
+//                     return false;
+//                 }
+            //             }
+        }
+        if (!ret)
+        {
+            Debug.LogError(sb);
+        }
+        return ret;
+    }
+
     //[MenuItem("JSBinding/Generate CS Bindings")]
     public static void GenerateClassBindings()
     {
@@ -1145,8 +1207,6 @@ using UnityEngine;
 			}
 		}
         return;*/
-
-
 
         CSGenerator2.OnBegin();
 
@@ -1223,7 +1283,9 @@ using UnityEngine;
     }
     [MenuItem("JSB/Generate JS and CS Bindings")]
     public static void GenerateJSCSBindings()
-    {
+	{
+		if (!CheckClassBindings())
+			return;
         JSDataExchangeMgr.reset();
         UnityEngineManual.initManual();
         CSGenerator2.GenerateClassBindings();
@@ -1270,8 +1332,8 @@ using UnityEngine;
     [MenuItem("JSB/Output All Types in UnityEngine.UI.dll")]
     public static void OutputAllTypesInUnityEngineUI()
     {
-        var asm = typeof(UnityEngine.EventSystems.UIBehaviour).Assembly;
-        OutputAllTypesInAssembly(asm);
+        //var asm = typeof(UnityEngine.EventSystems.UIBehaviour).Assembly;
+        //OutputAllTypesInAssembly(asm);
     }
 
     public static void OutputAllTypesInAssembly(Assembly asm)
