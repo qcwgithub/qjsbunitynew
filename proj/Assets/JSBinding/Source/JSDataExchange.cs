@@ -1373,17 +1373,22 @@ public class JSDataExchangeMgr
         }
         return con;
     }*/
-    public static ConstructorInfo GetConstructorOfGenericClass(Type type, int constructorIndex)
+    public static PropertyInfo GetPropertyInfoOfGenericClass(Type type, int index)
     {
-        if (constructorIndex < 0) return null;
-        return type.GetConstructors()[constructorIndex];
+        if (index < 0) return null;
+        return type.GetProperties(JSMgr.BindingFlagsProperty)[index];
+    }
+    public static ConstructorInfo GetConstructorOfGenericClass(Type type, int index)
+    {
+        if (index < 0) return null;
+        return type.GetConstructors()[index];
     }
 
-    public static MethodInfo GetMethodOfGenericClass(Type type, string methodName, int methodArrIndex)
+    public static MethodInfo GetMethodOfGenericClass(Type type, string methodName, int index)
     {
-        if (methodArrIndex < 0) return null;
+        if (index < 0) return null;
 
-        MethodInfo method = JSMgr.RuntimeGetMethodInfo(type, methodArrIndex);
+        MethodInfo method = JSMgr.RuntimeGetMethodInfo(type, index);
         if (method.Name != methodName)
         {
             Debug.LogError("GetMethodOfGenericClass Name different! " + methodName + "/" + method.Name);

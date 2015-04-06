@@ -525,7 +525,7 @@ public static class JSMgr
         if (!dictTypeMI.TryGetValue(type, out arrMI))
         {
             // flags must be the same as AddATypeInfo
-            arrMI = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
+            arrMI = type.GetMethods(JSMgr.BindingFlagsMethod);
             dictTypeMI.Add(type, arrMI);
         }
         if (i < arrMI.Length)
@@ -553,11 +553,17 @@ public static class JSMgr
     public class ATypeInfo
     {
         public FieldInfo[] fields;
+        public int[] fieldsIndex;
+
         public PropertyInfo[] properties;
+        public int[] propertiesIndex;
+
         public ConstructorInfo[] constructors;
         public int[] constructorsIndex;
+
         public MethodInfo[] methods;
         public int[] methodsIndex; // index of the method in array of type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
+
         public int[] methodsOLInfo;//0 not overloaded >0 overloaded index
         public int howmanyConstructors;//how many constructors actually, (before filtering).
     }
@@ -576,12 +582,35 @@ public static class JSMgr
         ATypeInfo tiOut = new ATypeInfo();
         return AddTypeInfo(type, out tiOut);
     }
+
+    public static BindingFlags BindingFlagsMethod = 
+        BindingFlags.Public 
+        | BindingFlags.Instance 
+        | BindingFlags.Static 
+        | BindingFlags.DeclaredOnly;
+
+    public static BindingFlags BindingFlagsProperty = 
+        BindingFlags.Public 
+        | BindingFlags.GetProperty 
+        | BindingFlags.SetProperty 
+        | BindingFlags.Instance 
+        | BindingFlags.Static 
+        | BindingFlags.DeclaredOnly;
+
+    public static BindingFlags BindingFlagsField = 
+        BindingFlags.Public 
+        | BindingFlags.GetField 
+        | BindingFlags.SetField 
+        | BindingFlags.Instance 
+        | BindingFlags.Static 
+        | BindingFlags.DeclaredOnly;
+
     public static int AddTypeInfo(Type type, out ATypeInfo tiOut)
     {
         ATypeInfo ti = new ATypeInfo();
-        ti.fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
-        ti.properties = type.GetProperties(BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
-        ti.methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly);
+        ti.fields = type.GetFields(BindingFlagsField);
+        ti.properties = type.GetProperties(BindingFlagsProperty);
+        ti.methods = type.GetMethods(BindingFlagsMethod);
         ti.constructors = type.GetConstructors();
         ti.howmanyConstructors = ti.constructors.Length;
 
@@ -642,6 +671,12 @@ public static class JSMgr
         return 0;
     }
 
+    public struct FieldInfoAndIndex
+    {
+        public FieldInfo method;
+        public int index;
+        public FieldInfoAndIndex(FieldInfo _m, int _i) { method = _m; index = _i; }
+    }
     public struct MethodInfoAndIndex
     {
         public MethodInfo method;
@@ -654,13 +689,19 @@ public static class JSMgr
         public int index;
         public ConstructorInfoAndIndex(ConstructorInfo _m, int _i) { method = _m; index = _i; }
     }
+    public struct PropertyInfoAndIndex
+    {
+        public PropertyInfo method;
+        public int index;
+        public PropertyInfoAndIndex(PropertyInfo _m, int _i) { method = _m; index = _i; }
+    }
     public static void FilterTypeInfo(Type type, ATypeInfo ti)
     {
         bool bIsStaticClass = (type.IsClass && type.IsAbstract && type.IsSealed);
 
         List<ConstructorInfoAndIndex> lstCons = new List<ConstructorInfoAndIndex>();
-        List<FieldInfo> lstField = new List<FieldInfo>();
-        List<PropertyInfo> lstPro = new List<PropertyInfo>();
+        List<FieldInfoAndIndex> lstField = new List<FieldInfoAndIndex>();
+        List<PropertyInfoAndIndex> lstPro = new List<PropertyInfoAndIndex>();
         Dictionary<string, int> proAccessors = new Dictionary<string, int>();
         List<MethodInfoAndIndex> lstMethod = new List<MethodInfoAndIndex>();
 
@@ -672,7 +713,9 @@ public static class JSMgr
             }
 
             if (!IsMemberObsolete(ti.constructors[i]))
+            {
                 lstCons.Add(new ConstructorInfoAndIndex(ti.constructors[i], i));
+            }
         }
 
         for (int i = 0; i < ti.fields.Length; i++)
@@ -685,7 +728,9 @@ public static class JSMgr
                 continue;
 
             if (!IsMemberObsolete(ti.fields[i]) && !JSBindingSettings.IsDiscard(type, ti.fields[i]))
-                lstField.Add(ti.fields[i]);
+            {
+                lstField.Add(new FieldInfoAndIndex(ti.fields[i], i));
+            }
         }
 
 
@@ -718,9 +763,8 @@ public static class JSMgr
             if (JSBindingSettings.IsDiscard(type, pro))
                 continue;
 
-            lstPro.Add(pro);
+            lstPro.Add(new PropertyInfoAndIndex(pro, i));
         }
-
 
 
         for (int i = 0; i < ti.methods.Length; i++)
@@ -845,8 +889,24 @@ public static class JSMgr
             ti.constructorsIndex[k] = lstCons[k].index;
         }
 
-        ti.fields = lstField.ToArray();
-        ti.properties = lstPro.ToArray();
+        // ti.fields = lstField.ToArray();
+        ti.fields = new FieldInfo[lstField.Count];
+        ti.fieldsIndex = new int[lstField.Count];
+        for (var k = 0; k < lstField.Count; k++)
+        {
+            ti.fields[k] = lstField[k].method;
+            ti.fieldsIndex[k] = lstField[k].index;
+        }
+
+        // ti.properties = lstPro.ToArray();
+        ti.properties = new PropertyInfo[lstPro.Count];
+        ti.propertiesIndex = new int[lstPro.Count];
+        for (var k = 0; k < lstPro.Count; k++)
+        {
+            ti.properties[k] = lstPro[k].method;
+            ti.propertiesIndex[k] = lstPro[k].index;
+        }
+
         ti.methods = new MethodInfo[lstMethod.Count];
         ti.methodsIndex = new int[lstMethod.Count];
 

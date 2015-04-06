@@ -264,7 +264,7 @@ public static class CSGenerator2
 
         return sb;
     }
-    public static StringBuilder BuildProperties(Type type, PropertyInfo[] properties, ClassCallbackNames ccbn)
+    public static StringBuilder BuildPropertiesTypeT(Type type, PropertyInfo[] properties, int[] propertiesIndex, ClassCallbackNames ccbn)
     {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < properties.Length; i++)
@@ -272,6 +272,21 @@ public static class CSGenerator2
             var sbCall = new StringBuilder();
 
             PropertyInfo property = properties[i];
+
+            bool bT = type.IsGenericTypeDefinition;
+            StringBuilder sbt = null;
+            if (bT)
+            {
+                sbt = new StringBuilder();
+
+                sbt.AppendFormat("    PropertyInfo property = JSDataExchangeMgr.GetPropertyInfoOfGenericClass(vc.csObj.GetType(), {0}); \n",
+                        propertiesIndex[i]);        // [0] methodArrIndex
+
+                sbt.AppendFormat("    if (property == null)\n        return true;\n");
+                sbt.Append("\n");
+
+                sb.Append(sbt);
+            }
 
             //
             // check to see if this is a indexer
@@ -295,7 +310,7 @@ public static class CSGenerator2
                 sbActualParam.Append("]");
             }
 
-            string functionName = JSDataExchangeMgr.HandleFunctionName(type.Name + "_" + property.Name);
+            string functionName = type.Name + "_" + property.Name;
             if (bIndexer)
             {
                 foreach (var p in ps)
@@ -303,6 +318,7 @@ public static class CSGenerator2
                     functionName += "_" + p.ParameterType.Name;
                 }
             }
+            functionName = JSDataExchangeMgr.HandleFunctionName(functionName);
 
             sb.AppendFormat("static void {0}(JSVCall vc)\n[[\n", functionName);
 
@@ -316,13 +332,205 @@ public static class CSGenerator2
                 {
                     sb.Append("        " + paramHandlers[j].getter + "\n");
                 }
-                if (isStatic)
+                if (bT)
                 {
-                    sbCall.AppendFormat("{0}{1}", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
+                    if (isStatic)
+                    {
+                        sbCall.AppendFormat("{0}{1}", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
+                    }
+                    else
+                    {
+                        sbCall.AppendFormat("(({0})vc.csObj){1}", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
+                    }
                 }
                 else
                 {
-                    sbCall.AppendFormat("(({0})vc.csObj){1}", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
+                    if (isStatic)
+                    {
+                        sbCall.AppendFormat("{0}{1}", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
+                    }
+                    else
+                    {
+                        sbCall.AppendFormat("(({0})vc.csObj){1}", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
+                    }
+                }
+            }
+
+            if (!bReadOnly)
+            {
+                sb.Append("    if (vc.bGet) [[ \n");
+            }
+
+            if (!bIndexer)
+            {
+                // get
+                if (isStatic)
+                    sbCall.AppendFormat("{0}.{1}", JSDataExchangeMgr.GetTypeFullName(type), property.Name);
+                else
+                    sbCall.AppendFormat("(({0})vc.csObj).{1}", JSDataExchangeMgr.GetTypeFullName(type), property.Name);
+            }
+
+            //if (type.IsValueType && !field.IsStatic)
+            //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
+
+            sb.AppendFormat("        {0}", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
+            if (!bReadOnly)
+            {
+                sb.Append("\n    ]]\n");
+            }
+
+            // set
+            if (!bReadOnly)
+            {
+                sb.Append("    else [[\n");
+
+                int ParamIndex = ps.Length;
+
+                var paramHandler = JSDataExchangeMgr.Get_ParamHandler(property.PropertyType, ParamIndex, false, false);
+                sb.Append("        " + paramHandler.getter + "\n");
+
+                if (bIndexer)
+                {
+                    if (isStatic)
+                        sb.AppendFormat("{0} = {1};\n", sbCall, paramHandler.argName);
+                    else
+                    {
+                        if (type.IsValueType)
+                        {
+                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSDataExchangeMgr.GetTypeFullName(type));
+                            sb.AppendFormat("argThis{0} = {1};", sbActualParam, paramHandler.argName);
+                            sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("        {0} = {1};\n", sbCall, paramHandler.argName);
+                        }
+                    }
+                }
+                else
+                {
+                    if (isStatic)
+                        sb.AppendFormat("{0}.{1} = {2};\n", JSDataExchangeMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
+                    else
+                    {
+                        if (type.IsValueType)
+                        {
+                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSDataExchangeMgr.GetTypeFullName(type));
+                            sb.AppendFormat("        argThis.{0} = {1};\n", property.Name, paramHandler.argName);
+                            sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
+                        }
+                        else
+                        {
+                            sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", JSDataExchangeMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
+                        }
+                    }
+                }
+                sb.Append("    ]]\n");
+            }
+
+            sb.AppendFormat("]]\n");
+
+            ccbn.properties.Add(functionName);
+        }
+        return sb;
+    }
+    
+
+    public static StringBuilder BuildProperties(Type type, PropertyInfo[] properties, int[] propertiesIndex, ClassCallbackNames ccbn)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < properties.Length; i++)
+        {
+            var sbCall = new StringBuilder();
+
+            PropertyInfo property = properties[i];
+            MethodInfo[] accessors = property.GetAccessors();
+            bool isStatic = accessors[0].IsStatic;
+
+            bool bGenericT = type.IsGenericTypeDefinition;
+            StringBuilder sbt = null;
+
+            if (bGenericT)
+            {
+                sbt = new StringBuilder();
+
+                sbt.AppendFormat("    PropertyInfo property = JSDataExchangeMgr.GetPropertyInfoOfGenericClass(vc.csObj.GetType(), {0}); \n",
+                        propertiesIndex[i]);        // [0] methodArrIndex
+
+                sbt.AppendFormat("    if (property == null)\n        return;\n");
+                sbt.Append("\n");
+            }
+
+            //
+            // check to see if this is a indexer
+            //
+            ParameterInfo[] ps = property.GetIndexParameters();
+            bool bIndexer = (ps.Length > 0);
+            StringBuilder sbActualParam = null;
+            JSDataExchangeMgr.ParamHandler[] paramHandlers = null;
+            if (bIndexer)
+            {
+                sbActualParam = new StringBuilder();
+                paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];
+                //sbActualParam.Append("[");
+                for (int j = 0; j < ps.Length; j++)
+                {
+                    paramHandlers[j] = JSDataExchangeMgr.Get_ParamHandler(ps[j].ParameterType, j, false, false);
+                    sbActualParam.AppendFormat("{0}", paramHandlers[j].argName);
+                    if (j != ps.Length - 1)
+                    {
+                        sbActualParam.Append(", ");
+                    }
+                }
+                //sbActualParam.Append("]");
+            }
+
+            string functionName = type.Name + "_" + property.Name;
+            if (bIndexer)
+            {
+                foreach (var p in ps)
+                {
+                    functionName += "_" + p.ParameterType.Name;
+                }
+            }
+            functionName = JSDataExchangeMgr.HandleFunctionName(functionName);
+
+            sb.AppendFormat("static void {0}(JSVCall vc)\n[[\n", functionName);
+
+            if (bGenericT)
+            {
+                sb.Append(sbt);
+            }
+
+
+            bool bReadOnly = !property.CanWrite;
+            if (bIndexer)
+            {
+                for (int j = 0; j < ps.Length; j++)
+                {
+                    sb.Append("        " + paramHandlers[j].getter + "\n");
+                }
+                if (bGenericT)
+                {
+                    if (isStatic)
+                    {
+                        sbCall.AppendFormat("property.GetValue(null, new object[][[{0}]])", sbActualParam);
+                    }
+                    else
+                    {
+                        sbCall.AppendFormat("property.GetValue(vc.csObj, new object[][[{0}]])", sbActualParam);
+                    }
+                }
+                else
+                {
+                    if (isStatic)
+                    {
+                        sbCall.AppendFormat("{0}[{1}]", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
+                    }
+                    else
+                    {
+                        sbCall.AppendFormat("(({0})vc.csObj)[{1}]", JSDataExchangeMgr.GetTypeFullName(type), sbActualParam);
+                    }
                 }
             }
             
@@ -345,7 +553,9 @@ public static class CSGenerator2
                         
             sb.AppendFormat("        {0}", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
             if (!bReadOnly)
+            {
                 sb.Append("\n    ]]\n");
+            }
 
             // set
             if (!bReadOnly)
@@ -1000,7 +1210,7 @@ public class JSGeneratedFileNames
         }
 
         var sbFields = BuildFields(type, ti.fields, ccbn);
-        var sbProperties = BuildProperties(type, ti.properties, ccbn);
+        var sbProperties = BuildProperties(type, ti.properties, ti.propertiesIndex, ccbn);
         var sbMethods = BuildMethods(type, ti.methods, ti.methodsIndex, ti.methodsOLInfo, ccbn);
         var sbCons = BuildConstructors(type, ti.constructors, ti.constructorsIndex, ccbn);
         var sbRegister = BuildRegisterFunction(ccbn, ti);

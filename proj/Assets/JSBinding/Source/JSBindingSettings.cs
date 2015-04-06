@@ -515,6 +515,10 @@ public class JSBindingSettings
 		*/       
     };
 
+    public static Type[] classes2 = new Type[]
+    {
+        typeof(List<>), 
+    };
     public static Type[] classes = new Type[]
     {
         /*
