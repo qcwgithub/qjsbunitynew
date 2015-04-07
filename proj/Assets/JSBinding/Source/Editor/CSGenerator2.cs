@@ -541,11 +541,25 @@ public static class CSGenerator2
 
             if (!bIndexer)
             {
-                // get
-                if (isStatic)
-                    sbCall.AppendFormat("{0}.{1}", JSDataExchangeMgr.GetTypeFullName(type), property.Name);
-                else
-                    sbCall.AppendFormat("(({0})vc.csObj).{1}", JSDataExchangeMgr.GetTypeFullName(type), property.Name);
+                if (bGenericT)
+                {
+                    if (isStatic)
+                    {
+                        sbCall.AppendFormat("property.GetValue(null, new object[][[]])");
+                    }
+                    else
+                    {
+                        sbCall.AppendFormat("property.GetValue(vc.csObj, new object[][[]])");
+                    }
+                }
+                else 
+                {
+                    // get
+                    if (isStatic)
+                        sbCall.AppendFormat("{0}.{1}", JSDataExchangeMgr.GetTypeFullName(type), property.Name);
+                    else
+                        sbCall.AppendFormat("(({0})vc.csObj).{1}", JSDataExchangeMgr.GetTypeFullName(type), property.Name);
+                }
             }
 
             //if (type.IsValueType && !field.IsStatic)
@@ -569,37 +583,67 @@ public static class CSGenerator2
 
                 if (bIndexer)
                 {
-                    if (isStatic)
-                        sb.AppendFormat("{0} = {1};\n", sbCall, paramHandler.argName);
-                    else
+                    if (bGenericT)
                     {
-                        if (type.IsValueType)
-                        {
-                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSDataExchangeMgr.GetTypeFullName(type));
-                            sb.AppendFormat("argThis{0} = {1};", sbActualParam, paramHandler.argName);
-                            sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
-                        }
+                        if (isStatic)
+                            sb.AppendFormat("property.SetValue(null, {0}, new object[][[{1}]]);\n", paramHandler.argName, sbActualParam);
                         else
                         {
-                            sb.AppendFormat("        {0} = {1};\n", sbCall, paramHandler.argName);
+                            if (type.IsValueType || !type.IsValueType)
+                            {   // struct 和 class 是一样的
+                                sb.AppendFormat("property.SetValue(vc.csObj, {0}, new object[][[{1}]]);\n", paramHandler.argName, sbActualParam);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (isStatic)
+                            sb.AppendFormat("{0} = {1};\n", sbCall, paramHandler.argName);
+                        else
+                        {
+                            if (type.IsValueType)
+                            {
+                                sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSDataExchangeMgr.GetTypeFullName(type));
+                                sb.AppendFormat("argThis{0} = {1};", sbActualParam, paramHandler.argName);
+                                sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
+                            }
+                            else
+                            {
+                                sb.AppendFormat("        {0} = {1};\n", sbCall, paramHandler.argName);
+                            }
                         }
                     }
                 }
                 else
                 {
-                    if (isStatic)
-                        sb.AppendFormat("{0}.{1} = {2};\n", JSDataExchangeMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
-                    else
+                    if (bGenericT)
                     {
-                        if (type.IsValueType)
-                        {
-                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSDataExchangeMgr.GetTypeFullName(type));
-                            sb.AppendFormat("        argThis.{0} = {1};\n", property.Name, paramHandler.argName);
-                            sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
-                        }
+                        if (isStatic)
+                            sb.AppendFormat("property.SetValue(null, {0}, new object[][[]]);\n", paramHandler.argName);
                         else
                         {
-                            sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", JSDataExchangeMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
+                            if (type.IsValueType || !type.IsValueType)
+                            {   // struct 和 class 是一样的
+                                sb.AppendFormat("property.SetValue(vc.csObj, {0}, new object[][[]]);\n", paramHandler.argName);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (isStatic)
+                            sb.AppendFormat("{0}.{1} = {2};\n", JSDataExchangeMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
+                        else
+                        {
+                            if (type.IsValueType)
+                            {
+                                sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSDataExchangeMgr.GetTypeFullName(type));
+                                sb.AppendFormat("        argThis.{0} = {1};\n", property.Name, paramHandler.argName);
+                                sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
+                            }
+                            else
+                            {
+                                sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", JSDataExchangeMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
+                            }
                         }
                     }
                 }

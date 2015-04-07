@@ -45,7 +45,7 @@ namespace cg
             Indexer, // [a, b, c]
             NewObjArr,// new object[] {a, b, c}
         }
-        public string FormatAs(ArgsFormat fmt)
+        public string Format(ArgsFormat fmt)
         {
             sb.Remove(0, sb.Length);
 
@@ -87,7 +87,7 @@ namespace cg
         }
         public override string ToString()
         {
-            return this.FormatAs(ArgsFormat.OnlyList);
+            return this.Format(ArgsFormat.OnlyList);
         }
     }
 
