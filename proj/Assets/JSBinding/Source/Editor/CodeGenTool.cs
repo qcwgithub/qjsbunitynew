@@ -39,16 +39,96 @@ namespace cg
             lst.Clear();
             return this;
         }
-        public override string ToString()
+        public enum ArgsFormat { 
+            OnlyList, // a, b, c
+            Call, // (a, b, c)
+            Indexer, // [a, b, c]
+            NewObjArr,// new object[] {a, b, c}
+        }
+        public string FormatAs(ArgsFormat fmt)
         {
             sb.Remove(0, sb.Length);
+
+            switch (fmt)
+            {
+                case ArgsFormat.Call:
+                    sb.Append("(");
+                    break;
+                case ArgsFormat.Indexer:
+                    sb.Append("[");
+                    break;
+                case ArgsFormat.NewObjArr:
+                    sb.Append("new object[] {");
+                    break;
+                default:
+                    break;
+            }
             for (int i = 0; i < lst.Count; i++)
             {
                 sb.Append(lst[i]);
                 if (i != lst.Count - 1)
                     sb.Append(", ");
             }
+            switch (fmt)
+            {
+                case ArgsFormat.Call:
+                    sb.Append(")");
+                    break;
+                case ArgsFormat.Indexer:
+                    sb.Append("]");
+                    break;
+                case ArgsFormat.NewObjArr:
+                    sb.Append("}");
+                    break;
+                default:
+                    break;
+            }
             return sb.ToString();
         }
+        public override string ToString()
+        {
+            return this.FormatAs(ArgsFormat.OnlyList);
+        }
+    }
+
+    public enum MemberType { 
+        CONSTRUCTOR,
+        FIELD,
+        PROPERTY,
+        METHOD,
+    }
+
+    public class GenClassProcess
+    {
+        public static MemberType memberType = MemberType.CONSTRUCTOR;
+        public static bool isStatic = false;
+
+        public void setFunctionName(string name) { 
+
+        }
+
+        // needCount: 最少需要几个
+        // allCount: 最多几个，也就是一共几个
+        // 将自动生成 if (count == 5) {} else if (count == 6) {}
+        public void setFunctionParamsCount(int needCount, int allCount) {
+            functionBodies = new FunctionBodyProcess[allCount - needCount + 1];
+            this.needParamCount = needCount;
+            this.allParamCount = allCount;
+        }
+        int needParamCount, allParamCount;
+        FunctionBodyProcess[] functionBodies = null;
+        FunctionBodyProcess functionBody { get { return functionBodies[0]; } }
+    }
+    public class FunctionBodyProcess
+    {
+        // for generic function definition
+        // and generic type definition
+        // 格式：全格式
+        // 
+        public StringBuilder sbPrepareMethod = new StringBuilder();
+
+        // 给定格式： a,b,c
+        // 会根据 memberType 自动处理一下
+        public StringBuilder sbCallParams = new StringBuilder();
     }
 }
