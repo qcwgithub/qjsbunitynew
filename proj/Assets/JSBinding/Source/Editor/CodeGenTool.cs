@@ -44,6 +44,7 @@ namespace cg
             Call, // (a, b, c)
             Indexer, // [a, b, c]
             NewObjArr,// new object[] {a, b, c}
+            GenericT, // <a, b, c>
         }
         public string Format(ArgsFormat fmt)
         {
@@ -59,6 +60,9 @@ namespace cg
                     break;
                 case ArgsFormat.NewObjArr:
                     sb.Append("new object[] {");
+                    break;
+                case ArgsFormat.GenericT:
+                    sb.Append("<");
                     break;
                 default:
                     break;
@@ -79,6 +83,9 @@ namespace cg
                     break;
                 case ArgsFormat.NewObjArr:
                     sb.Append("}");
+                    break;
+                case ArgsFormat.GenericT:
+                    sb.Append(">");
                     break;
                 default:
                     break;

@@ -266,12 +266,23 @@ _jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
 
             argFormal.Clear();
 
+            // add T to formal param
+            if (type.IsGenericTypeDefinition)
+            {
+                int TCount = type.GetGenericArguments().Length;
+                for (int j = 0; j < TCount; j++)
+                {
+                    argFormal.Add("t" + j + "");
+                    argActual.Add("t" + j + ".getNativeType()");
+                }
+            }
+
             StringBuilder sbFormalParam = new StringBuilder();
             StringBuilder sbActualParam = new StringBuilder();
             for (int j = 0; j < ps.Length; j++)
             {
-                argActual.Add("a" + j.ToString());
                 argFormal.Add("a" + j.ToString());
+                argActual.Add("a" + j.ToString());
             }
             sb.AppendFormat(fmt, 
                 SharpKitMethodName("ctor", ps, (type.IsValueType || howmanyConstructors > 1)), // [0]

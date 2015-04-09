@@ -143,8 +143,23 @@ public static class CSGenerator2
             sbParamList.AppendFormat("{0}{1}", ps[i].Name, (i == ps.Length - 1 ? "" : ","));
         }
 
+        string stringTOfMethod = string.Empty;
+        if (delType.IsGenericType)
+        {
+            var arg = new cg.args();
+            foreach (var t in delType.GetGenericArguments())
+            {
+                arg.Add(t.Name);
+            }
+            stringTOfMethod = arg.Format(cg.args.ArgsFormat.GenericT);
+        }
+
         // this function name is used in BuildFields, don't change
-        sb.AppendFormat("static {0} {1}(jsval jsFunction)\n[[\n", JSDataExchangeMgr.GetTypeFullName(delType), GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, argIndex));
+        sb.AppendFormat("static {0} {1}{2}(jsval jsFunction)\n[[\n", 
+            JSDataExchangeMgr.GetTypeFullName(delType),  // [0]
+            GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, argIndex), // [2]
+            stringTOfMethod  // [1]
+            );
         sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");
         sb.AppendFormat("    {0} action = ({1}) => \n", JSDataExchangeMgr.GetTypeFullName(delType), sbParamList);
         sb.AppendFormat("    [[\n");
@@ -740,8 +755,8 @@ public static class CSGenerator2
                 // 不是 T 函数，但是类带T
                 StringBuilder sbt = new StringBuilder();
 
-                sbt.AppendFormat("    ConstructorInfo constructor = JSDataExchangeMgr.GetConstructorOfGenericClass(vc.csObj.GetType(), {0}); \n",
-                        methodArrIndex);        // [0] methodArrIndex
+                sbt.AppendFormat("    ConstructorInfo constructor = JSDataExchangeMgr.GetConstructorOfGenericClass(typeof({0}), vc, {1}); \n",
+                        JSDataExchangeMgr.GetTypeFullName(type), methodArrIndex);        // [0] methodArrIndex
 
                 sbt.AppendFormat("    if (constructor == null)\n        return true;\n");
                 sbt.Append("\n");
@@ -842,9 +857,30 @@ public static class CSGenerator2
             {
                 ParameterInfo p = ps[i];
                 if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
-                    sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n", JSDataExchangeMgr.GetTypeFullName(p.ParameterType), i, GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i));
+                {
+                    string delegateGetName = GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i);
+
+                    if (p.ParameterType.IsGenericType)
+                    {
+                        // cg.args ta = new cg.args();
+                        // sbGetParam.AppendFormat("foreach (var a in method.GetParameters()[{0}].ParameterType.GetGenericArguments()) ta.Add();");
+                        sbGetParam.AppendFormat("        var getDelegateFun{0} = typeof({1}).GetMethod(\"{2}\").MakeGenericMethod\n", i, thisClassName, delegateGetName);
+                        sbGetParam.AppendFormat("            (method.GetParameters()[{0}].ParameterType.GetGenericArguments());\n", i);
+                        sbGetParam.AppendFormat("        object arg{0} = getDelegateFun{0}.Invoke(null, new object[][[{1}]]);\n", i, "vc.getJSFunctionValue()");
+                    }
+                    else
+                    {
+                        sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n",
+                                                JSDataExchangeMgr.GetTypeFullName(p.ParameterType), // [0]
+                                                i, // [1]
+                                                delegateGetName // [2]
+                                                );
+                    }
+                }
                 else
+                {
                     sbGetParam.Append("        " + paramHandlers[i].getter + "\n");
+                }
 
                 // value type array
                 // no 'out' nor 'ref'
@@ -1149,16 +1185,27 @@ public static void __Register()
         for (int i = 0; i < ccbn.constructors.Count; i++)
         {
             if (ccbn.constructors.Count == 1 && ti.constructors.Length == 0) // no constructors   add a default  so ...
-                sbCons.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{2}', {1}),\n", ccbn.constructors[i], ccbn.constructorsCSParam[i], type.Name);
+                sbCons.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{2}', {1}),\n", ccbn.constructors[i],
+                    //ccbn.constructorsCSParam[i], 
+                    "null", 
+                    type.Name);
             else
-                sbCons.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{2}', {1}),\n", ccbn.constructors[i], ccbn.constructorsCSParam[i], ti.constructors[i].Name);
+                sbCons.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{2}', {1}),\n", ccbn.constructors[i],
+                    //ccbn.constructorsCSParam[i], 
+                    "null", 
+                    ti.constructors[i].Name);
         }
         for (int i = 0; i < ccbn.methods.Count; i++)
         {
             // if method is not overloaded
             // don's save the cs param array
             sbMethod.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{2}', {1}),\n", ccbn.methods[i], 
-                (ti.methodsOLInfo[i] > 0 ? ccbn.methodsCSParam[i] : "null"), 
+                (ti.methodsOLInfo[i] > 0 ? 
+                
+                // ccbn.methodsCSParam[i] : 
+                "null" : // !!!!!!!!!!!!!!!!!!!!!!!!!!!
+                
+                "null"), 
                 ti.methods[i].Name);
         }
 
@@ -1209,7 +1256,7 @@ public class JSGeneratedFileNames
         StringBuilder sbA = new StringBuilder();
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
-            string name = JSDataExchangeMgr.GetTypeFullName(JSBindingSettings.classes[i]).Replace('.', '_');
+            string name = JSDataExchangeMgr.GetTypeFileName(JSBindingSettings.classes[i]).Replace('.', '_');
             if (JSGenerator2.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
                 name = JSGenerator2.typeClassName[JSBindingSettings.classes[i]];
             sbA.AppendFormat("        \"{0}\",\n", name);

@@ -515,11 +515,11 @@ public class JSBindingSettings
 		*/       
     };
 
-    public static Type[] classes = new Type[]
+    public static Type[] classes2 = new Type[]
     {
         typeof(List<>), 
     };
-    public static Type[] classes2 = new Type[]
+    public static Type[] classes = new Type[]
     {
         /*
          * Classes to export for demo
@@ -539,13 +539,13 @@ public class JSBindingSettings
 
          //class
 
-        typeof(UnityEngine.SocialPlatforms.Impl.LocalUser),
-        typeof(UnityEngine.SocialPlatforms.Impl.UserProfile),
-        typeof(UnityEngine.SocialPlatforms.Impl.Achievement),
-        typeof(UnityEngine.SocialPlatforms.Impl.AchievementDescription),
-        typeof(UnityEngine.SocialPlatforms.Impl.Score),
-        typeof(UnityEngine.SocialPlatforms.Impl.Leaderboard),
-        typeof(UnityEngine.SocialPlatforms.Local),
+ //       typeof(UnityEngine.SocialPlatforms.Impl.LocalUser),
+ //       typeof(UnityEngine.SocialPlatforms.Impl.UserProfile),
+ //       typeof(UnityEngine.SocialPlatforms.Impl.Achievement),
+ //       typeof(UnityEngine.SocialPlatforms.Impl.AchievementDescription),
+ //       typeof(UnityEngine.SocialPlatforms.Impl.Score),
+ //       typeof(UnityEngine.SocialPlatforms.Impl.Leaderboard),
+ //       typeof(UnityEngine.SocialPlatforms.Local),
 
         typeof(UnityEngine.Security),
 
@@ -1066,6 +1066,9 @@ public class JSBindingSettings
         // typeof(UnityEngine.UI.InputField.OnValidateInput),
 
 #endif
+
+        
+        typeof(List<>), 
 
     };
 

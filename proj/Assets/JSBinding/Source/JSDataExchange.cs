@@ -948,7 +948,7 @@ public class JSDataExchangeMgr
             fatherName += "<";
             for (int i = 0; i < ts.Length; i++)
             {
-                fatherName += ts[i].Name;
+                fatherName += ts[i].Name; // ÕâÀïÊÇT
                 if (i != ts.Length - 1)
                     fatherName += ", ";
             }
@@ -1378,10 +1378,36 @@ public class JSDataExchangeMgr
         if (index < 0) return null;
         return type.GetProperties(JSMgr.BindingFlagsProperty)[index];
     }
-    public static ConstructorInfo GetConstructorOfGenericClass(Type type, int index)
-    {
-        if (index < 0) return null;
-        return type.GetConstructors()[index];
+    public static ConstructorInfo GetConstructorOfGenericClass(Type type, JSVCall vc, int index)
+    { 
+        if (index < 0) 
+            return null;
+
+        bool bGen = type.IsGenericType;
+        bool bGenD = type.IsGenericTypeDefinition;
+
+        if (type.IsGenericTypeDefinition)
+        {
+            int TCount = type.GetGenericArguments().Length;
+            // get T types
+            Type[] genericTypes = new Type[TCount];
+            for (int i = 0; i < TCount; i++)
+            {
+                // Get generic types from js.
+                System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV));
+                genericTypes[i] = t;
+                if (t == null)
+                {
+                    return null;
+                }
+            }
+            var concreteType = type.MakeGenericType(genericTypes);
+            return concreteType.GetConstructors()[index];
+        }
+        else
+        {
+            return type.GetConstructors()[index];
+        }
     }
 
     public static MethodInfo GetMethodOfGenericClass(Type type, string methodName, int index)

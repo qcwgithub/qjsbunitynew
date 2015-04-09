@@ -289,7 +289,7 @@ public static class JSAnalyzer
         Debug.Log(sbHierachy);
     }
     // Alt + Shift + Q
-    //[MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
+    [MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
     public static void CopyGameObjectMonoBehaviours()
     {
         Debug.Log("CopyGameObjectMonoBehaviours");
