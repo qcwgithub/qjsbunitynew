@@ -604,7 +604,7 @@ public static class CSGenerator2
                             if (type.IsValueType)
                             {
                                 sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSDataExchangeMgr.GetTypeFullName(type));
-                                sb.AppendFormat("argThis{0} = {1};", sbActualParam, paramHandler.argName);
+                                sb.AppendFormat("argThis[{0}] = {1};", sbActualParam, paramHandler.argName);
                                 sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
                             }
                             else
