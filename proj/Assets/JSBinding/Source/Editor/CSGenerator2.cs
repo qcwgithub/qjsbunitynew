@@ -15,6 +15,7 @@ public static class CSGenerator2
     // input
     static StringBuilder sb = null;
     public static Type type = null;
+    public static string thisClassName = null;
 
     static string tempFile = JSBindingSettings.jsDir + "/temp" + JSBindingSettings.jsExtension;
 
@@ -1253,6 +1254,8 @@ public class JSGeneratedFileNames
             ccbn.methodsCSParam = new List<string>(ti.methods.Length);
         }
 
+        thisClassName = JSDataExchangeMgr.GetTypeFileName(type) + "Generated";
+
         var sbFields = BuildFields(type, ti.fields, ccbn);
         var sbProperties = BuildProperties(type, ti.properties, ti.propertiesIndex, ccbn);
         var sbMethods = BuildMethods(type, ti.methods, ti.methodsIndex, ti.methodsOLInfo, ccbn);
@@ -1276,7 +1279,7 @@ using System.Reflection;
 
 using jsval = JSApi.jsval;
 
-public class {0}Generated
+public class {0}
 [[
 {1}
 ]]
@@ -1289,7 +1292,7 @@ public class {0}Generated
             if (nameSpaceString == "UnityEngine")
                 nameSpaceString = string.Empty;
         }
-        sbFile.AppendFormat(fmtFile, JSDataExchangeMgr.GetTypeFileName(type), sbClass, nameSpaceString.Length > 0 ? "using " + nameSpaceString + ";" : "");
+        sbFile.AppendFormat(fmtFile, thisClassName, sbClass, nameSpaceString.Length > 0 ? "using " + nameSpaceString + ";" : "");
         HandleStringFormat(sbFile);
 
         sbFile.Replace("\r\n", "\n");
