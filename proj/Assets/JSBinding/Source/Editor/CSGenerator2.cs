@@ -105,7 +105,7 @@ public static class CSGenerator2
         }
 
         // this function name is used in BuildFields, don't change
-        sb.AppendFormat("static {0} {1}_{2}_GetDelegate(jsval jsFunction)\n[[\n", JSDataExchangeMgr.GetTypeFullName(field.FieldType), type.Name, field.Name);
+        sb.AppendFormat("public static {0} {1}_{2}_GetDelegate(jsval jsFunction)\n[[\n", JSDataExchangeMgr.GetTypeFullName(field.FieldType), type.Name, field.Name);
         sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");
         sb.AppendFormat("    {0} action = ({1}) => \n", JSDataExchangeMgr.GetTypeFullName(field.FieldType), sbParamList);
         sb.AppendFormat("    [[\n");
@@ -155,7 +155,7 @@ public static class CSGenerator2
         }
 
         // this function name is used in BuildFields, don't change
-        sb.AppendFormat("static {0} {1}{2}(jsval jsFunction)\n[[\n", 
+        sb.AppendFormat("public static {0} {1}{2}(jsval jsFunction)\n[[\n", 
             JSDataExchangeMgr.GetTypeFullName(delType),  // [0]
             GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, argIndex), // [2]
             stringTOfMethod  // [1]

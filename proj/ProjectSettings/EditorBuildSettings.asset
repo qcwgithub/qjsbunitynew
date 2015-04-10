@@ -6,4 +6,4 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/JSBinding/Test/UnityJSTestScene.unity
+    path: Assets/JSBinding/Test/UnityJSTestScene_SharpKit.unity
