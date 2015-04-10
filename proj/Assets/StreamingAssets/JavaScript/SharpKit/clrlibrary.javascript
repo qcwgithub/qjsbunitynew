@@ -5762,7 +5762,7 @@ var System$Collections$Generic$List$1 = {
         }
     }
 };
-JsTypes.push(System$Collections$Generic$List$1);
+//JsTypes.push(System$Collections$Generic$List$1);
 var System$Collections$Generic$Queue$1 = {
     fullname: "System.Collections.Generic.Queue$1",
     baseTypeName: "System.Object",

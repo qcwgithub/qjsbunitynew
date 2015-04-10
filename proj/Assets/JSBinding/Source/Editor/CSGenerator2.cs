@@ -843,6 +843,8 @@ public static class CSGenerator2
 
         if (TCount == 0)
             sb.AppendFormat("    int len = count;\n");
+        else if (bConstructor && type.IsGenericTypeDefinition)
+            sb.AppendFormat("    int len = count - {0};\n", type.GetGenericArguments().Length);
         else
             sb.AppendFormat("    int len = count - {0};\n", TCount);
 

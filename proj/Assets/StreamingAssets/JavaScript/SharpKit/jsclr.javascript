@@ -450,7 +450,7 @@ JsCompiler.Compile_Phase1 = function (){
         }
 
 
-		if (jsType.Kind == "Struct" || jsType.Kind == "Class") 
+		// if (jsType.Kind == "Struct" || jsType.Kind == "Class") 
 		{
             // add default constructor!!
             if (jsType.definition.ctor == undefined) {
