@@ -515,12 +515,19 @@ public class JSBindingSettings
 		*/       
     };
 
-    public static Type[] classes2 = new Type[]
+    public static Type[] classes = new Type[]
     {
         typeof(List<>), 
         typeof(List<>.Enumerator), 
+        typeof(System.Diagnostics.Stopwatch),
+        typeof(GameObject),
+        typeof(UnityEngine.Object),
+        typeof(UnityEngine.MonoBehaviour),
+        typeof(UnityEngine.Behaviour),
+        typeof(UnityEngine.Component),
+        typeof(Debug),
     };
-    public static Type[] classes = new Type[]
+    public static Type[] classes2 = new Type[]
     {
         /*
          * Classes to export for demo
