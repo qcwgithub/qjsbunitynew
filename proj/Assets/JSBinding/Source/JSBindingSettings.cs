@@ -518,6 +518,7 @@ public class JSBindingSettings
     public static Type[] classes2 = new Type[]
     {
         typeof(List<>), 
+        typeof(List<>.Enumerator), 
     };
     public static Type[] classes = new Type[]
     {
@@ -954,7 +955,7 @@ public class JSBindingSettings
         //
         //
 
-#if UNITY_4_6
+#if UNITY_4_9
         
         // interface
 
@@ -1069,6 +1070,7 @@ public class JSBindingSettings
 
         
         typeof(List<>), 
+        typeof(List<>.Enumerator), 
 
     };
 

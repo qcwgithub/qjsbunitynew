@@ -1,1 +1,1 @@
-CS.require("Test1")
+CS.require("SharpKitGenerated/Test1");

@@ -840,11 +840,11 @@ public static class CSGenerator2
             minNeedParams++;
         }
 
-
-        if (TCount == 0)
-            sb.AppendFormat("    int len = count;\n");
-        else if (bConstructor && type.IsGenericTypeDefinition)
+        
+        if (bConstructor && type.IsGenericTypeDefinition)
             sb.AppendFormat("    int len = count - {0};\n", type.GetGenericArguments().Length);
+        else if (TCount == 0)
+            sb.AppendFormat("    int len = count;\n");
         else
             sb.AppendFormat("    int len = count - {0};\n", TCount);
 
@@ -954,14 +954,14 @@ public static class CSGenerator2
                     }
                     else
                     {
-                        sbCall.AppendFormat("method.Invoke(argThis, {0})", sbActualParamT);
+                        sbCall.AppendFormat("method.Invoke(vc.csObj, {0})", sbActualParamT);
                     }
                 }
 
                 string callAndReturn = JSDataExchangeMgr.Get_Return(returnType, sbCall.ToString());
 
                 StringBuilder sbStruct = null;
-                if (type.IsValueType && !bStatic)
+                if (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition)
                 {
                     sbStruct = new StringBuilder();
                     sbStruct.AppendFormat("{0} argThis = ({0})vc.csObj;", JSDataExchangeMgr.GetTypeFullName(type));
@@ -978,9 +978,9 @@ public static class CSGenerator2
 ",
                  j, // [0] param count
                  (j == minNeedParams) ? "" : "else ",  // [1] else
-                 (type.IsValueType && !bStatic) ? sbStruct.ToString() : "",  // [2] if Struct, get argThis first
+                 (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? sbStruct.ToString() : "",  // [2] if Struct, get argThis first
                  callAndReturn,  // [3] function call and return to js
-                 (type.IsValueType && !bStatic) ? "JSMgr.changeJSObj(vc.jsObj, argThis);" : "",  // [4] if Struct, update 'this' object
+                 (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? "JSMgr.changeJSObj(vc.jsObj, argThis);" : "",  // [4] if Struct, update 'this' object
                  sbGetParam,        // [5] get param
                  sbUpdateRefParam); // [6] update ref/out param
 
@@ -1439,6 +1439,7 @@ using UnityEngine;
         foreach (var typeb in dict)
         {
             Type type = typeb.Key;
+            if (type.BaseType == null) { continue;  }
             // System.Object is already defined in SharpKit clrlibrary
             if (!clrLibrary.ContainsKey(type.BaseType) && !dict.ContainsKey(type.BaseType))
             {
