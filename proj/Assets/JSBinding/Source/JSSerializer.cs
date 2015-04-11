@@ -159,21 +159,25 @@ public class JSSerializer : MonoBehaviour
     }
     class SerializeStruct
     {
-
-    }
-    public void TraverseSerialize(IntPtr cx, IntPtr jsObj)
-    {
-
-    }
-    // this function is called in Awake
-    public void initSerializedData(IntPtr cx, IntPtr jsObj)
-    {
-        if (arrString == null || arrString.Length == 0)
+        public enum SType { Root, Array, Struct, List, Unit };
+        public SType type;
+        public JSApi.jsval val;
+        public SerializeStruct father;
+        List<SerializeStruct> lstChildren;
+        public void AddChild(SerializeStruct ss)
         {
-            return;
-        }
 
-        for (var i = 0; i < arrString.Length; i++)
+        }
+        public SerializeStruct()
+        {
+            type = SType.Root;
+            val.asBits = 0;
+            father = null;
+        }
+    }
+    public int TraverseSerialize(IntPtr cx, IntPtr jsObj, int index, SerializeStruct st)
+    {
+        for (var i = index; i < arrString.Length; i++)
         {
             string s = arrString[i];
             int x = s.IndexOf('/');
@@ -201,5 +205,15 @@ public class JSSerializer : MonoBehaviour
                     break;
             }
         }
+    }
+    // this function is called in Awake
+    public void initSerializedData(IntPtr cx, IntPtr jsObj)
+    {
+        if (arrString == null || arrString.Length == 0)
+        {
+            return;
+        }
+
+        TraverseSerialize(cx, jsObj, 0, new SerializeStruct());
     }
 }
