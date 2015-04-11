@@ -191,14 +191,14 @@ public static class JSSerializerEditor
 
         if ((typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type)))
         {
-            return UnitType.ST_MonoBehaviour;
+            return JSSerializer.UnitType.ST_MonoBehaviour;
         }
         if ((typeof(UnityEngine.Object).IsAssignableFrom(type)))
         {
-            return UnitType.ST_UnityEngineObject;
+            return JSSerializer.UnitType.ST_UnityEngineObject;
         }
 
-        UnitType ret = UnitType.ST_Unknown;
+        JSSerializer.UnitType ret = JSSerializer.UnitType.ST_Unknown;
         if (!sDict.TryGetValue(type, out ret))
         {
             // Debug.LogError("GetIndex: Unknown type: " + type.Name);

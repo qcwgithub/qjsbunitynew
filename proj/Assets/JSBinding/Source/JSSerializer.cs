@@ -181,7 +181,8 @@ public class JSSerializer : MonoBehaviour
     }
     public int TraverseSerialize(IntPtr cx, IntPtr jsObj, int index, SerializeStruct st)
     {
-        for (var i = index; i < arrString.Length; i++)
+        var i = index;
+        for (/* */; i < arrString.Length; /* i++ */)
         {
             string s = arrString[i];
             int x = s.IndexOf('/');
@@ -200,14 +201,14 @@ public class JSSerializer : MonoBehaviour
 
                         var ss = new SerializeStruct(sType, s1, st);
                         st.AddChild(ss);
-                        TraverseSerialize(cx, jsObj, i + 1, ss);
+                        i += TraverseSerialize(cx, jsObj, i + 1, ss);
                     }
                     break;
                 case "ArrayEnd":
                 case "StructEnd":
                 case "ListEnd":
                     {
-                        TraverseSerialize(cx, jsObj, i + 1, st.father);
+                        i += TraverseSerialize(cx, jsObj, i + 1, st.father);
                     }
                     break;
                 default:
@@ -226,27 +227,35 @@ public class JSSerializer : MonoBehaviour
                         }
                         else if (eUnitType == UnitType.ST_MonoBehaviour)
                         {
-                            // TODO 最后再做
-                            //                             var arr = s1.Split('/');
-                            //                             var valName = arr[0];
-                            //                             var objIndex = int.Parse(arr[1]);
-                            //                             var scriptName = arr[2];
-                            // 
-                            //                             UnityEngine.Object obj = this.arrObjectArray[objIndex];
-                            //                             cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
-                            // 
-                            //                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-                            //                             child.val = JSMgr.vCall.valTemp;
-                            //                             st.AddChild(child);
+// TODO 最后再做
+//                             var arr = s1.Split('/');
+//                             var valName = arr[0];
+//                             var objIndex = int.Parse(arr[1]);
+//                             var scriptName = arr[2];
+// 
+//                             UnityEngine.Object obj = this.arrObjectArray[objIndex];
+//                             cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
+// 
+//                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
+//                             child.val = JSMgr.vCall.valTemp;
+//                             st.AddChild(child);
                         }
                         else
                         {
-                            ToJsval(eUnitType, s1);
+                            var arr = s1.Split('/');
+                            var valName = arr[0];
+                            ToJsval(eUnitType, arr[1]);
+                            var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
+                            child.val = JSMgr.vCall.valTemp;
+                            st.AddChild(child);
                         }
+                        // !
+                        i++;
                     }
                     break;
             }
         }
+        return i - index;
     }
     // this function is called in Awake
     public void initSerializedData(IntPtr cx, IntPtr jsObj)
