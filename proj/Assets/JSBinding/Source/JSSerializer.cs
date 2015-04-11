@@ -209,14 +209,22 @@ public class JSSerializer : MonoBehaviour
                 case SType.Struct:
                     {
                         IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(this.typeName);
-                        IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
-                        for (var i = 0; i < lstChildren.Count; i++)
+                        if (jstypeObj == IntPtr.Zero)
                         {
-                            var child = lstChildren[i];
-                            JSApi.jsval mVal = child.CalcJSVal();
-                            JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, child.name, -1, ref mVal);
+                            Debug.LogError("JSSerialize fail. New object \"" + this.typeName + "\" fail, did you forget to export that class?");
+                            this.val.asBits = 0;
                         }
-                        JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
+                        else
+                        {
+                            IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+                            for (var i = 0; i < lstChildren.Count; i++)
+                            {
+                                var child = lstChildren[i];
+                                JSApi.jsval mVal = child.CalcJSVal();
+                                JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, child.name, -1, ref mVal);
+                            }
+                            JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
+                        }
                     }
                     break;
                 case SType.List:
@@ -354,7 +362,7 @@ public class JSSerializer : MonoBehaviour
         }
 
         var root = new SerializeStruct(SerializeStruct.SType.Root, "this-name-doesn't-matter", null);
-        TraverseSerialize(cx, jsObj, 0, root);
+        TraverseSerialize(cx, jsObj, root);
         if (root.lstChildren != null)
         {
             foreach (var child in root.lstChildren)
