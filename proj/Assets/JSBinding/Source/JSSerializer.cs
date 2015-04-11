@@ -311,14 +311,17 @@ public class JSSerializer : MonoBehaviour
             value = v;
             unitType = ut;
 
-            serializeType = SerializeType.String;
+            eSerialize = SerializeType.String;
             serizlizeIndex = 0;
         }
-        public SerializeType serializeType;
+        // string or object?
+        public SerializeType eSerialize;
+        // if string  it's index of arrString
+        // if object  it's index of arrObject
         public int serizlizeIndex;
-        public void Alloc()
+        public void Alloc(JSSerializer behaviour)
         {
-            serializeType = SerializeType.String;
+            eSerialize = SerializeType.String;
             switch (analyzeType)
             {
                 case AnalyzeType.ArrayBegin:
@@ -341,7 +344,38 @@ public class JSSerializer : MonoBehaviour
                     break;
                 case AnalyzeType.Unit:
                     {
-                        Type objectType = this.serializeType;
+                        var sb = new StringBuilder();
+
+                        Type objectType = this.value.GetType();
+                        if (typeof(UnityEngine.Object).IsAssignableFrom(objectType))
+                        {
+                            eSerialize = SerializeType.Object;
+
+                            if (typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(objectType))
+                            {
+                                // if a monobehaviour is refer
+                                // and this monobehaviour will be translated to js later
+                                //  ST_MonoBehaviour
+                                if (WillTypeBeTranslatedToJavaScript(objectType))
+                                {
+                                    // add game object
+                                    var index = AllocObject(((MonoBehaviour)this.value).gameObject);
+
+                                    // eType / Name / object Index / MonoBehaviour name
+                                    sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, "NAME", index, JSDataExchangeMgr.GetTypeFullName(objectType));
+                                    AllocString(sb.ToString());
+                                }
+                                else
+                                {
+                                    // not supported
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string str = ValueToString(this.value, this.value.GetType(), this.unitType, "NAME!");
+                            AllocString(str);
+                        }
                     }
                     break;
             }
