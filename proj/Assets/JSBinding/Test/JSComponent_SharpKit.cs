@@ -128,6 +128,15 @@ public class JSComponent_SharpKit : JSSerializer
             initSerializedData(JSMgr.cx, jsObj);
         }
     }
+    public IntPtr GetJSObj()
+    {
+        if (jsObj == IntPtr.Zero)
+        {
+            if (!initFail) 
+                initJS();
+        }
+        return jsObj;
+    }
 
     private bool firstStart = true;
     void Start() 

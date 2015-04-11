@@ -353,7 +353,6 @@ public static class JSSerializerEditor
         {
             lstAnalyze[i].Alloc(serizlizer);
         }
-        serizlizer.AutoDelete = true;
         serizlizer.jsScriptName = JSDataExchangeMgr.GetTypeFullName(behaviour.GetType());
         serizlizer.arrString = lstString.ToArray();
         serizlizer.arrObject = lstObjs.ToArray();

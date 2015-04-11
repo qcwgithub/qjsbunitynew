@@ -12,25 +12,10 @@ public class JSSerializer : MonoBehaviour
      * AutoDelete: if true  will be automatically deleted when needed (when press Alt + Shift + Q)
      * DON'T change this manually
      */
-    [HideInInspector]
-    public bool AutoDelete = false;
-
     public string jsScriptName = string.Empty;
     public string[] arrString = null;
     public UnityEngine.Object[] arrObject = null;
 
-    /// <summary>
-    /// 当引用其他 MonoBehaviour 时  因为后来脚本都变成JS了  也就不能使用原来的方式去引用
-    /// 只能改成引用 GameObject   然后再记录脚本名字  后面再匹配
-    /// </summary>
-    private struct GameObject_JSComponentName
-    {
-        public string valName;
-        public GameObject go;
-        public string scriptName;
-        public GameObject_JSComponentName(string _valName, GameObject _go, string _scriptName) { valName = _valName; go = _go; scriptName = _scriptName; }
-    }
-    private List<GameObject_JSComponentName> cachedRefJSComponent = new List<GameObject_JSComponentName>();
     public enum UnitType
     {
         ST_Unknown = 0,
@@ -143,34 +128,20 @@ public class JSSerializer : MonoBehaviour
         }
         return ret;
     }
-    /// <summary>
-    /// 为什么这个要延迟调用（在Start时才调用）
-    /// 每个 GameObject Awake 时 jsObj 才会有值
-    /// 每个 GameObject 的 Awake 时机是不定的
-    /// 所以为了取得这个 jsObj 就必须在所有 GameObject 都 Awake 后再进行互相引用
-    /// </summary>
-    /// <param name="cx"></param>
-    /// <param name="jsObj"></param>
-    public void initSerializedRefMonoBehaviour(IntPtr cx, IntPtr jsObj)
+    public IntPtr GetGameObjectMonoBehaviourJSObj(GameObject go, string scriptName)
     {
-        foreach (var rel in cachedRefJSComponent)
+        JSComponent_SharpKit[] jsComs = go.GetComponents<JSComponent_SharpKit>();
+        foreach (var com in jsComs)
         {
-            GameObject go = rel.go;
-            JSComponent_SharpKit[] jsComs = go.GetComponents<JSComponent_SharpKit>();
-            foreach (var com in jsComs)
+            // 注意：最多只能绑同 一个名字的脚本一次  
+            // 现在只能支持这样
+            // 数组也不行  要注意
+            if (com.jsScriptName == scriptName)
             {
-                if (com.jsScriptName == rel.scriptName)
-                {
-                    // 注意：最多只能绑同 一个名字的脚本一次  
-                    // 现在只能支持这样
-                    // 数组也不行  要注意
-                    JSApi.JSh_SetJsvalObject(ref JSMgr.vCall.valTemp, com.jsObj);
-                    JSApi.JSh_SetUCProperty(cx, jsObj, rel.valName, -1, ref JSMgr.vCall.valTemp);
-                    break;
-                }
+                return com.GetJSObj();
             }
         }
-        cachedRefJSComponent.Clear();
+        return IntPtr.Zero;
     }
     public class SerializeStruct
     {
@@ -327,14 +298,17 @@ public class JSSerializer : MonoBehaviour
                             var objIndex = int.Parse(arr[0]);
                             var scriptName = arr[1];
 
-                            cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)this.arrObject[objIndex], scriptName));
-
-//                             UnityEngine.Object obj = this.arrObjectArray[objIndex];
-//                             cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
-// 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-                            JSApi.JSh_SetJsvalUndefined(ref child.val);
-                            // child.val = JSMgr.vCall.valTemp;
+                            IntPtr refJSObj = this.GetGameObjectMonoBehaviourJSObj((GameObject)this.arrObject[objIndex], scriptName);
+                            if (refJSObj == IntPtr.Zero)
+                            {
+                                JSApi.JSh_SetJsvalUndefined(ref child.val);
+                            }
+                            else
+                            {
+                                JSApi.JSh_SetJsvalObject(ref child.val, refJSObj);
+                            }
+
                             st.AddChild(child);
                         }
                         else
