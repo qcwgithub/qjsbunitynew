@@ -443,6 +443,38 @@ public class JSSerializer : MonoBehaviour
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
         return fields;
     }
+    static void TraverseAnalyze()
+    {
+        for (var i = 0; i < lst.Count; i++)
+        {
+            AnalyzeStructInfo info = lst[i];
+            switch (info.analyzeType)
+            {
+                case AnalyzeType.ArrayObj:
+                    break;
+                case AnalyzeType.StructObj:
+                    break;
+                case AnalyzeType.ListObj:
+                    {
+                        var list = info.value;
+                        var listType = list.GetType();
+                        var listElementType = listType.GetGenericArguments()[0];
+
+                        int Count = (int)listType.GetProperty("Count").GetValue(list, new object[] { });
+                        PropertyInfo pro = listType.GetProperty("Item");
+                        int Pos = i + 1;
+                        for (var j = 0; j < Count; j++)
+                        {
+                            var value = pro.GetValue(list, new object[]{ j });
+                            Pos += AddAnalyze(listElementType, value, Pos);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
     static void CopyBehaviour(MonoBehaviour behaviour, JSSerializer helper)
     {
         GameObject go = behaviour.gameObject;
