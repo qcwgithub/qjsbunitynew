@@ -157,7 +157,7 @@ public class JSSerializer : MonoBehaviour
         }
         cachedRefJSComponent.Clear();
     }
-    class SerializeStruct
+    public class SerializeStruct
     {
         public enum SType { Root, Array, Struct, List, Unit };
         public SType type;

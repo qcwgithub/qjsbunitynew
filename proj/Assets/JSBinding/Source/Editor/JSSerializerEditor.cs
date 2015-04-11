@@ -8,15 +8,7 @@ using SharpKit.JavaScript;
 
 public static class JSSerializerEditor
 {
-    private struct GameObject_JSComponentName
-    {
-        public string valName;
-        public GameObject go;
-        public string scriptName;
-        public GameObject_JSComponentName(string _valName, GameObject _go, string _scriptName) { valName = _valName; go = _go; scriptName = _scriptName; }
-    }
-    private List<GameObject_JSComponentName> cachedRefJSComponent = new List<GameObject_JSComponentName>();
-    enum SerializeType
+    public enum SerializeType
     {
         String,
         Object,
@@ -115,8 +107,13 @@ public static class JSSerializerEditor
         }
     }
 
-    static int AllocString(string str) { lstString.Add(str); return lstString.Count - 1; }
-    static int AllocObject(UnityEngine.Object obj) { lstObjs.Add(obj); return lstString.Count - 1; }
+    static void AllocString(string str) { 
+		lstString.Add(str); 
+	}
+    static int AllocObject(UnityEngine.Object obj) { 
+		lstObjs.Add(obj); 
+		return lstString.Count - 1; 
+	}
     static List<string> lstString = new List<string>();
     static List<UnityEngine.Object> lstObjs = new List<UnityEngine.Object>();
 
@@ -316,6 +313,9 @@ public static class JSSerializerEditor
     }
     static void CopyBehaviour(MonoBehaviour behaviour, JSSerializer serizlizer)
     {
+        lstString.Clear();
+        lstObjs.Clear();
+
         GameObject go = behaviour.gameObject;
         Type type = behaviour.GetType();
 

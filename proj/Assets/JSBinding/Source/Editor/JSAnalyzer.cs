@@ -109,10 +109,10 @@ public static class JSAnalyzer
         switch (op)
         {
             case TraverseOp.CopyMonoBehaviour:
-                ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
+                JSSerializerEditor.CopyGameObject<JSComponent_SharpKit>(go);
                 break;
             case TraverseOp.RemoveOldBehaviour:
-                ExtraHelper.RemoveOtherMonoBehaviours(go);
+                JSSerializerEditor.RemoveOtherMonoBehaviours(go);
                 break;
             case TraverseOp.Analyze:
             default:
@@ -294,7 +294,8 @@ public static class JSAnalyzer
     {
         Debug.Log("CopyGameObjectMonoBehaviours");
         GameObject go = Selection.activeGameObject;
-        ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
+        //ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
+        JSSerializerEditor.CopyGameObject<JSComponent_SharpKit>(go);
     }
     // Alt + Shift + W
     //[MenuItem("JSB/Remove Other MonoBehaviours &#w")]
