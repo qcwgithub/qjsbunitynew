@@ -252,18 +252,21 @@ public static class JSSerializerEditor
         {
             AnalyzeStructInfo info = lstAnalyze[i];
             bool bBreakFor = true;
+            int Pos = i + 1;
             switch (info.analyzeType)
             {
                 case JSSerializer.AnalyzeType.ArrayObj:
                     {
                         bContinueTraverse = true;
-                        int Pos = i;
-                        Array arr = (Array)info.value;
-                        Type arrayElementType = info.value.GetType().GetElementType();
-                        for (var j = 0; j < arr.Length; j++)
+                        if (info.value != null)
                         {
-                            object value = arr.GetValue(j);
-                            Pos += AddAnalyze(arrayElementType, j.ToString(), value, Pos);
+                            Array arr = (Array)info.value;
+                            Type arrayElementType = info.value.GetType().GetElementType();
+                            for (var j = 0; j < arr.Length; j++)
+                            {
+                                object value = arr.GetValue(j);
+                                Pos += AddAnalyze(arrayElementType, j.ToString(), value, Pos);
+                            }
                         }
                         lstAnalyze.RemoveAt(i);
                     }
@@ -271,12 +274,11 @@ public static class JSSerializerEditor
                 case JSSerializer.AnalyzeType.StructObj:
                     {
                         bContinueTraverse = true;
-                        int Pos = i;
                         var structure = info.value;
                         FieldInfo[] fields = GetTypeSerializedFields(structure.GetType());
                         foreach (FieldInfo field in fields)
                         {
-                            Pos += AddAnalyze(field.FieldType, field.Name, field.GetValue(structure));
+                            Pos += AddAnalyze(field.FieldType, field.Name, field.GetValue(structure), Pos);
                         }
                         lstAnalyze.RemoveAt(i);
                     }
@@ -284,18 +286,20 @@ public static class JSSerializerEditor
                 case JSSerializer.AnalyzeType.ListObj:
                     {
                         bContinueTraverse = true;
-                        int Pos = i;
-                        var list = info.value;
-                        var listType = list.GetType();
-                        var listElementType = listType.GetGenericArguments()[0];
-
-                        int Count = (int)listType.GetProperty("Count").GetValue(list, new object[] { });
-                        PropertyInfo pro = listType.GetProperty("Item");
-
-                        for (var j = 0; j < Count; j++)
+                        if (info.value != null)
                         {
-                            var value = pro.GetValue(list, new object[] { j });
-                            Pos += AddAnalyze(listElementType, j.ToString(), value, Pos);
+                            var list = info.value;
+                            var listType = list.GetType();
+                            var listElementType = listType.GetGenericArguments()[0];
+
+                            int Count = (int)listType.GetProperty("Count").GetValue(list, new object[] { });
+                            PropertyInfo pro = listType.GetProperty("Item");
+
+                            for (var j = 0; j < Count; j++)
+                            {
+                                var value = pro.GetValue(list, new object[] { j });
+                                Pos += AddAnalyze(listElementType, j.ToString(), value, Pos);
+                            }
                         }
                         lstAnalyze.RemoveAt(i);
                     }
