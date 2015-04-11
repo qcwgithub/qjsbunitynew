@@ -130,25 +130,6 @@ public class JSSerializer : MonoBehaviour
                     JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
                 }
                 break;
-            case UnitType.ST_Vector2:
-                {
-                    string[] xy = strValue.Split('/');
-                    var v = new Vector2();
-                    float.TryParse(xy[0], out v.x);
-                    float.TryParse(xy[1], out v.y);
-                    JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, v);
-                }
-                break;
-            case UnitType.ST_Vector3:
-                {
-                    string[] xyz = strValue.Split('/');
-                    var v = new Vector3();
-                    float.TryParse(xyz[0], out v.x);
-                    float.TryParse(xyz[1], out v.y);
-                    float.TryParse(xyz[2], out v.z);
-                    JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, v);
-                }
-                break;
             default:
                 ret = false;
                 break;
@@ -187,111 +168,13 @@ public class JSSerializer : MonoBehaviour
     // this function is called in Awake
     public void initSerializedData(IntPtr cx, IntPtr jsObj)
     {
-        int arrObjectIndex = 0;
-        int arrObjectIndexOfArray = 0;
-
-        if (arrString == null)
+        if (arrString == null || arrString.Length == 0)
             return;
 
-        //
-        // handle arrString first
-        //
         for (var i = 0; i < arrString.Length; i++)
         {
             string s = arrString[i];
-            int x = s.IndexOf('/');
-            int y = s.IndexOf('/', x + 1);
 
-            if (x < 0 || y < 0) continue;
-
-            string s0 = s.Substring(0, x);
-            string s1 = s.Substring(x + 1, y - x - 1);
-
-            if (s0 != "Array")
-            {
-                UnitType eType = (UnitType)int.Parse(s0);
-                string valName = s1;
-
-                if (eType == UnitType.ST_UnityEngineObject)
-                {
-                    // arrObjectIndex++ here
-                    UnityEngine.Object obj = arrObjectSingle[arrObjectIndex++];
-                    JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, obj);
-                    JSApi.JSh_SetUCProperty(cx, jsObj, valName, -1, ref JSMgr.vCall.valTemp);
-                }
-                else if (eType == UnitType.ST_MonoBehaviour)
-                {
-                    // eType / Name / lstObjsSingle's Index / Monobehaviour name
-                    //
-                    //
-                    string strValue = s.Substring(y + 1, s.Length - y - 1);
-
-                    x = strValue.IndexOf('/');
-                    s0 = strValue.Substring(0, x);
-                    if (arrObjectIndex != int.Parse(s0)) Debug.LogError("Serialize MonoBehaviour Error: arrObjectIndex != int.Parse(s0)");
-                    string scriptName = strValue.Substring(x + 1, strValue.Length - x - 1);
-
-                    UnityEngine.Object obj = arrObjectSingle[arrObjectIndex++];
-                    cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
-                }
-                else
-                {
-                    string strValue = s.Substring(y + 1, s.Length - y - 1);
-                    if (ToJsval(eType, strValue))
-                        JSApi.JSh_SetUCProperty(cx, jsObj, valName, -1, ref JSMgr.vCall.valTemp);
-                }
-            }
-            else
-            {
-                UnitType eType = (UnitType)int.Parse(s1);
-                string[] s2 = s.Substring(y + 1, s.Length - y - 1).Split('/');
-                if (s2.Length != 2)
-                {
-                    // !
-                    return;
-                }
-                string valName = s2[0];
-                int Count = 0;
-                if (!int.TryParse(s2[1], out Count))
-                {
-                    // !
-                    return;
-                }
-
-                var arrVal = new JSApi.jsval[Count];
-                for (int j = 0; j < Count; j++)
-                {
-                    if (eType == UnitType.ST_UnityEngineObject)
-                    {
-                        // arrObjectIndex++ here
-                        UnityEngine.Object obj = arrObjectArray[arrObjectIndexOfArray++];
-                        JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, obj);
-                    }
-                    else
-                    {
-                        string strValue = help_ThirdS(arrString[i + 1 + j]);
-                        ToJsval(eType, strValue);
-                    }
-                    arrVal[j] = JSMgr.vCall.valTemp;
-                }
-                JSMgr.vCall.datax.setArray(JSDataExchangeMgr.eSetType.Jsval, arrVal);
-                JSApi.JSh_SetUCProperty(cx, jsObj, valName, -1, ref JSMgr.vCall.valTemp);
-
-                if (eType != UnitType.ST_UnityEngineObject)
-                {
-                    i += Count;
-                }
-            }
-        }
-
-        if (arrObjectIndex == arrObjectSingle.Length &&
-            arrObjectIndexOfArray == arrObjectArray.Length)
-        {
-            Debug.Log(name + " serialized perfect");
-        }
-        else
-        {
-            Debug.LogError(name + " serialized FAIL");
         }
     }
     enum SerializeType
@@ -302,12 +185,14 @@ public class JSSerializer : MonoBehaviour
     public struct AnalyzeStructInfo
     {
         public AnalyzeType analyzeType;
+        public string Name;
         public object value;
         public UnitType unitType;
 
-        public AnalyzeStructInfo(AnalyzeType at, object v = null, UnitType ut = UnitType.ST_Unknown) 
+        public AnalyzeStructInfo(AnalyzeType at, string name, object v = null, UnitType ut = UnitType.ST_Unknown) 
         {
             analyzeType = at;
+            Name = name;
             value = v;
             unitType = ut;
 
@@ -319,7 +204,7 @@ public class JSSerializer : MonoBehaviour
         // if string  it's index of arrString
         // if object  it's index of arrObject
         public int serizlizeIndex;
-        public void Alloc(JSSerializer behaviour)
+        public void Alloc(JSSerializer serializer)
         {
             eSerialize = SerializeType.String;
             switch (analyzeType)
@@ -362,7 +247,7 @@ public class JSSerializer : MonoBehaviour
                                     var index = AllocObject(((MonoBehaviour)this.value).gameObject);
 
                                     // eType / Name / object Index / MonoBehaviour name
-                                    sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, "NAME", index, JSDataExchangeMgr.GetTypeFullName(objectType));
+                                    sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSDataExchangeMgr.GetTypeFullName(objectType));
                                     AllocString(sb.ToString());
                                 }
                                 else
@@ -373,7 +258,7 @@ public class JSSerializer : MonoBehaviour
                         }
                         else
                         {
-                            string str = ValueToString(this.value, this.value.GetType(), this.unitType, "NAME!");
+                            string str = ValueToString(this.value, this.value.GetType(), this.unitType, this.Name);
                             AllocString(str);
                         }
                     }
@@ -388,36 +273,36 @@ public class JSSerializer : MonoBehaviour
     static List<UnityEngine.Object> lstObjs = new List<UnityEngine.Object>();
 
     static List<AnalyzeStructInfo> lst = new List<AnalyzeStructInfo>();
-    public static int AddAnalyze(Type type, object value, int index = -1)
+    public static int AddAnalyze(Type type, string name, object value, int index = -1)
     {
         if (index == -1) index = lst.Count;
         UnitType unitType = GetUnitType(type);
         if (unitType != UnitType.ST_Unknown)
         {
-            lst.Insert(index, new AnalyzeStructInfo(AnalyzeType.Unit, value, unitType));
+            lst.Insert(index, new AnalyzeStructInfo(AnalyzeType.Unit, name, value, unitType));
             return 1;
         }
         else
         {
             if (type.IsArray)
             {
-                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayBegin));
-                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayObj, value));
-                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayEnd));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayBegin, name));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayObj, name, value));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayEnd, name));
                 return 3;
             }
             else if (type.IsClass || type.IsValueType)
             {
-                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ListBegin));
-                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ListObj, value));
-                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ListEnd));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ListBegin, name));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ListObj, name, value));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ListEnd, name));
                 return 3;
             }
             else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
-                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.StructBegin));
-                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.StructObj, value));
-                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.StructEnd));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.StructBegin, name));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.StructObj, name, value));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.StructEnd, name));
                 return 3;
             }
         }
@@ -534,7 +419,7 @@ public class JSSerializer : MonoBehaviour
                         for (var j = 0; j < arr.Length; j++)
                         {
                             object value = arr.GetValue(j);
-                            Pos += AddAnalyze(arrayElementType, value, Pos);
+                            Pos += AddAnalyze(arrayElementType, j.ToString(), value, Pos);
                         }
                         lst.RemoveAt(i);
                     }
@@ -546,7 +431,7 @@ public class JSSerializer : MonoBehaviour
                         FieldInfo[] fields = GetTypeSerializedFields(structure.GetType());
                         foreach (FieldInfo field in fields)
                         {
-                            Pos += AddAnalyze(field.FieldType, field.GetValue(structure));
+                            Pos += AddAnalyze(field.FieldType, field.Name, field.GetValue(structure));
                         }
                         lst.RemoveAt(i);
                     }
@@ -564,7 +449,7 @@ public class JSSerializer : MonoBehaviour
                         for (var j = 0; j < Count; j++)
                         {
                             var value = pro.GetValue(list, new object[]{ j });
-                            Pos += AddAnalyze(listElementType, value, Pos);
+                            Pos += AddAnalyze(listElementType, j.ToString(), value, Pos);
                         }
                         lst.RemoveAt(i);
                     }
@@ -581,11 +466,7 @@ public class JSSerializer : MonoBehaviour
         if (bContinueTraverse)
             TraverseAnalyze();
     }
-    static void TraverseCopy()
-    {
-
-    }
-    static void CopyBehaviour(MonoBehaviour behaviour, JSSerializer helper)
+    static void CopyBehaviour(MonoBehaviour behaviour, JSSerializer serizlizer)
     {
         GameObject go = behaviour.gameObject;
         Type type = behaviour.GetType();
@@ -593,9 +474,19 @@ public class JSSerializer : MonoBehaviour
         FieldInfo[] fields = GetMonoBehaviourSerializedFields(behaviour);
         foreach (FieldInfo field in fields)
         {
-            AddAnalyze(field.FieldType, field.GetValue(behaviour));
+            AddAnalyze(field.FieldType, field.Name, field.GetValue(behaviour));
         }
+
         TraverseAnalyze();
+
+        for (var i = 0; i < lst.Count; i++)
+        {
+            lst[i].Alloc(serizlizer);
+        }
+        serizlizer.AutoDelete = true;
+        serizlizer.jsScriptName = JSDataExchangeMgr.GetTypeFullName(behaviour.GetType());
+        serizlizer.arrString = lstString.ToArray();
+        serizlizer.arrObjectSingle = lstObjs.ToArray();
     }
     public static bool WillTypeBeAvailableInJavaScript(Type type)
     {
