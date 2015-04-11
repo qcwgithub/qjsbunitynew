@@ -300,12 +300,24 @@ public class JSSerializer : MonoBehaviour
         public AnalyzeType analyzeType;
         public object value;
         public UnitType unitType;
-        public AnalyzeStructInfo(AnalyzeType at, object v = null, UnitType ut = UnitType.ST_Unknown) {
+
+        public AnalyzeStructInfo(AnalyzeType at, object v = null, UnitType ut = UnitType.ST_Unknown) 
+        {
             analyzeType = at;
             value = v;
             unitType = ut;
         }
+
+        public void Alloc()
+        {
+
+        }
     }
+
+    static int AllocString(string str) { lstString.Add(str); return lstString.Count - 1; }
+    static int AllocObject(UnityEngine.Object obj) { lstObjs.Add(obj); return lstString.Count - 1; }
+    static List<string> lstString = new List<string>();
+    static List<UnityEngine.Object> lstObjs = new List<UnityEngine.Object>();
 
     static List<AnalyzeStructInfo> lst = new List<AnalyzeStructInfo>();
     public static int AddAnalyze(Type type, object value, int index = -1)
@@ -385,9 +397,6 @@ public class JSSerializer : MonoBehaviour
             return UnitType.ST_UnityEngineObject;
         }
 
-        if (type == typeof(Vector2)) return UnitType.ST_Vector2;
-        if (type == typeof(Vector3)) return UnitType.ST_Vector3;
-
         UnitType ret = UnitType.ST_Unknown;
         if (!sDict.TryGetValue(type, out ret))
         {
@@ -426,10 +435,6 @@ public class JSSerializer : MonoBehaviour
             sb.AppendFormat("{0}/{1}/{2}/{3}/{4}", (int)eType, name, v3.x, v3.y, v3.z);
         }
         return sb.ToString();
-        //         else if (typeof(UnityEngine.Object).IsAssignableFrom(type))
-        //         {
-        //             lstObjs.Add((UnityEngine.Object)value);
-        //         }
     }
 
     public static FieldInfo[] GetMonoBehaviourSerializedFields(MonoBehaviour behaviour)
@@ -445,14 +450,17 @@ public class JSSerializer : MonoBehaviour
     }
     static void TraverseAnalyze()
     {
+        bool bContinueTraverse = false;
         for (var i = 0; i < lst.Count; i++)
         {
             AnalyzeStructInfo info = lst[i];
             int Pos = i + 1;
+            bool bBreakFor = true;
             switch (info.analyzeType)
             {
                 case AnalyzeType.ArrayObj:
                     {
+                        bContinueTraverse = true;
                         Array arr = (Array)info.value;
                         Type arrayElementType = info.value.GetType().GetElementType();
                         for (var j = 0; j < arr.Length; j++)
@@ -460,20 +468,24 @@ public class JSSerializer : MonoBehaviour
                             object value = arr.GetValue(j);
                             Pos += AddAnalyze(arrayElementType, value, Pos);
                         }
+                        lst.RemoveAt(i);
                     }
                     break;
                 case AnalyzeType.StructObj:
                     {
+                        bContinueTraverse = true;
                         var structure = info.value;
                         FieldInfo[] fields = GetTypeSerializedFields(structure.GetType());
                         foreach (FieldInfo field in fields)
                         {
                             Pos += AddAnalyze(field.FieldType, field.GetValue(structure));
                         }
+                        lst.RemoveAt(i);
                     }
                     break;
                 case AnalyzeType.ListObj:
                     {
+                        bContinueTraverse = true;
                         var list = info.value;
                         var listType = list.GetType();
                         var listElementType = listType.GetGenericArguments()[0];
@@ -486,12 +498,24 @@ public class JSSerializer : MonoBehaviour
                             var value = pro.GetValue(list, new object[]{ j });
                             Pos += AddAnalyze(listElementType, value, Pos);
                         }
+                        lst.RemoveAt(i);
                     }
                     break;
                 default:
+                    {
+                        bBreakFor = false;
+                    }
                     break;
             }
+            if (bBreakFor)
+                break;
         }
+        if (bContinueTraverse)
+            TraverseAnalyze();
+    }
+    static void TraverseCopy()
+    {
+
     }
     static void CopyBehaviour(MonoBehaviour behaviour, JSSerializer helper)
     {
@@ -503,6 +527,7 @@ public class JSSerializer : MonoBehaviour
         {
             AddAnalyze(field.FieldType, field.GetValue(behaviour));
         }
+        TraverseAnalyze();
     }
     public static bool WillTypeBeAvailableInJavaScript(Type type)
     {
