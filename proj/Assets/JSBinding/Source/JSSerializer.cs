@@ -169,7 +169,7 @@ public class JSSerializer : MonoBehaviour
         public string typeName;
         public JSApi.jsval val; // only valid when type == SType.Unit
         public SerializeStruct father;
-        List<SerializeStruct> lstChildren;
+        public List<SerializeStruct> lstChildren;
         public void AddChild(SerializeStruct ss)
         {
             if (lstChildren == null) 
@@ -184,12 +184,16 @@ public class JSSerializer : MonoBehaviour
             val.asBits = 0;
             typeName = "WRONGTYPENAME!";
         }
+        /// <summary>
+        /// Calc jsval
+        /// save in this.val    and return it
+        /// </summary>
+        /// <returns></returns>
         public JSApi.jsval CalcJSVal()
         {
-            switch (this.type) 
+            switch (this.type)
             {
                 case SType.Unit:
-                    return this.val;
                     break;
                 case SType.Array:
                     {
@@ -199,7 +203,7 @@ public class JSSerializer : MonoBehaviour
                             arrVal[i] = lstChildren[i].CalcJSVal();
                         }
                         JSMgr.vCall.datax.setArray(JSDataExchangeMgr.eSetType.Jsval, arrVal);
-                        return JSMgr.vCall.valTemp;
+                        this.val = JSMgr.vCall.valTemp;
                     }
                     break;
                 case SType.Struct:
@@ -213,12 +217,17 @@ public class JSSerializer : MonoBehaviour
                             JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, child.name, -1, ref mVal);
                         }
                         JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
-                        return this.val;
                     }
                     break;
                 case SType.List:
+                    {
+                        // 这里要处理成 List 是 C# 的还是 JS 的？
+                        // 如果是 C# 的要 使用 先创建一个 List 对象 然后JSDataExchangeMgr.setObject 
+                        // 如果是 JS 的 会比较简单一点  参考上面的
+                    }
                     break;
             }
+            return this.val;
         }
     }
     /// <summary>
@@ -261,10 +270,10 @@ public class JSSerializer : MonoBehaviour
                         SerializeStruct.SType sType = SerializeStruct.SType.Array;
                         if (s0 == "StructBegin") sType = SerializeStruct.SType.Struct;
                         else if (s0 == "ListBegin") sType = SerializeStruct.SType.List;
-                        var arr = s1.Split('/');
+                        string s2 = s.Substring(y + 1, s.Length - y - 1);
 
-                        var ss = new SerializeStruct(sType, arr[0], st);
-                        ss.typeName = arr[1];
+                        var ss = new SerializeStruct(sType, s1, st);
+                        ss.typeName = s2;
                         st.AddChild(ss);
                         i += TraverseSerialize(cx, jsObj, i + 1, ss);
                     }
@@ -281,9 +290,9 @@ public class JSSerializer : MonoBehaviour
                         UnitType eUnitType = (UnitType)int.Parse(s0);
                         if (eUnitType == UnitType.ST_UnityEngineObject)
                         {
-                            var arr = s1.Split('/');
-                            var valName = arr[0];
-                            var objIndex = int.Parse(arr[1]);
+                            string s2 = s.Substring(y + 1, s.Length - y - 1);
+                            var valName = s1;
+                            var objIndex = int.Parse(s2);
                             JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, this.arrObject[objIndex]);
 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
@@ -306,10 +315,10 @@ public class JSSerializer : MonoBehaviour
 //                             st.AddChild(child);
                         }
                         else
-                        {
-                            var arr = s1.Split('/');
-                            var valName = arr[0];
-                            ToJsval(eUnitType, arr[1]);
+						{
+							string s2 = s.Substring(y + 1, s.Length - y - 1);
+							var valName = s1;
+							ToJsval(eUnitType, s2);
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
                             child.val = JSMgr.vCall.valTemp;
                             st.AddChild(child);
@@ -336,5 +345,13 @@ public class JSSerializer : MonoBehaviour
 
         var root = new SerializeStruct(SerializeStruct.SType.Root, "this-name-doesn't-matter", null);
         TraverseSerialize(cx, jsObj, 0, root);
+        if (root.lstChildren != null)
+        {
+            foreach (var child in root.lstChildren)
+            {
+                child.CalcJSVal();
+                JSApi.JSh_SetUCProperty(cx, jsObj, child.name, -1, ref child.val);
+            }
+        }
     }
 }
