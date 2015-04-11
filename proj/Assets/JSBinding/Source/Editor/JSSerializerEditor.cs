@@ -41,10 +41,10 @@ public static class JSSerializerEditor
             switch (analyzeType)
             {
                 case JSSerializer.AnalyzeType.ArrayBegin:
-                    AllocString("ArrayBegin/" + this.Name);
+                    AllocString("ArrayBegin/" + this.Name + "/");
                     break;
                 case JSSerializer.AnalyzeType.ArrayEnd:
-                    AllocString("ArrayEnd/" + this.Name);
+                    AllocString("ArrayEnd/" + this.Name + "/");
                     break;
                 case JSSerializer.AnalyzeType.StructBegin:
                     AllocString("StructBegin/" + this.Name + "/" + JSDataExchangeMgr.GetTypeFullName(this.type));

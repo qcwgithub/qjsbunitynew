@@ -240,12 +240,14 @@ public class JSSerializer : MonoBehaviour
     /// <param name="index"></param>
     /// <param name="st"></param>
     /// <returns></returns>
-    public int TraverseSerialize(IntPtr cx, IntPtr jsObj, int index, SerializeStruct st)
+    public void TraverseSerialize(IntPtr cx, IntPtr jsObj, SerializeStruct st)
     {
-        var i = index;
-        for (/* */; i < arrString.Length; /* i++ */)
+        while (true)
         {
-            string s = arrString[i];
+            string s = NextString();
+            if (s == null)
+                return;
+
             int x = s.IndexOf('/');
             int y = s.IndexOf('/', x + 1);
             string s0 = s.Substring(0, x);
@@ -260,10 +262,10 @@ public class JSSerializer : MonoBehaviour
 
                         var ss = new SerializeStruct(sType, s1, st);
                         st.AddChild(ss);
-                        i += TraverseSerialize(cx, jsObj, i + 1, ss);
+                        TraverseSerialize(cx, jsObj, ss);
                     }
                     break;
-                    // 这2个还带有类型
+                // 这2个还带有类型
                 case "StructBegin":
                 case "ListBegin":
                     {
@@ -275,14 +277,15 @@ public class JSSerializer : MonoBehaviour
                         var ss = new SerializeStruct(sType, s1, st);
                         ss.typeName = s2;
                         st.AddChild(ss);
-                        i += TraverseSerialize(cx, jsObj, i + 1, ss);
+                        TraverseSerialize(cx, jsObj, ss);
                     }
                     break;
                 case "ArrayEnd":
                 case "StructEnd":
                 case "ListEnd":
                     {
-                        i += TraverseSerialize(cx, jsObj, i + 1, st.father);
+                        // ! return here
+                        return;
                     }
                     break;
                 default:
@@ -301,35 +304,42 @@ public class JSSerializer : MonoBehaviour
                         }
                         else if (eUnitType == UnitType.ST_MonoBehaviour)
                         {
-// TODO 最后再做
-//                             var arr = s1.Split('/');
-//                             var valName = arr[0];
-//                             var objIndex = int.Parse(arr[1]);
-//                             var scriptName = arr[2];
-// 
-//                             UnityEngine.Object obj = this.arrObjectArray[objIndex];
-//                             cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
-// 
-//                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-//                             child.val = JSMgr.vCall.valTemp;
-//                             st.AddChild(child);
+                            // TODO 最后再做
+                            //                             var arr = s1.Split('/');
+                            //                             var valName = arr[0];
+                            //                             var objIndex = int.Parse(arr[1]);
+                            //                             var scriptName = arr[2];
+                            // 
+                            //                             UnityEngine.Object obj = this.arrObjectArray[objIndex];
+                            //                             cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
+                            // 
+                            //                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
+                            //                             child.val = JSMgr.vCall.valTemp;
+                            //                             st.AddChild(child);
                         }
                         else
-						{
-							string s2 = s.Substring(y + 1, s.Length - y - 1);
-							var valName = s1;
-							ToJsval(eUnitType, s2);
+                        {
+                            string s2 = s.Substring(y + 1, s.Length - y - 1);
+                            var valName = s1;
+                            ToJsval(eUnitType, s2);
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
                             child.val = JSMgr.vCall.valTemp;
                             st.AddChild(child);
                         }
-                        // !
-                        i++;
                     }
                     break;
             }
         }
-        return i - index;
+    }
+    int arrStringIndex = 0;
+    string NextString()
+    {
+        if (arrString == null) return null;
+        if (arrStringIndex >= 0 && arrStringIndex < arrString.Length)
+        {
+            return arrString[arrStringIndex++];
+        }
+        return null;
     }
     /// <summary>
     /// 在脚本的 Awake 时会调用这个函数来初始化序列化数据给JS。
