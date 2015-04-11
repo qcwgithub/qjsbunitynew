@@ -326,15 +326,22 @@ public class JSSerializer : MonoBehaviour
                 lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayEnd));
                 return 3;
             }
-            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-            {
-
-            }
             else if (type.IsClass || type.IsValueType)
             {
-
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ListBegin));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ListObj, value));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ListEnd));
+                return 3;
+            }
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.StructBegin));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.StructObj, value));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.StructEnd));
+                return 3;
             }
         }
+        return 0;
     }
 
 
@@ -441,91 +448,11 @@ public class JSSerializer : MonoBehaviour
         GameObject go = behaviour.gameObject;
         Type type = behaviour.GetType();
 
-        var lstString = new List<string>();
-        var lstObjsSingle = new List<UnityEngine.Object>();
-        var lstObjsArray = new List<UnityEngine.Object>();
-        var sb = new StringBuilder();
-
         FieldInfo[] fields = GetMonoBehaviourSerializedFields(behaviour);
         foreach (FieldInfo field in fields)
         {
-            if (!field.FieldType.IsArray)
-            {
-                UnitType eType = GetUnitType(field.FieldType);
-                if (eType == UnitType.ST_Unknown)
-                {
-                    continue;
-                }
-
-                sb.Remove(0, sb.Length);
-                if (typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
-                {
-                    if (typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(field.FieldType))
-                    {
-                        // if a monobehaviour is refer
-                        // and this monobehaviour will be translated to js later
-                        //  ST_MonoBehaviour
-                        if (WillTypeBeTranslatedToJavaScript(field.FieldType))
-                        {
-                            // eType / Name / lstObjsSingle's Index / Monobehaviour name
-                            lstString.Add(((int)eType).ToString() + "/" + field.Name + "/" + lstObjsSingle.Count.ToString() + "/" +
-                                JSDataExchangeMgr.GetTypeFullName(field.FieldType));
-                            MonoBehaviour mb = (MonoBehaviour)field.GetValue(behaviour);
-                            lstObjsSingle.Add(mb.gameObject);// add game object
-                        }
-                        else
-                        {
-                            // not support
-                        }
-                    }
-                    else
-                    {
-                        // eType / Name / lstObjsSingle's Index
-                        lstString.Add(((int)eType).ToString() + "/" + field.Name + "/" + lstObjsSingle.Count.ToString());
-                        lstObjsSingle.Add((UnityEngine.Object)field.GetValue(behaviour));
-                    }
-                }
-                else
-                {
-                    string str = ValueToString(field.GetValue(behaviour), field.FieldType, eType, field.Name);
-                    lstString.Add(str);
-                }
-            }
-            else
-            {
-                Type elementType = field.FieldType.GetElementType();
-                UnitType eType = GetUnitType(elementType);
-                if (eType == UnitType.ST_Unknown)
-                {
-                    continue;
-                }
-
-                Array arr = (Array)field.GetValue(behaviour);
-
-                // Array / eType / fildName / Count
-                lstString.Add("Array/" + ((int)eType).ToString() + "/" + field.Name + "/" + arr.Length.ToString());
-
-                for (var i = 0; i < arr.Length; i++)
-                {
-                    object value = arr.GetValue(i);
-                    if (typeof(UnityEngine.Object).IsAssignableFrom(elementType))
-                    {
-                        lstObjsArray.Add((UnityEngine.Object)value);
-                    }
-                    else
-                    {
-                        string str = ValueToString(value, elementType, eType, "[" + i.ToString() + "]");
-                        lstString.Add(str);
-                    }
-                }
-            }
+            AddAnalyze(field.FieldType, field.GetValue(behaviour));
         }
-
-        helper.AutoDelete = true;
-        helper.jsScriptName = JSDataExchangeMgr.GetTypeFullName(behaviour.GetType());
-        helper.arrString = lstString.ToArray();
-        helper.arrObjectSingle = lstObjsSingle.ToArray();
-        helper.arrObjectArray = lstObjsArray.ToArray();
     }
     public static bool WillTypeBeAvailableInJavaScript(Type type)
     {
