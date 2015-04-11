@@ -161,18 +161,22 @@ public class JSSerializer : MonoBehaviour
     {
         public enum SType { Root, Array, Struct, List, Unit };
         public SType type;
+        public string name;
         public JSApi.jsval val;
         public SerializeStruct father;
         List<SerializeStruct> lstChildren;
         public void AddChild(SerializeStruct ss)
         {
-
+            if (lstChildren == null) 
+                lstChildren = new List<SerializeStruct>();
+            lstChildren.Add(ss);
         }
-        public SerializeStruct()
+        public SerializeStruct(SType t, string name, SerializeStruct father)
         {
-            type = SType.Root;
+            type = t;
+            this.name = name;
+            this.father = father;
             val.asBits = 0;
-            father = null;
         }
     }
     public int TraverseSerialize(IntPtr cx, IntPtr jsObj, int index, SerializeStruct st)
@@ -187,20 +191,58 @@ public class JSSerializer : MonoBehaviour
             switch (s0)
             {
                 case "ArrayBegin":
+                case "StructBegin":
+                case "ListBegin":
+                    {
+                        SerializeStruct.SType sType = SerializeStruct.SType.Array;
+                        if (s0 == "StructBegin") sType = SerializeStruct.SType.Struct;
+                        else if (s0 == "ListBegin") sType = SerializeStruct.SType.List;
+
+                        var ss = new SerializeStruct(sType, s1, st);
+                        st.AddChild(ss);
+                        TraverseSerialize(cx, jsObj, i + 1, ss);
+                    }
                     break;
                 case "ArrayEnd":
-                    break;
-                case "StructBegin":
-                    break;
                 case "StructEnd":
-                    break;
-                case "ListBegin":
-                    break;
                 case "ListEnd":
+                    {
+                        TraverseSerialize(cx, jsObj, i + 1, st.father);
+                    }
                     break;
                 default:
                     {
                         UnitType eUnitType = (UnitType)int.Parse(s0);
+                        if (eUnitType == UnitType.ST_UnityEngineObject)
+                        {
+                            var arr = s1.Split('/');
+                            var valName = arr[0];
+                            var objIndex = int.Parse(arr[1]);
+                            JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, this.arrObjectArray[objIndex]);
+
+                            var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
+                            child.val = JSMgr.vCall.valTemp;
+                            st.AddChild(child);
+                        }
+                        else if (eUnitType == UnitType.ST_MonoBehaviour)
+                        {
+                            // TODO 最后再做
+                            //                             var arr = s1.Split('/');
+                            //                             var valName = arr[0];
+                            //                             var objIndex = int.Parse(arr[1]);
+                            //                             var scriptName = arr[2];
+                            // 
+                            //                             UnityEngine.Object obj = this.arrObjectArray[objIndex];
+                            //                             cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
+                            // 
+                            //                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
+                            //                             child.val = JSMgr.vCall.valTemp;
+                            //                             st.AddChild(child);
+                        }
+                        else
+                        {
+                            ToJsval(eUnitType, s1);
+                        }
                     }
                     break;
             }
@@ -214,6 +256,6 @@ public class JSSerializer : MonoBehaviour
             return;
         }
 
-        TraverseSerialize(cx, jsObj, 0, new SerializeStruct());
+        TraverseSerialize(cx, jsObj, 0, new SerializeStruct(SerializeStruct.SType.Root, "root", null));
     }
 }

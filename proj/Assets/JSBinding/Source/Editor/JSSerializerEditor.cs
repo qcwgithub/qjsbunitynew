@@ -96,6 +96,12 @@ public static class JSSerializerEditor
                                     // not supported
                                 }
                             }
+                            else
+                            {
+                                // eType / Name / object Index
+                                sb.AppendFormat("{0}/{1}/{2}", (int)this.unitType, this.Name, JSDataExchangeMgr.GetTypeFullName(objectType));
+                                AllocString(sb.ToString());
+                            }
                         }
                         else
                         {
