@@ -145,7 +145,6 @@ public class JSComponent_SharpKit : JSSerializer
         {
             firstStart = false;
             callIfExist(ref valAwake);
-            initSerializedRefMonoBehaviour(JSMgr.cx, jsObj);
         }
         callIfExist(ref valStart);
     }

@@ -1,2 +1,2 @@
 CS.require("SharpKitGenerated/Test1");
-CS.require("SharpKitGenerated/Apple");
+CS.require("SharpKitGenerated/Test2");
