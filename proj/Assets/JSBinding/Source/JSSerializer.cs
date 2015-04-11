@@ -294,7 +294,11 @@ public class JSSerializer : MonoBehaviour
             Debug.LogError(name + " serialized FAIL");
         }
     }
-
+    enum SerializeType
+    {
+        String,
+        Object,
+    }
     public struct AnalyzeStructInfo
     {
         public AnalyzeType analyzeType;
@@ -306,11 +310,41 @@ public class JSSerializer : MonoBehaviour
             analyzeType = at;
             value = v;
             unitType = ut;
-        }
 
+            serializeType = SerializeType.String;
+            serizlizeIndex = 0;
+        }
+        public SerializeType serializeType;
+        public int serizlizeIndex;
         public void Alloc()
         {
-
+            serializeType = SerializeType.String;
+            switch (analyzeType)
+            {
+                case AnalyzeType.ArrayBegin:
+                    serizlizeIndex = AllocString("ArrayBegin");
+                    break;
+                case AnalyzeType.ArrayEnd:
+                    serizlizeIndex = AllocString("ArrayEnd");
+                    break;
+                case AnalyzeType.StructBegin:
+                    serizlizeIndex = AllocString("StructBegin");
+                    break;
+                case AnalyzeType.StructEnd:
+                    serizlizeIndex = AllocString("StructEnd");
+                    break;
+                case AnalyzeType.ListBegin:
+                    serizlizeIndex = AllocString("ListBegin");
+                    break;
+                case AnalyzeType.ListEnd:
+                    serizlizeIndex = AllocString("ListEnd");
+                    break;
+                case AnalyzeType.Unit:
+                    {
+                        Type objectType = this.serializeType;
+                    }
+                    break;
+            }
         }
     }
 
