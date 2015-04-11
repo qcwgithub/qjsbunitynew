@@ -135,13 +135,6 @@ public class JSSerializer : MonoBehaviour
         }
         return ret;
     }
-    string help_ThirdS(string s)
-    {
-        int x = s.IndexOf('/');
-        int y = s.IndexOf('/', x + 1);
-        string strValue = s.Substring(y + 1, s.Length - y - 1);
-        return strValue;
-    }
     // this function is called in Start
     public void initSerializedRefMonoBehaviour(IntPtr cx, IntPtr jsObj)
     {
@@ -168,61 +161,14 @@ public class JSSerializer : MonoBehaviour
     public void initSerializedData(IntPtr cx, IntPtr jsObj)
     {
         if (arrString == null || arrString.Length == 0)
+        {
             return;
+        }
 
         for (var i = 0; i < arrString.Length; i++)
         {
             string s = arrString[i];
-
+            
         }
     }
-    static Dictionary<Type, UnitType> sDict;
-    static UnitType GetUnitType(Type type)
-    {
-        if (sDict == null)
-        {
-            sDict = new Dictionary<Type, UnitType>();
-
-            sDict.Add(typeof(Boolean), UnitType.ST_Boolean);
-
-            sDict.Add(typeof(Byte), UnitType.ST_Byte);
-            sDict.Add(typeof(SByte), UnitType.ST_SByte);
-            sDict.Add(typeof(Char), UnitType.ST_Char);
-            sDict.Add(typeof(Int16), UnitType.ST_Int16);
-            sDict.Add(typeof(UInt16), UnitType.ST_UInt16);
-            sDict.Add(typeof(Int32), UnitType.ST_Int32);
-            sDict.Add(typeof(UInt32), UnitType.ST_UInt32);
-            sDict.Add(typeof(Int64), UnitType.ST_Int64);
-            sDict.Add(typeof(UInt64), UnitType.ST_UInt64);
-
-            sDict.Add(typeof(Single), UnitType.ST_Single);
-            sDict.Add(typeof(Double), UnitType.ST_Double);
-
-
-            sDict.Add(typeof(String), UnitType.ST_String);
-        }
-
-        if (type.IsEnum)
-        {
-            return UnitType.ST_Enum;
-        }
-
-        if ((typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type)))
-        {
-            return UnitType.ST_MonoBehaviour;
-        }
-        if ((typeof(UnityEngine.Object).IsAssignableFrom(type)))
-        {
-            return UnitType.ST_UnityEngineObject;
-        }
-
-        UnitType ret = UnitType.ST_Unknown;
-        if (!sDict.TryGetValue(type, out ret))
-        {
-            // Debug.LogError("GetIndex: Unknown type: " + type.Name);
-            return UnitType.ST_Unknown;
-        }
-        return ret;
-    }
-
 }

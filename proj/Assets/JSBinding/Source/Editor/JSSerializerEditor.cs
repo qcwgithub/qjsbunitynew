@@ -51,22 +51,22 @@ public static class JSSerializerEditor
             switch (analyzeType)
             {
                 case JSSerializer.AnalyzeType.ArrayBegin:
-                    serizlizeIndex = AllocString("ArrayBegin");
+                    serizlizeIndex = AllocString("ArrayBegin/" + this.Name);
                     break;
                 case JSSerializer.AnalyzeType.ArrayEnd:
-                    serizlizeIndex = AllocString("ArrayEnd");
+                    serizlizeIndex = AllocString("ArrayEnd/" + this.Name);
                     break;
                 case JSSerializer.AnalyzeType.StructBegin:
-                    serizlizeIndex = AllocString("StructBegin");
+                    serizlizeIndex = AllocString("StructBegin/" + this.Name);
                     break;
                 case JSSerializer.AnalyzeType.StructEnd:
-                    serizlizeIndex = AllocString("StructEnd");
+                    serizlizeIndex = AllocString("StructEnd/" + this.Name);
                     break;
                 case JSSerializer.AnalyzeType.ListBegin:
-                    serizlizeIndex = AllocString("ListBegin");
+                    serizlizeIndex = AllocString("ListBegin/" + this.Name);
                     break;
                 case JSSerializer.AnalyzeType.ListEnd:
-                    serizlizeIndex = AllocString("ListEnd");
+                    serizlizeIndex = AllocString("ListEnd/" + this.Name);
                     break;
                 case JSSerializer.AnalyzeType.Unit:
                     {
@@ -99,6 +99,7 @@ public static class JSSerializerEditor
                         }
                         else
                         {
+                            sb.AppendFormat("{0}/{1}", (int)this.unitType, );
                             string str = ValueToString(this.value, this.value.GetType(), this.unitType, this.Name);
                             AllocString(str);
                         }
@@ -200,7 +201,7 @@ public static class JSSerializerEditor
         return ret;
     }
 
-    static string ValueToString(object value, Type type, JSSerializer.UnitType eType, string name)
+    static string ValueToString(object value, Type type, string name)
     {
         //
         // eType / name / value
@@ -208,25 +209,25 @@ public static class JSSerializerEditor
         StringBuilder sb = new StringBuilder();
         if (type.IsPrimitive)
         {
-            sb.AppendFormat("{0}/{1}/{2}", (int)eType, name, value.ToString());
+            sb.AppendFormat("{0}/{1}", name, value.ToString());
         }
         else if (type.IsEnum)
         {
-            sb.AppendFormat("{0}/{1}/{2}", (int)eType, name, (int)Enum.Parse(type, value.ToString()));
+            sb.AppendFormat("{0}/{1}", name, (int)Enum.Parse(type, value.ToString()));
         }
         else if (type == typeof(string))
         {
-            sb.AppendFormat("{0}/{1}/{2}", (int)eType, name, value.ToString());
+            sb.AppendFormat("{0}/{1}", name, value.ToString());
         }
         else if (type == typeof(Vector2))
         {
             Vector2 v2 = (Vector2)value;
-            sb.AppendFormat("{0}/{1}/{2}/{3}", (int)eType, name, v2.x, v2.y);
+            sb.AppendFormat("{0}/{1}/{2}", name, v2.x, v2.y);
         }
         else if (type == typeof(Vector3))
         {
             Vector3 v3 = (Vector3)value;
-            sb.AppendFormat("{0}/{1}/{2}/{3}/{4}", (int)eType, name, v3.x, v3.y, v3.z);
+            sb.AppendFormat("{0}/{1}/{2}/{3}", name, v3.x, v3.y, v3.z);
         }
         return sb.ToString();
     }
