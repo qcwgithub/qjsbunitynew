@@ -300,7 +300,7 @@ public class JSSerializer : MonoBehaviour
         public AnalyzeType analyzeType;
         public object value;
         public UnitType unitType;
-        public AnalyzeStructInfo(AnalyzeType at, object v, UnitType ut = UnitType.ST_Unknown) {
+        public AnalyzeStructInfo(AnalyzeType at, object v = null, UnitType ut = UnitType.ST_Unknown) {
             analyzeType = at;
             value = v;
             unitType = ut;
@@ -308,9 +308,33 @@ public class JSSerializer : MonoBehaviour
     }
 
     static List<AnalyzeStructInfo> lst = new List<AnalyzeStructInfo>();
-    public static void AddAnalyze(Type type, object obj, int index = -1)
+    public static int AddAnalyze(Type type, object value, int index = -1)
     {
         if (index == -1) index = lst.Count;
+        UnitType unitType = GetUnitType(type);
+        if (unitType != UnitType.ST_Unknown)
+        {
+            lst.Insert(index, new AnalyzeStructInfo(AnalyzeType.Unit, value, unitType));
+            return 1;
+        }
+        else
+        {
+            if (type.IsArray)
+            {
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayBegin));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayObj, value));
+                lst.Insert(index++, new AnalyzeStructInfo(AnalyzeType.ArrayEnd));
+                return 3;
+            }
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            {
+
+            }
+            else if (type.IsClass || type.IsValueType)
+            {
+
+            }
+        }
     }
 
 
