@@ -421,6 +421,10 @@ public class ExtraHelper : MonoBehaviour
                             MonoBehaviour mb = (MonoBehaviour)field.GetValue(behaviour);
                             lstObjsSingle.Add(mb.gameObject);// add game object
                         }
+                        else
+                        {
+                            // not support
+                        }
                     }
                     else
                     {
