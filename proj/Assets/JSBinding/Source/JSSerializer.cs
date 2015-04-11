@@ -17,8 +17,7 @@ public class JSSerializer : MonoBehaviour
 
     public string jsScriptName = string.Empty;
     public string[] arrString = null;
-    public UnityEngine.Object[] arrObjectSingle = null;
-    public UnityEngine.Object[] arrObjectArray = null;
+    public UnityEngine.Object[] arrObject = null;
 
     private struct GameObject_JSComponentName
     {
@@ -219,7 +218,7 @@ public class JSSerializer : MonoBehaviour
                             var arr = s1.Split('/');
                             var valName = arr[0];
                             var objIndex = int.Parse(arr[1]);
-                            JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, this.arrObjectArray[objIndex]);
+                            JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, this.arrObject[objIndex]);
 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
                             child.val = JSMgr.vCall.valTemp;
