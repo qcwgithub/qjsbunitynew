@@ -17,15 +17,17 @@ public static class JSSerializerEditor
     {
         public JSSerializer.AnalyzeType analyzeType;
         public string Name; // 字段名字。当 analyzeType == xxObj xxEnd 时 或者数组元素时这个没鸟用
+        public Type type; // 类型 有时候 value == null
         public object value;
         public JSSerializer.UnitType unitType;// 单元类型。当 analyzeType == xxBegin xxObj xxEnd 时 这个没鸟用
 
-        public AnalyzeStructInfo(JSSerializer.AnalyzeType at, 
-            string name, object v = null, 
+        public AnalyzeStructInfo(JSSerializer.AnalyzeType at,
+            string name, Type type, object v = null, 
             JSSerializer.UnitType ut = JSSerializer.UnitType.ST_Unknown)
         {
             analyzeType = at;
             Name = name;
+            this.type = type;
             value = v;
             unitType = ut;
 
@@ -60,7 +62,8 @@ public static class JSSerializerEditor
                     {
                         var sb = new StringBuilder();
 
-                        Type objectType = this.value.GetType();
+                        // this.value could be null
+                        Type objectType = this.type; // this.value.GetType();
                         if (typeof(UnityEngine.Object).IsAssignableFrom(objectType))
                         {
                             eSerialize = SerializeType.Object;
@@ -94,7 +97,7 @@ public static class JSSerializerEditor
                         else
                         {
                             sb.AppendFormat("{0}/{1}/{2}", (int)this.unitType, this.Name, 
-                                ValueToString(this.value, this.value.GetType()));
+                                ValueToString(this.value, this.type));
                             AllocString(sb.ToString());
                         }
                     }
@@ -120,30 +123,30 @@ public static class JSSerializerEditor
         JSSerializer.UnitType unitType = GetUnitType(type);
         if (unitType != JSSerializer.UnitType.ST_Unknown)
         {
-            lstAnalyze.Insert(index, new AnalyzeStructInfo(JSSerializer.AnalyzeType.Unit, name, value, unitType));
+            lstAnalyze.Insert(index, new AnalyzeStructInfo(JSSerializer.AnalyzeType.Unit, name, type, value, unitType));
             return 1;
         }
         else
         {
             if (type.IsArray)
             {
-                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ArrayBegin, name));
-                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ArrayObj, name, value));
-                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ArrayEnd, name));
+                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ArrayBegin, name, type));
+                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ArrayObj, name, type, value));
+                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ArrayEnd, name, type));
                 return 3;
             }
             else if (type.IsClass || type.IsValueType)
             {
-                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ListBegin, name));
-                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ListObj, name, value));
-                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ListEnd, name));
+                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.StructBegin, name, type));
+                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.StructObj, name, type, value));
+                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.StructEnd, name, type));
                 return 3;
             }
             else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
-                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.StructBegin, name));
-                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.StructObj, name, value));
-                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.StructEnd, name));
+                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ListBegin, name, type));
+                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ListObj, name, type, value));
+                lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.ListEnd, name, type));
                 return 3;
             }
         }
@@ -216,7 +219,7 @@ public static class JSSerializerEditor
         }
         else if (type == typeof(string))
         {
-            sb.AppendFormat("{0}", value.ToString());
+            sb.AppendFormat("{0}", value == null ? "" : value.ToString());
         }
         else if (type == typeof(Vector2))
         {
@@ -248,13 +251,13 @@ public static class JSSerializerEditor
         for (var i = 0; i < lstAnalyze.Count; i++)
         {
             AnalyzeStructInfo info = lstAnalyze[i];
-            int Pos = i + 1;
             bool bBreakFor = true;
             switch (info.analyzeType)
             {
                 case JSSerializer.AnalyzeType.ArrayObj:
                     {
                         bContinueTraverse = true;
+                        int Pos = i;
                         Array arr = (Array)info.value;
                         Type arrayElementType = info.value.GetType().GetElementType();
                         for (var j = 0; j < arr.Length; j++)
@@ -268,6 +271,7 @@ public static class JSSerializerEditor
                 case JSSerializer.AnalyzeType.StructObj:
                     {
                         bContinueTraverse = true;
+                        int Pos = i;
                         var structure = info.value;
                         FieldInfo[] fields = GetTypeSerializedFields(structure.GetType());
                         foreach (FieldInfo field in fields)
@@ -280,6 +284,7 @@ public static class JSSerializerEditor
                 case JSSerializer.AnalyzeType.ListObj:
                     {
                         bContinueTraverse = true;
+                        int Pos = i;
                         var list = info.value;
                         var listType = list.GetType();
                         var listElementType = listType.GetGenericArguments()[0];

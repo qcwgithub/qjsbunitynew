@@ -29,28 +29,28 @@ public class JSSerializer : MonoBehaviour
     private List<GameObject_JSComponentName> cachedRefJSComponent = new List<GameObject_JSComponentName>();
     public enum UnitType
     {
-        ST_Unknown,
+        ST_Unknown = 0,
 
-        ST_Boolean,
+        ST_Boolean = 1,
 
-        ST_Byte,
-        ST_SByte,
-        ST_Char,
-        ST_Int16,
-        ST_UInt16,
-        ST_Int32,
-        ST_UInt32,
-        ST_Int64,
-        ST_UInt64,
+        ST_Byte = 2,
+        ST_SByte = 3,
+        ST_Char = 4,
+        ST_Int16 = 5,
+        ST_UInt16 = 6,
+        ST_Int32 = 7,
+        ST_UInt32 = 8,
+        ST_Int64 = 9,
+        ST_UInt64 = 10,
 
-        ST_Single,
-        ST_Double,
+        ST_Single = 11,
+        ST_Double = 12,
 
-        ST_String,
+        ST_String = 13,
 
-        ST_Enum,
-        ST_UnityEngineObject,
-        ST_MonoBehaviour,
+        ST_Enum = 14,
+        ST_UnityEngineObject = 15,
+        ST_MonoBehaviour = 16,
 
         ST_MAX = 100,
     }
