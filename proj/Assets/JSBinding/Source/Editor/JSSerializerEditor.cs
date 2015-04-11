@@ -99,9 +99,9 @@ public static class JSSerializerEditor
                         }
                         else
                         {
-                            sb.AppendFormat("{0}/{1}", (int)this.unitType, );
-                            string str = ValueToString(this.value, this.value.GetType(), this.unitType, this.Name);
-                            AllocString(str);
+                            sb.AppendFormat("{0}/{1}/{2}", (int)this.unitType, this.Name, 
+                                ValueToString(this.value, this.value.GetType()));
+                            AllocString(sb.ToString());
                         }
                     }
                     break;
@@ -201,33 +201,33 @@ public static class JSSerializerEditor
         return ret;
     }
 
-    static string ValueToString(object value, Type type, string name)
+    static string ValueToString(object value, Type type)
     {
         //
-        // eType / name / value
+        // value
         //
         StringBuilder sb = new StringBuilder();
         if (type.IsPrimitive)
         {
-            sb.AppendFormat("{0}/{1}", name, value.ToString());
+            sb.AppendFormat("{0}", value.ToString());
         }
         else if (type.IsEnum)
         {
-            sb.AppendFormat("{0}/{1}", name, (int)Enum.Parse(type, value.ToString()));
+            sb.AppendFormat("{0}", (int)Enum.Parse(type, value.ToString()));
         }
         else if (type == typeof(string))
         {
-            sb.AppendFormat("{0}/{1}", name, value.ToString());
+            sb.AppendFormat("{0}", value.ToString());
         }
         else if (type == typeof(Vector2))
         {
             Vector2 v2 = (Vector2)value;
-            sb.AppendFormat("{0}/{1}/{2}", name, v2.x, v2.y);
+            sb.AppendFormat("{0}/{1}", v2.x, v2.y);
         }
         else if (type == typeof(Vector3))
         {
             Vector3 v3 = (Vector3)value;
-            sb.AppendFormat("{0}/{1}/{2}/{3}", name, v3.x, v3.y, v3.z);
+            sb.AppendFormat("{0}/{1}/{2}", v3.x, v3.y, v3.z);
         }
         return sb.ToString();
     }

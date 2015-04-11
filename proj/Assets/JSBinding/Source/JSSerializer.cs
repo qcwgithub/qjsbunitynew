@@ -157,6 +157,14 @@ public class JSSerializer : MonoBehaviour
         }
         cachedRefJSComponent.Clear();
     }
+    class SerializeStruct
+    {
+
+    }
+    public void TraverseSerialize(IntPtr cx, IntPtr jsObj)
+    {
+
+    }
     // this function is called in Awake
     public void initSerializedData(IntPtr cx, IntPtr jsObj)
     {
@@ -168,7 +176,30 @@ public class JSSerializer : MonoBehaviour
         for (var i = 0; i < arrString.Length; i++)
         {
             string s = arrString[i];
-            
+            int x = s.IndexOf('/');
+            int y = s.IndexOf('/', x + 1);
+            string s0 = s.Substring(0, x);
+            string s1 = s.Substring(x + 1, y - x - 1);
+            switch (s0)
+            {
+                case "ArrayBegin":
+                    break;
+                case "ArrayEnd":
+                    break;
+                case "StructBegin":
+                    break;
+                case "StructEnd":
+                    break;
+                case "ListBegin":
+                    break;
+                case "ListEnd":
+                    break;
+                default:
+                    {
+                        UnitType eUnitType = (UnitType)int.Parse(s0);
+                    }
+                    break;
+            }
         }
     }
 }
