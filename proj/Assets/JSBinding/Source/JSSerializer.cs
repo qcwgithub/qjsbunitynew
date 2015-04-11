@@ -448,11 +448,29 @@ public class JSSerializer : MonoBehaviour
         for (var i = 0; i < lst.Count; i++)
         {
             AnalyzeStructInfo info = lst[i];
+            int Pos = i + 1;
             switch (info.analyzeType)
             {
                 case AnalyzeType.ArrayObj:
+                    {
+                        Array arr = (Array)info.value;
+                        Type arrayElementType = info.value.GetType().GetElementType();
+                        for (var j = 0; j < arr.Length; j++)
+                        {
+                            object value = arr.GetValue(j);
+                            Pos += AddAnalyze(arrayElementType, value, Pos);
+                        }
+                    }
                     break;
                 case AnalyzeType.StructObj:
+                    {
+                        var structure = info.value;
+                        FieldInfo[] fields = GetTypeSerializedFields(structure.GetType());
+                        foreach (FieldInfo field in fields)
+                        {
+                            Pos += AddAnalyze(field.FieldType, field.GetValue(structure));
+                        }
+                    }
                     break;
                 case AnalyzeType.ListObj:
                     {
@@ -462,7 +480,7 @@ public class JSSerializer : MonoBehaviour
 
                         int Count = (int)listType.GetProperty("Count").GetValue(list, new object[] { });
                         PropertyInfo pro = listType.GetProperty("Item");
-                        int Pos = i + 1;
+                        
                         for (var j = 0; j < Count; j++)
                         {
                             var value = pro.GetValue(list, new object[]{ j });
