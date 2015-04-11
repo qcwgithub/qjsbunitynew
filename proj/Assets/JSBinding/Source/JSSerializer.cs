@@ -299,10 +299,19 @@ public class JSSerializer : MonoBehaviour
     {
         public AnalyzeType analyzeType;
         public object value;
-
+        public UnitType unitType;
+        public AnalyzeStructInfo(AnalyzeType at, object v, UnitType ut = UnitType.ST_Unknown) {
+            analyzeType = at;
+            value = v;
+            unitType = ut;
+        }
     }
 
-    List<AnalyzeStructInfo>;
+    static List<AnalyzeStructInfo> lst = new List<AnalyzeStructInfo>();
+    public static void AddAnalyze(Type type, object obj, int index = -1)
+    {
+        if (index == -1) index = lst.Count;
+    }
 
 
     static Dictionary<Type, UnitType> sDict;
