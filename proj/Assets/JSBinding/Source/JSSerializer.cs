@@ -54,10 +54,23 @@ public class JSSerializer : MonoBehaviour
         ST_UnityEngineObject,
         ST_MonoBehaviour,
 
-        ST_Vector2,
-        ST_Vector3,
-
         ST_MAX = 100,
+    }
+    enum AnalyzeType
+    {
+        Unit,
+
+        ArrayBegin,
+        ArrayObj,
+        ArrayEnd,
+
+        StructBegin,
+        StructObj,
+        StructEnd,
+
+        ListBegin,
+        ListObj,
+        ListEnd,
     }
 
     bool ToJsval(UnitType eType, string strValue)
@@ -282,6 +295,15 @@ public class JSSerializer : MonoBehaviour
         }
     }
 
+    public struct AnalyzeStructInfo
+    {
+        public AnalyzeType analyzeType;
+        public object value;
+
+    }
+
+    List<AnalyzeStructInfo>;
+
 
     static Dictionary<Type, UnitType> sDict;
     static UnitType GetUnitType(Type type)
@@ -376,7 +398,11 @@ public class JSSerializer : MonoBehaviour
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
         return fields;
     }
-
+    public static FieldInfo[] GetTypeSerializedFields(Type type)
+    {
+        var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
+        return fields;
+    }
     static void CopyBehaviour(MonoBehaviour behaviour, JSSerializer helper)
     {
         GameObject go = behaviour.gameObject;
