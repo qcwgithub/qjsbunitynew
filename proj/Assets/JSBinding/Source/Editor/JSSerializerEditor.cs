@@ -110,8 +110,8 @@ public static class JSSerializerEditor
 		lstString.Add(str); 
 	}
     static int AllocObject(UnityEngine.Object obj) { 
-		lstObjs.Add(obj); 
-		return lstString.Count - 1; 
+		lstObjs.Add(obj);
+        return lstObjs.Count - 1; 
 	}
     /// <summary>
     /// lstString lstObjs 存储序列化要用的字符串和对象列表。
@@ -281,7 +281,7 @@ public static class JSSerializerEditor
                             for (var j = 0; j < arr.Length; j++)
                             {
                                 object value = arr.GetValue(j);
-                                Pos += AddAnalyze(arrayElementType, j.ToString(), value, Pos);
+                                Pos += AddAnalyze(arrayElementType, "["+j.ToString()+"]", value, Pos);
                             }
                         }
                         lstAnalyze.RemoveAt(i);
