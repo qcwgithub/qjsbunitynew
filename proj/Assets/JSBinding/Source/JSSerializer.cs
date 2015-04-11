@@ -70,7 +70,12 @@ public class JSSerializer : MonoBehaviour
         ListObj,
         ListEnd,
     }
-
+    /// <summary>
+    /// 根据 eType 将 strValue 转换为 jsval
+    /// </summary>
+    /// <param name="eType"></param>
+    /// <param name="strValue"></param>
+    /// <returns></returns>
     bool ToJsval(UnitType eType, string strValue)
     {
         bool ret = true;
@@ -177,7 +182,41 @@ public class JSSerializer : MonoBehaviour
             this.father = father;
             val.asBits = 0;
         }
+        public JSApi.jsval CalcJSVal()
+        {
+            switch (this.type) 
+            {
+                case SType.Unit:
+                    return this.val;
+                    break;
+                case SType.Array:
+                    {
+                        var arrVal = new JSApi.jsval[lstChildren.Count];
+                        for (var i = 0; i < arrVal.Length; i++)
+                        {
+                            arrVal[i] = lstChildren[i].CalcJSVal();
+                        }
+                        JSMgr.vCall.datax.setArray(JSDataExchangeMgr.eSetType.Jsval, arrVal);
+                        return JSMgr.vCall.valTemp;
+                    }
+                    break;
+                case SType.Struct:
+                    break;
+                case SType.List:
+                    break;
+            }
+        }
     }
+    /// <summary>
+    /// 遍历 arrString 逐级处理序列化数据
+    /// index: arrString 索引
+    /// st: 当前父结点
+    /// </summary>
+    /// <param name="cx"></param>
+    /// <param name="jsObj"></param>
+    /// <param name="index"></param>
+    /// <param name="st"></param>
+    /// <returns></returns>
     public int TraverseSerialize(IntPtr cx, IntPtr jsObj, int index, SerializeStruct st)
     {
         var i = index;
@@ -256,7 +295,11 @@ public class JSSerializer : MonoBehaviour
         }
         return i - index;
     }
-    // this function is called in Awake
+    /// <summary>
+    /// 在脚本的 Awake 时会调用这个函数来初始化序列化数据给JS。
+    /// </summary>
+    /// <param name="cx"></param>
+    /// <param name="jsObj"></param>
     public void initSerializedData(IntPtr cx, IntPtr jsObj)
     {
         if (arrString == null || arrString.Length == 0)
@@ -264,6 +307,7 @@ public class JSSerializer : MonoBehaviour
             return;
         }
 
-        TraverseSerialize(cx, jsObj, 0, new SerializeStruct(SerializeStruct.SType.Root, "root", null));
+        var root = new SerializeStruct(SerializeStruct.SType.Root, "this-name-doesn't-matter", null);
+        TraverseSerialize(cx, jsObj, 0, root);
     }
 }

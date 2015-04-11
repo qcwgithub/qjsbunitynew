@@ -113,6 +113,9 @@ public static class JSSerializerEditor
 		lstObjs.Add(obj); 
 		return lstString.Count - 1; 
 	}
+    /// <summary>
+    /// lstString lstObjs 存储序列化要用的字符串和对象列表。
+    /// </summary>
     static List<string> lstString = new List<string>();
     static List<UnityEngine.Object> lstObjs = new List<UnityEngine.Object>();
 
@@ -154,6 +157,9 @@ public static class JSSerializerEditor
     }
 
 
+    /// <summary>
+    /// sDict 存储类型和枚举JSSerializer的对应关系
+    /// </summary>
     static Dictionary<Type, JSSerializer.UnitType> sDict;
     static JSSerializer.UnitType GetUnitType(Type type)
     {
@@ -202,7 +208,12 @@ public static class JSSerializerEditor
         }
         return ret;
     }
-
+    /// <summary>
+    /// 将值转换为字符串表示
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
     static string ValueToString(object value, Type type)
     {
         //
@@ -234,6 +245,11 @@ public static class JSSerializerEditor
         return sb.ToString();
     }
 
+    /// <summary>
+    /// 取出一个脚本中需要序列化的字段。目前是取出所有 public 变量。可能有误
+    /// </summary>
+    /// <param name="behaviour"></param>
+    /// <returns></returns>
     public static FieldInfo[] GetMonoBehaviourSerializedFields(MonoBehaviour behaviour)
     {
         Type type = behaviour.GetType();
