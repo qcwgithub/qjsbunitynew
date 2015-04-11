@@ -47,16 +47,16 @@ public static class JSSerializerEditor
                     AllocString("ArrayEnd/" + this.Name);
                     break;
                 case JSSerializer.AnalyzeType.StructBegin:
-                    AllocString("StructBegin/" + this.Name);
+                    AllocString("StructBegin/" + this.Name + "/" + JSDataExchangeMgr.GetTypeFullName(this.type));
                     break;
                 case JSSerializer.AnalyzeType.StructEnd:
-                    AllocString("StructEnd/" + this.Name);
+                    AllocString("StructEnd/" + this.Name + "/" + JSDataExchangeMgr.GetTypeFullName(this.type));
                     break;
                 case JSSerializer.AnalyzeType.ListBegin:
-                    AllocString("ListBegin/" + this.Name);
+                    AllocString("ListBegin/" + this.Name + "/" + JSDataExchangeMgr.GetTypeFullName(typeof(List<>)));
                     break;
                 case JSSerializer.AnalyzeType.ListEnd:
-                    AllocString("ListEnd/" + this.Name);
+                    AllocString("ListEnd/" + this.Name + "/" + JSDataExchangeMgr.GetTypeFullName(typeof(List<>)));
                     break;
                 case JSSerializer.AnalyzeType.Unit:
                     {

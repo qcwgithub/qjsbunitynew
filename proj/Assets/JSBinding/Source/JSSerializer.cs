@@ -166,7 +166,8 @@ public class JSSerializer : MonoBehaviour
         public enum SType { Root, Array, Struct, List, Unit };
         public SType type;
         public string name;
-        public JSApi.jsval val;
+        public string typeName;
+        public JSApi.jsval val; // only valid when type == SType.Unit
         public SerializeStruct father;
         List<SerializeStruct> lstChildren;
         public void AddChild(SerializeStruct ss)
@@ -181,6 +182,7 @@ public class JSSerializer : MonoBehaviour
             this.name = name;
             this.father = father;
             val.asBits = 0;
+            typeName = "WRONGTYPENAME!";
         }
         public JSApi.jsval CalcJSVal()
         {
@@ -201,6 +203,18 @@ public class JSSerializer : MonoBehaviour
                     }
                     break;
                 case SType.Struct:
+                    {
+                        IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(this.typeName);
+                        IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+                        for (var i = 0; i < lstChildren.Count; i++)
+                        {
+                            var child = lstChildren[i];
+                            JSApi.jsval mVal = child.CalcJSVal();
+                            JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, child.name, -1, ref mVal);
+                        }
+                        JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
+                        return this.val;
+                    }
                     break;
                 case SType.List:
                     break;
@@ -230,14 +244,27 @@ public class JSSerializer : MonoBehaviour
             switch (s0)
             {
                 case "ArrayBegin":
-                case "StructBegin":
-                case "ListBegin":
                     {
                         SerializeStruct.SType sType = SerializeStruct.SType.Array;
                         if (s0 == "StructBegin") sType = SerializeStruct.SType.Struct;
                         else if (s0 == "ListBegin") sType = SerializeStruct.SType.List;
 
                         var ss = new SerializeStruct(sType, s1, st);
+                        st.AddChild(ss);
+                        i += TraverseSerialize(cx, jsObj, i + 1, ss);
+                    }
+                    break;
+                    // 这2个还带有类型
+                case "StructBegin":
+                case "ListBegin":
+                    {
+                        SerializeStruct.SType sType = SerializeStruct.SType.Array;
+                        if (s0 == "StructBegin") sType = SerializeStruct.SType.Struct;
+                        else if (s0 == "ListBegin") sType = SerializeStruct.SType.List;
+                        var arr = s1.Split('/');
+
+                        var ss = new SerializeStruct(sType, arr[0], st);
+                        ss.typeName = arr[1];
                         st.AddChild(ss);
                         i += TraverseSerialize(cx, jsObj, i + 1, ss);
                     }
