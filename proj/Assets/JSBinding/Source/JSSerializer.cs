@@ -19,6 +19,10 @@ public class JSSerializer : MonoBehaviour
     public string[] arrString = null;
     public UnityEngine.Object[] arrObject = null;
 
+    /// <summary>
+    /// 当引用其他 MonoBehaviour 时  因为后来脚本都变成JS了  也就不能使用原来的方式去引用
+    /// 只能改成引用 GameObject   然后再记录脚本名字  后面再匹配
+    /// </summary>
     private struct GameObject_JSComponentName
     {
         public string valName;
@@ -139,7 +143,14 @@ public class JSSerializer : MonoBehaviour
         }
         return ret;
     }
-    // this function is called in Start
+    /// <summary>
+    /// 为什么这个要延迟调用（在Start时才调用）
+    /// 每个 GameObject Awake 时 jsObj 才会有值
+    /// 每个 GameObject 的 Awake 时机是不定的
+    /// 所以为了取得这个 jsObj 就必须在所有 GameObject 都 Awake 后再进行互相引用
+    /// </summary>
+    /// <param name="cx"></param>
+    /// <param name="jsObj"></param>
     public void initSerializedRefMonoBehaviour(IntPtr cx, IntPtr jsObj)
     {
         foreach (var rel in cachedRefJSComponent)
@@ -194,6 +205,7 @@ public class JSSerializer : MonoBehaviour
             switch (this.type)
             {
                 case SType.Unit:
+                    // 在 TraverseSerialize() 的时候就已经计算好了
                     break;
                 case SType.Array:
                     {
@@ -265,9 +277,6 @@ public class JSSerializer : MonoBehaviour
                 case "ArrayBegin":
                     {
                         SerializeStruct.SType sType = SerializeStruct.SType.Array;
-                        if (s0 == "StructBegin") sType = SerializeStruct.SType.Struct;
-                        else if (s0 == "ListBegin") sType = SerializeStruct.SType.List;
-
                         var ss = new SerializeStruct(sType, s1, st);
                         st.AddChild(ss);
                         TraverseSerialize(cx, jsObj, ss);
@@ -312,18 +321,21 @@ public class JSSerializer : MonoBehaviour
                         }
                         else if (eUnitType == UnitType.ST_MonoBehaviour)
                         {
-                            // TODO 最后再做
-                            //                             var arr = s1.Split('/');
-                            //                             var valName = arr[0];
-                            //                             var objIndex = int.Parse(arr[1]);
-                            //                             var scriptName = arr[2];
-                            // 
-                            //                             UnityEngine.Object obj = this.arrObjectArray[objIndex];
-                            //                             cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
-                            // 
-                            //                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-                            //                             child.val = JSMgr.vCall.valTemp;
-                            //                             st.AddChild(child);
+                            var valName = s1;
+                            string s2 = s.Substring(y + 1, s.Length - y - 1);
+                            var arr = s2.Split('/');
+                            var objIndex = int.Parse(arr[0]);
+                            var scriptName = arr[1];
+
+                            cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)this.arrObject[objIndex], scriptName));
+
+//                             UnityEngine.Object obj = this.arrObjectArray[objIndex];
+//                             cachedRefJSComponent.Add(new GameObject_JSComponentName(valName, (GameObject)obj, scriptName));
+// 
+                            var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
+                            JSApi.JSh_SetJsvalUndefined(ref child.val);
+                            // child.val = JSMgr.vCall.valTemp;
+                            st.AddChild(child);
                         }
                         else
                         {

@@ -42,8 +42,9 @@ public class JSComponent_SharpKit : JSSerializer
     jsval valDisableChildGameObject = new jsval();
     jsval valDestroyGameObject = new jsval();
 
-
-    bool inited = false;
+    int initState = 0;
+    bool initSuccess { get { return initState == 1; } set { if (value) initState = 1; } }
+    bool initFail { get { return initState == 2; } set { if (value) initState = 2; } }
 
     void initVal(ref jsval val, string jsFunName)
     {
@@ -56,10 +57,15 @@ public class JSComponent_SharpKit : JSSerializer
             JSMgr.vCall.CallJSFunctionValue(jsObj, ref val, args);
     }
 
-    public bool initJS()
+    public void initJS()
     {
+        if (initFail || initSuccess) return;
+
         if (string.IsNullOrEmpty(jsScriptName))
-            return false;
+        {
+            initFail = true;
+            return;
+        }
 
         jsval[] valParam = new jsval[2];
         jsval valRet = new jsval();
@@ -83,18 +89,10 @@ public class JSComponent_SharpKit : JSSerializer
         {
             jsObj = IntPtr.Zero;
             Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");
-            return false;
+            initFail = true;
+            return;
         }
         JSMgr.addJSCSRelation(jsObj, __nativeObj, this);
-
-        // TODO:
-        // handle serialization here
-        //
-        //
-        initSerializedData(JSMgr.cx, jsObj);
-        //
-        //
-        //
 
         JSMgr.AddRootedObject(jsObj);
 
@@ -117,17 +115,17 @@ public class JSComponent_SharpKit : JSSerializer
         initVal(ref valDisableChildGameObject, "DisableChildGameObject");
         initVal(ref valDestroyGameObject, "DestroyGameObject");
 
-        inited = true;
-        return true;
+        initSuccess = true;
     }
     public void Awake()
     {
         if (!JSEngine.inited)
             return;
 
-        if (!initJS())
+        initJS();
+        if (initSuccess)
         {
-            return;
+            initSerializedData(JSMgr.cx, jsObj);
         }
     }
 
@@ -161,7 +159,7 @@ public class JSComponent_SharpKit : JSSerializer
 
         callIfExist(ref valDestroy);
 
-        if (inited)
+        if (initSuccess)
         {
             JSMgr.RemoveRootedObject(jsObj);
         }

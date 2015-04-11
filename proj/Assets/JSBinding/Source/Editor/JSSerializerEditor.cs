@@ -78,7 +78,7 @@ public static class JSSerializerEditor
                                     // add game object
                                     var index = AllocObject(((MonoBehaviour)this.value).gameObject);
 
-                                    // eType / Name / object Index / MonoBehaviour name
+                                    // UnitType / Name / object Index / MonoBehaviour Name
                                     sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSDataExchangeMgr.GetTypeFullName(objectType));
                                     AllocString(sb.ToString());
                                 }
