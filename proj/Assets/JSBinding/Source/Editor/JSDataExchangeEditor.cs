@@ -254,4 +254,59 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         }
         return xcg.Get_Return(expVar) + ";";
     }
+
+
+    public static string GetFunctionArg_DelegateFuncionName(string className, string methodName, int methodIndex, int argIndex)
+    {
+        return JSDataExchangeMgr.HandleFunctionName(className + "_" + methodName + methodIndex.ToString() + "_" + argIndex.ToString() + "_GetDelegate");
+    }
+    public static StringBuilder BuildFunctionArg_DelegateFunction(string className, string methodName, Type delType, int methodIndex, int argIndex)
+    {
+        // building a closure
+        // a function having a up-value: jsFunction
+
+        methodName = JSDataExchangeMgr.HandleFunctionName(methodName);
+
+        var sb = new StringBuilder();
+        ParameterInfo[] ps = delType.GetMethod("Invoke").GetParameters();
+        Type returnType = delType.GetMethod("Invoke").ReturnType;
+
+        var argsParam = new cg.args();
+        for (int i = 0; i < ps.Length; i++)
+        {
+            argsParam.Add(ps[i].Name);
+        }
+
+        // <t,u,v> µÄÐÎÊ½
+        string stringTOfMethod = string.Empty;
+        if (delType.IsGenericType)
+        {
+            var arg = new cg.args();
+            foreach (var t in delType.GetGenericArguments())
+            {
+                arg.Add(t.Name);
+            }
+            stringTOfMethod = arg.Format(cg.args.ArgsFormat.GenericT);
+        }
+
+        // this function name is used in BuildFields, don't change
+        sb.AppendFormat("public static {0} {1}{2}(jsval jsFunction)\n[[\n",
+            JSDataExchangeMgr.GetTypeFullName(delType),  // [0]
+            GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, argIndex), // [2]
+            stringTOfMethod  // [1]
+            );
+        sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");
+        sb.AppendFormat("    {0} action = ({1}) => \n", JSDataExchangeMgr.GetTypeFullName(delType), argsParam.Format(cg.args.ArgsFormat.OnlyList));
+        sb.AppendFormat("    [[\n");
+        sb.AppendFormat("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction{0}{1});\n", (argsParam.Count > 0) ? "," : "", argsParam);
+
+        if (returnType != typeof(void))
+            sb.Append("        return (" + JSDataExchangeMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeEditor.Get_GetJSReturn(returnType) + ";\n");
+
+        sb.AppendFormat("    ]];\n");
+        sb.Append("    return action;\n");
+        sb.AppendFormat("]]\n");
+
+        return sb;
+    }
 }

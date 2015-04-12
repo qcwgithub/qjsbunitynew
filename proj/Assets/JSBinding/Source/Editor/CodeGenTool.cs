@@ -26,6 +26,7 @@ namespace cg
             }
             return this;
         }
+        public int Count { get{return lst.Count;} }
         public args AddFormat(string format, params object[] objs)
         {
             sb.Remove(0, sb.Length);            
