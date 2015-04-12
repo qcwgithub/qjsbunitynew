@@ -119,7 +119,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         if (type.IsGenericParameter || type.ContainsGenericParameters)
             typeFullName = "object";
         else
-            typeFullName = GetTypeFullName(type);
+            typeFullName = JSNameMgr.GetTypeFullName(type);
 
         string get_getParam = string.Empty;
         if (isOut)
@@ -258,14 +258,14 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
 
     public static string GetFunctionArg_DelegateFuncionName(string className, string methodName, int methodIndex, int argIndex)
     {
-        return JSDataExchangeMgr.HandleFunctionName(className + "_" + methodName + methodIndex.ToString() + "_" + argIndex.ToString() + "_GetDelegate");
+        return JSNameMgr.HandleFunctionName(className + "_" + methodName + methodIndex.ToString() + "_" + argIndex.ToString() + "_GetDelegate");
     }
     public static StringBuilder BuildFunctionArg_DelegateFunction(string className, string methodName, Type delType, int methodIndex, int argIndex)
     {
         // building a closure
         // a function having a up-value: jsFunction
 
-        methodName = JSDataExchangeMgr.HandleFunctionName(methodName);
+        methodName = JSNameMgr.HandleFunctionName(methodName);
 
         var sb = new StringBuilder();
         ParameterInfo[] ps = delType.GetMethod("Invoke").GetParameters();
@@ -291,17 +291,17 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
 
         // this function name is used in BuildFields, don't change
         sb.AppendFormat("public static {0} {1}{2}(jsval jsFunction)\n[[\n",
-            JSDataExchangeMgr.GetTypeFullName(delType),  // [0]
+            JSNameMgr.GetTypeFullName(delType),  // [0]
             GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, argIndex), // [2]
             stringTOfMethod  // [1]
             );
         sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");
-        sb.AppendFormat("    {0} action = ({1}) => \n", JSDataExchangeMgr.GetTypeFullName(delType), argsParam.Format(cg.args.ArgsFormat.OnlyList));
+        sb.AppendFormat("    {0} action = ({1}) => \n", JSNameMgr.GetTypeFullName(delType), argsParam.Format(cg.args.ArgsFormat.OnlyList));
         sb.AppendFormat("    [[\n");
         sb.AppendFormat("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction{0}{1});\n", (argsParam.Count > 0) ? "," : "", argsParam);
 
         if (returnType != typeof(void))
-            sb.Append("        return (" + JSDataExchangeMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeEditor.Get_GetJSReturn(returnType) + ";\n");
+            sb.Append("        return (" + JSNameMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeEditor.Get_GetJSReturn(returnType) + ";\n");
 
         sb.AppendFormat("    ]];\n");
         sb.Append("    return action;\n");

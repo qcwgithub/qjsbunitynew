@@ -47,16 +47,16 @@ public static class JSSerializerEditor
                     AllocString("ArrayEnd/" + this.Name + "/");
                     break;
                 case JSSerializer.AnalyzeType.StructBegin:
-                    AllocString("StructBegin/" + this.Name + "/" + JSDataExchangeMgr.GetTypeFullName(this.type));
+                    AllocString("StructBegin/" + this.Name + "/" + JSNameMgr.GetTypeFullName(this.type));
                     break;
                 case JSSerializer.AnalyzeType.StructEnd:
-                    AllocString("StructEnd/" + this.Name + "/" + JSDataExchangeMgr.GetTypeFullName(this.type));
+                    AllocString("StructEnd/" + this.Name + "/" + JSNameMgr.GetTypeFullName(this.type));
                     break;
                 case JSSerializer.AnalyzeType.ListBegin:
-                    AllocString("ListBegin/" + this.Name + "/" + JSDataExchangeMgr.GetTypeFullName(typeof(List<>)));
+                    AllocString("ListBegin/" + this.Name + "/" + JSNameMgr.GetTypeFullName(typeof(List<>)));
                     break;
                 case JSSerializer.AnalyzeType.ListEnd:
-                    AllocString("ListEnd/" + this.Name + "/" + JSDataExchangeMgr.GetTypeFullName(typeof(List<>)));
+                    AllocString("ListEnd/" + this.Name + "/" + JSNameMgr.GetTypeFullName(typeof(List<>)));
                     break;
                 case JSSerializer.AnalyzeType.Unit:
                     {
@@ -79,7 +79,7 @@ public static class JSSerializerEditor
                                     var index = AllocObject(((MonoBehaviour)this.value).gameObject);
 
                                     // UnitType / Name / object Index / MonoBehaviour Name
-                                    sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSDataExchangeMgr.GetTypeFullName(objectType));
+                                    sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSNameMgr.GetTypeFullName(objectType));
                                     AllocString(sb.ToString());
                                 }
                                 else
@@ -353,7 +353,7 @@ public static class JSSerializerEditor
         {
             lstAnalyze[i].Alloc(serizlizer);
         }
-        serizlizer.jsScriptName = JSDataExchangeMgr.GetTypeFullName(behaviour.GetType());
+        serizlizer.jsScriptName = JSNameMgr.GetTypeFullName(behaviour.GetType());
         serizlizer.arrString = lstString.ToArray();
         serizlizer.arrObject = lstObjs.ToArray();
     }

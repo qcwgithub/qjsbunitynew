@@ -116,7 +116,7 @@ public static class JSGenerator2
     }
     public static string SharpKitClassName(Type type)
     {
-        return JSDataExchangeMgr.GetJSTypeFullName(type);
+        return JSNameMgr.GetJSTypeFullName(type);
     }
 
     public static StringBuilder BuildFields(Type type, FieldInfo[] fields, int slot)
@@ -220,7 +220,7 @@ _jstype =
 ]];
 
 ";
-        string jsTypeName = JSDataExchangeMgr.GetTypeFullName(type);
+        string jsTypeName = JSNameMgr.GetTypeFullName(type);
         jsTypeName = jsTypeName.Replace('.', '$');
 
         string assemblyName = "";
@@ -428,8 +428,8 @@ _jstype.staticDefinition.{1} = function({2}) [[
         HandleStringFormat(sbClass);
 
 
-        string fileName = JSBindingSettings.jsGeneratedDir + "/" + 
-            JSDataExchangeMgr.GetTypeFileName(JSGenerator2.type)
+        string fileName = JSBindingSettings.jsGeneratedDir + "/" +
+            JSNameMgr.GetTypeFileName(JSGenerator2.type)
             + JSBindingSettings.jsExtension;
         var writer2 = OpenFile(fileName, false);
         writer2.Write(sbClass.ToString());

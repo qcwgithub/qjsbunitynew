@@ -768,7 +768,7 @@ public class JSDataExchangeMgr
                             // 返回给JS的对象：需要 prototype
                             // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
                             //
-                            string typeName = JSDataExchangeMgr.GetJSTypeFullName(csType);
+                            string typeName = JSNameMgr.GetJSTypeFullName(csType);
                             IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
                             if (jstypeObj != IntPtr.Zero)
                             {
@@ -820,7 +820,7 @@ public class JSDataExchangeMgr
                         else
                         {
                             // csObj must not be null
-                            IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSDataExchangeMgr.GetTypeFullName(csObj.GetType()));
+                            IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSNameMgr.GetTypeFullName(csObj.GetType()));
                             if (jstypeObj != IntPtr.Zero)
                             {
                                 // 1)
@@ -848,7 +848,7 @@ public class JSDataExchangeMgr
                             }
                             else
                             {
-                                Debug.LogError("Return a \"" + JSDataExchangeMgr.GetTypeFullName(csObj.GetType()) + "\" to JS failed. Did you forget to export that class?");
+                                Debug.LogError("Return a \"" + JSNameMgr.GetTypeFullName(csObj.GetType()) + "\" to JS failed. Did you forget to export that class?");
                             }
                         }
 
@@ -1132,14 +1132,14 @@ public class JSDataExchangeMgr
                     method = methods[i];
                 else
                 {
-                    Debug.LogError("More than 1 Generic method found!!! " + GetTypeFullName(type) + "." + name);
+                    Debug.LogError("More than 1 Generic method found!!! " + JSNameMgr.GetTypeFullName(type) + "." + name);
                     return null;
                 }
             }
         }
         if (method == null)
         {
-            Debug.LogError("No generic method found! " + GetTypeFullName(type) + "." + name);
+            Debug.LogError("No generic method found! " + JSNameMgr.GetTypeFullName(type) + "." + name);
         }
         return method;
     }
@@ -1366,7 +1366,7 @@ public class JSDataExchange_Arr : JSDataExchange
             getValMethod = "setObject";
         }
 
-        sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSDataExchangeMgr.GetTypeFullName(elementType), expVar);
+        sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar);
         sb.AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar);
         sb.AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n");
         sb.AppendFormat("        vc.datax.{0}(JSDataExchangeMgr.eSetType.Jsval, arrRet[i]);\n", getValMethod);

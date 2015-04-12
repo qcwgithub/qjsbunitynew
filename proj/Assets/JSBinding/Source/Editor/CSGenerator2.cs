@@ -280,7 +280,7 @@ public static class CSGenerator2
                     functionName += "_" + p.ParameterType.Name;
                 }
             }
-            functionName = JSDataExchangeMgr.HandleFunctionName(functionName);
+            functionName = JSNameMgr.HandleFunctionName(functionName);
 
             sb.AppendFormat("static void {0}(JSVCall vc)\n[[\n", functionName);
 
@@ -455,7 +455,7 @@ public static class CSGenerator2
                     functionName += "_" + p.ParameterType.Name;
                 }
             }
-            functionName = JSDataExchangeMgr.HandleFunctionName(functionName);
+            functionName = JSNameMgr.HandleFunctionName(functionName);
 
             sb.AppendFormat("static void {0}(JSVCall vc)\n[[\n", functionName);
 
@@ -806,7 +806,7 @@ public static class CSGenerator2
                 ParameterInfo p = ps[i];
                 if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
                 {
-                    string delegateGetName = GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i);
+                    string delegateGetName = JSDataExchangeEditor.GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i);
 
                     if (p.ParameterType.IsGenericType)
                     {
@@ -973,7 +973,7 @@ static bool {0}(JSVCall vc, int start, int count)
             int olIndex = i + 1; // for constuctors, they are always overloaded
             bool returnVoid = false;
 
-            string functionName = JSDataExchangeMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : ""));
+            string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : ""));
 
             sb.AppendFormat(fmt, functionName,
                 BuildNormalFunctionCall(i, paramS, type.Name, cons.Name, cons.IsStatic, returnVoid, null, true, 0, constructorsIndex[i]));
@@ -1023,7 +1023,7 @@ static bool {0}(JSVCall vc, int start, int count)
                 TCount = method.GetGenericArguments().Length;
             }
 
-            functionName = JSDataExchangeMgr.HandleFunctionName(type.Name + "_" + SharpKitMethodName(method.Name, paramS, true, TCount));
+            functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + SharpKitMethodName(method.Name, paramS, true, TCount));
             if (method.IsSpecialName && method.Name == "op_Implicit" && paramS.Length > 0)
             {
                 functionName += "_to_" + method.ReturnType.Name;
@@ -1174,7 +1174,7 @@ public class CSharpGenerated
         StringBuilder sbA = new StringBuilder();
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
-            sbA.AppendFormat("        {0}Generated.__Register();\n", JSDataExchangeMgr.GetTypeFileName(JSBindingSettings.classes[i]));
+            sbA.AppendFormat("        {0}Generated.__Register();\n", JSNameMgr.GetTypeFileName(JSBindingSettings.classes[i]));
         }
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat(fmt, sbA);
@@ -1204,7 +1204,7 @@ public class JSGeneratedFileNames
         StringBuilder sbA = new StringBuilder();
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
-            string name = JSDataExchangeMgr.GetTypeFileName(JSBindingSettings.classes[i]).Replace('.', '_');
+            string name = JSNameMgr.GetTypeFileName(JSBindingSettings.classes[i]).Replace('.', '_');
             if (JSGenerator2.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
                 name = JSGenerator2.typeClassName[JSBindingSettings.classes[i]];
             sbA.AppendFormat("        \"{0}\",\n", name);
@@ -1249,7 +1249,7 @@ public class JSGeneratedFileNames
             ccbn.methodsCSParam = new List<string>(ti.methods.Length);
         }
 
-        thisClassName = JSDataExchangeMgr.GetTypeFileName(type) + "Generated";
+        thisClassName = JSNameMgr.GetTypeFileName(type) + "Generated";
 
         var sbFields = BuildFields(type, ti.fields, ccbn);
         var sbProperties = BuildProperties(type, ti.properties, ti.propertiesIndex, ccbn);
@@ -1293,7 +1293,7 @@ public class {0}
         sbFile.Replace("\r\n", "\n");
 
         string fileName = JSBindingSettings.csGeneratedDir + "/" +
-            JSDataExchangeMgr.GetTypeFileName(type) + 
+            JSNameMgr.GetTypeFileName(type) + 
             "Generated.cs";
         var writer2 = OpenFile(fileName, false);
         writer2.Write(sbFile.ToString());

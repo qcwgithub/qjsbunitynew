@@ -417,7 +417,7 @@ public class ExtraHelper : MonoBehaviour
                         {
                             // eType / Name / lstObjsSingle's Index / Monobehaviour name
                             lstString.Add(((int)eType).ToString() + "/" + field.Name + "/" + lstObjsSingle.Count.ToString() + "/" +
-                                JSDataExchangeMgr.GetTypeFullName(field.FieldType));
+                                JSNameMgr.GetTypeFullName(field.FieldType));
                             MonoBehaviour mb = (MonoBehaviour)field.GetValue(behaviour);
                             lstObjsSingle.Add(mb.gameObject);// add game object
                         }
@@ -470,7 +470,7 @@ public class ExtraHelper : MonoBehaviour
         }
 
         helper.AutoDelete = true;
-        helper.jsScriptName = JSDataExchangeMgr.GetTypeFullName(behaviour.GetType());
+        helper.jsScriptName = JSNameMgr.GetTypeFullName(behaviour.GetType());
         helper.arrString = lstString.ToArray();
         helper.arrObjectSingle = lstObjsSingle.ToArray();
         helper.arrObjectArray = lstObjsArray.ToArray();
