@@ -133,9 +133,7 @@ public class JSSerializer : MonoBehaviour
         JSComponent_SharpKit[] jsComs = go.GetComponents<JSComponent_SharpKit>();
         foreach (var com in jsComs)
         {
-            // 注意：最多只能绑同 一个名字的脚本一次  
-            // 现在只能支持这样
-            // 数组也不行  要注意
+            // 注意：同一个GameObject不能绑相同名字的脚本2次以上
             if (com.jsScriptName == scriptName)
             {
                 return com.GetJSObj();

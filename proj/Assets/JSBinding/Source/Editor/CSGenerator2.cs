@@ -115,7 +115,7 @@ public static class CSGenerator2
             sb.Append("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction);\n");
 
         if (returnType != typeof(void))
-            sb.Append("        return (" + JSDataExchangeMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeMgr.Get_GetJSReturn(returnType) + ";\n");
+            sb.Append("        return (" + JSDataExchangeMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeEditor.Get_GetJSReturn(returnType) + ";\n");
 
         sb.AppendFormat("    ]];\n");
         sb.Append("    return action;\n");
@@ -169,7 +169,7 @@ public static class CSGenerator2
             sb.Append("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction);\n");
 
         if (returnType != typeof(void))
-            sb.Append("        return (" + JSDataExchangeMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeMgr.Get_GetJSReturn(returnType) + ";\n");
+            sb.Append("        return (" + JSDataExchangeMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeEditor.Get_GetJSReturn(returnType) + ";\n");
 
         sb.AppendFormat("    ]];\n");
         sb.Append("    return action;\n");
@@ -212,8 +212,8 @@ public static class CSGenerator2
             else
                 sbCall.AppendFormat("(({0})vc.csObj).{1}", type.Name, field.Name);
 
-            
-            sb.AppendFormat("        {0}\n", JSDataExchangeMgr.Get_Return(field.FieldType, sbCall.ToString()));
+
+            sb.AppendFormat("        {0}\n", JSDataExchangeEditor.Get_Return(field.FieldType, sbCall.ToString()));
 
             // set
             if (!bReadOnly)
@@ -222,7 +222,7 @@ public static class CSGenerator2
 
                 if (!isDelegate)
                 {
-                    var paramHandler = JSDataExchangeMgr.Get_ParamHandler(field);
+                    var paramHandler = JSDataExchangeEditor.Get_ParamHandler(field);
                     sb.Append("        " + paramHandler.getter + "\n");
 
                     if (field.IsStatic)
@@ -310,15 +310,15 @@ public static class CSGenerator2
             ParameterInfo[] ps = property.GetIndexParameters();
             bool bIndexer = (ps.Length > 0);
             StringBuilder sbActualParam = null;
-            JSDataExchangeMgr.ParamHandler[] paramHandlers = null;
+            JSDataExchangeEditor.ParamHandler[] paramHandlers = null;
             if (bIndexer)
             {
                 sbActualParam = new StringBuilder();
-                paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];
+                paramHandlers = new JSDataExchangeEditor.ParamHandler[ps.Length];
                 sbActualParam.Append("[");
                 for (int j = 0; j < ps.Length; j++)
                 {
-                    paramHandlers[j] = JSDataExchangeMgr.Get_ParamHandler(ps[j].ParameterType, j, false, false);
+                    paramHandlers[j] = JSDataExchangeEditor.Get_ParamHandler(ps[j].ParameterType, j, false, false);
                     sbActualParam.AppendFormat("{0}", paramHandlers[j].argName);
                     if (j != ps.Length - 1)
                         sbActualParam.Append(", ");
@@ -389,7 +389,7 @@ public static class CSGenerator2
             //if (type.IsValueType && !field.IsStatic)
             //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
 
-            sb.AppendFormat("        {0}", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
+            sb.AppendFormat("        {0}", JSDataExchangeEditor.Get_Return(property.PropertyType, sbCall.ToString()));
             if (!bReadOnly)
             {
                 sb.Append("\n    ]]\n");
@@ -402,7 +402,7 @@ public static class CSGenerator2
 
                 int ParamIndex = ps.Length;
 
-                var paramHandler = JSDataExchangeMgr.Get_ParamHandler(property.PropertyType, ParamIndex, false, false);
+                var paramHandler = JSDataExchangeEditor.Get_ParamHandler(property.PropertyType, ParamIndex, false, false);
                 sb.Append("        " + paramHandler.getter + "\n");
 
                 if (bIndexer)
@@ -483,15 +483,15 @@ public static class CSGenerator2
             ParameterInfo[] ps = property.GetIndexParameters();
             bool bIndexer = (ps.Length > 0);
             StringBuilder sbActualParam = null;
-            JSDataExchangeMgr.ParamHandler[] paramHandlers = null;
+            JSDataExchangeEditor.ParamHandler[] paramHandlers = null;
             if (bIndexer)
             {
                 sbActualParam = new StringBuilder();
-                paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];
+                paramHandlers = new JSDataExchangeEditor.ParamHandler[ps.Length];
                 //sbActualParam.Append("[");
                 for (int j = 0; j < ps.Length; j++)
                 {
-                    paramHandlers[j] = JSDataExchangeMgr.Get_ParamHandler(ps[j].ParameterType, j, false, false);
+                    paramHandlers[j] = JSDataExchangeEditor.Get_ParamHandler(ps[j].ParameterType, j, false, false);
                     sbActualParam.AppendFormat("{0}", paramHandlers[j].argName);
                     if (j != ps.Length - 1)
                     {
@@ -580,8 +580,8 @@ public static class CSGenerator2
 
             //if (type.IsValueType && !field.IsStatic)
             //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
-                        
-            sb.AppendFormat("        {0}", JSDataExchangeMgr.Get_Return(property.PropertyType, sbCall.ToString()));
+
+            sb.AppendFormat("        {0}", JSDataExchangeEditor.Get_Return(property.PropertyType, sbCall.ToString()));
             if (!bReadOnly)
             {
                 sb.Append("\n    ]]\n");
@@ -594,7 +594,7 @@ public static class CSGenerator2
 
                 int ParamIndex = ps.Length;
 
-                var paramHandler = JSDataExchangeMgr.Get_ParamHandler(property.PropertyType, ParamIndex, false, false);
+                var paramHandler = JSDataExchangeEditor.Get_ParamHandler(property.PropertyType, ParamIndex, false, false);
                 sb.Append("        " + paramHandler.getter + "\n");
 
                 if (bIndexer)
@@ -692,10 +692,10 @@ public static class CSGenerator2
     public static StringBuilder BuildSpecialFunctionCall(ParameterInfo[] ps, string className, string methodName, bool bStatic, bool returnVoid, Type returnType)
     {
         StringBuilder sb = new StringBuilder();
-        var paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];
+        var paramHandlers = new JSDataExchangeEditor.ParamHandler[ps.Length];
         for (int i = 0; i < ps.Length; i++)
         {
-            paramHandlers[i] = JSDataExchangeMgr.Get_ParamHandler(ps[i], i);
+            paramHandlers[i] = JSDataExchangeEditor.Get_ParamHandler(ps[i], i);
             sb.Append("    " + paramHandlers[i].getter + "\n");
         }
 
@@ -731,7 +731,7 @@ public static class CSGenerator2
         else
             Debug.LogError("Unknown special name: " + methodName);
 
-        string ret = JSDataExchangeMgr.Get_Return(returnType, strCall);
+        string ret = JSDataExchangeEditor.Get_Return(returnType, strCall);
         sb.Append("    " + ret);
         return sb;
     }
@@ -818,13 +818,13 @@ public static class CSGenerator2
             /////////////////////
         }
 
-        var paramHandlers = new JSDataExchangeMgr.ParamHandler[ps.Length];        
+        var paramHandlers = new JSDataExchangeEditor.ParamHandler[ps.Length];        
         for (int i = 0; i < ps.Length; i++)
         {
             if (true /* !ps[i].ParameterType.IsGenericParameter */ )
             {
                 // use original method's parameterinfo
-                paramHandlers[i] = JSDataExchangeMgr.Get_ParamHandler(ps[i], i);
+                paramHandlers[i] = JSDataExchangeEditor.Get_ParamHandler(ps[i], i);
                 if (ps[i].ParameterType.IsGenericParameter)
                 {
                     paramHandlers[i].getter = "    vc.datax.setTemp(method.GetParameters()[" + i.ToString() + "].ParameterType);\n" + paramHandlers[i].getter;
@@ -912,7 +912,7 @@ public static class CSGenerator2
                     sbCall.AppendFormat("constructor.Invoke(null, new object[][[{0}]])", sbActualParam);
                 }
 
-                string callAndReturn = JSDataExchangeMgr.Get_Return(type/*don't use returnType*/, sbCall.ToString());
+                string callAndReturn = JSDataExchangeEditor.Get_Return(type/*don't use returnType*/, sbCall.ToString());
                 sb.AppendFormat(@"    {1}if (len == {0}) 
     [[
 {2}
@@ -958,7 +958,7 @@ public static class CSGenerator2
                     }
                 }
 
-                string callAndReturn = JSDataExchangeMgr.Get_Return(returnType, sbCall.ToString());
+                string callAndReturn = JSDataExchangeEditor.Get_Return(returnType, sbCall.ToString());
 
                 StringBuilder sbStruct = null;
                 if (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition)
@@ -1596,7 +1596,7 @@ using UnityEngine;
 	{
 		if (!CheckClassBindings())
 			return;
-        JSDataExchangeMgr.reset();
+        JSDataExchangeEditor.reset();
         UnityEngineManual.initManual();
         CSGenerator2.GenerateClassBindings();
         JSGenerator2.GenerateClassBindings();

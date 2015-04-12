@@ -128,6 +128,12 @@ public class JSComponent_SharpKit : JSSerializer
             initSerializedData(JSMgr.cx, jsObj);
         }
     }
+    /// <summary>
+    /// 获取 jsObj
+    /// 可能本脚本的 Awake 还未执行就由其他脚本调用了这个函数
+    /// 因为其他脚本需要引用到这个脚本的 jsObj
+    /// </summary>
+    /// <returns></returns>
     public IntPtr GetJSObj()
     {
         if (jsObj == IntPtr.Zero)
