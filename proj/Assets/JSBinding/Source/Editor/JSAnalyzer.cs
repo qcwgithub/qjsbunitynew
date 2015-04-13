@@ -310,15 +310,35 @@ public static class JSAnalyzer
     {
         matched = true;
         var sb = new StringBuilder();
-        sb.AppendFormat("\n[JsType(JsMode.Clr,\"../StreamingAssets/JavaScript/SharpKitGenerated/{0}{1}.javascript\")]\n{2}", ""/*nextPath*/, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
+        if (addjstype)
+        {
+            sb.AppendFormat("\n[JsType(JsMode.Clr,\"../StreamingAssets/JavaScript/SharpKitGenerated/{0}{1}.javascript\")]\n{2}",
+                ""/*nextPath*/, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
+        }
+        else
+        {
+            sb.AppendFormat("\n{0}", m.Groups["ClassDefinition"]);
+        }
         return sb.ToString();
     }
 
     // 包含/
     static string nextPath = string.Empty;
     static bool matched = false;
+    static bool addjstype = true;
 
+    [MenuItem("JSB/Delete JsType Attribute for all files in Src Folder(Beta)")]
+    public static void DelJsTypeAttributeInSrc()
+    {
+        addjstype = false;
+        MakeJsTypeAttributeInSrc();
+    }
     [MenuItem("JSB/Add JsType Attribute for all files in Src Folder(Beta)")]
+    public static void AddJsTypeAttributeInSrc()
+    {
+        addjstype = true;
+        MakeJsTypeAttributeInSrc();
+    }
     public static void MakeJsTypeAttributeInSrc()
     {
         string srcFolder = Application.dataPath + "/Src";
