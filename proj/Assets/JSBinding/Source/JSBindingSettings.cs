@@ -178,6 +178,9 @@ public class JSBindingSettings
         typeof(UnityEngine.Behaviour),
         typeof(UnityEngine.Component),
         typeof(Debug),
+        typeof(TweenCallbackExtensions),
+        typeof(DaikonForge.Tween.Tween<>),
+        typeof(DaikonForge.Tween.TweenBase),
     };
     public static Type[] classes2 = new Type[]
     {

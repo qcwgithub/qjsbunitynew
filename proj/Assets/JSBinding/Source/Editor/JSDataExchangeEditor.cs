@@ -255,17 +255,19 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         return xcg.Get_Return(expVar) + ";";
     }
 
-
-    public static string GetFunctionArg_DelegateFuncionName(string className, string methodName, int methodIndex, int argIndex)
+    public static string GetMethodArg_DelegateFuncionName(Type classType, string methodName, int argIndex)
     {
-        return JSNameMgr.HandleFunctionName(className + "_" + methodName + methodIndex.ToString() + "_" + argIndex.ToString() + "_GetDelegate");
+        // 如果还有重复再加 method index
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("{0}_{1}_GetDelegate_arg{2}", classType.Name, methodName, argIndex);
+        return JSNameMgr.HandleFunctionName(sb.ToString());
     }
-    public static StringBuilder BuildFunctionArg_DelegateFunction(string className, string methodName, Type delType, int methodIndex, int argIndex)
+    public static StringBuilder Build_DelegateFunction(Type classType, MemberInfo memberInfo, Type delType, int argIndex)
     {
         // building a closure
         // a function having a up-value: jsFunction
 
-        methodName = JSNameMgr.HandleFunctionName(methodName);
+        string getDelFunctionName = GetMethodArg_DelegateFuncionName(classType, memberInfo.Name, argIndex);
 
         var sb = new StringBuilder();
         ParameterInfo[] ps = delType.GetMethod("Invoke").GetParameters();
@@ -292,7 +294,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         // this function name is used in BuildFields, don't change
         sb.AppendFormat("public static {0} {1}{2}(jsval jsFunction)\n[[\n",
             JSNameMgr.GetTypeFullName(delType),  // [0]
-            GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, argIndex), // [2]
+            getDelFunctionName, // [2]
             stringTOfMethod  // [1]
             );
         sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");

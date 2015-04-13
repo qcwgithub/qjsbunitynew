@@ -1021,6 +1021,11 @@ public class JSDataExchangeMgr
         }
         return con;
     }*/
+    public static FieldInfo GetFidldInfoOfGenericClass(Type type, int index)
+    {
+        if (index < 0) return null;
+        return type.GetFields(JSMgr.BindingFlagsField)[index];
+    }
     public static PropertyInfo GetPropertyInfoOfGenericClass(Type type, int index)
     {
         if (index < 0) return null;

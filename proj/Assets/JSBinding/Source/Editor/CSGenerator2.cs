@@ -90,40 +90,7 @@ public static class CSGenerator2
         name = name.Replace("$", "_");
         return name;
     }
-    public static StringBuilder BuildField_DelegateFunction(Type type, FieldInfo field)
-    {
-        // building a closure
-        // a function having a up-value: jsFunction
-
-        var sb = new StringBuilder();
-        var sbParamList = new StringBuilder();
-        ParameterInfo[] ps = field.FieldType.GetMethod("Invoke").GetParameters();
-        Type returnType = field.FieldType.GetMethod("Invoke").ReturnType;
-        for (int i = 0; i < ps.Length; i++)
-        {
-            sbParamList.AppendFormat("{0}{1}", ps[i].Name, (i == ps.Length - 1 ? "" : ","));
-        }
-
-        // this function name is used in BuildFields, don't change
-        sb.AppendFormat("public static {0} {1}_{2}_GetDelegate(jsval jsFunction)\n[[\n", JSNameMgr.GetTypeFullName(field.FieldType), type.Name, field.Name);
-        sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");
-        sb.AppendFormat("    {0} action = ({1}) => \n", JSNameMgr.GetTypeFullName(field.FieldType), sbParamList);
-        sb.AppendFormat("    [[\n");
-        if (sbParamList.Length > 0)
-            sb.AppendFormat("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction, {0});\n", sbParamList);
-        else
-            sb.Append("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction);\n");
-
-        if (returnType != typeof(void))
-            sb.Append("        return (" + JSNameMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeEditor.Get_GetJSReturn(returnType) + ";\n");
-
-        sb.AppendFormat("    ]];\n");
-        sb.Append("    return action;\n");
-        sb.AppendFormat("]]\n");
-
-        return sb;
-    }
-    public static StringBuilder BuildFields(Type type, FieldInfo[] fields, ClassCallbackNames ccbn)
+    public static StringBuilder BuildFields(Type type, FieldInfo[] fields, int[] fieldsIndex, ClassCallbackNames ccbn)
     {
         var sb = new StringBuilder();
         for (int i = 0; i < fields.Length; i++)
@@ -134,7 +101,21 @@ public static class CSGenerator2
             bool isDelegate = (typeof(System.Delegate).IsAssignableFrom(field.FieldType));
             if (isDelegate)
             {
-                sb.Append(BuildField_DelegateFunction(type, field));
+                // sb.Append(JSDataExchangeEditor.BuildField_DelegateFunction(type, field));
+                sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, field, field.FieldType, 0));
+            }
+
+            bool bGenericT = type.IsGenericTypeDefinition;
+            StringBuilder sbt = null;
+            if (bGenericT)
+            {
+                sbt = new StringBuilder();
+
+                sbt.AppendFormat("    FieldInfo member = JSDataExchangeMgr.GetFidldInfoOfGenericClass(vc.csObj.GetType(), {0}); \n",
+                        fieldsIndex[i]);        // [0] methodArrIndex
+
+                sbt.AppendFormat("    if (member == null)\n        return;\n");
+                sbt.Append("\n");
             }
 
             string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + field.Name);
@@ -151,10 +132,20 @@ public static class CSGenerator2
             //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
 
             // get
-            if (field.IsStatic)
-                sbCall.AppendFormat("{0}.{1}", type.Name, field.Name);
+            if (!bGenericT)
+            {
+                if (field.IsStatic)
+                    sbCall.AppendFormat("{0}.{1}", type.Name, field.Name);
+                else
+                    sbCall.AppendFormat("(({0})vc.csObj).{1}", type.Name, field.Name);
+            }
             else
-                sbCall.AppendFormat("(({0})vc.csObj).{1}", type.Name, field.Name);
+            {
+                if (field.IsStatic)
+                    sbCall.AppendFormat("member.GetValue(null, new object[]{})");
+                else
+                    sbCall.AppendFormat("member.GetValue(vc.csObj, new object[]{})");
+            }
 
 
             sb.AppendFormat("        {0}\n", JSDataExchangeEditor.Get_Return(field.FieldType, sbCall.ToString()));
@@ -168,27 +159,33 @@ public static class CSGenerator2
                 {
                     var paramHandler = JSDataExchangeEditor.Get_ParamHandler(field);
                     sb.Append("        " + paramHandler.getter + "\n");
-
-                    if (field.IsStatic)
-                        sb.AppendFormat("        {0}.{1} = {2};\n", type.Name, field.Name, paramHandler.argName);
-                    else
+                    if (!bGenericT)
                     {
-                        if (type.IsValueType)
-                        {
-                            sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", type.Name);
-                            sb.AppendFormat("        argThis.{0} = {1};\n", field.Name, paramHandler.argName);
-                            sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
-                        }
+                        if (field.IsStatic)
+                            sb.AppendFormat("        {0}.{1} = {2};\n", type.Name, field.Name, paramHandler.argName);
                         else
                         {
-                            sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", JSNameMgr.GetTypeFullName(type), field.Name, paramHandler.argName);
+                            if (type.IsValueType)
+                            {
+                                sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", type.Name);
+                                sb.AppendFormat("        argThis.{0} = {1};\n", field.Name, paramHandler.argName);
+                                sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
+                            }
+                            else
+                            {
+                                sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", JSNameMgr.GetTypeFullName(type), field.Name, paramHandler.argName);
+                            }
                         }
+                    }
+                    else
+                    {
+
                     }
                 }
                 else
                 {
-                    var getDelegateFuncitonName = new StringBuilder();
-                    getDelegateFuncitonName.AppendFormat("{0}_{1}_GetDelegate", type.Name, field.Name);
+                    var getDelegateFuncitonName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, field.Name, 0);
+                    //getDelegateFuncitonName.AppendFormat("{0}_{1}_GetDelegate", type.Name, field.Name);
 
                     if (field.IsStatic)
                     {
@@ -409,6 +406,12 @@ public static class CSGenerator2
 
             bool bGenericT = type.IsGenericTypeDefinition;
             StringBuilder sbt = null;
+
+            bool isDelegate = (typeof(System.Delegate).IsAssignableFrom(property.PropertyType));
+            if (isDelegate)
+            {
+                sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, property, property.PropertyType, 0));
+            }
 
             if (bGenericT)
             {
@@ -804,7 +807,8 @@ public static class CSGenerator2
                 ParameterInfo p = ps[i];
                 if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
                 {
-                    string delegateGetName = JSDataExchangeEditor.GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i);
+                    //string delegateGetName = JSDataExchangeEditor.GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i);
+                    string delegateGetName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, methodName, i);
 
                     if (p.ParameterType.IsGenericType)
                     {
@@ -1006,7 +1010,9 @@ static bool {0}(JSVCall vc, int start, int count)
             {
                 if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
                 {
-                    StringBuilder sbD = JSDataExchangeEditor.BuildFunctionArg_DelegateFunction(type.Name, method.Name, paramS[j].ParameterType, i, j);
+                    // StringBuilder sbD = JSDataExchangeEditor.BuildFunctionArg_DelegateFunction(type.Name, method.Name, paramS[j].ParameterType, i, j);
+                    StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, method, paramS[j].ParameterType, j);
+
                     sb.Append(sbD);
                 }
             }
@@ -1249,7 +1255,7 @@ public class JSGeneratedFileNames
 
         thisClassName = JSNameMgr.GetTypeFileName(type) + "Generated";
 
-        var sbFields = BuildFields(type, ti.fields, ccbn);
+        var sbFields = BuildFields(type, ti.fields, ti.fieldsIndex, ccbn);
         var sbProperties = BuildProperties(type, ti.properties, ti.propertiesIndex, ccbn);
         var sbMethods = BuildMethods(type, ti.methods, ti.methodsIndex, ti.methodsOLInfo, ccbn);
         var sbCons = BuildConstructors(type, ti.constructors, ti.constructorsIndex, ccbn);
