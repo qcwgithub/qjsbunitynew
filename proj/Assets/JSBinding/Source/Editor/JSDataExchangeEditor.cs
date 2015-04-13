@@ -311,4 +311,72 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
 
         return sb;
     }
+    public enum MemberFeature
+    {
+        Static = 1 << 0,
+        Indexer = 1 << 1,
+        Get = 1 << 2,// Get Set 只能其中之一 Field Property 使用
+        Set = 1 << 3,
+    }
+    //
+    // arg: a,b,c
+    //
+    public static string BuildCallString(Type classType, MemberInfo memberInfo, string argList, MemberFeature features, string newValue = "")
+    {
+        bool bGenericT = classType.IsGenericTypeDefinition;
+        string memberName = memberInfo.Name;
+        bool bIndexer = ((features & MemberFeature.Indexer) > 0);
+        bool bStatic = ((features & MemberFeature.Static) > 0);
+        bool bStruct = classType.IsValueType;
+        string typeFullName = JSNameMgr.GetTypeFullName(classType);
+        bool bField = (memberInfo is FieldInfo);
+        bool bProperty = (memberInfo is PropertyInfo);
+        bool bGet = ((features & MemberFeature.Get) > 0);
+        bool bSet = ((features & MemberFeature.Set) > 0);
+
+        StringBuilder sb = new StringBuilder();
+
+        if (bField || bProperty)
+        {
+            if (!bGenericT)
+            {
+                var strThis = "null";
+                if (!bStatic)
+                {
+                    strThis = "argThis";
+                    sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", typeFullName);
+                }
+
+                if (bIndexer)
+                    sb.AppendFormat("        {0}[{1}]", strThis, argList);
+                else
+                    sb.AppendFormat("        {0}.{1}", strThis, memberName);
+
+                if (bGet)
+                {
+                    sb.Append(";\n");
+                }
+                else
+                {
+                    sb.AppendFormat(" = {0};\n", newValue);
+                    if (!bStatic && bStruct)
+                    {
+                        sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
+                    }
+                }
+            }
+            else
+            {
+                if (bIndexer || !bIndexer) // 2个一样
+                {
+                    sb.AppendFormat("member.{0}({1}, {2}new object[][[{3}]]);", 
+                        bGet ? "GetValue" : "SetValue", 
+                        bStatic ? "null" : "vc.csObj", 
+                        bSet ? newValue + ", " : "", 
+                        argList);
+                }
+            }
+        }
+        return sb;
+    }
 }
