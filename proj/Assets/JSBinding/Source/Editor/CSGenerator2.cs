@@ -137,10 +137,8 @@ public static class CSGenerator2
                 sb.Append(BuildField_DelegateFunction(type, field));
             }
 
-            
-
-
-            sb.AppendFormat("static void {0}_{1}(JSVCall vc)\n[[\n", type.Name, field.Name);
+            string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + field.Name);
+            sb.AppendFormat("static void {0}(JSVCall vc)\n[[\n", functionName);
 
             bool bReadOnly = (field.IsInitOnly || field.IsLiteral);
             if (!bReadOnly)
@@ -221,7 +219,7 @@ public static class CSGenerator2
 //             else if (type.IsValueType) f = fmtValueType;
 // 
 //             sb.AppendFormat(f, type.Name, field.Name, field.FieldType);
-            ccbn.fields.Add(type.Name + "_" + field.Name);
+            ccbn.fields.Add(functionName);
         }
 
         return sb;
