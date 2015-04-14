@@ -101,9 +101,12 @@ public static class CSGenerator2
             bool isDelegate = (typeof(System.Delegate).IsAssignableFrom(field.FieldType));
             if (isDelegate)
             {
-                // sb.Append(JSDataExchangeEditor.BuildField_DelegateFunction(type, field));
                 sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, field, field.FieldType, 0));
             }
+
+
+            JSDataExchangeEditor.MemberFeature features = 0;
+            if (field.IsStatic) features |= JSDataExchangeEditor.MemberFeature.Static;
 
             bool bGenericT = type.IsGenericTypeDefinition;
             StringBuilder sbt = null;
@@ -121,34 +124,23 @@ public static class CSGenerator2
             string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + field.Name);
             sb.AppendFormat("static void {0}(JSVCall vc)\n[[\n", functionName);
 
+            if (bGenericT)
+            {
+                sb.Append(sbt);
+            }
+
             bool bReadOnly = (field.IsInitOnly || field.IsLiteral);
             if (!bReadOnly)
             {
                 sb.Append("    if (vc.bGet) [[\n");
             }
 
-            
-            //if (type.IsValueType && !field.IsStatic)
-            //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
+            // Debug.Log("FIELD " + type.Name + "." + field.Name);
 
-            // get
-            if (!bGenericT)
-            {
-                if (field.IsStatic)
-                    sbCall.AppendFormat("{0}.{1}", type.Name, field.Name);
-                else
-                    sbCall.AppendFormat("(({0})vc.csObj).{1}", type.Name, field.Name);
-            }
-//             else
-//             {
-//                 if (field.IsStatic)
-//                     sbCall.AppendFormat("member.GetValue(null, new object[]{})");
-//                 else
-//                     sbCall.AppendFormat("member.GetValue(vc.csObj, new object[]{})");
-//             }
+            sb.Append(JSDataExchangeEditor.BuildCallString(type, field, "" /* argList */,
+                                features | JSDataExchangeEditor.MemberFeature.Get));
 
-
-            sb.AppendFormat("        {0}\n", JSDataExchangeEditor.Get_Return(field.FieldType, sbCall.ToString()));
+            sb.AppendFormat("        {0}\n", JSDataExchangeEditor.Get_Return(field.FieldType, "result"));
 
             // set
             if (!bReadOnly)
@@ -159,63 +151,21 @@ public static class CSGenerator2
                 {
                     var paramHandler = JSDataExchangeEditor.Get_ParamHandler(field);
                     sb.Append("        " + paramHandler.getter + "\n");
-                    if (!bGenericT)
-                    {
-                        if (field.IsStatic)
-                            sb.AppendFormat("        {0}.{1} = {2};\n", type.Name, field.Name, paramHandler.argName);
-                        else
-                        {
-                            if (type.IsValueType)
-                            {
-                                sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", type.Name);
-                                sb.AppendFormat("        argThis.{0} = {1};\n", field.Name, paramHandler.argName);
-                                sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
-                            }
-                            else
-                            {
-                                sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", JSNameMgr.GetTypeFullName(type), field.Name, paramHandler.argName);
-                            }
-                        }
-                    }
-                    else
-                    {
 
-                    }
+                    sb.Append(JSDataExchangeEditor.BuildCallString(type, field, "" /* argList */,
+                                features | JSDataExchangeEditor.MemberFeature.Set, paramHandler.argName));
                 }
                 else
                 {
                     var getDelegateFuncitonName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, field.Name, 0);
-                    //getDelegateFuncitonName.AppendFormat("{0}_{1}_GetDelegate", type.Name, field.Name);
 
-                    if (field.IsStatic)
-                    {
-                        sb.AppendFormat("{0}.{1} = {2}(vc.getJSFunctionValue());\n", type.Name, field.Name, getDelegateFuncitonName);
-                    }
-                    else
-                    {
-                        if (type.IsValueType)
-                        {
-                            sb.AppendFormat("\n    {0} argThis = ({0})vc.csObj;\n", type.Name);
-                            sb.AppendFormat("    argThis.{0} = {1}(vc.getJSFunctionValue());\n", field.Name, getDelegateFuncitonName);
-                            sb.Append("    JSMgr.changeJSObj(vc.jsObj, argThis);\n\n");
-                        }
-                        else
-                        {
-                            sb.AppendFormat("(({0})vc.csObj).{1} = {2}(vc.getJSFunctionValue());\n", JSNameMgr.GetTypeFullName(type), field.Name, getDelegateFuncitonName);
-                        }
-                    }
+                    sb.Append(JSDataExchangeEditor.BuildCallString(type, field, "" /* argList */,
+                                features | JSDataExchangeEditor.MemberFeature.Set, getDelegateFuncitonName + "(vc.getJSFunctionValue())"));
                 }
                 sb.Append("    ]]\n");
             }
 
             sb.AppendFormat("]]\n");
-
-//             string f = fmt;
-//             if (field.IsStatic) f = bReadOnly ? fmtStaticReadOnly : fmtStatic;
-//             else if (bReadOnly) f = fmtReadOnly;
-//             else if (type.IsValueType) f = fmtValueType;
-// 
-//             sb.AppendFormat(f, type.Name, field.Name, field.FieldType);
             ccbn.fields.Add(functionName);
         }
 
@@ -465,55 +415,6 @@ public static class CSGenerator2
             sbCall.Append(JSDataExchangeEditor.BuildCallString(type, property, argActual.Format(cg.args.ArgsFormat.OnlyList), 
                                 features | JSDataExchangeEditor.MemberFeature.Get));
 
-//             if (bIndexer)
-//             {
-//                 if (bGenericT)
-//                 {
-//                     if (isStatic)
-//                     {
-//                         sbCall.AppendFormat("property.GetValue(null, new object[][[{0}]])", argActual.Format(cg.args.ArgsFormat.OnlyList));
-//                     }
-//                     else
-//                     {
-//                         sbCall.AppendFormat("property.GetValue(vc.csObj, new object[][[{0}]])", argActual.Format(cg.args.ArgsFormat.OnlyList));
-//                     }
-//                 }
-//                 else
-//                 {
-//                     if (isStatic)
-//                     {
-//                         sbCall.AppendFormat("{0}[{1}]", JSNameMgr.GetTypeFullName(type), argActual.Format(cg.args.ArgsFormat.OnlyList));
-//                     }
-//                     else
-//                     {
-//                         sbCall.AppendFormat("(({0})vc.csObj)[{1}]", JSNameMgr.GetTypeFullName(type), argActual.Format(cg.args.ArgsFormat.OnlyList));
-//                     }
-//                 }
-//             }
-//             
-//             if (!bIndexer)
-//             {
-//                 if (bGenericT)
-//                 {
-//                     if (isStatic)
-//                     {
-//                         sbCall.AppendFormat("property.GetValue(null, new object[][[]])");
-//                     }
-//                     else
-//                     {
-//                         sbCall.AppendFormat("property.GetValue(vc.csObj, new object[][[]])");
-//                     }
-//                 }
-//                 else 
-//                 {
-//                     // get
-//                     if (isStatic)
-//                         sbCall.AppendFormat("{0}.{1}", JSNameMgr.GetTypeFullName(type), property.Name);
-//                     else
-//                         sbCall.AppendFormat("(({0})vc.csObj).{1}", JSNameMgr.GetTypeFullName(type), property.Name);
-//                 }
-//             }
-
             if (!bReadOnly)
             {
                 sb.Append("    if (vc.bGet) [[ \n");
@@ -539,72 +440,9 @@ public static class CSGenerator2
                 var paramHandler = JSDataExchangeEditor.Get_ParamHandler(property.PropertyType, ParamIndex, false, false);
                 sb.Append("        " + paramHandler.getter + "\n");
 
-                if (bIndexer)
-                {
-                    if (bGenericT)
-                    {
-                        if (isStatic)
-                            sb.AppendFormat("property.SetValue(null, {0}, new object[][[{1}]]);\n", paramHandler.argName, argActual.Format(cg.args.ArgsFormat.OnlyList));
-                        else
-                        {
-                            if (type.IsValueType || !type.IsValueType)
-                            {   // struct 和 class 是一样的
-                                sb.AppendFormat("property.SetValue(vc.csObj, {0}, new object[][[{1}]]);\n", paramHandler.argName, argActual.Format(cg.args.ArgsFormat.OnlyList));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (isStatic)
-                            sb.AppendFormat("{0} = {1};\n", sbCall, paramHandler.argName);
-                        else
-                        {
-                            if (type.IsValueType)
-                            {
-                                sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSNameMgr.GetTypeFullName(type));
-                                sb.AppendFormat("argThis[{0}] = {1};", argActual.Format(cg.args.ArgsFormat.OnlyList), paramHandler.argName);
-                                sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
-                            }
-                            else
-                            {
-                                sb.AppendFormat("        {0} = {1};\n", sbCall, paramHandler.argName);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (bGenericT)
-                    {
-                        if (isStatic)
-                            sb.AppendFormat("property.SetValue(null, {0}, new object[][[]]);\n", paramHandler.argName);
-                        else
-                        {
-                            if (type.IsValueType || !type.IsValueType)
-                            {   // struct 和 class 是一样的
-                                sb.AppendFormat("property.SetValue(vc.csObj, {0}, new object[][[]]);\n", paramHandler.argName);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (isStatic)
-                            sb.AppendFormat("{0}.{1} = {2};\n", JSNameMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
-                        else
-                        {
-                            if (type.IsValueType)
-                            {
-                                sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSNameMgr.GetTypeFullName(type));
-                                sb.AppendFormat("        argThis.{0} = {1};\n", property.Name, paramHandler.argName);
-                                sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
-                            }
-                            else
-                            {
-                                sb.AppendFormat("        (({0})vc.csObj).{1} = {2};\n", JSNameMgr.GetTypeFullName(type), property.Name, paramHandler.argName);
-                            }
-                        }
-                    }
-                }
+                sb.Append(JSDataExchangeEditor.BuildCallString(type, property, argActual.Format(cg.args.ArgsFormat.OnlyList),
+                                features | JSDataExchangeEditor.MemberFeature.Set, paramHandler.argName));
+
                 sb.Append("    ]]\n");
             }
 

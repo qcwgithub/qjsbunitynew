@@ -314,7 +314,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
     public enum MemberFeature
     {
         Static = 1 << 0,
-        Indexer = 1 << 1,
+        Indexer = 1 << 1, // Property 使用
         Get = 1 << 2,// Get Set 只能其中之一 Field Property 使用
         Set = 1 << 3,
     }
@@ -378,12 +378,23 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                 // 约定：外面那个得叫 member
                 if (bIndexer || !bIndexer) // 2个一样
                 {
-                    sb.AppendFormat("        {4}member.{0}({1}, {2}new object[][[{3}]]);\n", 
-                        bGet ? "GetValue" : "SetValue", 
-                        bStatic ? "null" : "vc.csObj", 
-                        bSet ? newValue + ", " : "", 
-                        argList, 
-                        bGet ? "var result = " : "");
+                    if (bProperty)
+                    {
+                        sb.AppendFormat("        {4}member.{0}({1}, {2}new object[][[{3}]]);\n",
+                            bGet ? "GetValue" : "SetValue",
+                            bStatic ? "null" : "vc.csObj",
+                            bSet ? newValue + ", " : "",
+                            argList,
+                            bGet ? "var result = " : "");
+                    }
+                    else
+                    {
+                        sb.AppendFormat("        {4}member.{0}({1}, {2});\n",
+                            bGet ? "GetValue" : "SetValue",
+                            bStatic ? "null" : "vc.csObj",
+                            bSet ? newValue + ", " : "",
+                            bGet ? "var result = " : "");
+                    }
                 }
             }
         }
