@@ -734,10 +734,12 @@ public class JSBindingSettings
         typeof(List<>), 
         typeof(List<>.Enumerator), 
         typeof(TweenTransformExtensions),
+        typeof(TweenComponentExtensions),
         typeof(TweenCallbackExtensions),
         typeof(DaikonForge.Tween.Tween<>),
         typeof(DaikonForge.Tween.TweenBase),
         typeof(DaikonForge.Tween.TweenShake),
+        typeof(DaikonForge.Tween.TweenEasingFunctions),
     };
 
     

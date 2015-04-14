@@ -1,6 +1,3 @@
-CS.require("SharpKitGenerated/Test1.javascript");
-CS.require("SharpKitGenerated/STRUCTYES.javascript");
-CS.require("SharpKitGenerated/Test2.javascript");
 CS.require("SharpKitGenerated/Tween_Scripts/DebugMessages.javascript");
 CS.require("SharpKitGenerated/Tween_Scripts/Message.javascript");
 CS.require("SharpKitGenerated/Tween_Scripts/MuchTweenSoWow.javascript");
