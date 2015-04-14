@@ -175,7 +175,20 @@ public static class JSAnalyzer
             {
                 if (ExtraHelper.WillTypeBeTranslatedToJavaScript(t))
                 {
-                    sb.AppendFormat("CS.require(\"SharpKitGenerated/{0}\");\n", t.Name);
+                    System.Object[] attrs = t.GetCustomAttributes(typeof(JsTypeAttribute), false);
+                    JsTypeAttribute jsTypeAttr = (JsTypeAttribute)attrs[0];
+                    //Debug.Log(jsTypeAttr.filename);
+
+                    string mustBegin = "../StreamingAssets/JavaScript/";
+
+                    if (jsTypeAttr.filename.IndexOf(mustBegin) == 0)
+                    {
+                        sb.AppendFormat("CS.require(\"{0}\");\n", jsTypeAttr.filename.Substring(mustBegin.Length));
+                    }
+                    else
+                    {
+                        Debug.LogError(JSNameMgr.GetTypeFullName(t) + " is ignored because JsType.filename doesn't begin with \""+ mustBegin + "\"");
+                    }
                 }
             }
         }

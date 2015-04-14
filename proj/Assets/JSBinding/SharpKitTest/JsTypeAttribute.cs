@@ -49,6 +49,7 @@ namespace SharpKit.JavaScript
         //   mode:
         //
         //   filename:
-        public JsTypeAttribute(JsMode mode, string filename) { }
+        public JsTypeAttribute(JsMode mode, string filename) { this.filename = filename; }
+        public string filename;
     }
 }
