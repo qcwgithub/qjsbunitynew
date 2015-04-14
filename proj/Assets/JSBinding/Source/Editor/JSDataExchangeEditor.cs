@@ -333,6 +333,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         bool bProperty = (memberInfo is PropertyInfo);
         bool bGet = ((features & MemberFeature.Get) > 0);
         bool bSet = ((features & MemberFeature.Set) > 0);
+        if ((bGet && bSet) || (!bGet && !bSet)) { return ">>>> sorry >>>>"; }
 
         StringBuilder sb = new StringBuilder();
 
@@ -343,14 +344,21 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                 var strThis = "null";
                 if (!bStatic)
                 {
-                    strThis = "argThis";
-                    sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", typeFullName);
+                    strThis = "_this";
+                    sb.AppendFormat("        {0} _this = ({0})vc.csObj;\n", typeFullName);
+                }
+
+                var result = string.Empty;
+                if (bGet)
+                {
+                    // 约定：返回的结果叫 result
+                    result = "var result = ";
                 }
 
                 if (bIndexer)
-                    sb.AppendFormat("        {0}[{1}]", strThis, argList);
+                    sb.AppendFormat("        {2}{0}[{1}]", strThis, argList, result);
                 else
-                    sb.AppendFormat("        {0}.{1}", strThis, memberName);
+                    sb.AppendFormat("        {2}{0}.{1}", strThis, memberName, result);
 
                 if (bGet)
                 {
@@ -367,9 +375,10 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             }
             else
             {
+                // 约定：外面那个得叫 member
                 if (bIndexer || !bIndexer) // 2个一样
                 {
-                    sb.AppendFormat("member.{0}({1}, {2}new object[][[{3}]]);", 
+                    sb.AppendFormat("    member.{0}({1}, {2}new object[][[{3}]]);\n", 
                         bGet ? "GetValue" : "SetValue", 
                         bStatic ? "null" : "vc.csObj", 
                         bSet ? newValue + ", " : "", 
@@ -377,6 +386,6 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                 }
             }
         }
-        return sb;
+        return sb.ToString();
     }
 }
