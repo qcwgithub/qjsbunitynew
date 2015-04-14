@@ -419,10 +419,10 @@ public static class CSGenerator2
             {
                 sbt = new StringBuilder();
 
-                sbt.AppendFormat("    PropertyInfo property = JSDataExchangeMgr.GetPropertyInfoOfGenericClass(vc.csObj.GetType(), {0}); \n",
+                sbt.AppendFormat("    PropertyInfo member = JSDataExchangeMgr.GetPropertyInfoOfGenericClass(vc.csObj.GetType(), {0}); \n",
                         propertiesIndex[i]);        // [0] methodArrIndex
 
-                sbt.AppendFormat("    if (property == null)\n        return;\n");
+                sbt.AppendFormat("    if (member == null)\n        return;\n");
                 sbt.Append("\n");
             }
 
@@ -522,6 +522,7 @@ public static class CSGenerator2
             //if (type.IsValueType && !field.IsStatic)
             //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
 
+            sb.Append(sbCall);
             sb.AppendFormat("        {0}", JSDataExchangeEditor.Get_Return(property.PropertyType, "result"));
             if (!bReadOnly)
             {

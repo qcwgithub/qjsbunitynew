@@ -378,11 +378,12 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                 // 约定：外面那个得叫 member
                 if (bIndexer || !bIndexer) // 2个一样
                 {
-                    sb.AppendFormat("    member.{0}({1}, {2}new object[][[{3}]]);\n", 
+                    sb.AppendFormat("        {4}member.{0}({1}, {2}new object[][[{3}]]);\n", 
                         bGet ? "GetValue" : "SetValue", 
                         bStatic ? "null" : "vc.csObj", 
                         bSet ? newValue + ", " : "", 
-                        argList);
+                        argList, 
+                        bGet ? "var result = " : "");
                 }
             }
         }
