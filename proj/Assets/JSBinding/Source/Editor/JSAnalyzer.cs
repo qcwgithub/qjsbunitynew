@@ -164,7 +164,7 @@ public static class JSAnalyzer
         sbHierachy.Remove(0, sbHierachy.Length);
     }
 
-    [MenuItem("JSB/Gen JsType file list")]
+    [MenuItem("JSB/Tool/Gen JsType file list")]
     public static void OutputAllTypesWithJsTypeAttribute()
     {
         var sb = new StringBuilder();
@@ -313,7 +313,7 @@ public static class JSAnalyzer
         if (addjstype)
         {
             sb.AppendFormat("\n[JsType(JsMode.Clr,\"../StreamingAssets/JavaScript/SharpKitGenerated/{0}{1}.javascript\")]\n{2}",
-                ""/*nextPath*/, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
+                nextPath, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
         }
         else
         {
@@ -323,17 +323,19 @@ public static class JSAnalyzer
     }
 
     // 包含/
+    // e.g. E:/code/qjsbunitynew/proj/Assets/Src/Tween_Scripts/TestHighConcurrencyGroup.cs -> Tween_Scripts/
+    // 获得相对于 Src 的目录
     static string nextPath = string.Empty;
     static bool matched = false;
     static bool addjstype = true;
 
-    [MenuItem("JSB/Delete JsType Attribute for all files in Src Folder(Beta)")]
+    [MenuItem("JSB/Tool/Delete JsType Attribute for all files in Src Folder(Beta)")]
     public static void DelJsTypeAttributeInSrc()
     {
         addjstype = false;
         MakeJsTypeAttributeInSrc();
     }
-    [MenuItem("JSB/Add JsType Attribute for all files in Src Folder(Beta)")]
+    [MenuItem("JSB/Tool/Add JsType Attribute for all files in Src Folder(Beta)")]
     public static void AddJsTypeAttributeInSrc()
     {
         addjstype = true;
@@ -349,6 +351,7 @@ public static class JSAnalyzer
 
             matched = false;
             nextPath = path.Substring(srcFolder.Length + 1, path.LastIndexOf('/') - srcFolder.Length);
+            //Debug.Log(path+" -> "+nextPath);
 
             string content = File.ReadAllText(path);
             var reg = new Regex(@"(?>^\s*\[\s*JsType.*$)?\s*(?<ClassDefinition>^(?>(?>public|protected|private|static|partial|abstract|internal)*\s*)*(?>class|struct)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);

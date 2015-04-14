@@ -182,6 +182,7 @@ public class JSBindingSettings
         typeof(TweenCallbackExtensions),
         typeof(DaikonForge.Tween.Tween<>),
         typeof(DaikonForge.Tween.TweenBase),
+        typeof(DaikonForge.Tween.TweenShake),
     };
     public static Type[] classes = new Type[]
     {

@@ -647,14 +647,15 @@ public static class CSGenerator2
                     //string delegateGetName = JSDataExchangeEditor.GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i);
                     string delegateGetName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, methodName, methodIndex, i);
 
-                    if (p.ParameterType.IsGenericType)
+                    //if (p.ParameterType.IsGenericType)
+                    if (p.ParameterType.ContainsGenericParameters)
                     {
                         // cg.args ta = new cg.args();
                         // sbGetParam.AppendFormat("foreach (var a in method.GetParameters()[{0}].ParameterType.GetGenericArguments()) ta.Add();");
                         sbGetParam.AppendFormat("        var getDelegateFun{0} = typeof({1}).GetMethod(\"{2}\").MakeGenericMethod\n", i, thisClassName, delegateGetName);
                         sbGetParam.AppendFormat("            (method.GetParameters()[{0}].ParameterType.GetGenericArguments());\n", i);
                         sbGetParam.AppendFormat("        object arg{0} = getDelegateFun{0}.Invoke(null, new object[][[{1}]]);\n", i, "vc.getJSFunctionValue()");
-                    }
+                    }   
                     else
                     {
                         sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n",
@@ -812,6 +813,15 @@ static bool {0}(JSVCall vc, int start, int count)
             int olIndex = i + 1; // for constuctors, they are always overloaded
             bool returnVoid = false;
 
+            for (int j = 0; j < paramS.Length; j++)
+            {
+                if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
+                {
+                    StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, cons, paramS[j].ParameterType, i, j);
+                    sb.Append(sbD);
+                }
+            }
+
             string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : ""));
 
             sb.AppendFormat(fmt, functionName,
@@ -845,6 +855,11 @@ static bool {0}(JSVCall vc, int start, int count)
 
             for (int j = 0; j < paramS.Length; j++)
             {
+                if (paramS[j].ParameterType == typeof(DaikonForge.Tween.TweenAssignmentCallback<Vector3>))
+                {
+                    Debug.Log("yes");
+                }
+
                 if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
                 {
                     // StringBuilder sbD = JSDataExchangeEditor.BuildFunctionArg_DelegateFunction(type.Name, method.Name, paramS[j].ParameterType, i, j);

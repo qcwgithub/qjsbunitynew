@@ -281,7 +281,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
 
         // <t,u,v> µÄÐÎÊ½
         string stringTOfMethod = string.Empty;
-        if (delType.IsGenericType)
+        if (delType.ContainsGenericParameters)
         {
             var arg = new cg.args();
             foreach (var t in delType.GetGenericArguments())

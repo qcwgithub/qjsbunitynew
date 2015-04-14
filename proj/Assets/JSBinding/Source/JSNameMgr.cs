@@ -18,7 +18,7 @@ public static class JSNameMgr
 
     public static string HandleFunctionName(string functionName)
     {
-        return functionName.Replace('<', '7').Replace('>', '7').Replace('`', 'A');
+        return functionName.Replace('<', '7').Replace('>', '7').Replace('`', 'A').Replace('.', '_');
     }
 
     public static string[] GenTSuffix = new string[] { "`1", "`2", "`3", "`4", "`5" };
