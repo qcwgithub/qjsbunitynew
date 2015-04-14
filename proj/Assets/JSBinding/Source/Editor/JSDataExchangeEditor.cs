@@ -255,19 +255,19 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         return xcg.Get_Return(expVar) + ";";
     }
 
-    public static string GetMethodArg_DelegateFuncionName(Type classType, string methodName, int argIndex)
+    public static string GetMethodArg_DelegateFuncionName(Type classType, string methodName, int methodIndex, int argIndex)
     {
         // 如果还有重复再加 method index
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("{0}_{1}_GetDelegate_arg{2}", classType.Name, methodName, argIndex);
+        sb.AppendFormat("{0}_{1}_GetDelegate_member{2}_arg{3}", classType.Name, methodName, methodIndex, argIndex);
         return JSNameMgr.HandleFunctionName(sb.ToString());
     }
-    public static StringBuilder Build_DelegateFunction(Type classType, MemberInfo memberInfo, Type delType, int argIndex)
+    public static StringBuilder Build_DelegateFunction(Type classType, MemberInfo memberInfo, Type delType, int methodIndex, int argIndex)
     {
         // building a closure
         // a function having a up-value: jsFunction
 
-        string getDelFunctionName = GetMethodArg_DelegateFuncionName(classType, memberInfo.Name, argIndex);
+        string getDelFunctionName = GetMethodArg_DelegateFuncionName(classType, memberInfo.Name, methodIndex, argIndex);
 
         var sb = new StringBuilder();
         ParameterInfo[] ps = delType.GetMethod("Invoke").GetParameters();
@@ -341,7 +341,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         {
             if (!bGenericT)
             {
-                var strThis = "null";
+                var strThis = typeFullName;
                 if (!bStatic)
                 {
                     strThis = "_this";
@@ -369,7 +369,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                     sb.AppendFormat(" = {0};\n", newValue);
                     if (!bStatic && bStruct)
                     {
-                        sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
+                        sb.Append("        JSMgr.changeJSObj(vc.jsObj, _this);\n");
                     }
                 }
             }
@@ -389,10 +389,10 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                     }
                     else
                     {
-                        sb.AppendFormat("        {4}member.{0}({1}, {2});\n",
+                        sb.AppendFormat("        {3}member.{0}({1}{2});\n",
                             bGet ? "GetValue" : "SetValue",
                             bStatic ? "null" : "vc.csObj",
-                            bSet ? newValue + ", " : "",
+                            bSet ? ", " + newValue : "",
                             bGet ? "var result = " : "");
                     }
                 }

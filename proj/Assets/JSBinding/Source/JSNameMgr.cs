@@ -34,7 +34,7 @@ public static class JSNameMgr
 
         if (type.IsGenericParameter)
         {  // T
-            return "object";
+            return "T";
         }
         else if (!type.IsGenericType && !type.IsGenericTypeDefinition)
         {

@@ -101,7 +101,7 @@ public static class CSGenerator2
             bool isDelegate = (typeof(System.Delegate).IsAssignableFrom(field.FieldType));
             if (isDelegate)
             {
-                sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, field, field.FieldType, 0));
+                sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, field, field.FieldType, i, 0));
             }
 
 
@@ -157,7 +157,7 @@ public static class CSGenerator2
                 }
                 else
                 {
-                    var getDelegateFuncitonName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, field.Name, 0);
+                    var getDelegateFuncitonName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, field.Name, i, 0);
 
                     sb.Append(JSDataExchangeEditor.BuildCallString(type, field, "" /* argList */,
                                 features | JSDataExchangeEditor.MemberFeature.Set, getDelegateFuncitonName + "(vc.getJSFunctionValue())"));
@@ -362,7 +362,7 @@ public static class CSGenerator2
             bool isDelegate = (typeof(System.Delegate).IsAssignableFrom(property.PropertyType));
             if (isDelegate)
             {
-                sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, property, property.PropertyType, 0));
+                sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, property, property.PropertyType, i, 0));
             }
 
             if (bGenericT)
@@ -584,7 +584,11 @@ public static class CSGenerator2
             }
             else // static method
             {
-                Debug.LogError("=================================ERROR");
+                // Debug.LogError("=================================ERROR");
+                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.GetMethodOfGenericClass(typeof({0}), \"{1}\", {2}); \n",
+                    JSNameMgr.GetTypeFullName(type), // [0]
+                    methodName,            // [1] 函数名
+                    methodArrIndex);        // [2] methodArrIndex
             }
             sbt.AppendFormat("    if (method == null)\n        return true;\n");
             sbt.Append("\n");
@@ -641,7 +645,7 @@ public static class CSGenerator2
                 if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
                 {
                     //string delegateGetName = JSDataExchangeEditor.GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i);
-                    string delegateGetName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, methodName, i);
+                    string delegateGetName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, methodName, methodIndex, i);
 
                     if (p.ParameterType.IsGenericType)
                     {
@@ -844,7 +848,7 @@ static bool {0}(JSVCall vc, int start, int count)
                 if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
                 {
                     // StringBuilder sbD = JSDataExchangeEditor.BuildFunctionArg_DelegateFunction(type.Name, method.Name, paramS[j].ParameterType, i, j);
-                    StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, method, paramS[j].ParameterType, j);
+                    StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, method, paramS[j].ParameterType, i, j);
 
                     sb.Append(sbD);
                 }

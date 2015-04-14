@@ -167,7 +167,7 @@ public class JSBindingSettings
 		*/       
     };
 
-    public static Type[] classes = new Type[]
+    public static Type[] classes2 = new Type[]
     {
         typeof(List<>), 
         typeof(List<>.Enumerator), 
@@ -182,7 +182,7 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.Tween<>),
         typeof(DaikonForge.Tween.TweenBase),
     };
-    public static Type[] classes2 = new Type[]
+    public static Type[] classes = new Type[]
     {
         /*
          * Classes to export for demo
