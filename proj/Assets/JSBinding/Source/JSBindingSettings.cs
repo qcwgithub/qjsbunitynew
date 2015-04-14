@@ -178,6 +178,7 @@ public class JSBindingSettings
         typeof(UnityEngine.Behaviour),
         typeof(UnityEngine.Component),
         typeof(Debug),
+        typeof(TweenTransformExtensions),
         typeof(TweenCallbackExtensions),
         typeof(DaikonForge.Tween.Tween<>),
         typeof(DaikonForge.Tween.TweenBase),
@@ -731,7 +732,11 @@ public class JSBindingSettings
         
         typeof(List<>), 
         typeof(List<>.Enumerator), 
-
+        typeof(TweenTransformExtensions),
+        typeof(TweenCallbackExtensions),
+        typeof(DaikonForge.Tween.Tween<>),
+        typeof(DaikonForge.Tween.TweenBase),
+        typeof(DaikonForge.Tween.TweenShake),
     };
 
     

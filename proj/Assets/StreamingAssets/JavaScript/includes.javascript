@@ -1,2 +1,12 @@
+CS.require("SharpKitGenerated/DebugMessages");
+CS.require("SharpKitGenerated/Message");
+CS.require("SharpKitGenerated/MuchTweenSoWow");
+CS.require("SharpKitGenerated/TestEasingFunctions");
+CS.require("SharpKitGenerated/TestFPS");
+CS.require("SharpKitGenerated/TestHighConcurrency");
+CS.require("SharpKitGenerated/TestHighConcurrencyGroup");
+CS.require("SharpKitGenerated/TestShakeObject");
+CS.require("SharpKitGenerated/TestSlinky");
+CS.require("SharpKitGenerated/TestSplineTween");
 CS.require("SharpKitGenerated/Test1");
 CS.require("SharpKitGenerated/Test2");
