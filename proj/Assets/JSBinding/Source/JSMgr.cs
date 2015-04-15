@@ -824,14 +824,14 @@ public static class JSMgr
             {
                 bool bDiscard = false;
 
-                var ps = method.GetParameters();
-                for (int k = 0; k < ps.Length; k++)
-                {
-                    if (ps[k].ParameterType.ContainsGenericParameters) {
-                        bDiscard = true;
-                        break;
-                    }
-                }
+//                 var ps = method.GetParameters();
+//                 for (int k = 0; k < ps.Length; k++)
+//                 {
+//                     if (ps[k].ParameterType.ContainsGenericParameters) {
+//                         bDiscard = true;
+//                         break;
+//                     }
+//                 }
                 if (bDiscard)
                     continue;
             }

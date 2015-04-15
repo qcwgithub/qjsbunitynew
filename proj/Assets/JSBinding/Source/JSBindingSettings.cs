@@ -733,6 +733,7 @@ public class JSBindingSettings
         
         typeof(List<>), 
         typeof(List<>.Enumerator), 
+        typeof(TweenReflectionExtensions),
         typeof(TweenTransformExtensions),
         typeof(TweenComponentExtensions),
         typeof(TweenCallbackExtensions),
@@ -740,6 +741,7 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.TweenBase),
         typeof(DaikonForge.Tween.TweenShake),
         typeof(DaikonForge.Tween.TweenEasingFunctions),
+        typeof(DaikonForge.Tween.TweenTimeline),
     };
 
     
