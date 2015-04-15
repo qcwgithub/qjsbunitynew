@@ -21,7 +21,8 @@ public class JSDataExchangeMgr
     {
         GetARGV,
         GetARGVRefOut,
-        GetJSFUNRET
+        GetJSFUNRET,
+        Jsval,
     }
 
     System.Object mTempObj;
@@ -135,6 +136,15 @@ public class JSDataExchangeMgr
                         return (double)JSApi.JSh_GetJsvalInt(ref vc.rvalCallJS);
                 }
                 break;
+            case eGetType.Jsval:
+                {
+                    // 通过 vc.valTemp 传递值
+                    if (JSApi.JSh_JsvalIsDouble(ref vc.valTemp))
+                        return JSApi.JSh_GetJsvalDouble(ref vc.valTemp);
+                    else
+                        return (double)JSApi.JSh_GetJsvalInt(ref vc.valTemp);
+                }
+                break;
             default:
                 Debug.LogError("Not Supported");
                 break;
@@ -158,6 +168,12 @@ public class JSDataExchangeMgr
                 break;
             case eGetType.GetJSFUNRET:
                 return JSApi.JSh_GetJsvalBool(ref vc.rvalCallJS);
+                break;
+            case eGetType.Jsval:
+                {
+                    // 通过 vc.valTemp 传递值
+                    return JSApi.JSh_GetJsvalBool(ref vc.valTemp);
+                }
                 break;
             default:
                 Debug.LogError("Not Supported");
@@ -184,6 +200,12 @@ public class JSDataExchangeMgr
                 break;
             case eGetType.GetJSFUNRET:
                 return JSApi.JSh_GetJsvalStringS(JSMgr.cx, ref vc.rvalCallJS);
+                break;
+            case eGetType.Jsval:
+                {
+                    // 通过 vc.valTemp 传递值
+                    return JSApi.JSh_GetJsvalStringS(JSMgr.cx, ref vc.valTemp);
+                }
                 break;
             default:
                 Debug.LogError("Not Supported");
@@ -258,6 +280,12 @@ public class JSDataExchangeMgr
                     Debug.LogError("getFunction not support eGetType.GetJSFUNRET");
                 }
                 break;
+            case eGetType.Jsval:
+                {
+                    // 通过 vc.valTemp 传递值
+                    // !!! return JSApi.jsh_getjsv(ref vc.valTemp);
+                }
+                break;
             default:
                 Debug.LogError("Not Supported");
                 break;
@@ -303,6 +331,25 @@ public class JSDataExchangeMgr
                     return csObj;
                 }
                 break;
+            case eGetType.Jsval:
+                {
+                    // 通过 vc.valTemp 传递值
+                    jsval val = new jsval();
+                    JSApi.JSh_SetJsvalUndefined(ref val);
+
+                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
+                    if (jsObj == IntPtr.Zero)
+                        return null;
+
+                    JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+                    IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
+                    if (__nativeObj == IntPtr.Zero)
+                        return null;
+
+                    object csObj = JSMgr.getCSObj(__nativeObj);
+                    return csObj;
+                }
+                break;
             default:
                 Debug.LogError("Not Supported");
                 break;
@@ -316,6 +363,7 @@ public class JSDataExchangeMgr
         {
             case eGetType.GetARGV:
                 {
+                    // 通过 vc.valTemp 传递值
                     int i = vc.currIndex;
                     if (JSApi.JSh_ArgvIsNullOrUndefined(JSMgr.cx, vc.vp, i))
                         return null;
@@ -328,6 +376,25 @@ public class JSDataExchangeMgr
                     else if (JSApi.JSh_ArgvIsString(JSMgr.cx, vc.vp, i))
                         return getString(e);
                     else if (JSApi.JSh_ArgvIsObject(JSMgr.cx, vc.vp, i))
+                    {
+                        return getObject(e);
+                    }
+                    return null;
+                }
+                break;
+            case eGetType.Jsval:
+                {
+                    if (JSApi.JSh_JsvalIsNullOrUndefined(ref vc.valTemp))
+                        return null;
+                    else if (JSApi.JSh_JsvalIsBool(ref vc.valTemp))
+                        return getBoolean(e);
+                    else if (JSApi.JSh_JsvalIsInt32(ref vc.valTemp))
+                        return getInt32(e);
+                    else if (JSApi.JSh_JsvalIsDouble(ref vc.valTemp))
+                        return getDouble(e);
+                    else if (JSApi.JSh_JsvalIsString(ref vc.valTemp))
+                        return getString(e);
+                    else if (JSApi.JSh_JsvalIsObject(ref vc.valTemp))
                     {
                         return getObject(e);
                     }
@@ -1177,6 +1244,53 @@ public class JSDataExchangeMgr
         }
         return lst.ToArray();
     }
+    public static string GetMetatypeKeyword(Type type)
+    {
+        string ret = string.Empty;
+
+        if (type == typeof(string))
+            ret = "String";
+        else if (type.IsEnum)
+            ret = "Enum";
+        else if (type.IsPrimitive)
+        {
+            if (type == typeof(System.Boolean))
+                ret = "Boolean";
+            else if (type == typeof(System.Char))
+                ret = "Char";
+            else if (type == typeof(System.Byte))
+                ret = "Byte";
+            else if (type == typeof(System.SByte))
+                ret = "SByte";
+            else if (type == typeof(System.UInt16))
+                ret = "UInt16";
+            else if (type == typeof(System.Int16))
+                ret = "Int16";
+            else if (type == typeof(System.UInt32))
+                ret = "UInt32";
+            else if (type == typeof(System.Int32))
+                ret = "Int32";
+            else if (type == typeof(System.UInt64))
+                ret = "UInt64";
+            else if (type == typeof(System.Int64))
+                ret = "Int64";
+            else if (type == typeof(System.Single))
+                ret = "Single";
+            else if (type == typeof(System.Double))
+                ret = "Double";
+            else
+                Debug.LogError("444 Unknown primitive type");
+        }
+        else if (type.IsGenericParameter)
+            ret = "ByType";
+        else
+            ret = "Object";
+
+        return ret;
+    }
+
+    public delegate T DGetV<T>();
+    public static T GetJSArg<T>(DGetV<T> del) { return del(); }
 }
 
 public class JSDataExchange 
@@ -1346,11 +1460,49 @@ public class JSDataExchange_Arr : JSDataExchange
 {
     public Type elementType = null;
 
-    public override string Get_GetJSReturn() 
-    { 
-        return "null"; 
+    public override string Get_GetParam(Type t)
+    {
+        elementType = t.GetElementType();
+        if (elementType.IsArray) { 
+            //...error
+        }
+        StringBuilder sb = new StringBuilder();
+        string getVal = "get" + JSDataExchangeMgr.GetMetatypeKeyword(t);
+
+        var arrayFullName = string.Empty;
+        var elementFullName = string.Empty;
+        if (elementType.IsGenericParameter)
+        {
+            arrayFullName = "object[]";
+            elementFullName = "object";
+        }
+        else
+        {
+            arrayFullName = JSNameMgr.GetTypeFullName(t);
+            elementFullName = JSNameMgr.GetTypeFullName(elementType);
+        }
+
+        sb.AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(() => [[\n", arrayFullName);
+        sb.AppendFormat("    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);\n");
+        sb.AppendFormat("    int length = JSApi.JSh_GetArrayLength(JSMgr.cx, jsObj);\n");
+        sb.AppendFormat("    var ret = new {0}[length];\n", elementFullName);
+        sb.AppendFormat("    for (var i = 0; i < length; i++) [[\n");
+        sb.AppendFormat("        JSApi.JSh_GetElement(JSMgr.cx, jsObj, (uint)i, ref vc.valTemp);\n");
+        sb.AppendFormat("        ret[i] = ({0})vc.datax.{1}(JSDataExchangeMgr.eGetType.Jsval);\n", elementFullName, getVal);
+        sb.AppendFormat("    ]]\n");
+        sb.AppendFormat("    return ret;\n");
+        sb.AppendFormat("]])\n");
+
+        sb.Replace("[[", "{");
+        sb.Replace("]]", "}");
+
+        return sb.ToString(); 
     }
 
+    public override string Get_GetJSReturn()
+    {
+        return "null";
+    }
     public override string Get_Return(string expVar)
     {
         if (elementType == null)
@@ -1360,45 +1512,7 @@ public class JSDataExchange_Arr : JSDataExchange
         }
 
         StringBuilder sb = new StringBuilder();
-        string getValMethod = "";
-
-        if (elementType == typeof(string))
-            getValMethod = "setString";
-        else if (elementType.IsEnum)
-            getValMethod = "setEnum";
-        else if (elementType.IsPrimitive)
-        {
-            if (elementType == typeof(System.Boolean))
-                getValMethod = "setBoolean";
-            else if (elementType == typeof(System.Char))
-                getValMethod = "setChar";
-            else if (elementType == typeof(System.Byte))
-                getValMethod = "setByte";
-            else if (elementType == typeof(System.SByte))
-                getValMethod = "setSByte";
-            else if (elementType == typeof(System.UInt16))
-                getValMethod = "setUInt16";
-            else if (elementType == typeof(System.Int16))
-                getValMethod = "setInt16";
-            else if (elementType == typeof(System.UInt32))
-                getValMethod = "setUInt32";
-            else if (elementType == typeof(System.Int32))
-                getValMethod = "setInt32";
-            else if (elementType == typeof(System.UInt64))
-                getValMethod = "setUInt64";
-            else if (elementType == typeof(System.Int64))
-                getValMethod = "setInt64";
-            else if (elementType == typeof(System.Single))
-                getValMethod = "setSingle";
-            else if (elementType == typeof(System.Double))
-                getValMethod = "setDouble";
-            else
-                Debug.LogError("Unknown primitive type");
-        }
-        else
-        {
-            getValMethod = "setObject";
-        }
+        string getValMethod = "set" + JSDataExchangeMgr.GetMetatypeKeyword(elementType);
 
         sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar);
         sb.AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar);

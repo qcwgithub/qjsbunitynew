@@ -71,12 +71,6 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         ParamHandler ph = new ParamHandler();
         ph.argName = "arg" + paramIndex.ToString();
 
-        if (type.IsArray)
-        {
-            //Debug.LogError("Parameter: Array not supported");
-            //return ph;
-        }
-
         if (typeof(System.Delegate).IsAssignableFrom(type))
         {
             //Debug.LogError("Delegate should not get here");
@@ -109,6 +103,8 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             {
                 xcg = enumExchange;
             }
+            else if (type.IsArray)
+                xcg = arrayExchange;
             else
             {
                 xcg = objExchange;

@@ -743,9 +743,12 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.Tween<>),
         typeof(DaikonForge.Tween.TweenBase),
         typeof(DaikonForge.Tween.TweenShake),
+        typeof(DaikonForge.Tween.Interpolation.Interpolator<>),
         typeof(DaikonForge.Tween.Interpolation.EulerInterpolator),
         typeof(DaikonForge.Tween.TweenEasingFunctions),
         typeof(DaikonForge.Tween.TweenTimeline),
+        typeof(TweenTextExtensions),
+        typeof(DaikonForge.Tween.SplineObject),
     };
 
     

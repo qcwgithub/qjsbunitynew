@@ -1224,6 +1224,14 @@ using UnityEngine;
         // 检查类型有没有重复
         foreach (var type in JSBindingSettings.classes)
         {
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            {
+                sb.AppendFormat(
+                    "\"{0}\" is not allowed. Try \"{1}\".\n",
+                    JSNameMgr.GetTypeFullName(type), JSNameMgr.GetTypeFullName(type.GetGenericTypeDefinition()));
+                ret = false;
+            }
+
             if (dict.ContainsKey(type))
             {
                 sb.AppendFormat(
@@ -1241,9 +1249,11 @@ using UnityEngine;
         foreach (var typeb in dict)
         {
             Type type = typeb.Key;
-            if (type.BaseType == null) { continue;  }
+            Type baseType = type.BaseType;
+            if (baseType == null) { continue;  }
+            if (baseType.IsGenericType) baseType = baseType.GetGenericTypeDefinition();
             // System.Object is already defined in SharpKit clrlibrary
-            if (!clrLibrary.ContainsKey(type.BaseType) && !dict.ContainsKey(type.BaseType))
+            if (!clrLibrary.ContainsKey(baseType) && !dict.ContainsKey(baseType))
             {
                 sb.AppendFormat("\"{0}\"\'s base type \"{1}\" must also be in JSBindingSettings.classes.\n",
                     JSNameMgr.GetTypeFullName(type),

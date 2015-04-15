@@ -99,6 +99,14 @@ namespace cg
         }
     }
 
+    public class autotab
+    {
+        public static string Format(string str, int tab)
+        {
+            return "";
+        }
+    }
+
     public enum MemberType { 
         CONSTRUCTOR,
         FIELD,
