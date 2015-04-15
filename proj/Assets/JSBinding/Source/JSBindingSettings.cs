@@ -183,6 +183,9 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.Tween<>),
         typeof(DaikonForge.Tween.TweenBase),
         typeof(DaikonForge.Tween.TweenShake),
+        typeof(DaikonForge.Tween.Interpolation.EulerInterpolator),
+        typeof(DaikonForge.Tween.TweenEasingFunctions),
+        typeof(DaikonForge.Tween.TweenTimeline),
     };
     public static Type[] classes = new Type[]
     {
@@ -740,6 +743,7 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.Tween<>),
         typeof(DaikonForge.Tween.TweenBase),
         typeof(DaikonForge.Tween.TweenShake),
+        typeof(DaikonForge.Tween.Interpolation.EulerInterpolator),
         typeof(DaikonForge.Tween.TweenEasingFunctions),
         typeof(DaikonForge.Tween.TweenTimeline),
     };

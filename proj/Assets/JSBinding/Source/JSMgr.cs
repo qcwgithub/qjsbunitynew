@@ -820,20 +820,39 @@ public static class JSMgr
             if (IsMemberObsolete(method))
                 continue;
 
-            if (method.IsGenericMethodDefinition /* || method.IsGenericMethod*/)
+            //
+            // ignore static method who contains T coming from class type
+            // because there is no way to call it
+            // SharpKit doesn't give c# the type of T
+            //
+            if (method.IsGenericMethodDefinition /* || method.IsGenericMethod*/
+                && method.IsStatic)
             {
                 bool bDiscard = false;
 
-//                 var ps = method.GetParameters();
-//                 for (int k = 0; k < ps.Length; k++)
-//                 {
-//                     if (ps[k].ParameterType.ContainsGenericParameters) {
-//                         bDiscard = true;
-//                         break;
-//                     }
-//                 }
-                if (bDiscard)
-                    continue;
+                 var ps = method.GetParameters();
+                 for (int k = 0; k < ps.Length; k++)
+                 {
+                     if (ps[k].ParameterType.ContainsGenericParameters) 
+                     {
+                         var Ts = JSDataExchangeMgr.RecursivelyGetGenericParameters(ps[k].ParameterType);
+                         foreach (var t in Ts)
+                         {
+                             if (t.DeclaringMethod == null) 
+                             { 
+                                 bDiscard = true; 
+                                 break; 
+                             }
+                         }
+                         if (bDiscard)
+                            break;
+                     }
+                 }
+                 if (bDiscard)
+                 {
+                     Debug.LogWarning("Ignore static method " + type.Name + "." + method.Name);
+                     continue;
+                 }
             }
 
 

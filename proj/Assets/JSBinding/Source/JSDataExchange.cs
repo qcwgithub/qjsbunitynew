@@ -1148,6 +1148,35 @@ public class JSDataExchangeMgr
         }
         return method;
     }
+    //
+    // 
+    //
+    public static Type[] RecursivelyGetGenericParameters(Type type, List<Type> lst = null)
+    {
+        if (lst == null)
+            lst = new List<Type>();
+
+        if (type.ContainsGenericParameters)
+        {
+            if (type.IsGenericParameter)
+            {
+                lst.Add(type);
+            }
+            else if (type.HasElementType)
+            {
+                RecursivelyGetGenericParameters(type.GetElementType(), lst);
+            }
+            else if (type.IsGenericType)
+            {
+                Type[] genericArguments = type.GetGenericArguments();
+                for (int i = 0; i < genericArguments.Length; i++)
+                {
+                    RecursivelyGetGenericParameters(genericArguments[i], lst);
+                }
+            }
+        }
+        return lst.ToArray();
+    }
 }
 
 public class JSDataExchange 
@@ -1384,5 +1413,4 @@ public class JSDataExchange_Arr : JSDataExchange
 
         return sb.ToString();
     }
-
 }
