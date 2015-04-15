@@ -233,11 +233,11 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                     Debug.LogError("Return [][] not supported");
                     return "";
                 }
-                else if (arrayExchange.elementType.ContainsGenericParameters)
-                {
-                    Debug.LogError(" Return T[] not supported");
-                    return "/* Return T[] is not supported */";
-                }
+//                 else if (arrayExchange.elementType.ContainsGenericParameters)
+//                 {
+//                     Debug.LogError(" Return T[] not supported");
+//                     return "/* Return T[] is not supported */";
+//                 }
             }
             else if (type.IsEnum)
             {

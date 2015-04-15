@@ -982,6 +982,10 @@ public class JSDataExchangeMgr
                     break;
             }
             typeCache[typeName] = t; // perhaps null
+            if (t == null)
+            {
+                Debug.LogError("GetType of \"" + typeName + "\" is null. Did you export that class to JavaScript?");
+            }
         }
         return t;
     }
