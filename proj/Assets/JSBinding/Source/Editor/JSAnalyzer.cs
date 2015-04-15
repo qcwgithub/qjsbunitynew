@@ -180,14 +180,14 @@ public static class JSAnalyzer
                     //Debug.Log(jsTypeAttr.filename);
 
                     string mustBegin = "../StreamingAssets/JavaScript/";
-
-                    if (jsTypeAttr.filename.IndexOf(mustBegin) == 0)
+                    int index = 0;
+                    if ((index = jsTypeAttr.filename.IndexOf(mustBegin)) >= 0)
                     {
-                        sb.AppendFormat("CS.require(\"{0}\");\n", jsTypeAttr.filename.Substring(mustBegin.Length));
+                        sb.AppendFormat("CS.require(\"{0}\");\n", jsTypeAttr.filename.Substring(index + mustBegin.Length));
                     }
                     else
                     {
-                        Debug.LogError(JSNameMgr.GetTypeFullName(t) + " is ignored because JsType.filename doesn't begin with \""+ mustBegin + "\"");
+                        Debug.LogError(JSNameMgr.GetTypeFullName(t) + " is ignored because JsType.filename doesn't contain \""+ mustBegin + "\"");
                     }
                 }
             }
@@ -325,8 +325,21 @@ public static class JSAnalyzer
         var sb = new StringBuilder();
         if (addjstype)
         {
-            sb.AppendFormat("\n[JsType(JsMode.Clr,\"../StreamingAssets/JavaScript/SharpKitGenerated/{0}{1}.javascript\")]\n{2}",
-                nextPath, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
+            var lastDir = "../";
+            {
+                int i = 0;
+                var np = nextPath;
+                while (true)
+                {
+                    i = np.IndexOf('/', i);
+                    if (i < 0) break;
+                    lastDir += "../";
+                    i++;
+                }
+            }
+
+            sb.AppendFormat("\n[JsType(JsMode.Clr,\"{0}StreamingAssets/JavaScript/SharpKitGenerated/{1}{2}.javascript\")]\n{3}",
+                lastDir, nextPath, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
         }
         else
         {
