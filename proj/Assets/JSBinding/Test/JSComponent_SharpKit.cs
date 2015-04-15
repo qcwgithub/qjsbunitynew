@@ -32,6 +32,7 @@ public class JSComponent_SharpKit : JSSerializer
     jsval valUpdate = new jsval();
     jsval valDestroy = new jsval();
     jsval valOnGUI = new jsval();
+    jsval valOnEnable = new jsval();
     jsval valOnTriggerEnter2D = new jsval();
     jsval valOnTriggerStay = new jsval();
     jsval valOnTriggerExit = new jsval();
@@ -102,6 +103,8 @@ public class JSComponent_SharpKit : JSSerializer
         initVal(ref valUpdate, "Update");
         initVal(ref valDestroy, "Destroy");
         initVal(ref valOnGUI, "OnGUI");
+        initVal(ref valOnEnable, "OnEnable");
+        
         initVal(ref valOnTriggerEnter2D, "OnTriggerEnter2D");
         initVal(ref valOnTriggerStay, "OnTriggerStay");
         initVal(ref valOnTriggerExit, "OnTriggerExit");
@@ -177,6 +180,10 @@ public class JSComponent_SharpKit : JSSerializer
         {
             JSMgr.RemoveRootedObject(jsObj);
         }
+    }
+    void OnEnable()
+    {
+        callIfExist(ref valOnEnable);
     }
 
     void OnTriggerEnter2D (Collider2D other)
