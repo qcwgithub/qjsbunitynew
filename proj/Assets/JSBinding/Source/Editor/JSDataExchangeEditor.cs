@@ -35,6 +35,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         dict.Add(typeof(UInt64), new JSDataExchange_UInt64());
         dict.Add(typeof(Single), new JSDataExchange_Single());
         dict.Add(typeof(Double), new JSDataExchange_Double());
+        dict.Add(typeof(IntPtr), new JSDataExchange_IntPtr());
 
         dict.Add(typeof(String), new JSDataExchange_String());
         dict.Add(typeof(System.Object), new JSDataExchange_SystemObject());

@@ -261,6 +261,11 @@ public class JSDataExchangeMgr
     {
         return (Double)getNumberic(e);
     }
+    public IntPtr getIntPtr(eGetType e)
+    {
+        long l = (long)getNumberic(e);
+        return new IntPtr(l);
+    }
     public jsval getFunction(eGetType e)
     {
         jsval val = new jsval();
@@ -791,6 +796,31 @@ public class JSDataExchangeMgr
     }
     public void setDouble(eSetType e, Double v)
     {
+        switch (e)
+        {
+            case eSetType.Jsval:
+                JSApi.JSh_SetJsvalDouble(ref vc.valTemp, (Double)v);
+                break;
+            case eSetType.SetRval:
+                JSApi.JSh_SetRvalDouble(JSMgr.cx, vc.vp, v);
+                break;
+            case eSetType.UpdateARGVRefOut:
+                {
+                    jsval val = new jsval();
+                    JSApi.JSh_SetJsvalDouble(ref val, v);
+                    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex);
+                    if (jsObj == IntPtr.Zero) Debug.LogError("ref/out param must be js obj!");
+                    JSApi.SetProperty(JSMgr.cx, jsObj, "Value", VALUE_LEN, ref val);
+                }
+                break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
+        }
+    }
+    public void setIntPtr(eSetType e, IntPtr ip)
+    {
+        double v = (double)ip.ToInt64();
         switch (e)
         {
             case eSetType.Jsval:
@@ -1408,6 +1438,14 @@ public class JSDataExchange_Double : JSDataExchange
     public override string Get_GetRefOutParam(Type t) { return "vc.datax.getDouble(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
     public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setDouble(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
 }
+public class JSDataExchange_IntPtr : JSDataExchange
+{
+    public override string Get_GetParam(Type t) { return "vc.datax.getIntPtr(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setIntPtr(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetJSReturn() { return "JSMgr.vCall.datax.getIntPtr(JSDataExchangeMgr.eGetType.GetJSFUNRET)"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getIntPtr(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setIntPtr(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+}
 
 #endregion
 
@@ -1518,13 +1556,26 @@ public class JSDataExchange_Arr : JSDataExchange
         StringBuilder sb = new StringBuilder();
         string getValMethod = "set" + JSDataExchangeMgr.GetMetatypeKeyword(elementType);
 
-        sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar);
-        sb.AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar);
-        sb.AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n");
-        sb.AppendFormat("        vc.datax.{0}(JSDataExchangeMgr.eSetType.Jsval, arrRet[i]);\n", getValMethod);
-        sb.AppendFormat("        arrVal[i] = vc.valTemp;\n");
-        sb.AppendFormat("    ]]\n");
-        sb.AppendFormat("    vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal)"); // no ;
+        if (elementType.ContainsGenericParameters)
+        {
+            sb.AppendFormat("    var arrRet = (Array){0};\n", expVar);
+            sb.AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar);
+            sb.AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n");
+            sb.AppendFormat("        vc.datax.{0}(JSDataExchangeMgr.eSetType.Jsval, arrRet.GetValue(i));\n", getValMethod);
+            sb.AppendFormat("        arrVal[i] = vc.valTemp;\n");
+            sb.AppendFormat("    ]]\n");
+            sb.AppendFormat("    vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal)"); // no ;
+        }
+        else
+        {
+            sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar);
+            sb.AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar);
+            sb.AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n");
+            sb.AppendFormat("        vc.datax.{0}(JSDataExchangeMgr.eSetType.Jsval, arrRet[i]);\n", getValMethod);
+            sb.AppendFormat("        arrVal[i] = vc.valTemp;\n");
+            sb.AppendFormat("    ]]\n");
+            sb.AppendFormat("    vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal)"); // no ;
+        }
 
         sb.Replace("[[", "{");
         sb.Replace("]]", "}");
