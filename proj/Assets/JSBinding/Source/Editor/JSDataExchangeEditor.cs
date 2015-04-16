@@ -74,7 +74,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
 
         if (typeof(System.Delegate).IsAssignableFrom(type))
         {
-            //Debug.LogError("Delegate should not get here");
+            Debug.LogError("Delegate should not get here");
             return ph;
         }
 

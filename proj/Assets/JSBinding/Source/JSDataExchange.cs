@@ -34,61 +34,6 @@ public class JSDataExchangeMgr
 
     #region Get Operation
 
-    /*
-     * for concrete type e.g. setInt32 setString
-     * they know type 
-     * 
-     * but for T parameters   type is known until run-time
-     * so this method need a 'Type' argument
-     * it is passed through mTempObj
-     */
-    public object getByType(eGetType e)
-    {
-        Type type = (Type)mTempObj;
-        if (type.IsByRef)
-            type = type.GetElementType();
-
-        if (type == typeof(string))
-            return getString(e);
-        else if (type.IsEnum)
-            return getEnum(e);
-        else if (type.IsPrimitive)
-        {
-            if (type == typeof(System.Boolean))
-                return getBoolean(e);
-            else if (type == typeof(System.Char))
-                return getChar(e);
-            else if (type == typeof(System.Byte))
-                return getByte(e);
-            else if (type == typeof(System.SByte))
-                return getSByte(e);
-            else if (type == typeof(System.UInt16))
-                return getUInt16(e);
-            else if (type == typeof(System.Int16))
-                return getInt16(e);
-            else if (type == typeof(System.UInt32))
-                return getUInt32(e);
-            else if (type == typeof(System.Int32))
-                return getInt32(e);
-            else if (type == typeof(System.UInt64))
-                return getUInt64(e);
-            else if (type == typeof(System.Int64))
-                return getInt64(e);
-            else if (type == typeof(System.Single))
-                return getSingle(e);
-            else if (type == typeof(System.Double))
-                return getDouble(e);
-            else
-                Debug.LogError("Unknown primitive type");
-        }
-        else
-        {
-            return getObject(e);
-        }
-        return null;
-    }
-
-
     public void getJSValueOfParam(ref jsval val, int pIndex)
     {
         IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, pIndex);
@@ -368,7 +313,6 @@ public class JSDataExchangeMgr
         {
             case eGetType.GetARGV:
                 {
-                    // 通过 vc.valTemp 传递值
                     int i = vc.currIndex;
                     if (JSApi.JSh_ArgvIsNullOrUndefined(JSMgr.cx, vc.vp, i))
                         return null;
@@ -389,6 +333,7 @@ public class JSDataExchangeMgr
                 break;
             case eGetType.Jsval:
                 {
+                    // 通过 vc.valTemp 传递值
                     if (JSApi.JSh_JsvalIsNullOrUndefined(ref vc.valTemp))
                         return null;
                     else if (JSApi.JSh_JsvalIsBool(ref vc.valTemp))
@@ -427,7 +372,7 @@ public class JSDataExchangeMgr
 
     // for generic type
     // type is assigned during runtime
-    public void setByType(eSetType e, object obj)
+    public void setWhatever(eSetType e, object obj)
     {
 //         Type type = (Type)mTempObj;
 //         if (type.IsByRef)
@@ -1281,6 +1226,8 @@ public class JSDataExchangeMgr
     public static string GetMetatypeKeyword(Type type)
     {
         string ret = string.Empty;
+        if (type.IsArray)
+            return ret;
 
         if (type == typeof(string))
             ret = "String";
@@ -1312,11 +1259,13 @@ public class JSDataExchangeMgr
                 ret = "Single";
             else if (type == typeof(System.Double))
                 ret = "Double";
+            else if (type == typeof(System.IntPtr))
+                ret = "IntPtr";
             else
                 Debug.LogError("444 Unknown primitive type");
         }
         else if (type.IsGenericParameter)
-            ret = "ByType";
+            ret = "Whatever";
         else
             ret = "Object";
 
@@ -1330,14 +1279,24 @@ public class JSDataExchangeMgr
 public class JSDataExchange 
 {
     // get value from param
-    public virtual string Get_GetParam(Type t) { Debug.LogError("X Get_GetParam "); return string.Empty; }
+    public virtual string Get_GetParam(Type t) { 
+        Debug.LogError("X Get_GetParam "); return string.Empty; 
+    }
     public virtual bool isGetParamNeedCast { get { return false; } }
 
-    public virtual string Get_Return(string expVar) { Debug.LogError("X Get_Return "); return string.Empty; }
-    public virtual string Get_GetJSReturn() { Debug.LogError("X Get_GetJSReturn "); return string.Empty; }
+    public virtual string Get_Return(string expVar) { 
+        Debug.LogError("X Get_Return "); return string.Empty; 
+    }
+    public virtual string Get_GetJSReturn() { 
+        Debug.LogError("X Get_GetJSReturn "); return string.Empty; 
+    }
 
-    public virtual string Get_GetRefOutParam(Type t) { Debug.LogError("X Get_GetRefOutParam "); return string.Empty; }
-    public virtual string Get_ReturnRefOut(string expVar) { Debug.LogError("X Get_ReturnRefOut "); return string.Empty; }
+    public virtual string Get_GetRefOutParam(Type t) { 
+        Debug.LogError("X Get_GetRefOutParam "); return string.Empty; 
+    }
+    public virtual string Get_ReturnRefOut(string expVar) { 
+        Debug.LogError("X Get_ReturnRefOut "); return string.Empty; 
+    }
 }
 
 #region Primitive Exchange (Editor Only)
@@ -1489,11 +1448,11 @@ public class JSDataExchange_Obj : JSDataExchange
 // generic 
 public class JSDataExchange_T : JSDataExchange
 {
-    public override string Get_GetParam(Type t) { return "vc.datax.getByType(JSDataExchangeMgr.eGetType.GetARGV)"; }
-    public override string Get_Return(string expVar) { return "vc.datax.setByType(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
-    public override string Get_GetJSReturn() { return "JSMgr.vCall.datax.getByType(JSDataExchangeMgr.eGetType.GetJSFUNRET)"; }
-    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getByType(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
-    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setByType(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
+    public override string Get_GetParam(Type t) { return "vc.datax.getWhatever(JSDataExchangeMgr.eGetType.GetARGV)"; }
+    public override string Get_Return(string expVar) { return "vc.datax.setWhatever(JSDataExchangeMgr.eSetType.SetRval, " + expVar + ")"; }
+    public override string Get_GetJSReturn() { return "JSMgr.vCall.datax.getWhatever(JSDataExchangeMgr.eGetType.GetJSFUNRET)"; }
+    public override string Get_GetRefOutParam(Type t) { return "vc.datax.getWhatever(JSDataExchangeMgr.eGetType.GetARGVRefOut)"; }
+    public override string Get_ReturnRefOut(string expVar) { return "vc.datax.setWhatever(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, " + expVar + ")"; }
     public override bool isGetParamNeedCast { get { return false; } }
 
 }

@@ -609,10 +609,10 @@ public static class CSGenerator2
             {
                 // use original method's parameterinfo
                 paramHandlers[i] = JSDataExchangeEditor.Get_ParamHandler(ps[i], i);
-                if (ps[i].ParameterType.IsGenericParameter)
-                {
-                    paramHandlers[i].getter = "    vc.datax.setTemp(method.GetParameters()[" + i.ToString() + "].ParameterType);\n" + paramHandlers[i].getter;
-                }
+//                if (ps[i].ParameterType.IsGenericParameter)
+//                {
+//                    paramHandlers[i].getter = "    vc.datax.setTemp(method.GetParameters()[" + i.ToString() + "].ParameterType);\n" + paramHandlers[i].getter;
+//                }
             }
         }
 

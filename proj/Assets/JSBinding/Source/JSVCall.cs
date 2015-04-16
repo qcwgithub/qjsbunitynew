@@ -1036,7 +1036,7 @@ public class JSVCall
                 for (int i = 0; i < args.Length; i++)
                 {
                     // vals[i + 2] = CSObject_2_JSValue(args[i]);
-                    this.datax.setByType(JSDataExchangeMgr.eSetType.Jsval, args[i]);
+                    this.datax.setWhatever(JSDataExchangeMgr.eSetType.Jsval, args[i]);
                     vals[i + 2] = valTemp;
                 }
             }
@@ -1054,7 +1054,7 @@ public class JSVCall
             for (int i = 0; i < argsLen; i++)
             {
                 // vals[i] = CSObject_2_JSValue(args[i]);
-                this.datax.setByType(JSDataExchangeMgr.eSetType.Jsval, args[i]);
+                this.datax.setWhatever(JSDataExchangeMgr.eSetType.Jsval, args[i]);
                 vals[i] = valTemp;
             }
 
