@@ -66,15 +66,23 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         //         ph.getter = "System.Type " + ph.argName + " = (System.Type)" + get_getParam + ";";
         return ph;
     }
+    public static bool IsDelegateSelf(Type type)
+    {
+        return type == typeof(System.Delegate) || type == typeof(System.MulticastDelegate);
+    }
+    public static bool IsDelegateDerived(Type type)
+    {
+        return typeof(System.Delegate).IsAssignableFrom(type) && !IsDelegateSelf(type);
+    }
     // Editor only
     public static ParamHandler Get_ParamHandler(Type type, int paramIndex, bool isRef, bool isOut)
     {
         ParamHandler ph = new ParamHandler();
         ph.argName = "arg" + paramIndex.ToString();
 
-        if (typeof(System.Delegate).IsAssignableFrom(type))
+        if (IsDelegateDerived(type))
         {
-            Debug.LogError("Delegate should not get here");
+            Debug.LogError("Delegate derived class should not get here");
             return ph;
         }
 
@@ -259,6 +267,18 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         sb.AppendFormat("{0}_{1}_GetDelegate_member{2}_arg{3}", classType.Name, methodName, methodIndex, argIndex);
         return JSNameMgr.HandleFunctionName(sb.ToString());
     }
+    public static string Build_GetDelegate(string getDelegateFunctionName, Type delType)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(()=>[[\n", JSNameMgr.GetTypeFullName(delType));
+        sb.AppendFormat("    if (vc.datax.IsArgvFunction())\n");
+        sb.AppendFormat("        return {0}(vc.getJSFunctionValue());\n", getDelegateFunctionName);
+        sb.Append("    else\n");
+        sb.AppendFormat("        return ({0})vc.datax.getObject(JSDataExchangeMgr.eGetType.GetARGV);\n", JSNameMgr.GetTypeFullName(delType));
+        sb.Append("]])\n");
+
+        return sb.ToString();
+    }
     public static StringBuilder Build_DelegateFunction(Type classType, MemberInfo memberInfo, Type delType, int methodIndex, int argIndex)
     {
         // building a closure
@@ -267,7 +287,8 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         string getDelFunctionName = GetMethodArg_DelegateFuncionName(classType, memberInfo.Name, methodIndex, argIndex);
 
         var sb = new StringBuilder();
-        ParameterInfo[] ps = delType.GetMethod("Invoke").GetParameters();
+		MethodInfo delInvoke = delType.GetMethod("Invoke");
+		ParameterInfo[] ps = delInvoke.GetParameters();
         Type returnType = delType.GetMethod("Invoke").ReturnType;
 
         var argsParam = new cg.args();

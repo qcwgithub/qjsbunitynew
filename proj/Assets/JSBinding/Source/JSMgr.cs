@@ -712,7 +712,7 @@ public static class JSMgr
                 continue;  
             }
 
-            if (!IsMemberObsolete(ti.constructors[i]))
+            if (!IsMemberObsolete(ti.constructors[i]) && !JSBindingSettings.IsDiscard(type, ti.constructors[i]))
             {
                 lstCons.Add(new ConstructorInfoAndIndex(ti.constructors[i], i));
             }
@@ -952,7 +952,6 @@ public static class JSMgr
         //         else
 
         if (JSMgr.isShutDown) return false;
-
         try
         {
             vCall.CallCallback(cx, argc, vp);

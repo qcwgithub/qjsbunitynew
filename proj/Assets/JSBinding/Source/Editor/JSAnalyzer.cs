@@ -311,12 +311,12 @@ public static class JSAnalyzer
         JSSerializerEditor.CopyGameObject<JSComponent_SharpKit>(go);
     }
     // Alt + Shift + W
-    //[MenuItem("JSB/Remove Other MonoBehaviours &#w")]
+    [MenuItem("JSB/Remove Other MonoBehaviours &#w")]
     public static void RemoveOtherMonoBehaviours()
     {
         Debug.Log("RemoveOtherMonoBehaviours");
         GameObject go = Selection.activeGameObject;
-        ExtraHelper.RemoveOtherMonoBehaviours(go);
+        JSSerializerEditor.RemoveOtherMonoBehaviours(go);
     }
 
     public static string MyMatchEvaluator(Match m)

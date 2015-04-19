@@ -169,23 +169,26 @@ public class JSBindingSettings
 
     public static Type[] classes2 = new Type[]
     {
-        typeof(List<>), 
-        typeof(List<>.Enumerator), 
-        typeof(System.Diagnostics.Stopwatch),
-        typeof(GameObject),
-        typeof(UnityEngine.Object),
-        typeof(UnityEngine.MonoBehaviour),
-        typeof(UnityEngine.Behaviour),
-        typeof(UnityEngine.Component),
-        typeof(Debug),
-        typeof(TweenTransformExtensions),
-        typeof(TweenCallbackExtensions),
-        typeof(DaikonForge.Tween.Tween<>),
-        typeof(DaikonForge.Tween.TweenBase),
-        typeof(DaikonForge.Tween.TweenShake),
-        typeof(DaikonForge.Tween.Interpolation.EulerInterpolator),
-        typeof(DaikonForge.Tween.TweenEasingFunctions),
-        typeof(DaikonForge.Tween.TweenTimeline),
+//         typeof(List<>), 
+//         typeof(List<>.Enumerator), 
+//         typeof(System.Diagnostics.Stopwatch),
+//         typeof(GameObject),
+//         typeof(UnityEngine.Object),
+//         typeof(UnityEngine.MonoBehaviour),
+//         typeof(UnityEngine.Behaviour),
+//         typeof(UnityEngine.Component),
+//         typeof(Debug),
+//         typeof(TweenTransformExtensions),
+//         typeof(TweenCallbackExtensions),
+//         typeof(DaikonForge.Tween.Tween<>),
+//         typeof(DaikonForge.Tween.TweenBase),
+//         typeof(DaikonForge.Tween.TweenShake),
+//         typeof(DaikonForge.Tween.Interpolation.Interpolator<>),
+//         typeof(DaikonForge.Tween.TweenEasingFunctions),
+//         typeof(DaikonForge.Tween.TweenTimeline),
+        typeof(System.Delegate),
+        typeof(System.MulticastDelegate),
+        //typeof(DaikonForge.Tween.TweenEasingCallback),
     };
     public static Type[] classes = new Type[]
     {
@@ -749,6 +752,9 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.TweenTimeline),
         typeof(TweenTextExtensions),
         typeof(DaikonForge.Tween.SplineObject),
+        typeof(System.Delegate),
+        typeof(System.MulticastDelegate),
+        typeof(DaikonForge.Tween.TweenEasingCallback),
     };
 
     
@@ -762,6 +768,10 @@ public class JSBindingSettings
     {
         string memberName = memberInfo.Name;
 
+        if (typeof(Delegate).IsAssignableFrom(type)/* && (memberInfo is MethodInfo || memberInfo is PropertyInfo || memberInfo is FieldInfo)*/)
+        {
+            return true;
+        }
 
         if (memberName == "networkView" && (type == typeof(GameObject) || typeof(Component).IsAssignableFrom(type)))
         {
@@ -796,6 +806,8 @@ public class JSBindingSettings
     }
     public static bool IsGeneratedDefaultConstructor(Type type)
     {
+        if (typeof(Delegate).IsAssignableFrom(type))
+            return false;
         return type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).Length == 0;
 
 //if (type == typeof(Coroutine)

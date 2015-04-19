@@ -357,6 +357,59 @@ public class JSDataExchangeMgr
         }
         return null;
     }
+    public object getDelegate(eGetType e)
+    {
+        switch (e)
+        {
+            case eGetType.GetARGV:
+                {
+                    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
+                    if (jsObj == IntPtr.Zero)
+                        return null;
+
+                    object csObj = JSMgr.getCSObj(jsObj);
+                    return csObj;
+                }
+                break;
+            case eGetType.GetARGVRefOut:
+                {
+//                     jsval val = new jsval();
+//                     JSApi.JSh_SetJsvalUndefined(ref val);
+//                     getJSValueOfParam(ref val, vc.currIndex++);
+// 
+//                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
+//                     if (jsObj == IntPtr.Zero)
+//                         return null;
+// 
+//                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+//                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
+//                     if (__nativeObj == IntPtr.Zero)
+//                         return null;
+// 
+//                     object csObj = JSMgr.getCSObj(__nativeObj);
+//                     return csObj;
+                }
+                break;
+            case eGetType.Jsval:
+                {
+                    // 通过 vc.valTemp 传递值
+                    jsval val = new jsval();
+                    JSApi.JSh_SetJsvalUndefined(ref val);
+
+                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
+                    if (jsObj == IntPtr.Zero)
+                        return null;
+
+                    object csObj = JSMgr.getCSObj(jsObj);
+                    return csObj;
+                }
+                break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
+        }
+        return null;
+    }
     #endregion
 
 
@@ -907,6 +960,125 @@ public class JSDataExchangeMgr
                 break;
         }
     }
+//     public void setDelegate(eSetType e, object csObj)
+//     {
+//         switch (e)
+//         {
+//             case eSetType.Jsval:
+//             case eSetType.SetRval:
+//                 {
+//                     JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
+//                     if (csObj != null)
+//                     {
+//                         IntPtr jsObj = IntPtr.Zero;
+//                         Type csType = csObj.GetType();
+//                         if (csType.IsClass && (jsObj = JSMgr.getJSObj(csObj)) != IntPtr.Zero)
+//                         {
+//                             JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
+//                         }
+//                         else
+//                         {
+//                             //
+//                             // 返回给JS的对象：需要 prototype
+//                             // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
+//                             //
+//                             string typeName = JSNameMgr.GetJSTypeFullName(csType);
+//                             IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
+//                             if (jstypeObj != IntPtr.Zero)
+//                             {
+//                                 jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+// 
+//                                 // __nativeObj
+//                                 IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
+//                                 JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
+// 
+//                                 // jsObj.__nativeObj = __nativeObj
+//                                 jsval val = new jsval();
+//                                 JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
+//                                 JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+// 
+//                                 JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
+//                             }
+//                             else
+//                             {
+//                                 Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
+//                             }
+//                         }
+//                     }
+// 
+//                     if (e == eSetType.Jsval)
+//                         vc.valTemp = vc.valReturn;
+//                     else if (e == eSetType.SetRval)
+//                         JSApi.JSh_SetRvalJSVAL(JSMgr.cx, vc.vp, ref vc.valReturn);
+//                 }
+//                 break;
+//             case eSetType.UpdateARGVRefOut:
+//                 {
+//                     jsval val = new jsval(); val.asBits = 0;
+//                     IntPtr argvJSObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex);
+//                     if (argvJSObj != IntPtr.Zero)
+//                     {
+//                         bool success = false;
+// 
+//                         IntPtr jsObj = IntPtr.Zero;
+//                         Type csType = csObj.GetType();
+//                         if (csType.IsClass && (jsObj = JSMgr.getJSObj(csObj)) != IntPtr.Zero)
+//                         {
+//                             // 3)
+//                             // argvObj.Value = jsObj
+//                             //
+//                             JSApi.JSh_SetJsvalObject(ref val, jsObj);
+//                             JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
+//                             success = true;
+//                         }
+//                         else
+//                         {
+//                             // csObj must not be null
+//                             IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSNameMgr.GetTypeFullName(csObj.GetType()));
+//                             if (jstypeObj != IntPtr.Zero)
+//                             {
+//                                 // 1)
+//                                 // jsObj: prototype  
+//                                 // __nativeObj: csObj + finalizer
+//                                 // 
+//                                 jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+//                                 // __nativeObj
+//                                 IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
+//                                 JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
+// 
+//                                 //
+//                                 // 2)
+//                                 // jsObj.__nativeObj = __nativeObj
+//                                 //
+//                                 JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
+//                                 JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+// 
+//                                 // 3)
+//                                 // argvObj.Value = jsObj
+//                                 //
+//                                 JSApi.JSh_SetJsvalObject(ref val, jsObj);
+//                                 JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
+//                                 success = true;
+//                             }
+//                             else
+//                             {
+//                                 Debug.LogError("Return a \"" + JSNameMgr.GetTypeFullName(csObj.GetType()) + "\" to JS failed. Did you forget to export that class?");
+//                             }
+//                         }
+// 
+//                         if (!success)
+//                         {
+//                             JSApi.JSh_SetJsvalUndefined(ref val);
+//                             JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
+//                         }
+//                     }
+//                 }
+//                 break;
+//             default:
+//                 Debug.LogError("Not Supported");
+//                 break;
+//         }
+//     }
 
     public void setArray(eSetType e, jsval[] arrVal)
     {
@@ -1274,6 +1446,15 @@ public class JSDataExchangeMgr
 
     public delegate T DGetV<T>();
     public static T GetJSArg<T>(DGetV<T> del) { return del(); }
+
+    public bool IsArgvFunction()
+    {
+        var i = vc.currIndex;
+        jsval val = new jsval(); val.asBits = 0;
+        JSApi.JSh_ArgvFunctionValue(vc.cx, vc.vp, i, ref val);
+		if (val.asBits == 0) return false;
+        return !JSApi.JSh_JsvalIsNullOrUndefined(ref val);
+    }
 }
 
 public class JSDataExchange 
@@ -1468,7 +1649,7 @@ public class JSDataExchange_Arr : JSDataExchange
             //...error
         }
         StringBuilder sb = new StringBuilder();
-        string getVal = "get" + JSDataExchangeMgr.GetMetatypeKeyword(t);
+        string getVal = "get" + JSDataExchangeMgr.GetMetatypeKeyword(elementType);
 
         var arrayFullName = string.Empty;
         var elementFullName = string.Empty;

@@ -98,7 +98,7 @@ public static class CSGenerator2
             var sbCall = new StringBuilder();
 
             FieldInfo field = fields[i];
-            bool isDelegate = (typeof(System.Delegate).IsAssignableFrom(field.FieldType));
+            bool isDelegate = JSDataExchangeEditor.IsDelegateDerived(field.FieldType);// (typeof(System.Delegate).IsAssignableFrom(field.FieldType));
             if (isDelegate)
             {
                 sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, field, field.FieldType, i, 0));
@@ -159,8 +159,12 @@ public static class CSGenerator2
                 {
                     var getDelegateFuncitonName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, field.Name, i, 0);
 
+//                     sb.Append(JSDataExchangeEditor.BuildCallString(type, field, "" /* argList */,
+//                                 features | JSDataExchangeEditor.MemberFeature.Set, getDelegateFuncitonName + "(vc.getJSFunctionValue())"));
+
+                    string getDelegate = JSDataExchangeEditor.Build_GetDelegate(getDelegateFuncitonName, field.FieldType);
                     sb.Append(JSDataExchangeEditor.BuildCallString(type, field, "" /* argList */,
-                                features | JSDataExchangeEditor.MemberFeature.Set, getDelegateFuncitonName + "(vc.getJSFunctionValue())"));
+                                features | JSDataExchangeEditor.MemberFeature.Set, getDelegate));
                 }
                 sb.Append("    ]]\n");
             }
@@ -359,7 +363,7 @@ public static class CSGenerator2
             bool bGenericT = type.IsGenericTypeDefinition;
             StringBuilder sbt = null;
 
-            bool isDelegate = (typeof(System.Delegate).IsAssignableFrom(property.PropertyType));
+            bool isDelegate = JSDataExchangeEditor.IsDelegateDerived(property.PropertyType); ;// (typeof(System.Delegate).IsAssignableFrom(property.PropertyType));
             if (isDelegate)
             {
                 sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, property, property.PropertyType, i, 0));
@@ -642,7 +646,8 @@ public static class CSGenerator2
             for (int i = 0; i < j; i++)
             {
                 ParameterInfo p = ps[i];
-                if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
+                //if (typeof(System.Delegate).IsAssignableFrom(p.ParameterType))
+                if (JSDataExchangeEditor.IsDelegateDerived(p.ParameterType))
                 {
                     //string delegateGetName = JSDataExchangeEditor.GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i);
                     string delegateGetName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, methodName, methodIndex, i);
@@ -652,16 +657,29 @@ public static class CSGenerator2
                     {
                         // cg.args ta = new cg.args();
                         // sbGetParam.AppendFormat("foreach (var a in method.GetParameters()[{0}].ParameterType.GetGenericArguments()) ta.Add();");
+
+
+                        sbGetParam.AppendFormat("object arg{0} = JSDataExchangeMgr.GetJSArg<object>(()=>[[\n", i);
+                        sbGetParam.AppendFormat("    if (vc.datax.IsArgvFunction()) [[\n");
                         sbGetParam.AppendFormat("        var getDelegateFun{0} = typeof({1}).GetMethod(\"{2}\").MakeGenericMethod\n", i, thisClassName, delegateGetName);
                         sbGetParam.AppendFormat("            (method.GetParameters()[{0}].ParameterType.GetGenericArguments());\n", i);
-                        sbGetParam.AppendFormat("        object arg{0} = getDelegateFun{0}.Invoke(null, new object[][[{1}]]);\n", i, "vc.getJSFunctionValue()");
+                        sbGetParam.AppendFormat("        return getDelegateFun{0}.Invoke(null, new object[][[{1}]]);\n", i, "vc.getJSFunctionValue()");
+                        sbGetParam.Append("    ]]\n");
+                        sbGetParam.Append("    else\n");
+                        sbGetParam.AppendFormat("        return vc.datax.getObject(JSDataExchangeMgr.eGetType.GetARGV);\n");
+                        sbGetParam.Append("]]);\n");
+
+
+//                         sbGetParam.AppendFormat("        var getDelegateFun{0} = typeof({1}).GetMethod(\"{2}\").MakeGenericMethod\n", i, thisClassName, delegateGetName);
+//                         sbGetParam.AppendFormat("            (method.GetParameters()[{0}].ParameterType.GetGenericArguments());\n", i);
+//                         sbGetParam.AppendFormat("        object arg{0} = getDelegateFun{0}.Invoke(null, new object[][[{1}]]);\n", i, "vc.getJSFunctionValue()");
                     }   
                     else
                     {
-                        sbGetParam.AppendFormat("        {0} arg{1} = {2}(vc.getJSFunctionValue());\n",
+                        sbGetParam.AppendFormat("        {0} arg{1} = {2};\n",
                                                 JSNameMgr.GetTypeFullName(p.ParameterType), // [0]
                                                 i, // [1]
-                                                delegateGetName // [2]
+                                                JSDataExchangeEditor.Build_GetDelegate(delegateGetName, p.ParameterType) // [2]
                                                 );
                     }
                 }
@@ -815,7 +833,8 @@ static bool {0}(JSVCall vc, int start, int count)
 
             for (int j = 0; j < paramS.Length; j++)
             {
-                if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
+                //if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
+                if(JSDataExchangeEditor.IsDelegateDerived(paramS[j].ParameterType))
                 {
                     StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, cons, paramS[j].ParameterType, i, j);
                     sb.Append(sbD);
@@ -855,12 +874,12 @@ static bool {0}(JSVCall vc, int start, int count)
 
             for (int j = 0; j < paramS.Length; j++)
             {
-                if (paramS[j].ParameterType == typeof(DaikonForge.Tween.TweenAssignmentCallback<Vector3>))
-                {
-                    Debug.Log("yes");
-                }
-
-                if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
+//                 if (paramS[j].ParameterType == typeof(DaikonForge.Tween.TweenAssignmentCallback<Vector3>))
+//                 {
+//                     Debug.Log("yes");
+//                
+                //if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
+                if (JSDataExchangeEditor.IsDelegateDerived(paramS[j].ParameterType))
                 {
                     // StringBuilder sbD = JSDataExchangeEditor.BuildFunctionArg_DelegateFunction(type.Name, method.Name, paramS[j].ParameterType, i, j);
                     StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, method, paramS[j].ParameterType, i, j);
@@ -1257,7 +1276,7 @@ using UnityEngine;
             {
                 sb.AppendFormat("\"{0}\"\'s base type \"{1}\" must also be in JSBindingSettings.classes.\n",
                     JSNameMgr.GetTypeFullName(type),
-                    JSNameMgr.GetTypeFullName(type.BaseType));
+                    JSNameMgr.GetTypeFullName(baseType));
                 ret = false;
             }
 //             foreach (var Interface in type.GetInterfaces())
