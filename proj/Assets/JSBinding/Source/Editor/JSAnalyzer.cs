@@ -230,7 +230,7 @@ public static class JSAnalyzer
     public static void OneKeyReplaceAll()
     {
         bool bContinue = EditorUtility.DisplayDialog("WARNING", 
-            "This action may cause data loss. You must backup whole project before executing this action.", 
+            "This action may cause data loss. You must backup whole project before executing this action.(Scenes and prefabs whose names begin with \'_\' will be skipped. )", 
             "Continue", 
             "Cancel");
 

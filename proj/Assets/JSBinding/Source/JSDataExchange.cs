@@ -1516,6 +1516,7 @@ public class JSDataExchange
     }
 }
 
+// TODO: delete
 #region Primitive Exchange (Editor Only)
 
 public class JSDataExchange_Boolean : JSDataExchange
@@ -1625,6 +1626,7 @@ public class JSDataExchange_IntPtr : JSDataExchange
 
 #endregion
 
+// TODO: delete
 // System.Object
 public class JSDataExchange_SystemObject : JSDataExchange
 {
