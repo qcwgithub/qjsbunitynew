@@ -751,7 +751,7 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.TweenEasingFunctions),
         typeof(DaikonForge.Tween.TweenTimeline),
         typeof(TweenTextExtensions),
-        typeof(DaikonForge.Tween.SplineObject),
+        //typeof(DaikonForge.Tween.SplineObject),
         typeof(System.Delegate),
         typeof(System.MulticastDelegate),
         typeof(DaikonForge.Tween.TweenEasingCallback),
@@ -850,7 +850,7 @@ public class JSBindingSettings
 
     public static string jsDir = Application.streamingAssetsPath + "/JavaScript";
     public static string jsGeneratedDir = jsDir + "/Generated";
-    public static string csDir = Application.dataPath + "/CSharp";
-    public static string csGeneratedDir = csDir + "/Generated";
+    public static string csDir = Application.dataPath + "/JSBinding/CSharp";
+    public static string csGeneratedDir = Application.dataPath + "/JSBinding/Generated";
     public static string jsExtension = ".javascript";
 }

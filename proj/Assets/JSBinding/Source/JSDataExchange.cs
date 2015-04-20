@@ -1399,7 +1399,10 @@ public class JSDataExchangeMgr
     {
         string ret = string.Empty;
         if (type.IsArray)
+        {
+            Debug.LogError("Array should not call GetMetatypeKeyword()");
             return ret;
+        }
 
         if (type == typeof(string))
             ret = "String";
@@ -1664,16 +1667,16 @@ public class JSDataExchange_Arr : JSDataExchange
             elementFullName = JSNameMgr.GetTypeFullName(elementType);
         }
 
-        sb.AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(() => [[\n", arrayFullName);
-        sb.AppendFormat("    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);\n");
-        sb.AppendFormat("    int length = JSApi.JSh_GetArrayLength(JSMgr.cx, jsObj);\n");
-        sb.AppendFormat("    var ret = new {0}[length];\n", elementFullName);
-        sb.AppendFormat("    for (var i = 0; i < length; i++) [[\n");
-        sb.AppendFormat("        JSApi.JSh_GetElement(JSMgr.cx, jsObj, (uint)i, ref vc.valTemp);\n");
-        sb.AppendFormat("        ret[i] = ({0})vc.datax.{1}(JSDataExchangeMgr.eGetType.Jsval);\n", elementFullName, getVal);
-        sb.AppendFormat("    ]]\n");
-        sb.AppendFormat("    return ret;\n");
-        sb.AppendFormat("]])\n");
+        sb.AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(() => [[\n", arrayFullName)
+        .AppendFormat("    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);\n")
+        .AppendFormat("    int length = JSApi.JSh_GetArrayLength(JSMgr.cx, jsObj);\n")
+        .AppendFormat("    var ret = new {0}[length];\n", elementFullName)
+        .AppendFormat("    for (var i = 0; i < length; i++) [[\n")
+        .AppendFormat("        JSApi.JSh_GetElement(JSMgr.cx, jsObj, (uint)i, ref vc.valTemp);\n")
+        .AppendFormat("        ret[i] = ({0})vc.datax.{1}(JSDataExchangeMgr.eGetType.Jsval);\n", elementFullName, getVal)
+        .AppendFormat("    ]]\n")
+        .AppendFormat("    return ret;\n")
+        .AppendFormat("]])\n");
 
         sb.Replace("[[", "{");
         sb.Replace("]]", "}");
@@ -1698,23 +1701,23 @@ public class JSDataExchange_Arr : JSDataExchange
 
         if (elementType.ContainsGenericParameters)
         {
-            sb.AppendFormat("    var arrRet = (Array){0};\n", expVar);
-            sb.AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar);
-            sb.AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n");
-            sb.AppendFormat("        vc.datax.{0}(JSDataExchangeMgr.eSetType.Jsval, arrRet.GetValue(i));\n", getValMethod);
-            sb.AppendFormat("        arrVal[i] = vc.valTemp;\n");
-            sb.AppendFormat("    ]]\n");
-            sb.AppendFormat("    vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal)"); // no ;
+            sb.AppendFormat("    var arrRet = (Array){0};\n", expVar)
+            .AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar)
+            .AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n")
+            .AppendFormat("        vc.datax.{0}(JSDataExchangeMgr.eSetType.Jsval, arrRet.GetValue(i));\n", getValMethod)
+            .AppendFormat("        arrVal[i] = vc.valTemp;\n")
+            .AppendFormat("    ]]\n")
+            .AppendFormat("    vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal);"); // no ;
         }
         else
         {
-            sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar);
-            sb.AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar);
-            sb.AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n");
-            sb.AppendFormat("        vc.datax.{0}(JSDataExchangeMgr.eSetType.Jsval, arrRet[i]);\n", getValMethod);
-            sb.AppendFormat("        arrVal[i] = vc.valTemp;\n");
-            sb.AppendFormat("    ]]\n");
-            sb.AppendFormat("    vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal)"); // no ;
+            sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar)
+            .AppendFormat("    var arrVal = new JSApi.jsval[arrRet.Length];\n", expVar)
+            .AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n")
+            .AppendFormat("        vc.datax.{0}(JSDataExchangeMgr.eSetType.Jsval, arrRet[i]);\n", getValMethod)
+            .AppendFormat("        arrVal[i] = vc.valTemp;\n")
+            .AppendFormat("    ]]\n")
+            .AppendFormat("    vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal);"); // no ;
         }
 
         sb.Replace("[[", "{");
