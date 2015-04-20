@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "PlayerControl.javascript")]
 public class PlayerControl : MonoBehaviour
 {
 	[HideInInspector]

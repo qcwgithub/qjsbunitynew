@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "Enemy_Data.javascript")]
 public class Enemy_Data : MonoBehaviour
 {
 	public float moveSpeed = 2f;		// The speed the enemy moves at.
@@ -17,7 +16,6 @@ public class Enemy_Data : MonoBehaviour
 
 }
 
-[JsType(JsMode.Clr, "Enemy.javascript")]
 public class Enemy : Enemy_Data
 {
 	private SpriteRenderer ren;			// Reference to the sprite renderer.

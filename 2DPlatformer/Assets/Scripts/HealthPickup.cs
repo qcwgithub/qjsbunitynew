@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "HealthPickup.javascript")]
 public class HealthPickup : MonoBehaviour
 {
 	public float healthBonus;				// How much health the crate gives the player.

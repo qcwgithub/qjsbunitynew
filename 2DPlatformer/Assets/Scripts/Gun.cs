@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "Gun.javascript")]
 public class Gun : MonoBehaviour
 {
 	public GameObject rocketGO;				// Prefab of the rocket.

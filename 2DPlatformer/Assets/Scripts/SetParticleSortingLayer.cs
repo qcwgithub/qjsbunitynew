@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "SetParticleSortingLayer.javascript")]
 public class SetParticleSortingLayer : MonoBehaviour
 {
 	public string sortingLayerName;		// The name of the sorting layer the particles should be set to.

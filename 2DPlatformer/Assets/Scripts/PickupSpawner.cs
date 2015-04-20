@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "PickupSpawner.javascript")]
 public class PickupSpawner : MonoBehaviour
 {
 	public GameObject[] pickups;				// Array of pickup prefabs with the bomb pickup first and health second.

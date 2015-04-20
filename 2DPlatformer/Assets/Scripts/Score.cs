@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "Score.javascript")]
 public class Score : MonoBehaviour
 {
 	public int score = 0;					// The player's score.

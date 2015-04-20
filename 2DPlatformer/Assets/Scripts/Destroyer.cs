@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "Destroyer.javascript")]
 public class Destroyer : MonoBehaviour
 {
 	public bool destroyOnAwake;			// Whether or not this gameobject should destroyed after a delay, on Awake.

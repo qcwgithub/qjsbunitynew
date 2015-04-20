@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "Spawner.javascript")]
 public class Spawner : MonoBehaviour
 {
 	public float spawnTime = 5f;		// The amount of time between each spawn.

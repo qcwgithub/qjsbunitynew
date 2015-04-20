@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "Remover.javascript")]
 public class Remover : MonoBehaviour
 {
 	public GameObject splash;

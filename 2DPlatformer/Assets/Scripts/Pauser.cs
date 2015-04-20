@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "Pauser.javascript")]
 public class Pauser : MonoBehaviour {
 	private bool paused = false;
 	

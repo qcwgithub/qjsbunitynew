@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "BackgroundPropSpawner.javascript")]
 public class BackgroundPropSpawner : MonoBehaviour
 {
 	public Rigidbody2D backgroundProp;		// The prop to be instantiated.

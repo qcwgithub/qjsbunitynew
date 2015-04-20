@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using SharpKit.JavaScript;
 
-[JsType(JsMode.Clr, "Bomb.javascript")]
 public class Bomb : MonoBehaviour
 {
 	public float bombRadius = 10f;			// Radius within which enemies are killed.
