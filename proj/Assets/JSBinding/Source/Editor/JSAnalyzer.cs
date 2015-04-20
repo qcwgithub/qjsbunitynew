@@ -181,9 +181,9 @@ public static class JSAnalyzer
 
                     string mustBegin = "../StreamingAssets/JavaScript/";
                     int index = 0;
-                    if ((index = jsTypeAttr.filename.IndexOf(mustBegin)) >= 0)
+                    if ((index = jsTypeAttr.Filename.IndexOf(mustBegin)) >= 0)
                     {
-                        sb.AppendFormat("CS.require(\"{0}\");\n", jsTypeAttr.filename.Substring(index + mustBegin.Length));
+                        sb.AppendFormat("CS.require(\"{0}\");\n", jsTypeAttr.Filename.Substring(index + mustBegin.Length));
                     }
                     else
                     {
