@@ -177,17 +177,20 @@ public static class JSAnalyzer
                 {
                     System.Object[] attrs = t.GetCustomAttributes(typeof(JsTypeAttribute), false);
                     JsTypeAttribute jsTypeAttr = (JsTypeAttribute)attrs[0];
-                    //Debug.Log(jsTypeAttr.filename);
+                    if (jsTypeAttr.Filename != null)
+                    {
+                        //Debug.Log(jsTypeAttr.filename);
 
-                    string mustBegin = "../StreamingAssets/JavaScript/";
-                    int index = 0;
-                    if ((index = jsTypeAttr.Filename.IndexOf(mustBegin)) >= 0)
-                    {
-                        sb.AppendFormat("CS.require(\"{0}\");\n", jsTypeAttr.Filename.Substring(index + mustBegin.Length));
-                    }
-                    else
-                    {
-                        Debug.LogError(JSNameMgr.GetTypeFullName(t) + " is ignored because JsType.filename doesn't contain \""+ mustBegin + "\"");
+                        string mustBegin = "../StreamingAssets/JavaScript/";
+                        int index = 0;
+                        if ((index = jsTypeAttr.Filename.IndexOf(mustBegin)) >= 0)
+                        {
+                            sb.AppendFormat("CS.require(\"{0}\");\n", jsTypeAttr.Filename.Substring(index + mustBegin.Length));
+                        }
+                        else
+                        {
+                            Debug.LogError(JSNameMgr.GetTypeFullName(t) + " is ignored because JsType.filename doesn't contain \"" + mustBegin + "\"");
+                        }
                     }
                 }
             }

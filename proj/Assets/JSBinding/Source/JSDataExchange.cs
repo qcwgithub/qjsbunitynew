@@ -255,11 +255,15 @@ public class JSDataExchangeMgr
                     jsval val = new jsval();
                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
-                    if (__nativeObj == IntPtr.Zero)
-                        return null;
-
-                    object csObj = JSMgr.getCSObj(__nativeObj);
-                    return csObj;
+                    if (__nativeObj != IntPtr.Zero)
+                    {
+                        object csObj = JSMgr.getCSObj(__nativeObj);
+                        return csObj;
+                    }
+                    else
+                    {
+                        return new CSRepresentedObject(jsObj);
+                    }
                 }
                 break;
             case eGetType.GetARGVRefOut:
@@ -274,11 +278,15 @@ public class JSDataExchangeMgr
 
                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
-                    if (__nativeObj == IntPtr.Zero)
-                        return null;
-
-                    object csObj = JSMgr.getCSObj(__nativeObj);
-                    return csObj;
+                    if (__nativeObj != IntPtr.Zero)
+                    {
+                        object csObj = JSMgr.getCSObj(__nativeObj);
+                        return csObj;
+                    }
+                    else
+                    {
+                        return new CSRepresentedObject(jsObj);
+                    }
                 }
                 break;
             case eGetType.Jsval:
@@ -293,11 +301,15 @@ public class JSDataExchangeMgr
 
                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
-                    if (__nativeObj == IntPtr.Zero)
-                        return null;
-
-                    object csObj = JSMgr.getCSObj(__nativeObj);
-                    return csObj;
+                    if (__nativeObj != IntPtr.Zero)
+                    {
+                        object csObj = JSMgr.getCSObj(__nativeObj);
+                        return csObj;
+                    }
+                    else
+                    {
+                        return new CSRepresentedObject(jsObj);
+                    }
                 }
                 break;
             default:
@@ -859,30 +871,37 @@ public class JSDataExchangeMgr
                         }
                         else
                         {
-                            //
-                            // 返回给JS的对象：需要 prototype
-                            // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
-                            //
-                            string typeName = JSNameMgr.GetJSTypeFullName(csType);
-                            IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
-                            if (jstypeObj != IntPtr.Zero)
+                            if (csObj is CSRepresentedObject)
                             {
-                                jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
-
-                                // __nativeObj
-                                IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-                                JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
-
-                                // jsObj.__nativeObj = __nativeObj
-                                jsval val = new jsval();
-                                JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
-                                JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-
-                                JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
+                                JSApi.JSh_SetJsvalObject(ref vc.valReturn, ((CSRepresentedObject)csObj).jsObj);
                             }
                             else
                             {
-                                Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
+                                //
+                                // 返回给JS的对象：需要 prototype
+                                // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
+                                //
+                                string typeName = JSNameMgr.GetJSTypeFullName(csType);
+                                IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
+                                if (jstypeObj != IntPtr.Zero)
+                                {
+                                    jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+
+                                    // __nativeObj
+                                    IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
+                                    JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
+
+                                    // jsObj.__nativeObj = __nativeObj
+                                    jsval val = new jsval();
+                                    JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
+                                    JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+
+                                    JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
+                                }
+                                else
+                                {
+                                    Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
+                                }
                             }
                         }
                     }
@@ -914,36 +933,45 @@ public class JSDataExchangeMgr
                         }
                         else
                         {
-                            // csObj must not be null
-                            IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSNameMgr.GetTypeFullName(csObj.GetType()));
-                            if (jstypeObj != IntPtr.Zero)
+                            if (csObj is CSRepresentedObject)
                             {
-                                // 1)
-                                // jsObj: prototype  
-                                // __nativeObj: csObj + finalizer
-                                // 
-                                jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
-                                // __nativeObj
-                                IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-                                JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
-
-                                //
-                                // 2)
-                                // jsObj.__nativeObj = __nativeObj
-                                //
-                                JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
-                                JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-
-                                // 3)
-                                // argvObj.Value = jsObj
-                                //
-                                JSApi.JSh_SetJsvalObject(ref val, jsObj);
+                                JSApi.JSh_SetJsvalObject(ref val, ((CSRepresentedObject)csObj).jsObj);
                                 JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
                                 success = true;
                             }
                             else
                             {
-                                Debug.LogError("Return a \"" + JSNameMgr.GetTypeFullName(csObj.GetType()) + "\" to JS failed. Did you forget to export that class?");
+                                // csObj must not be null
+                                IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSNameMgr.GetTypeFullName(csObj.GetType()));
+                                if (jstypeObj != IntPtr.Zero)
+                                {
+                                    // 1)
+                                    // jsObj: prototype  
+                                    // __nativeObj: csObj + finalizer
+                                    // 
+                                    jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+                                    // __nativeObj
+                                    IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
+                                    JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
+
+                                    //
+                                    // 2)
+                                    // jsObj.__nativeObj = __nativeObj
+                                    //
+                                    JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
+                                    JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+
+                                    // 3)
+                                    // argvObj.Value = jsObj
+                                    //
+                                    JSApi.JSh_SetJsvalObject(ref val, jsObj);
+                                    JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
+                                    success = true;
+                                }
+                                else
+                                {
+                                    Debug.LogError("Return a \"" + JSNameMgr.GetTypeFullName(csObj.GetType()) + "\" to JS failed. Did you forget to export that class?");
+                                }
                             }
                         }
 
@@ -1133,6 +1161,10 @@ public class JSDataExchangeMgr
             {
                 Debug.LogError("GetType of \"" + typeName + "\" is null. Did you export that class to JavaScript?");
             }
+        }
+        if (t == null)
+        {
+            return typeof(CSRepresentedObject);
         }
         return t;
     }
@@ -1439,7 +1471,7 @@ public class JSDataExchangeMgr
             else
                 Debug.LogError("444 Unknown primitive type");
         }
-        else if (type.IsGenericParameter)
+        else if (type == typeof(System.Object) || type.IsGenericParameter)
             ret = "Whatever";
         else
             ret = "Object";
@@ -1460,6 +1492,7 @@ public class JSDataExchangeMgr
     }
 }
 
+// TODO: delete
 public class JSDataExchange 
 {
     // get value from param
@@ -1725,4 +1758,18 @@ public class JSDataExchange_Arr : JSDataExchange
 
         return sb.ToString();
     }
+}
+
+/*
+ * class defined in JS
+ * use this class to represent that object
+ * it can be transfered between js<->c#
+ * but no member functions are available
+ */
+public class CSRepresentedObject
+{
+    public CSRepresentedObject(IntPtr jsObj) {
+        this.jsObj = jsObj;
+    }
+    public IntPtr jsObj;
 }
