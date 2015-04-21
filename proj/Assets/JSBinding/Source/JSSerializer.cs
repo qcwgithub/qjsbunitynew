@@ -189,17 +189,25 @@ public class JSSerializer : MonoBehaviour
                     break;
                 case SType.Struct:
                     {
-                        IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(this.typeName);
-                        if (jstypeObj == IntPtr.Zero)
+                        /*
+                         * 这里的过程比较复杂，可以同时支持在 CS 里的类和 JS 里的类
+                         * 以 Vector3 为例，会先调用 UnityEngine.Vector3.ctor 创建对象，他是C#的类，所以实际会走到C#去生成对象
+                         * 后面调用 SetUCProperty 时，也会触发 JS 的 property，实际也是调用到C#去了
+                         * 
+                         * 如果不是 C# 的类，那么新建类对象和SetUCProperty都不会走到C#来，在JS中完成
+                         */
+                        JSApi.jsval valParam = new JSApi.jsval(); valParam.asBits = 0;
+                        JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam, this.typeName);
+                        JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[]{valParam}, ref JSMgr.vCall.rvalCallJS);
+                        IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
+                        if (jsObj == IntPtr.Zero)
                         {
-                            Debug.LogError("JSSerialize fail. New object \"" + this.typeName + "\" fail, did you forget to export that class?");
-                            this.val.asBits = 0;
+                            Debug.LogError("Serialize error: call \"" + this.typeName + "\".ctor return null, , did you forget to export that class?");
+                            JSApi.JSh_SetJsvalUndefined(ref this.val);
                         }
                         else
                         {
-                            // 这里有问题
-                            // 如果
-                            IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
+                            //IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
                             for (var i = 0; i < lstChildren.Count; i++)
                             {
                                 var child = lstChildren[i];
@@ -208,6 +216,45 @@ public class JSSerializer : MonoBehaviour
                             }
                             JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
                         }
+                        
+                        /*
+                        IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(this.typeName);
+                        if (jstypeObj == IntPtr.Zero)
+                        {
+                            Debug.LogError("JSSerialize fail. New object \"" + this.typeName + "\" fail, did you forget to export that class?");
+                            this.val.asBits = 0;
+                        }
+                        else
+                        {
+                            JSApi.jsval valFun; valFun.asBits = 0;
+                            JSApi.GetProperty(JSMgr.cx, jstypeObj, "ctor", -1, ref valFun);
+                            if (valFun.asBits == 0 || JSApi.JSh_JsvalIsNullOrUndefined(ref valFun))
+                            {
+                                Debug.LogError("Serialize error: " + this.typeName + ".ctor is not a function");
+                                JSApi.JSh_SetJsvalUndefined(ref this.val);
+                            }
+                            else
+                            {
+                                JSMgr.vCall.CallJSFunctionValue(jstypeObj, ref valFun);
+                                IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
+                                if (jsObj == IntPtr.Zero)
+                                {
+                                    Debug.LogError("Serialize error: call " + this.typeName + ".ctor return null");
+                                    JSApi.JSh_SetJsvalUndefined(ref this.val);
+                                }
+                                else
+                                {
+                                    //IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null);// JSMgr.mjsFinalizer);
+                                    for (var i = 0; i < lstChildren.Count; i++)
+                                    {
+                                        var child = lstChildren[i];
+                                        JSApi.jsval mVal = child.CalcJSVal();
+                                        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, child.name, -1, ref mVal);
+                                    }
+                                    JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
+                                }
+                            }
+                        }*/
                     }
                     break;
                 case SType.List:

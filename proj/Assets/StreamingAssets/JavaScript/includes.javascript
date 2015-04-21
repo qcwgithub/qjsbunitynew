@@ -1,13 +1,1 @@
-CS.require("SharpKitGenerated/Scripts/DebugMessages.javascript");
-CS.require("SharpKitGenerated/Scripts/Message.javascript");
-CS.require("SharpKitGenerated/Scripts/MuchTweenSoWow.javascript");
-CS.require("SharpKitGenerated/Scripts/TestEasingFunctions.javascript");
-CS.require("SharpKitGenerated/Scripts/TestFPS.javascript");
-CS.require("SharpKitGenerated/Scripts/TestHighConcurrency.javascript");
-CS.require("SharpKitGenerated/Scripts/TestHighConcurrencyGroup.javascript");
-CS.require("SharpKitGenerated/Scripts/TestShakeObject.javascript");
-CS.require("SharpKitGenerated/Scripts/TestSlinky.javascript");
-CS.require("SharpKitGenerated/Scripts/TestSplineTween.javascript");
 CS.require("SharpKitGenerated/Test1.javascript");
-CS.require("SharpKitGenerated/FApple.javascript");
-CS.require("SharpKitGenerated/Test2.javascript");

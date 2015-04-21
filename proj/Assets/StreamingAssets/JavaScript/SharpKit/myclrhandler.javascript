@@ -47,3 +47,17 @@ function jsb_NewObject(name)
     }
     return undefined;
 }
+
+function jsb_CallObjectCtor(name)
+{
+    var arr = name.split(".");
+    var obj = this;
+    arr.forEach(function (a) {
+        if (obj)
+            obj = obj[a];
+    });
+    if (obj && obj.ctor) {
+        return new obj.ctor();
+    }
+    return undefined;
+}
