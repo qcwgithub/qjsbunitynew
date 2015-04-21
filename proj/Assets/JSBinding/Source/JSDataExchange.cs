@@ -1145,7 +1145,7 @@ public class JSDataExchangeMgr
 //    }
 
     static Dictionary<string, Type> typeCache = new Dictionary<string,Type>();
-    public static Type GetTypeByName(string typeName)
+    public static Type GetTypeByName(string typeName, Type defaultType = null)
     {
         Type t = null;
         if (!typeCache.TryGetValue(typeName, out t))
@@ -1157,14 +1157,14 @@ public class JSDataExchangeMgr
                     break;
             }
             typeCache[typeName] = t; // perhaps null
-            if (t == null)
-            {
-                Debug.LogError("GetType of \"" + typeName + "\" is null. Did you export that class to JavaScript?");
-            }
+            //if (t == null)
+            //{
+            //    Debug.LogError("GetType of \"" + typeName + "\" is null. Did you export that class to JavaScript?");
+            //}
         }
         if (t == null)
         {
-            return typeof(CSRepresentedObject);
+            return defaultType;// typeof(CSRepresentedObject);
         }
         return t;
     }
@@ -1297,7 +1297,7 @@ public class JSDataExchangeMgr
             for (int i = 0; i < TCount; i++)
             {
                 // Get generic types from js.
-                System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV));
+                System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV), typeof(CSRepresentedObject));
                 genericTypes[i] = t;
                 if (t == null)
                 {
@@ -1351,7 +1351,7 @@ public class JSDataExchangeMgr
         for (int i = 0; i < TCount; i++)
         {
             // Get generic types from js.
-            System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV));
+            System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV, typeof(CSRepresentedObject)));
             genericTypes[i] = t;
             if (t == null)
             {
