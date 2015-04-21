@@ -612,6 +612,14 @@ public static class JSMgr
         ti.properties = type.GetProperties(BindingFlagsProperty);
         ti.methods = type.GetMethods(BindingFlagsMethod);
         ti.constructors = type.GetConstructors();
+        if (JSBindingSettings.IsGeneratedDefaultConstructor(type))
+        {
+            // 表示默认构造函数！
+            var l = new List<ConstructorInfo>();
+            l.Add(null);
+            l.AddRange(ti.constructors);
+            ti.constructors = l.ToArray();
+        }
         ti.howmanyConstructors = ti.constructors.Length;
 
         FilterTypeInfo(type, ti);
@@ -707,6 +715,12 @@ public static class JSMgr
 
         for (int i = 0; i < ti.constructors.Length; i++)
         {
+            if (ti.constructors[i] == null)
+            {
+                lstCons.Add(new ConstructorInfoAndIndex(null, i));
+                continue;
+            }
+
             // don't generate MonoBehaviour constructor
             if (type == typeof(UnityEngine.MonoBehaviour)) { 
                 continue;  

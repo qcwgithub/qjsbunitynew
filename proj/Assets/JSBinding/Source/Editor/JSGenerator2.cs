@@ -254,12 +254,12 @@ _jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
         for (int i = 0; i < constructors.Length; i++)
         {
             ConstructorInfo con = constructors[i];
-            ParameterInfo[] ps = con.GetParameters();
+            ParameterInfo[] ps = con == null? new ParameterInfo[0] : con.GetParameters();
 
             argActual.Clear().Add(
                 (int)JSVCall.Oper.CONSTRUCTOR, // OP
-                slot, 
-                i, 
+                slot,
+                i,  // 注意
                 "true", // IsStatics
                 "false" // IsOverloaded
                 );
@@ -285,7 +285,7 @@ _jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
                 argActual.Add("a" + j.ToString());
             }
             sb.AppendFormat(fmt, 
-                SharpKitMethodName("ctor", ps, (type.IsValueType || howmanyConstructors > 1)), // [0]
+                SharpKitMethodName("ctor", ps, howmanyConstructors > 1), // [0]
                 argFormal,    // [1]
                 argActual,    // [2]
                 thisString);  // [3] thisString

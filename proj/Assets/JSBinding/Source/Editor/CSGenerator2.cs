@@ -810,7 +810,7 @@ static bool {0}(JSVCall vc, int start, int count)
 ]]
 ";
         StringBuilder sb = new StringBuilder();
-        if (constructors.Length == 0 && JSBindingSettings.IsGeneratedDefaultConstructor(type) &&
+        /*if (constructors.Length == 0 && JSBindingSettings.IsGeneratedDefaultConstructor(type) &&
             (type.IsValueType || (type.IsClass && !type.IsAbstract && !type.IsInterface)))
         {
             int olIndex = 1;
@@ -822,33 +822,60 @@ static bool {0}(JSVCall vc, int start, int count)
 
             ccbn.constructors.Add(functionName);
             ccbn.constructorsCSParam.Add(GenListCSParam2(new ParameterInfo[0]).ToString());        
+        }*/
+
+        // 如果产生默认的构造函数，后续的索引都加1
+        int deltaIndex = 0;
+
+        if (JSBindingSettings.IsGeneratedDefaultConstructor(type))
+        {
+            deltaIndex = 1;
+
         }
 
         for (int i = 0; i < constructors.Length; i++)
         {
             ConstructorInfo cons = constructors[i];
-            ParameterInfo[] paramS = cons.GetParameters();
 
-            int olIndex = i + 1; // for constuctors, they are always overloaded
-            bool returnVoid = false;
-
-            for (int j = 0; j < paramS.Length; j++)
+            if (cons == null)
             {
-                //if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
-                if(JSDataExchangeEditor.IsDelegateDerived(paramS[j].ParameterType))
-                {
-                    StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, cons, paramS[j].ParameterType, i, j);
-                    sb.Append(sbD);
-                }
+                // this is default constructor
+
+                bool returnVoid = false;
+                string functionName = type.Name + "_" + type.Name + "1";
+
+                sb.AppendFormat(fmt, functionName,
+                    BuildNormalFunctionCall(0, new ParameterInfo[0], type.Name, type.Name, false, returnVoid, null, true));
+
+                ccbn.constructors.Add(functionName);
+                ccbn.constructorsCSParam.Add(GenListCSParam2(new ParameterInfo[0]).ToString());
             }
+            else
+            {
 
-            string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : ""));
+                ParameterInfo[] paramS = cons.GetParameters();
 
-            sb.AppendFormat(fmt, functionName,
-                BuildNormalFunctionCall(i, paramS, type.Name, cons.Name, cons.IsStatic, returnVoid, null, true, 0, constructorsIndex[i]));
+                int olIndex = i + 1; // for constuctors, they are always overloaded
+                bool returnVoid = false;
 
-            ccbn.constructors.Add(functionName);
-            ccbn.constructorsCSParam.Add(GenListCSParam2(paramS).ToString());
+                for (int j = 0; j < paramS.Length; j++)
+                {
+                    //if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
+                    if (JSDataExchangeEditor.IsDelegateDerived(paramS[j].ParameterType))
+                    {
+                        StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, cons, paramS[j].ParameterType, i, j);
+                        sb.Append(sbD);
+                    }
+                }
+
+                string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : ""));
+
+                sb.AppendFormat(fmt, functionName,
+                    BuildNormalFunctionCall(i + deltaIndex, paramS, type.Name, cons.Name, cons.IsStatic, returnVoid, null, true, 0, constructorsIndex[i]));
+
+                ccbn.constructors.Add(functionName);
+                ccbn.constructorsCSParam.Add(GenListCSParam2(paramS).ToString());
+            }
         }
         return sb;
     }
@@ -1017,7 +1044,7 @@ public static void __Register()
                 sbCons.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{2}', {1}),\n", ccbn.constructors[i],
                     //ccbn.constructorsCSParam[i], 
                     "null", 
-                    ti.constructors[i].Name);
+                    ti.constructors[i] == null ? ".ctor" : ti.constructors[i].Name);
         }
         for (int i = 0; i < ccbn.methods.Count; i++)
         {

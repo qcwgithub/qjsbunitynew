@@ -739,22 +739,22 @@ public class JSBindingSettings
         
         typeof(List<>), 
         typeof(List<>.Enumerator), 
-        typeof(TweenReflectionExtensions),
-        typeof(TweenTransformExtensions),
-        typeof(TweenComponentExtensions),
-        typeof(TweenCallbackExtensions),
-        typeof(DaikonForge.Tween.Tween<>),
-        typeof(DaikonForge.Tween.TweenBase),
-        typeof(DaikonForge.Tween.TweenShake),
-        typeof(DaikonForge.Tween.Interpolation.Interpolator<>),
-        typeof(DaikonForge.Tween.Interpolation.EulerInterpolator),
-        typeof(DaikonForge.Tween.TweenEasingFunctions),
-        typeof(DaikonForge.Tween.TweenTimeline),
-        typeof(TweenTextExtensions),
+        //typeof(TweenReflectionExtensions),
+        //typeof(TweenTransformExtensions),
+        //typeof(TweenComponentExtensions),
+        //typeof(TweenCallbackExtensions),
+        //typeof(DaikonForge.Tween.Tween<>),
+        //typeof(DaikonForge.Tween.TweenBase),
+        //typeof(DaikonForge.Tween.TweenShake),
+        //typeof(DaikonForge.Tween.Interpolation.Interpolator<>),
+        //typeof(DaikonForge.Tween.Interpolation.EulerInterpolator),
+        //typeof(DaikonForge.Tween.TweenEasingFunctions),
+        //typeof(DaikonForge.Tween.TweenTimeline),
+        //typeof(TweenTextExtensions),
         //typeof(DaikonForge.Tween.SplineObject),
         typeof(System.Delegate),
         typeof(System.MulticastDelegate),
-        typeof(DaikonForge.Tween.TweenEasingCallback),
+        //typeof(DaikonForge.Tween.TweenEasingCallback),
     };
 
     
@@ -808,7 +808,36 @@ public class JSBindingSettings
     {
         if (typeof(Delegate).IsAssignableFrom(type))
             return false;
-        return type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).Length == 0;
+
+        // 如果有定义非Public的构造函数存在，就不要生成默认的构造函数
+        // 再检查参数个数，如果为0才算？
+        if (type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).Length != 0)
+            return false;
+
+        //foreach (var c in type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance))
+        //{
+            // 如果已经有不含参数的构造函数了，就不要生成了
+        //    if (c.GetParameters().Length == 0)
+        //        return false;
+        //}
+
+        if (type.IsClass && (type.IsAbstract || type.IsInterface))
+            return false;
+
+        if (type.IsClass)
+        {
+            return type.GetConstructors().Length == 0;
+        }
+        else
+        {
+            foreach (var c in type.GetConstructors())
+            {
+                // 如果已经有不含参数的构造函数了，就不要生成了
+                if (c.GetParameters().Length == 0)
+                    return false;
+            }
+            return true;
+        }
 
 //if (type == typeof(Coroutine)
 //    || type == typeof(CrashReport)

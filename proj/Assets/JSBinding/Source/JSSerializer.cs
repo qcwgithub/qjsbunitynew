@@ -197,6 +197,8 @@ public class JSSerializer : MonoBehaviour
                         }
                         else
                         {
+                            // 这里有问题
+                            // 如果
                             IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
                             for (var i = 0; i < lstChildren.Count; i++)
                             {
