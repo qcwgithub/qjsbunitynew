@@ -78,6 +78,7 @@ MonoBehaviour:
   - SharpKit/jsclr
   - SharpKit/clrlibrary
   - SharpKit/myclrhandler
+  - ErrorHandler
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
