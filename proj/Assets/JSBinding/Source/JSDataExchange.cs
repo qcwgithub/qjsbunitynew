@@ -1351,7 +1351,7 @@ public class JSDataExchangeMgr
         for (int i = 0; i < TCount; i++)
         {
             // Get generic types from js.
-            System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV, typeof(CSRepresentedObject)));
+            System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV), typeof(CSRepresentedObject));
             genericTypes[i] = t;
             if (t == null)
             {
