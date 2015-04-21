@@ -1,0 +1,35 @@
+﻿using SharpKit.JavaScript;
+using System;
+using UnityEngine;
+using System.Collections;
+
+[JsType(JsMode.Clr, "../../StreamingAssets/JavaScript/SharpKitGenerated/Serialization/SerializeStruct.javascript")]
+public class SerializeStruct : MonoBehaviour
+{
+    [System.Serializable]
+    public struct AppleInfo
+    {
+        public int age;
+        public GameObject go;
+        public string firstName;
+        public bool doYouLoveMe;
+    }
+    public AppleInfo appleInfo;
+
+    void Start()
+    {
+        Debug.Log("age: " + appleInfo.age);
+        if (appleInfo.go != null)
+            Debug.Log("go: " + appleInfo.go.name);
+        else
+            Debug.Log("go: null");
+        Debug.Log("firstName: " + appleInfo.firstName);
+        Debug.Log("doYouLoveMe: " + (appleInfo.doYouLoveMe ? "true" : "false"));
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+}
