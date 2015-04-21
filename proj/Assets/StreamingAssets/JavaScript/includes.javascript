@@ -1,1 +1,1 @@
-CS.require("SharpKitGenerated/Test1.javascript");
+CS.require("SharpKitGenerated/Serialization/SerializeSimple.javascript");
