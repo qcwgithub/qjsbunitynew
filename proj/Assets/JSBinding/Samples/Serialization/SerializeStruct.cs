@@ -1,14 +1,16 @@
-﻿using SharpKit.JavaScript;
+using SharpKit.JavaScript;
 using System;
 using UnityEngine;
 using System.Collections;
 
-[JsType(JsMode.Clr, "../../StreamingAssets/JavaScript/SharpKitGenerated/Serialization/SerializeStruct.javascript")]
+[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/Serialization/SerializeStruct.javascript")]
 public class SerializeStruct : MonoBehaviour
 {
     [System.Serializable]
+
+//[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/Serialization/AppleInfo.javascript")]
     public struct AppleInfo
-    {
+    { 
         public int age;
         public GameObject go;
         public string firstName;

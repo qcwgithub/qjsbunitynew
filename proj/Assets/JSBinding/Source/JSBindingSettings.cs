@@ -755,6 +755,7 @@ public class JSBindingSettings
         typeof(System.Delegate),
         typeof(System.MulticastDelegate),
         //typeof(DaikonForge.Tween.TweenEasingCallback),
+        typeof(SerializeStruct.AppleInfo),
     };
 
     

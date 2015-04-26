@@ -105,6 +105,11 @@ public class UnityEngineManual
         {
             return true;
         }
+        // 当 源文件还未从工程中删除时这个有用
+        if (type.GetCustomAttributes(typeof(SharpKit.JavaScript.JsTypeAttribute), false).Length > 0)
+        {
+            return false;
+        }
         return !typeof(MonoBehaviour).IsAssignableFrom(type);
     }
 
