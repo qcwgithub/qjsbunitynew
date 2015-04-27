@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
@@ -358,13 +358,13 @@ public static class JSAnalyzer
     static bool matched = false;
     static bool addjstype = true;
 
-    [MenuItem("JSB/Tool/Delete JsType Attribute for all files in Src Folder(Beta)")]
+    [MenuItem("JSB/Tool/Delete JsType Attribute for all structs and classes")]
     public static void DelJsTypeAttributeInSrc()
     {
         addjstype = false;
         MakeJsTypeAttributeInSrc();
     }
-    [MenuItem("JSB/Tool/Add JsType Attribute for all files in Src Folder(Beta)")]
+    [MenuItem("JSB/Tool/Add JsType Attribute for all structs and classes")]
     public static void AddJsTypeAttributeInSrc()
     {
         addjstype = true;
@@ -372,12 +372,64 @@ public static class JSAnalyzer
     }
     public static void MakeJsTypeAttributeInSrc()
     {
-        string srcFolder = Application.dataPath + "/Src";
+        GameObject goEngine = GameObject.Find("_JSEngine");
+        JSEngine jsEngine = goEngine != null ? goEngine.GetComponent<JSEngine>() : null;
+        if (jsEngine == null)
+        {
+            Debug.LogError("No JSEngine GameObject found in current scene, find a prefab named \"_JSEngine\" and drag it to current scene.");
+            return;
+        }
+
+        bool bContinue = EditorUtility.DisplayDialog("Tip",
+            "Make sure you have made proper settings to JSEngine.DirectoriesNotExport field before this action.",
+            "Continue",
+            "Cancel");
+
+        if (!bContinue)
+        {
+            Debug.Log("Operation canceled.");
+            return;
+        }
+
+        var sb = new StringBuilder();
+        sb.Append("files to handle:\n-----------------------------------------\n");
+        string srcFolder = Application.dataPath.Replace('\\', '/');
         string[] files = Directory.GetFiles(srcFolder, "*.cs", SearchOption.AllDirectories);
+        List<string> lstFiles = new List<string>();
         foreach (var f in files)
         {
             var path = f.Replace('\\', '/');
+            var subPath = path.Substring(srcFolder.Length + 1);
+            bool export = true;
+            foreach (string dir in jsEngine.DirectoriesNotToExport)
+            {
+                if (subPath.IndexOf(dir) == 0)
+                {
+                    export = false;
+                    break;
+                }
+            }
+            if (!export && jsEngine.DirectoriesToExport != null)
+            {
+                foreach (string dir in jsEngine.DirectoriesToExport)
+                {
+                    if (subPath.IndexOf(dir) == 0)
+                    {
+                        export = true;
+                        break;
+                    }
+                }
+            }
+            if (export)
+            {
+                sb.Append(subPath + "\n");
+                lstFiles.Add(path);
+            }
+        }
+        Debug.Log(sb);
 
+        foreach (string path in lstFiles)
+        {
             matched = false;
             nextPath = path.Substring(srcFolder.Length + 1, path.LastIndexOf('/') - srcFolder.Length);
             //Debug.Log(path+" -> "+nextPath);

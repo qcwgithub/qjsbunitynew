@@ -21,6 +21,8 @@ public class JSEngineInspector : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("GCInterval"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("jsLoader"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("InitLoadScripts"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("DirectoriesNotToExport"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("DirectoriesToExport"), true);
 
         EditorGUILayout.HelpBox(@"1. Check 'Debug' to enable js debugging with Firefox.
 2. Add 'ErrorHandler' to InitLoadScripts to enable printing calling stack on error.
