@@ -9,6 +9,7 @@ public class SerializeStruct : MonoBehaviour
     [System.Serializable]
 
 //[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/Serialization/AppleInfo.javascript")]
+
 [JsType(JsMode.Clr,"../../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Serialization/AppleInfo.javascript")]
     public struct AppleInfo
     { 

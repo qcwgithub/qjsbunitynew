@@ -76,6 +76,7 @@ MonoBehaviour:
   - includes
   DirectoriesNotToExport:
   - JSBinding/
+  - Stealth/
   DirectoriesToExport:
   - JSBinding/Samples/
 --- !u!114 &11400002

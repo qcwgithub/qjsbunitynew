@@ -207,58 +207,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
---- !u!1 &640072853
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 100000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 1344338890}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 640072854}
-  - 114: {fileID: 640072855}
-  m_Layer: 0
-  m_Name: _JSEngine
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &640072854
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 1344338890}
-  m_GameObject: {fileID: 640072853}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1920571567}
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
---- !u!114 &640072855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400000, guid: e06934f7bc4aaa444b6e96140e1b77e9,
-    type: 2}
-  m_PrefabInternal: {fileID: 1344338890}
-  m_GameObject: {fileID: 640072853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d134e75bc11fdf04fada25deba19d0b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debug: 1
-  port: 5086
-  GCInterval: 1
-  jsLoader: {fileID: 1920571566}
-  InitLoadScripts:
-  - includes
-  DirectoriesNotToExport:
-  - JSBinding/
-  DirectoriesToExport:
-  - JSBinding/Samples/
---- !u!1001 &1344338890
+--- !u!1001 &561673635
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -306,11 +255,63 @@ Prefab:
   m_RootGameObject: {fileID: 640072853}
   m_IsPrefabParent: 0
   m_IsExploded: 1
+--- !u!1 &640072853
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 100000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
+  m_PrefabInternal: {fileID: 561673635}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 640072854}
+  - 114: {fileID: 640072855}
+  m_Layer: 0
+  m_Name: _JSEngine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &640072854
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
+  m_PrefabInternal: {fileID: 561673635}
+  m_GameObject: {fileID: 640072853}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1920571567}
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+--- !u!114 &640072855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400000, guid: e06934f7bc4aaa444b6e96140e1b77e9,
+    type: 2}
+  m_PrefabInternal: {fileID: 561673635}
+  m_GameObject: {fileID: 640072853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d134e75bc11fdf04fada25deba19d0b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debug: 1
+  port: 5086
+  GCInterval: 1
+  jsLoader: {fileID: 1920571566}
+  InitLoadScripts:
+  - includes
+  DirectoriesNotToExport:
+  - JSBinding/
+  - Stealth/
+  DirectoriesToExport:
+  - JSBinding/Samples/
 --- !u!1 &1920571565
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100002, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 1344338890}
+  m_PrefabInternal: {fileID: 561673635}
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1920571567}
@@ -327,7 +328,7 @@ MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400002, guid: e06934f7bc4aaa444b6e96140e1b77e9,
     type: 2}
-  m_PrefabInternal: {fileID: 1344338890}
+  m_PrefabInternal: {fileID: 561673635}
   m_GameObject: {fileID: 1920571565}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -338,7 +339,7 @@ MonoBehaviour:
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 400002, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 1344338890}
+  m_PrefabInternal: {fileID: 561673635}
   m_GameObject: {fileID: 1920571565}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
