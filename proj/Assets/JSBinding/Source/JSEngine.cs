@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,6 +28,14 @@ public class JSEngine : MonoBehaviour
     [NonSerialized]
     public bool OutputFullCallingStackOnError = false;
     public string[] InitLoadScripts = new string[0];
+
+    /*
+     * Formular:
+     * All files - DirectoriesNotExport + DirectoriesExport = Files to export to js
+     * see JSAnalyzer.MakeJsTypeAttributeInSrc for more information
+     */
+    public List<string> DirectoriesNotToExport;
+    public List<string> DirectoriesToExport;
 
     public void OnInitJSEngine(bool bSuccess)
     {
