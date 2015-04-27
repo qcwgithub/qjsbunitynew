@@ -1116,10 +1116,14 @@ public class JSVCall
 			}
 
             this.csObj = JSMgr.getCSObj(jsObj);
-			if (this.csObj == null) {
-				throw(new Exception("Invalid this csObj"));
-                return JSApi.JS_FALSE;
-			}
+            //
+            // for manual js code
+            // this.csObj will be null
+            //
+			//if (this.csObj == null) {
+			//	throw(new Exception("Invalid this csObj"));
+            //    return JSApi.JS_FALSE;
+			//}
 
             currentParamCount++;
         }

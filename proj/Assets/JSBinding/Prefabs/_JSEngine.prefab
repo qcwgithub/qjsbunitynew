@@ -73,12 +73,7 @@ MonoBehaviour:
   GCInterval: 1
   jsLoader: {fileID: 11400002}
   InitLoadScripts:
-  - Utilities
   - includes
-  - SharpKit/jsclr
-  - SharpKit/clrlibrary
-  - SharpKit/myclrhandler
-  - ErrorHandler
   DirectoriesNotToExport:
   - JSBinding/
   DirectoriesToExport:
