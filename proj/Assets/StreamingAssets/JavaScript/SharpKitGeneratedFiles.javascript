@@ -6,4 +6,4 @@
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/SerializeSimple.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/SerializeStruct.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/AppleInfo.javascript");
-CS.require("SharpKitGenerated/Src/Test1.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/V3Test.javascript");

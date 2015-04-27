@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using System.Collections;
 
-[JsType(JsMode.Clr,"../../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Serialization/SerializeSimple.javascript")]
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Serialization/SerializeSimple.javascript")]
 public class SerializeSimple : MonoBehaviour 
 {
     public int age;
