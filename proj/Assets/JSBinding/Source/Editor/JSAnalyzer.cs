@@ -334,7 +334,7 @@ public static class JSAnalyzer
         var sb = new StringBuilder();
         if (addjstype)
         {
-            var lastDir = "../";
+            var lastDir = "";
             {
                 int i = 0;
                 var np = nextPath;
@@ -437,6 +437,9 @@ public static class JSAnalyzer
         foreach (string path in lstFiles)
         {
             matched = false;
+			// E:/code/qjsbunitynew/proj/Assets/JSBinding/Samples/Serialization/SerializeSimple.cs
+			// ->
+			// JSBinding/Samples/
             nextPath = path.Substring(srcFolder.Length + 1, path.LastIndexOf('/') - srcFolder.Length);
             //Debug.Log(path+" -> "+nextPath);
 
