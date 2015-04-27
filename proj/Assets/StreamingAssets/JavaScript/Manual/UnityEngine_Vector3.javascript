@@ -1,7 +1,7 @@
 _jstype = undefined;
-for (var i = 0; i < JsType.length; i++) {
-    if (JsType[i].fullname == "UnityEngine.Vector3") {
-        _jstype = JsType[i];
+for (var i = 0; i < JsTypes.length; i++) {
+    if (JsTypes[i].fullname == "UnityEngine.Vector3") {
+        _jstype = JsTypes[i];
         break;
     }
 }
@@ -18,6 +18,10 @@ for (var i = 0; i < JsType.length; i++) {
 //    fullname: "UnityEngine.Vector3",
 //    baseTypeName: "System.ValueType"
 //};
+
+_jstype.staticDefinition = _jstype.staticDefinition || {};
+_jstype.definition = _jstype.definition || {};
+
 
 _jstype.staticDefinition.New = function(x, y, z) {
     var ret = new UnityEngine.Vector3.ctor$$Single$$Single$$Single(x, y, z);
