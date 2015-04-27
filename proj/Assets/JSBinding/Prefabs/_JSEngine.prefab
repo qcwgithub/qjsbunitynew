@@ -79,6 +79,10 @@ MonoBehaviour:
   - SharpKit/clrlibrary
   - SharpKit/myclrhandler
   - ErrorHandler
+  DirectoriesNotToExport:
+  - JSBinding/
+  DirectoriesToExport:
+  - JSBinding/Samples/
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
