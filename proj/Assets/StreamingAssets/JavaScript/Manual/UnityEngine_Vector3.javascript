@@ -21,7 +21,9 @@ for (var i = 0; i < JsTypes.length; i++) {
 
 _jstype.staticDefinition = _jstype.staticDefinition || {};
 _jstype.definition = _jstype.definition || {};
-
+delete _jstype.fields.x;
+delete _jstype.fields.y;
+delete _jstype.fields.z;
 
 _jstype.staticDefinition.New = function(x, y, z) {
     var ret = new UnityEngine.Vector3.ctor$$Single$$Single$$Single(x, y, z);
