@@ -1154,7 +1154,7 @@ public static class JSMgr
 
         bool b = JSMgr.ExecuteScriptGlobal(ptrScript, obj);
         JSApi.JSh_SetRvalBool(cx, vp, b);
-        return true;
+        return b;
     }
 
     // same as require
