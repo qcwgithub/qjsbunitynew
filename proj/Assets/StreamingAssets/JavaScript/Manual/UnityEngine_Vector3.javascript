@@ -31,13 +31,24 @@ _jstype.staticDefinition.New = function(x, y, z) {
     return ret;
 }
 
-_jstype.definition.ctor = function() { UnityEngine.Vector3.New(0, 0, 0); }
+_jstype.definition.ctor = function() { 
+    this.x = 0;
+    this.y = 0;
+    this.z = 0;
+    this._fullname = "UnityEngine.Vector3";
+}
 _jstype.definition.ctor$$Single$$Single$$Single = function(a0, a1, a2) {
     this.x = a0;
     this.y = a1;
     this.z = a2;
+    this._fullname = "UnityEngine.Vector3";
 }
-_jstype.definition.ctor$$Single$$Single = function(a0, a1) { UnityEngine.Vector3.New(a0, a1, 0); }
+_jstype.definition.ctor$$Single$$Single = function(a0, a1) { 
+    this.x = a0;
+    this.y = a1;
+    this.z = 0;
+    this._fullname = "UnityEngine.Vector3";
+}
 
 // fields
 

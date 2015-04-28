@@ -1,9 +1,21 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 public partial class UnityEngineManual
 {
+    public static bool IsJSObjVector3(IntPtr jsObj)
+    {
+        JSApi.jsval val = new JSApi.jsval();
+        JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "_fullname", -1, ref val);
+        if (JSApi.JSh_JsvalIsString(ref val)) {
+            string s = JSApi.JSh_GetJsvalStringS(JSMgr.cx, ref val);
+            return s == "UnityEngine.Vector3";
+        }
+        return false;
+    }
+
     public static bool Vector3_GetHashCode(JSVCall vc, int start, int count)
     {
         Vector3 v = vc.datax.getVector3(vc.jsObj);
@@ -52,7 +64,7 @@ public partial class UnityEngineManual
         return true;
     }
 
-#if UNITY_4_6
+//#if UNITY_4_6
     public static bool Vector3_ProjectOnPlane__Vector3__Vector3(JSVCall vc, int start, int count)
     {
         Vector3 a0 = vc.datax.getVector3(JSDataExchangeMgr.eGetType.GetARGV);
@@ -61,7 +73,7 @@ public partial class UnityEngineManual
         vc.datax.setVector3(JSDataExchangeMgr.eSetType.SetRval, ret);
         return true;
     }
-#endif
+//#endif
     public static bool Vector3_Reflect__Vector3__Vector3(JSVCall vc, int start, int count)
     {
         Vector3 a0 = vc.datax.getVector3(JSDataExchangeMgr.eGetType.GetARGV);
