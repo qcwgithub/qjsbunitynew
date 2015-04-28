@@ -231,12 +231,26 @@ public static class JSAnalyzer
         return (shortName[0] == '_');
     }
 
+    // delegate return true: not to replace
+    public delegate bool DelFilterReplaceFile(string fullpath);
 
-    [MenuItem("JSB/One Key Replace All (Danger!)")]
-    public static void OneKeyReplaceAll()
+    [MenuItem("JSB/Replace all monos for all prefabs and scenes")]
+    public static void ReplaceAllMonos()
     {
-        bool bContinue = EditorUtility.DisplayDialog("WARNING", 
-            "This action may cause data loss. You must backup whole project before executing this action.(Scenes and prefabs whose names begin with \'_\' will be skipped. )", 
+        GameObject goEngine = GameObject.Find("_JSEngine");
+        JSEngine jsEngine = goEngine != null ? goEngine.GetComponent<JSEngine>() : null;
+        if (jsEngine == null)
+        {
+            Debug.LogError("No JSEngine GameObject found in current scene, find a prefab named \"_JSEngine\" and drag it to current scene.");
+            return;
+        }
+
+        /////////////////
+
+        bool bContinue = EditorUtility.DisplayDialog("WARNING",
+            @"1) This action may cause data loss. You better backup whole project before executing this action.
+2) Make sure you have made proper settings to JSEngine.DirectoriesNotToReplace fields before this action.
+3) Scenes and prefabs whose names begin with '_' will be skipped.", 
             "Continue", 
             "Cancel");
 
@@ -246,29 +260,49 @@ public static class JSAnalyzer
             return;
         }
 
+        DelFilterReplaceFile filter = (path) => 
+        {
+            var dataPath = Application.dataPath;
+            if (path.IndexOf(dataPath) != 0)
+                return true;
+
+            var subPath = path.Substring(dataPath.Length + 1);
+
+            // Skip paths in jsEngine.DirectoriesNotToReplace
+            foreach (var p in jsEngine.DirectoriesNotToReplace)
+            {
+                if (subPath.IndexOf(p) == 0)
+                    return true;
+            }
+            // Skip underscore
+            if (FileNameBeginsWithUnderscore(path))
+                return true;
+
+            return false;
+        };
+
         // first copy
         // then remove
         var ops = new TraverseOp[] { TraverseOp.CopyMonoBehaviour, TraverseOp.RemoveOldBehaviour};
         foreach (var op in ops)
         {
-            IterateAllPrefabs(op);
+            IterateAllPrefabs(op, filter);
             EditorApplication.SaveAssets();
 
             string[] GUIDs = AssetDatabase.FindAssets("t:Scene");
             foreach (var guid in GUIDs)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                if (FileNameBeginsWithUnderscore(path))
-                {
+                if (filter(path))
                     continue;
-                }
+
                 // Debug.Log("Replace Scene: " + path);
                 EditorApplication.OpenScene(path);
                 IterateAllGameObjectsInTheScene(op);
                 EditorApplication.SaveScene();
             }
         }
-        Debug.Log("Replace all OK.");
+        Debug.Log("Replace OK.");
         AssetDatabase.Refresh();
     }
 
@@ -289,14 +323,14 @@ public static class JSAnalyzer
     }
 
     // [MenuItem("JSB/Replace MonoBehaviours of all prefabs")]
-    public static void IterateAllPrefabs(TraverseOp op)
+    public static void IterateAllPrefabs(TraverseOp op, DelFilterReplaceFile filter)
     {
         initAnalyze();
         string[] GUIDs = AssetDatabase.FindAssets("t:Prefab");
         foreach (var guid in GUIDs)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
-            if (FileNameBeginsWithUnderscore(path))
+            if (filter(path))
             {
                 continue;
             }
@@ -311,20 +345,20 @@ public static class JSAnalyzer
         Debug.Log(sbHierachy);
     }
     // Alt + Shift + Q
-    [MenuItem("JSB/Copy GameObject MonoBehaviours &#q")]
+    [MenuItem("JSB/Copy GameObjects MonoBehaviours &#q")]
     public static void CopyGameObjectMonoBehaviours()
     {
         Debug.Log("CopyGameObjectMonoBehaviours");
-        GameObject go = Selection.activeGameObject;
-        JSSerializerEditor.CopyGameObject<JSComponent>(go);
+        foreach(var go in Selection.gameObjects)
+            JSSerializerEditor.CopyGameObject<JSComponent>(go);
     }
     // Alt + Shift + W
-    [MenuItem("JSB/Remove Other MonoBehaviours &#w")]
+    [MenuItem("JSB/Remove GameObjects Other MonoBehaviours &#w")]
     public static void RemoveOtherMonoBehaviours()
     {
         Debug.Log("RemoveOtherMonoBehaviours");
-        GameObject go = Selection.activeGameObject;
-        JSSerializerEditor.RemoveOtherMonoBehaviours(go);
+        foreach (var go in Selection.gameObjects)
+            JSSerializerEditor.RemoveOtherMonoBehaviours(go);
     }
 
     public static string MyMatchEvaluator(Match m)
@@ -386,7 +420,12 @@ public static class JSAnalyzer
         }
 
         bool bContinue = EditorUtility.DisplayDialog("Tip",
-            "Make sure you have made proper settings to JSEngine.DirectoriesNotExport field before this action.",
+@"Make sure you have made proper settings to 
+
+JSEngine.DirectoriesNotToExport 
+JSEngine.DirectoriesToExport 
+
+fields before this action.",
             "Continue",
             "Cancel");
 
