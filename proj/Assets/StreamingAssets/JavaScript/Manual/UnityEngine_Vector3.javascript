@@ -75,7 +75,7 @@ _jstype.definition.set_Item$$Int32 = function(ind0, v) {
 }
 
 _jstype.definition.get_normalized = function() {
-    var mag = this.Magnitude()
+    var mag = this.get_magnitude()
     if (mag == 1)
         return UnityEngine.Vector3.New(this.x, this.y, this.z);
     else if (mag > 1e-5)
@@ -131,7 +131,7 @@ _jstype.definition.Equals = function(a0/*Object*/) {
 //}
 /* Void */
 _jstype.definition.Normalize = function() {
-    var mag = this.Magnitude()
+    var mag = this.get_magnitude()
     if (mag == 1)
         return;
     else if (mag > 1e-5) {
