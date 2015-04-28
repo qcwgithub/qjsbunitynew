@@ -18,7 +18,7 @@ using jsval = JSApi.jsval;
  * One likely solution is call Awake, Start, Update only once per frame
  * 
  */
-public class JSComponent_SharpKit : JSSerializer
+public class JSComponent : JSSerializer
 {
     //public string jsScriptName = string.Empty;
 
