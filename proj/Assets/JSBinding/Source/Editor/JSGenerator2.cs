@@ -219,6 +219,18 @@ _jstype =
     {4}
 ]];
 
+var _found = false;
+for (var i = 0; i < JsTypes.length; i++) [[
+    if (JsTypes[i].fullname == _jstype.fullname) [[
+        JsTypes[i] = _jstype;
+        _found = true;
+        break;
+    ]]
+]]
+if (!_found) [[
+    JsTypes.push(_jstype);
+]]
+
 ";
         string jsTypeName = JSNameMgr.GetTypeFullName(type);
         jsTypeName = jsTypeName.Replace('.', '$');
@@ -423,7 +435,7 @@ _jstype.staticDefinition.{1} = function({2}) [[
         var sbFields = BuildFields(type, ti.fields, slot);
         var sbProperties = BuildProperties(type, ti.properties, slot);
         var sbMethods = BuildMethods(type, ti.methods, slot);
-        sbMethods.Append(BuildTail());
+        //sbMethods.Append(BuildTail());
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons);
         HandleStringFormat(sbClass);
 
