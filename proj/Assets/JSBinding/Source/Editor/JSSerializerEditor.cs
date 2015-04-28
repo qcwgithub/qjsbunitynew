@@ -400,7 +400,7 @@ public static class JSSerializerEditor
 
             if (WillTypeBeTranslatedToJavaScript(behav.GetType()))
             {   // if this MonoBehaviour is going to be translated to JavaScript
-                // replace this behaviour with JSComponent_SharpKit
+                // replace this behaviour with JSComponent
                 // copy the serialized data if needed
                 JSSerializer helper = (JSSerializer)go.AddComponent<T>();
                 CopyBehaviour(behav, helper);

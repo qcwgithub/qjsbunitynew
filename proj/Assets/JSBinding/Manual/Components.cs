@@ -14,7 +14,7 @@ public partial class UnityEngineManual
         }
         vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal);
     }
-    static void help_searchAndRetCom(JSVCall vc, JSComponent_SharpKit[] jsComs, string typeString)
+    static void help_searchAndRetCom(JSVCall vc, JSComponent[] jsComs, string typeString)
     {
         foreach (var jsCom in jsComs)
         {
@@ -27,9 +27,9 @@ public partial class UnityEngineManual
             }
         }
     }
-    static void help_searchAndRetComs(JSVCall vc, JSComponent_SharpKit[] com, string typeString)
+    static void help_searchAndRetComs(JSVCall vc, JSComponent[] com, string typeString)
     {
-        List<JSComponent_SharpKit> lst = new List<JSComponent_SharpKit>();
+        List<JSComponent> lst = new List<JSComponent>();
         foreach (var c in com)
         {
             if (c.jsScriptName == typeString)
@@ -84,7 +84,7 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent_SharpKit jsComp = go.AddComponent<JSComponent_SharpKit>();
+            JSComponent jsComp = go.AddComponent<JSComponent>();
             jsComp.jsScriptName = typeString;
             jsComp.Awake();
 
@@ -113,7 +113,7 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent_SharpKit[] com = go.GetComponents<JSComponent_SharpKit>();
+            JSComponent[] com = go.GetComponents<JSComponent>();
             help_searchAndRetCom(vc, com, typeString);
         }
         return true;
@@ -139,7 +139,7 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent_SharpKit[] com = go.GetComponents<JSComponent_SharpKit>();
+            JSComponent[] com = go.GetComponents<JSComponent>();
             help_searchAndRetComs(vc, com, typeString);
         }
         return true;
@@ -165,7 +165,7 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent_SharpKit[] com = go.GetComponentsInChildren<JSComponent_SharpKit>();
+            JSComponent[] com = go.GetComponentsInChildren<JSComponent>();
             help_searchAndRetCom(vc, com, typeString);
         }
         return true;
@@ -191,7 +191,7 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent_SharpKit[] com = go.GetComponentsInChildren<JSComponent_SharpKit>();
+            JSComponent[] com = go.GetComponentsInChildren<JSComponent>();
             help_searchAndRetComs(vc, com, typeString);
         }
         return true;
@@ -218,7 +218,7 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent_SharpKit[] com = go.GetComponentsInChildren<JSComponent_SharpKit>(includeInactive);
+            JSComponent[] com = go.GetComponentsInChildren<JSComponent>(includeInactive);
             help_searchAndRetComs(vc, com, typeString);
         }
         return true;
@@ -244,7 +244,7 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent_SharpKit[] com = go.GetComponentsInParent<JSComponent_SharpKit>();
+            JSComponent[] com = go.GetComponentsInParent<JSComponent>();
             help_searchAndRetCom(vc, com, typeString);
         }
         return true;
@@ -270,7 +270,7 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent_SharpKit[] com = go.GetComponentsInParent<JSComponent_SharpKit>();
+            JSComponent[] com = go.GetComponentsInParent<JSComponent>();
             help_searchAndRetComs(vc, com, typeString);
         }
         return true;
@@ -297,7 +297,7 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent_SharpKit[] com = go.GetComponentsInParent<JSComponent_SharpKit>(includeInactive);
+            JSComponent[] com = go.GetComponentsInParent<JSComponent>(includeInactive);
             help_searchAndRetComs(vc, com, typeString);
         }
         return true;

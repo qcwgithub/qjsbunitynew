@@ -23,7 +23,7 @@ public static class JSAnalyzer
             StringBuilder sbProblem = new StringBuilder();
             MonoBehaviour behaviour = com as MonoBehaviour;
             Type type = behaviour.GetType();
-            FieldInfo[] fields = ExtraHelper.GetMonoBehaviourSerializedFields(behaviour);
+            FieldInfo[] fields = JSSerializerEditor.GetMonoBehaviourSerializedFields(behaviour);
             for (var i = 0; i < fields.Length; i++)
             {
                 FieldInfo field = fields[i];
@@ -109,7 +109,7 @@ public static class JSAnalyzer
         switch (op)
         {
             case TraverseOp.CopyMonoBehaviour:
-                JSSerializerEditor.CopyGameObject<JSComponent_SharpKit>(go);
+                JSSerializerEditor.CopyGameObject<JSComponent>(go);
                 break;
             case TraverseOp.RemoveOldBehaviour:
                 JSSerializerEditor.RemoveOtherMonoBehaviours(go);
@@ -179,7 +179,7 @@ public static class JSAnalyzer
             Type[] types = a.GetTypes();
             foreach (Type t in types)
             {
-                if (ExtraHelper.WillTypeBeTranslatedToJavaScript(t))
+                if (JSSerializerEditor.WillTypeBeTranslatedToJavaScript(t))
                 {
                     System.Object[] attrs = t.GetCustomAttributes(typeof(JsTypeAttribute), false);
                     JsTypeAttribute jsTypeAttr = (JsTypeAttribute)attrs[0];
@@ -316,8 +316,7 @@ public static class JSAnalyzer
     {
         Debug.Log("CopyGameObjectMonoBehaviours");
         GameObject go = Selection.activeGameObject;
-        //ExtraHelper.CopyGameObject<JSComponent_SharpKit>(go);
-        JSSerializerEditor.CopyGameObject<JSComponent_SharpKit>(go);
+        JSSerializerEditor.CopyGameObject<JSComponent>(go);
     }
     // Alt + Shift + W
     [MenuItem("JSB/Remove Other MonoBehaviours &#w")]

@@ -130,7 +130,7 @@ public class JSSerializer : MonoBehaviour
     }
     public IntPtr GetGameObjectMonoBehaviourJSObj(GameObject go, string scriptName)
     {
-        JSComponent_SharpKit[] jsComs = go.GetComponents<JSComponent_SharpKit>();
+        JSComponent[] jsComs = go.GetComponents<JSComponent>();
         foreach (var com in jsComs)
         {
             // 注意：同一个GameObject不能绑相同名字的脚本2次以上
