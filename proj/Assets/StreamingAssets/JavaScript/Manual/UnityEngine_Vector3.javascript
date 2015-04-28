@@ -167,7 +167,7 @@ _jstype.definition.toString = function() {
 }
 /* static Single  */
 _jstype.staticDefinition.Angle = function(a0/*Vector3*/, a1/*Vector3*/) { 
-    var dot = UnityEngine.Vector3.Dot(a0.get_normalized(), a0.get_normalized());
+    var dot = UnityEngine.Vector3.Dot(a0.get_normalized(), a1.get_normalized());
     if (dot < -1) dot = -1;
     else if (dot > 1) dot = 1;
     var acos = Math.acos(dot);
@@ -175,7 +175,7 @@ _jstype.staticDefinition.Angle = function(a0/*Vector3*/, a1/*Vector3*/) {
 }
 /* static Vector3  */
 _jstype.staticDefinition.ClampMagnitude = function(a0/*Vector3*/, a1/*Single*/) {
-    if (a0.get_sqrMagnitude() > a1) {
+    if (a0.get_sqrMagnitude() > a1 * a1) {
         a0.Normalize();
         a0.Scale(a1);
     }

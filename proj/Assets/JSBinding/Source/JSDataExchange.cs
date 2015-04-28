@@ -327,13 +327,22 @@ public class JSDataExchangeMgr
         jsval val = new jsval();
 
         JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
-        v.x = (float)JSApi.JSh_GetJsvalDouble(ref val);
+        if (JSApi.JSh_JsvalIsInt32(ref val))
+            v.x = (float)JSApi.JSh_GetJsvalInt(ref val);
+        else
+            v.x = (float)JSApi.JSh_GetJsvalDouble(ref val);
 
         JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
-        v.y = (float)JSApi.JSh_GetJsvalDouble(ref val);
+        if (JSApi.JSh_JsvalIsInt32(ref val))
+            v.y = (float)JSApi.JSh_GetJsvalInt(ref val);
+        else
+            v.y = (float)JSApi.JSh_GetJsvalDouble(ref val);
 
         JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "z", -1, ref val);
-        v.z = (float)JSApi.JSh_GetJsvalDouble(ref val);
+        if (JSApi.JSh_JsvalIsInt32(ref val))
+            v.z = (float)JSApi.JSh_GetJsvalInt(ref val);
+        else
+            v.z = (float)JSApi.JSh_GetJsvalDouble(ref val);
         return v;
     }
     public Vector3 getVector3(eGetType e)
