@@ -37,6 +37,9 @@ public class JSEngine : MonoBehaviour
     public List<string> DirectoriesNotToExport;
     public List<string> DirectoriesToExport;
 
+
+    public List<string> DirectoriesNotToReplace;
+
     public void OnInitJSEngine(bool bSuccess)
     {
         /* 
