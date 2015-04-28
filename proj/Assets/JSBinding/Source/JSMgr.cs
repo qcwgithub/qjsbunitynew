@@ -1227,7 +1227,9 @@ public static class JSMgr
     {
         if (mDict1.ContainsKey(nativeObj.ToInt64()))
         {
-            Debug.LogError("mDict1 already contains key for: " + nativeObj.ToString());
+            // Debug.LogWarning("mDict1 already contains key for: " + nativeObj.ToString());
+            // !!!!!
+            mDict1.Remove(nativeObj.ToInt64());
         }
 
         mDict1.Add(nativeObj.ToInt64(), new JS_CS_Relation(nativeObj, csObj));
@@ -1304,6 +1306,7 @@ public static class JSMgr
         if (mDict1.TryGetValue(nativeObj.ToInt64(), out Rel))
         {
             mDict1.Remove(nativeObj.ToInt64());
+            //Debug.Log("GC: " + nativeObj.ToInt64() + " removed from mDict1");
 
             object csObj = Rel.csObj;
             if (csObj != null && csObj.GetType().IsClass)
