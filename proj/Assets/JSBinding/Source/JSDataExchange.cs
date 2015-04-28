@@ -1624,6 +1624,8 @@ public class JSDataExchangeMgr
         }
         else if (type == typeof(System.Object) || type.IsGenericParameter)
             ret = "Whatever";
+        else if (type == typeof(Vector3))
+            ret = "Vector3";
         else
             ret = "Object";
 
