@@ -402,7 +402,11 @@ public class JSDataExchangeMgr
                         return getString(e);
                     else if (JSApi.JSh_ArgvIsObject(JSMgr.cx, vc.vp, i))
                     {
-                        return getObject(e);
+                        IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, i);
+                        if (UnityEngineManual.IsJSObjVector3(jsObj))
+                            return getVector3(e);
+                        else
+                            return getObject(e);
                     }
                     return null;
                 }
@@ -422,7 +426,11 @@ public class JSDataExchangeMgr
                         return getString(e);
                     else if (JSApi.JSh_JsvalIsObject(ref vc.valTemp))
                     {
-                        return getObject(e);
+                        IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
+                        if (UnityEngineManual.IsJSObjVector3(jsObj))
+                            return getVector3(e);
+                        else
+                            return getObject(e);
                     }
                     return null;
                 }
@@ -549,6 +557,8 @@ public class JSDataExchangeMgr
             else
                 Debug.LogError("Unknown primitive type");
         }
+        else if (type == typeof(Vector3))
+            setVector3(e, (Vector3)obj);
         else
         {
             setObject(e, obj);
