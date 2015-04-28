@@ -486,6 +486,10 @@ JsCompiler.Compile_Phase1 = function (){
                 if (this._type && this._type.fullname) 
 				{
                     this.__nativeType = this._type.fullname;
+					this.__nativeType = this.__nativeType.replace("$1", "<>")
+						.replace("$2", "<,>")
+						.replace("$3", "<,,>")
+						.replace("$4", "<,,,>");
                 } 
 				else
 				{
