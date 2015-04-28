@@ -61,3 +61,12 @@ function jsb_CallObjectCtor(name)
     }
     return undefined;
 }
+
+function jsb_formatParamsArray(preCount, argArray, funArguments)
+{
+    if (Object.prototype.toString.apply(argArray) === "[object Array]") {
+        return argArray;
+    } else {
+        return Array.prototype.slice.apply(funArguments).slice(preCount);
+    }
+}

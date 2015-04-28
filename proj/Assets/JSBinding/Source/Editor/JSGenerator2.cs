@@ -357,7 +357,16 @@ _jstype.staticDefinition.{1} = function({2}) [[
             for (int j = 0; j < L; j++)
             {
                 sbFormalParam.AppendFormat("a{0}/*{1}*/{2}", j, paramS[j].ParameterType.Name, (j == L - 1 ? "" : ", "));
-                sbActualParam.AppendFormat(", a{0}", j);
+
+                ParameterInfo par = paramS[j];
+                if (par.ParameterType.IsArray && par.GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0)
+                {
+                    sbActualParam.AppendFormat(", jsb_formatParamsArray({0}, a{0}, arguments)", j);
+                }
+                else
+                {
+                    sbActualParam.AppendFormat(", a{0}", j);
+                }
             }
 
             //int TCount = method.GetGenericArguments().Length;
