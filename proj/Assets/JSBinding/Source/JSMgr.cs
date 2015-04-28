@@ -232,25 +232,24 @@ public static class JSMgr
 
         // bool jsRegistered = false;
 
-        jsGeneratedFileNames = (string[])RefGetStaticField("JSGeneratedFileNames", "names");
-        //jsGeneratedFileNames = JSGeneratedFileNames.names;
+        RefCallStaticMethod("CSharpGenerated", "RegisterAll");
+        //CSharpGenerated.RegisterAll(); // register cs function
+        JSMgr.jsLoader = jsLoader;
 
+        /* 不这么干了，放在 includes.javascript 去 CS.require
+        jsGeneratedFileNames = (string[])RefGetStaticField("JSGeneratedFileNames", "names");
         if (jsGeneratedFileNames == null)
         {
             Debug.LogError("InitJSEngine failed. Click menu [Assets -> JSBinding -> Generate JS and CS Bindings]");
             onInitJSEngine(false);
             return false;
         }
-
-        RefCallStaticMethod("CSharpGenerated", "RegisterAll");
-        //CSharpGenerated.RegisterAll(); // register cs function
-
-
-
-        JSMgr.jsLoader = jsLoader;
         JSMgr.onInitJSEngine = onInitJSEngine;
         foreach (var shortName in jsGeneratedFileNames)
             jsLoader.LoadJSSync(shortName, true, JSMgr.OnLoadGeneratedJS);
+        */
+
+        onInitJSEngine(true);
 
         return true;
     }
