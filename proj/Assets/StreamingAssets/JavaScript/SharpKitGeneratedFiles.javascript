@@ -3,7 +3,18 @@
 * better not modify manually.
 */
 
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/DebugMessages.javascript");
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/Message.javascript");
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/MuchTweenSoWow.javascript");
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestEasingFunctions.javascript");
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestFPS.javascript");
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestHighConcurrency.javascript");
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestHighConcurrencyGroup.javascript");
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestShakeObject.javascript");
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestSlinky.javascript");
+CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestSplineTween.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/SerializeSimple.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/SerializeStruct.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/AppleInfo.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/V3Test.javascript");
+CS.require("SharpKitGenerated/Src/Test1.javascript");

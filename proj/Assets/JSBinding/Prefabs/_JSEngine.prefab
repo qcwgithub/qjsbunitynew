@@ -77,8 +77,17 @@ MonoBehaviour:
   DirectoriesNotToExport:
   - JSBinding/
   - Stealth/
+  - DaikonForge Tween (Pro)/
   DirectoriesToExport:
   - JSBinding/Samples/
+  - DaikonForge Tween (Pro)/Examples/Scripts
+  DirectoriesNotToReplace:
+  - JSBinding/
+  - Plugins/
+  - Resources/
+  - Src/
+  - StreamingAssets/
+  - UnityVS/
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
