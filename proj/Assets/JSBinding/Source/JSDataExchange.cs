@@ -950,12 +950,10 @@ public class JSDataExchangeMgr
             case eSetType.Jsval:
             case eSetType.SetRval:
                 {
-                    IntPtr jsObj = IntPtr.Zero;
                     var typeName = "UnityEngine.Vector3";
-                    IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
-                    if (jstypeObj != IntPtr.Zero)
+                    IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
+                    if (jsObj != IntPtr.Zero)
                     {
-                        jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
                         setVector3(ref jsObj, csObj);
                         JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
                     }
@@ -979,14 +977,10 @@ public class JSDataExchangeMgr
                     {
                         bool success = false;
 
-                        IntPtr jsObj = IntPtr.Zero;
                         var typeName = "UnityEngine.Vector3";
-
-                        // csObj must not be null
-                        IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
-                        if (jstypeObj != IntPtr.Zero)
+                        IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
+                        if (jsObj != IntPtr.Zero)
                         {
-                            jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
                             setVector3(ref jsObj, csObj);
 
                             // 3)
