@@ -272,6 +272,9 @@ function As(obj, typeOrName){
     return null;
 };
 function Cast(obj, typeOrName){
+    // don't need cast
+    return obj;
+
     if (obj == null)
         return obj;
     var type = JsTypeHelper.GetType(typeOrName, true);
@@ -498,23 +501,16 @@ JsCompiler.Compile_Phase1 = function (){
 				return this.__nativeType;
             }
 
-            if (jsType.fields != undefined)
-		    {
+            if (jsType.fields != undefined) {
 				jsType.commonPrototype = jsType.definition.ctor.prototype;
-				for (var v in jsType.fields) 
-				{
-					var o = jsType.fields[v];
-					Object.defineProperty(jsType.commonPrototype, v, o);
-				}
-				delete jsType.fields;
-			}
-			if (jsType.staticFields != undefined)
-			{
-				for (var v in jsType.staticFields)
-				{
-					jsType[v] = jsType.staticFields[v];
-				}
-				delete jsType.staticFields;
+				//for (var v in jsType.fields)
+				//{
+				//	var o = jsType.fields[v];
+                 //   if (typeof o === typeof {}) {
+                 //       Object.defineProperty(jsType.commonPrototype, v, o);
+                 //   }
+				//}
+				//delete jsType.fields;
 			}
 		}
     }
@@ -524,6 +520,35 @@ JsCompiler.Compile_Phase2 = function (){
         var jsType = JsTypes[i];
         JsCompiler.Compile_Phase2_TmpType(jsType);
     }
+    // by qiucw
+    // make fields as type's property
+    for (var i = 0; i < JsTypes.length; i++){
+        var jt = JsTypes[i];
+
+        var f = jt.fields;
+        if (f && jt.commonPrototype) {
+            for (var v in f) {
+                var o = f[v];
+                //if (typeof o === typeof {}) {
+                    Object.defineProperty(jt.commonPrototype, v, o);
+                //}
+            }
+            delete jt.fields;
+        }
+
+        var sf = jt.staticFields;
+        if (sf) {
+            for (var p in sf) {
+                var member = sf[p];
+                if (typeof(member.get) == "function")
+                    Object.defineProperty(jt, p, member);
+                else
+                    jt[p] = member;
+            }
+            delete jt.staticFields;
+        }
+    }
+
     for (var $i4 = 0,$l4 = JsTypes.length,ce = JsTypes[$i4]; $i4 < $l4; $i4++, ce = JsTypes[$i4]){
         if (ce.cctor != null)
             ce.cctor();
@@ -575,6 +600,15 @@ JsCompiler._CopyObject = function (source, target){
 		target[p] = source[p];
 	if(source.toString!=Object.prototype.toString && target.toString==Object.prototype.toString)
 		target.toString = source.toString;
+};
+// qiucw source: base JsType, target: child JsType
+JsCompiler._CopyFields = function (source, target){
+    for (var p in source.fields) {
+        target.fields[p] = source.fields[p];
+    }
+    for (var p in source.staticFields) {
+        target.staticFields[p] = source.staticFields[p];
+    }
 };
 JsCompiler._SafeCopyObject = function (source, target){
     	for(var p in source)
@@ -706,6 +740,8 @@ JsCompiler.CompileType = function (type){
         }
         if (baseTypeResolved){
             JsCompiler._CopyObject(currentType.baseType.commonPrototype, currentType.commonPrototype);
+            // copy fields and staticFields(then are {get:xx, set:xx})
+            JsCompiler._CopyFields(currentType.baseType, currentType);
         }
         for (var p in type.definition){
             var member = type.definition[p];
