@@ -276,62 +276,6 @@ public class JSVCall
         JSApi.JSh_ArgvFunctionValue(cx, vp, currIndex++, ref val);
         return val;
     }
-//     public object getWhatever()
-//     {
-//         int i = currIndex++;
-//         if (JSApi.JSh_ArgvIsBool(cx, vp, i))
-//             return JSApi.JSh_ArgvBool(cx, vp, i);
-//         else if (JSApi.JSh_ArgvIsInt32(cx, vp, i))
-//             return JSApi.JSh_ArgvInt(cx, vp, i);
-//         else if (JSApi.JSh_ArgvIsDouble(cx, vp, i))
-//             return JSApi.JSh_ArgvDouble(cx, vp, i);
-//         else if (JSApi.JSh_ArgvIsString(cx, vp, i))
-//             return JSApi.JSh_ArgvStringS(cx, vp, i);
-//         else if (JSApi.JSh_ArgvIsObject(cx, vp, i))
-//         {
-//             IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, i);
-//             object csObj = JSMgr.getCSObj(jsObj);
-//             if (csObj is JSValueWrap.Wrap)
-//                 return ((JSValueWrap.Wrap)csObj).obj;
-//             else
-//                 return csObj;
-//         }
-//         else if (JSApi.JSh_ArgvIsNullOrUndefined(cx, vp, i))
-//             return null;
-//         return null;
-//     }
-//     public object getRefWhatever()
-//     {
-//         IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-//         if (jsObj == IntPtr.Zero) 
-//             return null;
-//         jsval val = new jsval(); val.asBits = 0;
-//         JSApi.JSh_GetUCProperty(cx, jsObj, "Value", 0, ref val);
-// 
-//         if (val.asBits == 0)
-//             return null;
-//         
-//         if (JSApi.JSh_JsvalIsNullOrUndefined(ref val))
-//             return null;
-//         else if (JSApi.JSh_JsvalIsBool(ref val))
-//             return JSApi.JSh_GetJsvalBool(ref val);
-//         else if (JSApi.JSh_JsvalIsInt32(ref val))
-//             return JSApi.JSh_GetJsvalInt(ref val);
-//         else if (JSApi.JSh_JsvalIsDouble(ref val))
-//             return JSApi.JSh_GetJsvalDouble(ref val);
-//         else if (JSApi.JSh_JsvalIsString(ref val))
-//             return JSApi.JSh_GetJsvalStringS(cx, ref val);
-//         else if (JSApi.JSh_JsvalIsObject(ref val))
-//         {
-//             jsObj = JSApi.JSh_GetJsvalObject(ref val);
-//             object csObj = JSMgr.getCSObj(jsObj);
-//             if (csObj is JSValueWrap.Wrap)
-//                 return ((JSValueWrap.Wrap)csObj).obj;
-//             else
-//                 return csObj;
-//         }
-//         return null;
-//     }
 
     public void returnBool(bool v) { JSApi.JSh_SetRvalBool(cx, vp, v); }
     public void returnString(String v) { JSApi.JSh_SetRvalString(cx, vp, v); }

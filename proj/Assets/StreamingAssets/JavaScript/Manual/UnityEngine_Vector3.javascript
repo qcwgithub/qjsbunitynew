@@ -26,9 +26,7 @@ delete _jstype.fields.y;
 delete _jstype.fields.z;
 
 _jstype.staticDefinition.New = function(x, y, z) {
-    var ret = new UnityEngine.Vector3.ctor$$Single$$Single$$Single(x, y, z);
-    ret.__nativeObj = ret;
-    return ret;
+    return new UnityEngine.Vector3.ctor$$Single$$Single$$Single(x, y, z);
 }
 
 _jstype.definition.ctor = function() { 
@@ -36,18 +34,21 @@ _jstype.definition.ctor = function() {
     this.y = 0;
     this.z = 0;
     this._fullname = "UnityEngine.Vector3";
+    this.__nativeObj = this;
 }
 _jstype.definition.ctor$$Single$$Single$$Single = function(a0, a1, a2) {
     this.x = a0;
     this.y = a1;
     this.z = a2;
     this._fullname = "UnityEngine.Vector3";
+    this.__nativeObj = this;
 }
 _jstype.definition.ctor$$Single$$Single = function(a0, a1) { 
     this.x = a0;
     this.y = a1;
     this.z = 0;
     this._fullname = "UnityEngine.Vector3";
+    this.__nativeObj = this;
 }
 
 // fields
