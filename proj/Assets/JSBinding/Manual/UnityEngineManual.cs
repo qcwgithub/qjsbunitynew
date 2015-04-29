@@ -52,6 +52,9 @@ public partial class UnityEngineManual
         {
             return false;
         }
-        return !typeof(MonoBehaviour).IsAssignableFrom(type);
+        if (!typeof(MonoBehaviour).IsAssignableFrom(type))
+            return false;
+		return true;
+        //return !typeof(MonoBehaviour).IsAssignableFrom(type);
     }
 }
