@@ -147,7 +147,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             {
                 ph.updater = new StringBuilder()
                     .AppendFormat("vc.currIndex = r_arg{0};\n", paramIndex)
-                    .AppendFormat("vc.datax.setObject(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, {0});", ph.argName)
+                    .AppendFormat("vc.datax.set{0}(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, {1});", keyword, ph.argName)
                     .ToString();
             }
         }
