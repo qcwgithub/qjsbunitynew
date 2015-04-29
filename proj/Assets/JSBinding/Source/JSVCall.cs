@@ -1017,6 +1017,17 @@ public class JSVCall
 //         return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, (UInt32)args.Length, vals, ref rvalCallJS);
 //     }
 
+    // typeName doesn't include ctor
+    public IntPtr CallJSClassCtorByName(string typeName)
+    {
+        JSApi.jsval valParam = new JSApi.jsval(); 
+        valParam.asBits = 0;
+        JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam, typeName);
+        JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[] { valParam }, ref JSMgr.vCall.rvalCallJS);
+        IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
+        return jsObj;
+    }
+
     public jsval[] arrJsval0 = new jsval[0];
     public bool CallJSFunctionValue(IntPtr jsThis, ref jsval valFunction, params object[] args)
     {
