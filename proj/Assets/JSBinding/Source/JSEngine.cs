@@ -152,8 +152,11 @@ public class JSEngine : MonoBehaviour
     }
 
     // OUTPUT object mappings
+	public bool showStatistics = true;
     void OnGUI()
     {
+		if (!showStatistics)
+			return;
         int countDict1, countDict2;
         JSMgr.GetDictCount(out countDict1, out countDict2);
         GUI.TextArea(new Rect(0, 10, 400, 20), "C#<->JS Object Total: " + countDict1.ToString() + ", Class: " + countDict2.ToString());

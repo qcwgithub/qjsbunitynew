@@ -19,7 +19,8 @@ public class JSEngineInspector : Editor
         }
         //EditorGUILayout.PropertyField(serializedObject.FindProperty("OutputFullCallingStackOnError"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("GCInterval"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("jsLoader"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("jsLoader"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("showStatistics"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("InitLoadScripts"), true);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("DirectoriesNotToExport"), true);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("DirectoriesToExport"), true);
