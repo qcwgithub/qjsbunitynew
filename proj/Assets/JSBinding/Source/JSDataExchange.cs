@@ -446,63 +446,60 @@ public class JSDataExchangeMgr
     }
     public object getWhatever(eGetType e)
     {
-                switch (e)
-
-                {
-            
-                case eGetType.GetARGV:
-                {
-
-                    int i = vc.currIndex;
-                    if (JSApi.JSh_ArgvIsNullOrUndefined(JSMgr.cx, vc.vp, i))
-                        return null;
-                    else if (JSApi.JSh_ArgvIsBool(JSMgr.cx, vc.vp, i))
-                        return getBoolean(e);
-                    else if (JSApi.JSh_ArgvIsInt32(JSMgr.cx, vc.vp, i))
-                        return getInt32(e);
-                    else if (JSApi.JSh_ArgvIsDouble(JSMgr.cx, vc.vp, i))
-                        return getDouble(e);
-                    else if (JSApi.JSh_ArgvIsString(JSMgr.cx, vc.vp, i))
-                        return getString(e);
-                    else if (JSApi.JSh_ArgvIsObject(JSMgr.cx, vc.vp, i))
-                    {
-                        IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, i);
-                        if (UnityEngineManual.IsJSObjVector3(jsObj))
-                            return getVector3(e);
-                        else
-                            return getObject(e);
-                    }
+        switch (e)
+        {
+            case eGetType.GetARGV:
+            {
+                int i = vc.currIndex;
+                if (JSApi.JSh_ArgvIsNullOrUndefined(JSMgr.cx, vc.vp, i))
                     return null;
-
-                }
-                break;
-            case eGetType.Jsval:
+                else if (JSApi.JSh_ArgvIsBool(JSMgr.cx, vc.vp, i))
+                    return getBoolean(e);
+                else if (JSApi.JSh_ArgvIsInt32(JSMgr.cx, vc.vp, i))
+                    return getInt32(e);
+                else if (JSApi.JSh_ArgvIsDouble(JSMgr.cx, vc.vp, i))
+                    return getSingle(e);
+                else if (JSApi.JSh_ArgvIsString(JSMgr.cx, vc.vp, i))
+                    return getString(e);
+                else if (JSApi.JSh_ArgvIsObject(JSMgr.cx, vc.vp, i))
                 {
-                    // 通过 vc.valTemp 传递值
-                    if (JSApi.JSh_JsvalIsNullOrUndefined(ref vc.valTemp))
-                        return null;
-                    else if (JSApi.JSh_JsvalIsBool(ref vc.valTemp))
-                        return getBoolean(e);
-                    else if (JSApi.JSh_JsvalIsInt32(ref vc.valTemp))
-                        return getInt32(e);
-                    else if (JSApi.JSh_JsvalIsDouble(ref vc.valTemp))
-                        return getDouble(e);
-                    else if (JSApi.JSh_JsvalIsString(ref vc.valTemp))
-                        return getString(e);
-                    else if (JSApi.JSh_JsvalIsObject(ref vc.valTemp))
-                    {
-                        IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
-                        if (UnityEngineManual.IsJSObjVector3(jsObj))
-                            return getVector3(e);
-                        else
-                            return getObject(e);
-                    }
-                    return null;
+                    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, i);
+                    if (UnityEngineManual.IsJSObjVector3(jsObj))
+                        return getVector3(e);
+                    else
+                        return getObject(e);
                 }
-                break;
-            default:
-                Debug.LogError("getWhatever ////// Not Supported");
-                break;
+                return null;
+
+            }
+            break;
+        case eGetType.Jsval:
+            {
+                // 通过 vc.valTemp 传递值
+                if (JSApi.JSh_JsvalIsNullOrUndefined(ref vc.valTemp))
+                    return null;
+                else if (JSApi.JSh_JsvalIsBool(ref vc.valTemp))
+                    return getBoolean(e);
+                else if (JSApi.JSh_JsvalIsInt32(ref vc.valTemp))
+                    return getInt32(e);
+                else if (JSApi.JSh_JsvalIsDouble(ref vc.valTemp))
+                    return getSingle(e);
+                else if (JSApi.JSh_JsvalIsString(ref vc.valTemp))
+                    return getString(e);
+                else if (JSApi.JSh_JsvalIsObject(ref vc.valTemp))
+                {
+                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
+                    if (UnityEngineManual.IsJSObjVector3(jsObj))
+                        return getVector3(e);
+                    else
+                        return getObject(e);
+                }
+                return null;
+            }
+            break;
+        default:
+            Debug.LogError("getWhatever ////// Not Supported");
+            break;
         }
         return null;
     }
@@ -1016,6 +1013,7 @@ public class JSDataExchangeMgr
             case eSetType.SetRval:
                 {
                     var typeName = "UnityEngine.Vector3";
+                    // 如果不使用JS版本的Vector3，这里将导致死循环
                     IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
                     if (jsObj != IntPtr.Zero)
                     {
@@ -1646,6 +1644,12 @@ public class JSDataExchangeMgr
             }
         }
         return lst.ToArray();
+    }
+    public static string GetMetatypeKeyword(Type type, out bool isWhatever)
+    {
+        string str = GetMetatypeKeyword(type);
+        isWhatever = (str == "Whatever");
+        return str;
     }
     public static string GetMetatypeKeyword(Type type)
     {
