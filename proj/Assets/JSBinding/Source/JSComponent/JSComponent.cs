@@ -185,6 +185,10 @@ public class JSComponent : JSSerializer
     {
         callIfExist(ref valOnEnable);
     }
+    void OnGUI()
+    {
+        callIfExist(ref valOnGUI);
+    }
 
     void OnTriggerEnter2D (Collider2D other)
     {
