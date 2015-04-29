@@ -196,10 +196,11 @@ public class JSSerializer : MonoBehaviour
                          * 
                          * 如果不是 C# 的类，那么新建类对象和SetUCProperty都不会走到C#来，在JS中完成
                          */
-                        JSApi.jsval valParam = new JSApi.jsval(); valParam.asBits = 0;
-                        JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam, this.typeName);
-                        JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[]{valParam}, ref JSMgr.vCall.rvalCallJS);
-                        IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
+                        //JSApi.jsval valParam = new JSApi.jsval(); valParam.asBits = 0;
+                        //JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam, this.typeName);
+                        //JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[]{valParam}, ref JSMgr.vCall.rvalCallJS);
+                        //IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
+                        IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(this.typeName);
                         if (jsObj == IntPtr.Zero)
                         {
                             Debug.LogError("Serialize error: call \"" + this.typeName + "\".ctor return null, , did you forget to export that class?");
