@@ -13,9 +13,6 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
     JSDataExchangeEditor(JSVCall vc):base(vc) {  }
 
     static Dictionary<Type, JSDataExchange> dict;
-    static JSDataExchange enumExchange;
-    static JSDataExchange objExchange;
-    static JSDataExchange t_Exchange;
     static JSDataExchange_Arr arrayExchange;
 
     // Editor only
@@ -23,26 +20,6 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
     {
         dict = new Dictionary<Type, JSDataExchange>();
 
-        dict.Add(typeof(Boolean), new JSDataExchange_Boolean());
-        dict.Add(typeof(Byte), new JSDataExchange_Byte());
-        dict.Add(typeof(SByte), new JSDataExchange_SByte());
-        dict.Add(typeof(Char), new JSDataExchange_Char());
-        dict.Add(typeof(Int16), new JSDataExchange_Int16());
-        dict.Add(typeof(UInt16), new JSDataExchange_UInt16());
-        dict.Add(typeof(Int32), new JSDataExchange_Int32());
-        dict.Add(typeof(UInt32), new JSDataExchange_UInt32());
-        dict.Add(typeof(Int64), new JSDataExchange_Int64());
-        dict.Add(typeof(UInt64), new JSDataExchange_UInt64());
-        dict.Add(typeof(Single), new JSDataExchange_Single());
-        dict.Add(typeof(Double), new JSDataExchange_Double());
-        dict.Add(typeof(IntPtr), new JSDataExchange_IntPtr());
-
-        dict.Add(typeof(String), new JSDataExchange_String());
-        dict.Add(typeof(System.Object), new JSDataExchange_SystemObject());
-
-        enumExchange = new JSDataExchange_Enum();
-        objExchange = new JSDataExchange_Obj();
-        t_Exchange = new JSDataExchange_T();
         arrayExchange = new JSDataExchange_Arr();
     }
 
@@ -153,95 +130,6 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         }
         return ph;
     }
-    // TODO: delete
-    public static ParamHandler Get_ParamHandler2(Type type, int paramIndex, bool isRef, bool isOut)
-    {
-        ParamHandler ph = new ParamHandler();
-        ph.argName = "arg" + paramIndex.ToString();
-
-        if (IsDelegateDerived(type))
-        {
-            Debug.LogError("Delegate derived class should not get here");
-            return ph;
-        }
-
-        if (isRef || isOut)
-        {
-            type = type.GetElementType();
-        }
-
-        JSDataExchange xcg = null;
-        if (type.IsGenericParameter)
-        {
-            xcg = t_Exchange;
-        }
-        if (xcg == null)
-        {
-            dict.TryGetValue(type, out xcg);
-        }
-
-        if (xcg == null)
-        {
-            if (type.IsPrimitive)
-            {
-                Debug.LogError("Unknown Primitive Type: " + type.ToString());
-                return ph;
-            }
-            if (type.IsEnum)
-            {
-                xcg = enumExchange;
-            }
-            else if (type.IsArray)
-                xcg = arrayExchange;
-            else
-            {
-                xcg = objExchange;
-            }
-        }
-
-        string typeFullName;
-        if (type.IsGenericParameter || type.ContainsGenericParameters)
-            typeFullName = "object";
-        else
-            typeFullName = JSNameMgr.GetTypeFullName(type);
-
-        string get_getParam = string.Empty;
-        if (isOut)
-        {
-            // don't need to get param but simply add index
-            // get_getParam = xcg.Get_GetRefOutParam(type);
-            ph.getter = "int r_arg" + paramIndex.ToString() + " = vc.currIndex++;\n";
-        }
-        else if (isRef)
-        {
-            get_getParam = xcg.Get_GetRefOutParam(type);
-            ph.getter = "int r_arg" + paramIndex.ToString() + " = vc.currIndex;\n";
-        }
-        else
-        {
-            get_getParam = xcg.Get_GetParam(type);
-            ph.getter = string.Empty;
-        }
-        if (isOut)
-        {
-            ph.getter += typeFullName + " " + ph.argName + ";";
-        }
-        else if (xcg.isGetParamNeedCast)
-        {
-            ph.getter += typeFullName + " " + ph.argName + " = (" + typeFullName + ")" + get_getParam + ";";
-        }
-        else
-        {
-            ph.getter += typeFullName + " " + ph.argName + " = " + get_getParam + ";";
-        }
-
-        if (isOut)
-        {
-            ph.updater = "vc.currIndex = r_arg" + paramIndex.ToString() + ";\n";
-            ph.updater += xcg.Get_ReturnRefOut(ph.argName) + ";";
-        }
-        return ph;
-    }
 
     // Editor only
     public static ParamHandler Get_ParamHandler(ParameterInfo paramInfo, int paramIndex)
@@ -317,93 +205,6 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                 sb.AppendFormat("JSMgr.vCall.datax.set{0}(JSDataExchangeMgr.eSetType.SetRval, {1});", keyword, expVar);
             return sb.ToString();
         }
-    }
-
-    // Editor only
-    // TODO: delete
-    public static string Get_GetJSReturn2(Type type)
-    {
-        if (type == typeof(void))
-            return string.Empty;
-
-        JSDataExchange xcg = null;
-        dict.TryGetValue(type, out xcg);
-        if (xcg == null)
-        {
-            if (type.IsPrimitive)
-            {
-                Debug.LogError("Unknown Primitive Type: " + type.ToString());
-                return string.Empty;
-            }
-
-            if (type.IsArray)
-            {
-                xcg = arrayExchange;
-                arrayExchange.elementType = type.GetElementType();
-                if (arrayExchange.elementType.IsArray)
-                {
-                    Debug.LogError("Return [][] not supported");
-                    return string.Empty;
-                }
-                else if (arrayExchange.elementType.ContainsGenericParameters)
-                {
-                    Debug.LogError(" Return T[] not supported");
-                    return "/* Return T[] is not supported */";
-                }
-            }
-            else if (type.IsEnum)
-            {
-                xcg = enumExchange;
-            }
-            else
-            {
-                xcg = objExchange;
-            }
-        }
-        return xcg.Get_GetJSReturn();
-    }
-    // Editor only
-    // TODO: delete
-    public static string Get_Return2(Type type, string expVar)
-    {
-        if (type == typeof(void))
-            return expVar + ";";
-
-        JSDataExchange xcg = null;
-        dict.TryGetValue(type, out xcg);
-        if (xcg == null)
-        {
-            if (type.IsPrimitive)
-            {
-                Debug.LogError("Unknown Primitive Type: " + type.ToString());
-                return "";
-            }
-
-            if (type.IsArray)
-            {
-                xcg = arrayExchange;
-                arrayExchange.elementType = type.GetElementType();
-                if (arrayExchange.elementType.IsArray)
-                {
-                    Debug.LogError("Return [][] not supported");
-                    return "";
-                }
-//                 else if (arrayExchange.elementType.ContainsGenericParameters)
-//                 {
-//                     Debug.LogError(" Return T[] not supported");
-//                     return "/* Return T[] is not supported */";
-//                 }
-            }
-            else if (type.IsEnum)
-            {
-                xcg = enumExchange;
-            }
-            else
-            {
-                xcg = objExchange;
-            }
-        }
-        return xcg.Get_Return(expVar) + ";";
     }
 
     public static string GetMethodArg_DelegateFuncionName(Type classType, string methodName, int methodIndex, int argIndex)
