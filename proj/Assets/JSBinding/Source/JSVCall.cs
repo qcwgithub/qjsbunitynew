@@ -1054,6 +1054,16 @@ public class JSVCall
         int index = JSApi.JSh_ArgvInt(cx, vp, 2);
         bool isStatic = JSApi.JSh_ArgvBool(cx, vp, 3);
 
+        // 出问题时用于排查
+        //StreamWriter sw = File.AppendText(Application.dataPath + "/VCall.txt");
+        //string nnname = string.Empty;
+        //if (op == Oper.GET_FIELD || op == Oper.SET_FIELD) nnname = JSMgr.allCallbackInfo[slot].fields[index].Method.Name;
+        //else if (op == Oper.GET_PROPERTY || op == Oper.SET_PROPERTY) nnname = JSMgr.allCallbackInfo[slot].properties[index].Method.Name;
+        //else if (op == Oper.METHOD) nnname = JSMgr.allCallbackInfo[slot].methods[index].fun.Method.Name;
+        //else if (op == Oper.CONSTRUCTOR) nnname = JSMgr.allCallbackInfo[slot].constructors[index].fun.Method.Name;
+        //sw.WriteLine(new StringBuilder().AppendFormat("{0},{1},{2},{3}  {4}", this.op, slot, index, isStatic, nnname).ToString());
+        //sw.Close();
+
         if (slot < 0 || slot >= JSMgr.allCallbackInfo.Count)
         {
 			throw(new Exception("Bad slot: " + slot));

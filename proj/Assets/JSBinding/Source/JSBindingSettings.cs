@@ -757,6 +757,7 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.SplineNode),
 		typeof(DaikonForge.Tween.TweenWait),
         typeof(DaikonForge.Tween.TweenGroup),
+        typeof(DaikonForge.Tween.TweenManager),
         typeof(System.Delegate),
         typeof(System.MulticastDelegate),
         typeof(SerializeStruct.AppleInfo),

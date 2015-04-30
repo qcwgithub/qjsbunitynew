@@ -282,6 +282,7 @@ CS.require("Generated/DaikonForge_Tween_SplineObject");
 CS.require("Generated/DaikonForge_Tween_SplineNode");
 CS.require("Generated/DaikonForge_Tween_TweenWait");
 CS.require("Generated/DaikonForge_Tween_TweenGroup");
+CS.require("Generated/DaikonForge_Tween_TweenManager");
 CS.require("Generated/System_Delegate");
 CS.require("Generated/System_MulticastDelegate");
 CS.require("Generated/SerializeStruct_AppleInfo");
