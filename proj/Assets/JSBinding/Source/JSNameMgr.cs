@@ -77,7 +77,7 @@ public static class JSNameMgr
             fatherName += "<";
             for (int i = 0; i < ts.Length; i++)
             {
-                fatherName += ts[i].Name; // 这里是T
+                fatherName += GetTypeFullName(ts[i]); // 这里是T
                 if (i != ts.Length - 1)
                     fatherName += ", ";
             }
