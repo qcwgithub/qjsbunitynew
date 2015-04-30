@@ -15,6 +15,7 @@ public class JSEngine : MonoBehaviour
     public bool debug = true;
     public int port = 5086;
     bool mDebug = true;
+    public bool forceProtectJSFunction = false;
 
     /*
      * Garbage Collection setting

@@ -270,17 +270,21 @@ public class JSVCall
     {
         return JSApi.JSh_ArgvFunction(cx, vp, currIndex++);
     }
-    //List<JSMgr.IntPtrClass> lst = new List<JSMgr.IntPtrClass>();
+    List<JSMgr.IntPtrClass> lst = new List<JSMgr.IntPtrClass>();
     public jsval getJSFunctionValue()
     {
         jsval val = new jsval();
         var i = currIndex++;
         JSApi.JSh_ArgvFunctionValue(cx, vp, i, ref val);
-        //IntPtr obj = JSApi.JSh_ArgvObject(cx, vp, i);
-        //var cls = new JSMgr.IntPtrClass(obj);
-        //JSApi.JSh_AddObjectRoot(cx, cls.pptr);
-        //lst.Add(cls);
-        //Debug.Log("functionRootCount = " + lst.Count);
+
+        if (JSEngine.inst && JSEngine.inst.forceProtectJSFunction)
+        {
+            IntPtr obj = JSApi.JSh_ArgvObject(cx, vp, i);
+            var cls = new JSMgr.IntPtrClass(obj);
+            JSApi.JSh_AddObjectRoot(cx, cls.pptr);
+            lst.Add(cls);
+            //Debug.Log("functionRootCount = " + lst.Count);
+        }
         return val;
     }
 
