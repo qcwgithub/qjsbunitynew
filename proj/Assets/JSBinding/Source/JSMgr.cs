@@ -347,7 +347,7 @@ public static class JSMgr
     //         r.Close();
     //         return ptr;
     //     }
-    class IntPtrClass
+    public class IntPtrClass
     {
         public IntPtrClass(IntPtr ptr) 
         {

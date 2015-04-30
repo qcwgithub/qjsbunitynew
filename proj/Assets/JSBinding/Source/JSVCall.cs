@@ -270,10 +270,17 @@ public class JSVCall
     {
         return JSApi.JSh_ArgvFunction(cx, vp, currIndex++);
     }
+    //List<JSMgr.IntPtrClass> lst = new List<JSMgr.IntPtrClass>();
     public jsval getJSFunctionValue()
     {
         jsval val = new jsval();
-        JSApi.JSh_ArgvFunctionValue(cx, vp, currIndex++, ref val);
+        var i = currIndex++;
+        JSApi.JSh_ArgvFunctionValue(cx, vp, i, ref val);
+        //IntPtr obj = JSApi.JSh_ArgvObject(cx, vp, i);
+        //var cls = new JSMgr.IntPtrClass(obj);
+        //JSApi.JSh_AddObjectRoot(cx, cls.pptr);
+        //lst.Add(cls);
+        //Debug.Log("functionRootCount = " + lst.Count);
         return val;
     }
 
@@ -1054,7 +1061,6 @@ public class JSVCall
         int index = JSApi.JSh_ArgvInt(cx, vp, 2);
         bool isStatic = JSApi.JSh_ArgvBool(cx, vp, 3);
 
-        // 出问题时用于排查
         //StreamWriter sw = File.AppendText(Application.dataPath + "/VCall.txt");
         //string nnname = string.Empty;
         //if (op == Oper.GET_FIELD || op == Oper.SET_FIELD) nnname = JSMgr.allCallbackInfo[slot].fields[index].Method.Name;

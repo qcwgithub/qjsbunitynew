@@ -262,8 +262,6 @@ CS.require("Generated/UnityEngine_LocationInfo");
 CS.require("Generated/System_Diagnostics_Stopwatch");
 CS.require("Generated/UnityEngine_MovieTexture");
 CS.require("Generated/UnityEngine_Motion");
-CS.require("Generated/System_Collections_Generic_List77");
-CS.require("Generated/System_Collections_Generic_List77_Enumerator");
 CS.require("Generated/TweenReflectionExtensions");
 CS.require("Generated/TweenTransformExtensions");
 CS.require("Generated/TweenComponentExtensions");

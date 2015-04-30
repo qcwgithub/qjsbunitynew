@@ -737,8 +737,8 @@ public class JSBindingSettings
 #endif
 
         
-        typeof(List<>), 
-        typeof(List<>.Enumerator), 
+        //typeof(List<>), 
+        //typeof(List<>.Enumerator), 
         typeof(TweenReflectionExtensions),
         typeof(TweenTransformExtensions),
         typeof(TweenComponentExtensions),

@@ -420,6 +420,9 @@ public class JSApi
     public static extern bool JSh_AddObjectRoot(IntPtr cx, IntPtr/*JSObject***/ rp);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern bool JSh_AddValueRoot(IntPtr cx, ref jsval val);
+
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void JSh_RemoveObjectRoot(IntPtr cx, IntPtr/*JSObject***/ rp);
 
     
