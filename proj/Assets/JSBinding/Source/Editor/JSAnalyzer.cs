@@ -106,6 +106,10 @@ public static class JSAnalyzer
         }
         sb.Append(go.name + "   -->("+go.tag+")");
 
+        // disconnect!!
+        if (PrefabUtility.GetPrefabType(go) == PrefabType.PrefabInstance)
+            PrefabUtility.DisconnectPrefabInstance(go);
+
         switch (op)
         {
             case TraverseOp.CopyMonoBehaviour:
@@ -187,7 +191,7 @@ public static class JSAnalyzer
                     {
                         //Debug.Log(jsTypeAttr.filename);
 
-                        string mustBegin = "../StreamingAssets/JavaScript/";
+                        string mustBegin = "StreamingAssets/JavaScript/";
                         int index = 0;
                         if ((index = jsTypeAttr.Filename.IndexOf(mustBegin)) >= 0)
                         {
@@ -233,13 +237,15 @@ public static class JSAnalyzer
 
     public static JSEngine FindJSEngine()
     {
-        GameObject goEngine = GameObject.Find("_JSEngine");
+		string path = "Assets/JSBinding/Prefabs/_JSEngine.prefab";
+		GameObject goEngine = (GameObject)AssetDatabase.LoadAssetAtPath (path, typeof(GameObject));
+        //GameObject goEngine = GameObject.Find("_JSEngine");
         JSEngine jsEngine = goEngine != null ? goEngine.GetComponent<JSEngine>() : null;
         if (jsEngine == null)
         {
-            Debug.LogError("No JSEngine GameObject found in current scene, find a prefab named \"_JSEngine\" and drag it to current scene.");
-        }
-        return jsEngine;
+			Debug.LogError(path + " not found.");
+		}
+		return jsEngine;
     }
 
     // delegate return true: not to replace
@@ -318,6 +324,13 @@ public static class JSAnalyzer
         var ops = new TraverseOp[] { TraverseOp.CopyMonoBehaviour, TraverseOp.RemoveOldBehaviour};
         foreach (var op in ops)
         {
+            foreach (var p in lstScenes)
+            {
+                EditorApplication.OpenScene(p);
+                IterateAllGameObjectsInTheScene(op);
+                EditorApplication.SaveScene();
+            }
+
             foreach (var p in lstPrefabs)
             {
                 UnityEngine.Object mainAsset = AssetDatabase.LoadMainAssetAtPath(p);
@@ -327,13 +340,6 @@ public static class JSAnalyzer
                 }
             }
             EditorApplication.SaveAssets();
-
-            foreach (var p in lstScenes)
-            {
-                EditorApplication.OpenScene(p);
-                IterateAllGameObjectsInTheScene(op);
-                EditorApplication.SaveScene();
-            }
         }
         Debug.Log("Replace OK.");
         AssetDatabase.Refresh();
