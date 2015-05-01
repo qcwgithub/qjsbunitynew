@@ -397,6 +397,12 @@ public static class JSSerializerEditor
             {
                 continue;
             }
+            if (behav == null)
+            {
+                // Debug.Log("00000000000");
+                Debug.LogWarning("There is null behaviour in gameObject \"" + go.name + "\"");
+                continue;
+            }
 
             if (WillTypeBeTranslatedToJavaScript(behav.GetType()))
             {   // if this MonoBehaviour is going to be translated to JavaScript

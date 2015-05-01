@@ -231,17 +231,26 @@ public static class JSAnalyzer
         return (shortName[0] == '_');
     }
 
-    // delegate return true: not to replace
-    public delegate bool DelFilterReplaceFile(string fullpath);
-
-    [MenuItem("JSB/Replace all monos for all prefabs and scenes")]
-    public static void ReplaceAllMonos()
+    public static JSEngine FindJSEngine()
     {
         GameObject goEngine = GameObject.Find("_JSEngine");
         JSEngine jsEngine = goEngine != null ? goEngine.GetComponent<JSEngine>() : null;
         if (jsEngine == null)
         {
             Debug.LogError("No JSEngine GameObject found in current scene, find a prefab named \"_JSEngine\" and drag it to current scene.");
+        }
+        return jsEngine;
+    }
+
+    // delegate return true: not to replace
+    public delegate bool DelFilterReplaceFile(string fullpath);
+
+    [MenuItem("JSB/Replace all monos for all prefabs and scenes")]
+    public static void ReplaceAllMonos()
+    {
+        JSEngine jsEngine = FindJSEngine();
+        if (jsEngine == null)
+        {
             return;
         }
 
@@ -262,11 +271,8 @@ public static class JSAnalyzer
 
         DelFilterReplaceFile filter = (path) => 
         {
-            var dataPath = Application.dataPath;
-            if (path.IndexOf(dataPath) != 0)
-                return true;
-
-            var subPath = path.Substring(dataPath.Length + 1);
+            // path begins witn Assets/
+            var subPath = path.Substring("Assets/".Length);
 
             // Skip paths in jsEngine.DirectoriesNotToReplace
             foreach (var p in jsEngine.DirectoriesNotToReplace)
@@ -281,23 +287,50 @@ public static class JSAnalyzer
             return false;
         };
 
+        var lstPrefabs = GetAllPrefabPaths(filter);
+        var lstScenes = GetAllScenePaths(filter);
+
+        var sb = new StringBuilder();
+        foreach (var p in lstPrefabs)
+        {
+            sb.Append(p.Substring("Assets/".Length) + "\r\n");
+        }
+        foreach (var p in lstScenes)
+        {
+            sb.Append(p.Substring("Assets/".Length) + "\r\n");
+        }
+        File.WriteAllText(Application.dataPath + "/Replace.txt", sb.ToString());
+        bContinue = EditorUtility.DisplayDialog("TIP",
+             "Files list are in " + Application.dataPath + "/Replace.txt. please verify.", 
+             "OK",
+             "Cancel");
+
+        if (!bContinue)
+        {
+            Debug.Log("Operation canceled.");
+            return;
+        }
+
+        initAnalyze();
+
         // first copy
         // then remove
         var ops = new TraverseOp[] { TraverseOp.CopyMonoBehaviour, TraverseOp.RemoveOldBehaviour};
         foreach (var op in ops)
         {
-            IterateAllPrefabs(op, filter);
+            foreach (var p in lstPrefabs)
+            {
+                UnityEngine.Object mainAsset = AssetDatabase.LoadMainAssetAtPath(p);
+                if (mainAsset is GameObject)
+                {
+                    TraverseGameObject(sbHierachy, (GameObject)mainAsset, 1, op);
+                }
+            }
             EditorApplication.SaveAssets();
 
-            string[] GUIDs = AssetDatabase.FindAssets("t:Scene");
-            foreach (var guid in GUIDs)
+            foreach (var p in lstScenes)
             {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                if (filter(path))
-                    continue;
-
-                // Debug.Log("Replace Scene: " + path);
-                EditorApplication.OpenScene(path);
+                EditorApplication.OpenScene(p);
                 IterateAllGameObjectsInTheScene(op);
                 EditorApplication.SaveScene();
             }
@@ -320,6 +353,42 @@ public static class JSAnalyzer
             }
         }
         Debug.Log(sbHierachy);
+    }
+    // path begins with Assets/
+    public static List<string> GetAllScenePaths(DelFilterReplaceFile filter)
+    {
+        var lst = new List<string>();
+
+        string[] GUIDs = AssetDatabase.FindAssets("t:Scene");
+        foreach (var guid in GUIDs)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (filter(path))
+            {
+                continue;
+            }
+
+            lst.Add(path);
+        }
+        return lst;
+    }
+    // path begins with Assets/
+    public static List<string> GetAllPrefabPaths(DelFilterReplaceFile filter)
+    {
+        var lst = new List<string>();
+
+        string[] GUIDs = AssetDatabase.FindAssets("t:Prefab");
+        foreach (var guid in GUIDs)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (filter(path))
+            {
+                continue;
+            }
+
+            lst.Add(path);
+        }
+        return lst;
     }
 
     // [MenuItem("JSB/Replace MonoBehaviours of all prefabs")]
@@ -411,11 +480,9 @@ public static class JSAnalyzer
     }
     public static void MakeJsTypeAttributeInSrc()
     {
-        GameObject goEngine = GameObject.Find("_JSEngine");
-        JSEngine jsEngine = goEngine != null ? goEngine.GetComponent<JSEngine>() : null;
+        JSEngine jsEngine = FindJSEngine();
         if (jsEngine == null)
         {
-            Debug.LogError("No JSEngine GameObject found in current scene, find a prefab named \"_JSEngine\" and drag it to current scene.");
             return;
         }
 
@@ -436,7 +503,7 @@ fields before this action.",
         }
 
         var sb = new StringBuilder();
-        sb.Append("files to handle:\n-----------------------------------------\n");
+        //sb.Append("files to handle:\n-----------------------------------------\n");
         string srcFolder = Application.dataPath.Replace('\\', '/');
         string[] files = Directory.GetFiles(srcFolder, "*.cs", SearchOption.AllDirectories);
         List<string> lstFiles = new List<string>();
@@ -466,11 +533,22 @@ fields before this action.",
             }
             if (export)
             {
-                sb.Append(subPath + "\n");
+                sb.Append(subPath + "\r\n");
                 lstFiles.Add(path);
             }
         }
-        Debug.Log(sb);
+
+        File.WriteAllText(Application.dataPath + "/FilesToAddJsType.txt", sb.ToString());
+        bContinue = EditorUtility.DisplayDialog("TIP",
+             "Files list are in " + Application.dataPath + "/FilesToAddJsType.txt. please verify.",
+             "OK",
+             "Cancel");
+
+        if (!bContinue)
+        {
+            Debug.Log("Operation canceled.");
+            return;
+        }
 
         foreach (string path in lstFiles)
         {
