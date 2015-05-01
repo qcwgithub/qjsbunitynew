@@ -99,6 +99,12 @@ public class JSEngine : MonoBehaviour
 
     void Awake()
     {
+        if (JSEngine.inst != null)
+        {
+            // destroy self
+            Destroy(gameObject);
+            return;
+        }
 // 		string tname = typeof(List<string>).GetGenericTypeDefinition().FullName;
 // 		Type type = typeof(List<string>).Assembly.GetType (tname);
         //T//ype type = typeof(List<T>);
@@ -121,6 +127,8 @@ public class JSEngine : MonoBehaviour
 
     void Update()
     {
+        if (this != JSEngine.inst)
+            return;
         if (inited)
         {
             if (mDebug)
@@ -131,6 +139,8 @@ public class JSEngine : MonoBehaviour
     float accum = 0f;
     void LateUpdate()
     {
+        if (this != JSEngine.inst)
+            return;
         if (inited)
         {
             accum += Time.deltaTime;
@@ -146,16 +156,21 @@ public class JSEngine : MonoBehaviour
 
     void OnDestroy()
     {
-        JSMgr.ShutdownJSEngine();
-        if (mDebug)
-            JSApi.JSh_CleanupDebugger();
-        Debug.Log("----------JSEngine Destroy ---");
+        if (this == JSEngine.inst)
+        {
+            JSMgr.ShutdownJSEngine();
+            if (mDebug)
+                JSApi.JSh_CleanupDebugger();
+            Debug.Log("----------JSEngine Destroy ---");
+        }
     }
 
     // OUTPUT object mappings
 	public bool showStatistics = true;
     void OnGUI()
     {
+        if (this != JSEngine.inst)
+            return;
 		if (!showStatistics)
 			return;
         int countDict1, countDict2;
