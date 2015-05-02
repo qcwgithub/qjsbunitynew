@@ -1084,29 +1084,35 @@ public static class JSMgr
         public IntPtr jsObj;   
         public object csObj;
         public string name;
-        public JS_CS_Relation(IntPtr _jsObj, object _csObj)
+        public int hash;
+        public JS_CS_Relation(IntPtr _jsObj, object _csObj, int h)
         {
             jsObj = _jsObj;
             csObj = _csObj;
             name = csObj.GetType().Name;// csObj.ToString();
+            this.hash = h;
         }
     }
 
     // 
     public static void addJSCSRelation(IntPtr jsObj, IntPtr nativeObj, object csObj)
     {
-        if (mDict1.ContainsKey(nativeObj.ToInt64()))
+        JS_CS_Relation Rel;
+        if (mDict1.TryGetValue(nativeObj.ToInt64(), out Rel))
         {
             // Debug.LogWarning("mDict1 already contains key for: " + nativeObj.ToString());
             // !!!!!
+            // when GC occurs . Same jsObj will get here before finalizer called
             mDict1.Remove(nativeObj.ToInt64());
+            //if (Rel.csObj != null && Rel.csObj.GetType().IsClass)
+            mDict2.Remove(Rel.hash);
         }
-
-        mDict1.Add(nativeObj.ToInt64(), new JS_CS_Relation(nativeObj, csObj));
+        int hash = csObj.GetHashCode();
+        mDict1.Add(nativeObj.ToInt64(), new JS_CS_Relation(nativeObj, csObj, hash));
 
         if (csObj.GetType().IsClass) 
         {
-            mDict2.Add(csObj, new JS_CS_Relation(jsObj, csObj));
+            mDict2.Add(hash, new JS_CS_Relation(jsObj, csObj, hash));
         }
 
         //         if (!csObj.GetType().IsValueType)
@@ -1128,14 +1134,24 @@ public static class JSMgr
             return IntPtr.Zero;
 
         JS_CS_Relation Rel;
-        if (mDict2.TryGetValue(csObj, out Rel))
+        if (mDict2.TryGetValue(csObj.GetHashCode(), out Rel))
             return Rel.jsObj;
         return IntPtr.Zero;
     }
     public static void changeJSObj(IntPtr nativeObj, object csObjNew)
     {
-        mDict1.Remove(nativeObj.ToInt64());
-        mDict1.Add(nativeObj.ToInt64(), new JS_CS_Relation(nativeObj, csObjNew));
+        if (!csObjNew.GetType().IsValueType)
+        {
+            Debug.LogError("class can not call changeJSObj");
+            return;
+        }
+        var Key = nativeObj.ToInt64();
+        JS_CS_Relation obj;
+        if (mDict1.TryGetValue(Key, out obj))
+        {
+            mDict1.Remove(Key);
+            mDict1.Add(Key, new JS_CS_Relation(nativeObj, csObjNew, obj.GetHashCode()));
+        }
 //        addJSCSRelation(nativeObj, csObjNew);
     }
     //     public static void changeCSObj(object csObj, object csObjNew)
@@ -1155,7 +1171,10 @@ public static class JSMgr
     // JS's __nativeObj -> CS csObj
     static Dictionary<long, JS_CS_Relation> mDict1 = new Dictionary<long, JS_CS_Relation>(); // key = jsObj.ToInt64()
     // CS csobj -> JS's jsObj
-    static Dictionary<object, JS_CS_Relation> mDict2 = new Dictionary<object, JS_CS_Relation>(); // key = object
+    // dict2 stores hashCode as key, may cause problems (2 object may share same hashCode)
+    // but if use object as key, after calling 'UnityObject.Destroy(this)' in js, 
+    // can't remove element from mDict2 due to csObj is null (JSObjectFinalizer)
+    static Dictionary<int, JS_CS_Relation> mDict2 = new Dictionary<int, JS_CS_Relation>(); // key = object.hashCode()
 
     public static void GetDictCount(out int countDict1, out int countDict2)
     {
@@ -1178,15 +1197,11 @@ public static class JSMgr
             mDict1.Remove(nativeObj.ToInt64());
             //Debug.Log("GC: " + nativeObj.ToInt64() + " removed from mDict1");
 
-            object csObj = Rel.csObj;
-            if (csObj != null && csObj.GetType().IsClass)
-            {
-                mDict2.Remove(csObj);
-            }
+            mDict2.Remove(Rel.hash);
         }
         else
         {
-            // Debug.LogError("Finalizer: csObj not found: " + jsObj.ToInt64().ToString());
+            //Debug.LogError("Finalizer: csObj not found: " + nativeObj.ToInt64().ToString());
         }
 //         if (obj != null)
 //             Debug.Log("-jsObj " + (mDict1.Count).ToString() + " " + obj.name);

@@ -177,6 +177,7 @@ public class JSEngine : MonoBehaviour
         JSMgr.GetDictCount(out countDict1, out countDict2);
         GUI.TextArea(new Rect(0, 10, 400, 20), "C#<->JS Object Total: " + countDict1.ToString() + ", Class: " + countDict2.ToString());
 
+        int clsCount = 0;
         Dictionary<long, JSMgr.JS_CS_Relation> dict1 = JSMgr.GetDict1();
         Dictionary<string, int> tj = new Dictionary<string, int>();
         foreach (var v in dict1)
@@ -190,8 +191,11 @@ public class JSEngine : MonoBehaviour
             {
                 tj[jscs.name] = 1;
             }
+            if (jscs.csObj != null && jscs.csObj.GetType().IsClass) clsCount++;
         }
         float y = 40;
+        GUI.TextArea(new Rect(0, y, 400, 20), "class count: " + clsCount);
+        y += 20;
         foreach (var v in tj)
         {
             GUI.TextArea(new Rect(0, y, 400, 20), v.Key + ": " + v.Value);
