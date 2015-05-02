@@ -20,6 +20,7 @@ CS.require("GeneratedFiles");
 // will overwrite some functions in step 1)
 //--------------------------------------------------
 CS.require("Manual/UnityEngine_Vector3");
+CS.require("Manual/UnityEngine_Vector2");
 //
 // may be more..
 //

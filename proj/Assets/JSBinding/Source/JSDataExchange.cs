@@ -318,6 +318,64 @@ public class JSDataExchangeMgr
         }
         return null;
     }
+    public Vector2 getVector2(IntPtr jsObj)
+    {
+        if (jsObj == IntPtr.Zero)
+            return Vector2.zero;
+
+        Vector2 v = Vector2.zero;
+        jsval val = new jsval();
+
+        JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
+        if (JSApi.JSh_JsvalIsInt32(ref val))
+            v.x = (float)JSApi.JSh_GetJsvalInt(ref val);
+        else
+            v.x = (float)JSApi.JSh_GetJsvalDouble(ref val);
+
+        JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
+        if (JSApi.JSh_JsvalIsInt32(ref val))
+            v.y = (float)JSApi.JSh_GetJsvalInt(ref val);
+        else
+            v.y = (float)JSApi.JSh_GetJsvalDouble(ref val);
+        return v;
+    }
+    public Vector2 getVector2(eGetType e)
+    {
+        switch (e)
+        {
+            case eGetType.GetARGV:
+                {
+                    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
+                    return getVector2(jsObj);
+                }
+                break;
+            case eGetType.GetARGVRefOut:
+                {
+                    jsval val = new jsval();
+                    JSApi.JSh_SetJsvalUndefined(ref val);
+                    getJSValueOfParam(ref val, vc.currIndex++);
+
+                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
+                    return getVector2(jsObj);
+                }
+                break;
+            case eGetType.Jsval:
+                {
+                    // 通过 vc.valTemp 传递值
+                    jsval val = new jsval();
+                    JSApi.JSh_SetJsvalUndefined(ref val);
+
+                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
+                    if (jsObj == IntPtr.Zero)
+                        return getVector2(jsObj);
+                }
+                break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
+        }
+        return Vector2.zero;
+    }
     public Vector3 getVector3(IntPtr jsObj) 
     {
         if (jsObj == IntPtr.Zero)
@@ -466,6 +524,8 @@ public class JSDataExchangeMgr
                     IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, i);
                     if (UnityEngineManual.IsJSObjVector3(jsObj))
                         return getVector3(e);
+                    else if (UnityEngineManual.IsJSObjVector2(jsObj))
+                        return getVector2(e);
                     else
                         return getObject(e);
                 }
@@ -491,6 +551,8 @@ public class JSDataExchangeMgr
                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
                     if (UnityEngineManual.IsJSObjVector3(jsObj))
                         return getVector3(e);
+                    else if (UnityEngineManual.IsJSObjVector2(jsObj))
+                        return getVector2(e);
                     else
                         return getObject(e);
                 }
@@ -621,6 +683,8 @@ public class JSDataExchangeMgr
         }
         else if (type == typeof(Vector3))
             setVector3(e, (Vector3)obj);
+        else if (type == typeof(Vector2))
+            setVector3(e, (Vector2)obj);
         else
         {
             setObject(e, obj);
@@ -982,6 +1046,85 @@ public class JSDataExchangeMgr
                     IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex);
                     if (jsObj == IntPtr.Zero) Debug.LogError("ref/out param must be js obj!");
                     JSApi.SetProperty(JSMgr.cx, jsObj, "Value", VALUE_LEN, ref val);
+                }
+                break;
+            default:
+                Debug.LogError("Not Supported");
+                break;
+        }
+    }
+    public void setVector2(ref IntPtr jsObj, Vector2 v)
+    {
+        if (jsObj == IntPtr.Zero)
+            return;
+
+        jsval val = new jsval();
+
+        JSApi.JSh_SetJsvalDouble(ref val, v.x);
+        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
+
+        JSApi.JSh_SetJsvalDouble(ref val, v.y);
+        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
+    }
+    public void setVector2(eSetType e, Vector2 csObj)
+    {
+        switch (e)
+        {
+            case eSetType.Jsval:
+            case eSetType.SetRval:
+                {
+                    var typeName = "UnityEngine.Vector2";
+                    // 如果不使用JS版本的Vector2，这里将导致死循环
+                    IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
+                    if (jsObj != IntPtr.Zero)
+                    {
+                        setVector2(ref jsObj, csObj);
+                        JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
+                    }
+                    else
+                    {
+                        JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
+                        Debug.LogError("Return a \"" + typeName + "\" to JS failed. ");
+                    }
+
+                    if (e == eSetType.Jsval)
+                        vc.valTemp = vc.valReturn;
+                    else if (e == eSetType.SetRval)
+                        JSApi.JSh_SetRvalJSVAL(JSMgr.cx, vc.vp, ref vc.valReturn);
+                }
+                break;
+            case eSetType.UpdateARGVRefOut:
+                {
+                    jsval val = new jsval(); val.asBits = 0;
+                    IntPtr argvJSObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex);
+                    if (argvJSObj != IntPtr.Zero)
+                    {
+                        bool success = false;
+
+                        var typeName = "UnityEngine.Vector2";
+                        IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
+                        if (jsObj != IntPtr.Zero)
+                        {
+                            setVector2(ref jsObj, csObj);
+
+                            // 3)
+                            // argvObj.Value = jsObj
+                            //
+                            JSApi.JSh_SetJsvalObject(ref val, jsObj);
+                            JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
+                            success = true;
+                        }
+                        else
+                        {
+                            Debug.LogError("Return a \"" + typeName + "\" to JS failed.");
+                        }
+
+                        if (!success)
+                        {
+                            JSApi.JSh_SetJsvalUndefined(ref val);
+                            JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
+                        }
+                    }
                 }
                 break;
             default:
@@ -1699,6 +1842,8 @@ public class JSDataExchangeMgr
             ret = "Whatever";
         else if (type == typeof(Vector3))
             ret = "Vector3";
+        else if (type == typeof(Vector2))
+            ret = "Vector2";
         else
             ret = "Object";
 
