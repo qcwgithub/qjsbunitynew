@@ -739,6 +739,8 @@ public class JSBindingSettings
         
         //typeof(List<>), 
         //typeof(List<>.Enumerator), 
+
+        /*
         typeof(TweenReflectionExtensions),
         typeof(TweenTransformExtensions),
         typeof(TweenComponentExtensions),
@@ -758,6 +760,8 @@ public class JSBindingSettings
 		typeof(DaikonForge.Tween.TweenWait),
         typeof(DaikonForge.Tween.TweenGroup),
         typeof(DaikonForge.Tween.TweenManager),
+        */
+
         typeof(System.Delegate),
         typeof(System.MulticastDelegate),
         typeof(SerializeStruct.AppleInfo),

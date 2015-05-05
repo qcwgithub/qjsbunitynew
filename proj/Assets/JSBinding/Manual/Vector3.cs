@@ -64,7 +64,7 @@ public partial class UnityEngineManual
         return true;
     }
 
-//#if UNITY_4_6
+#if UNITY_4_6
     public static bool Vector3_ProjectOnPlane__Vector3__Vector3(JSVCall vc, int start, int count)
     {
         Vector3 a0 = vc.datax.getVector3(JSDataExchangeMgr.eGetType.GetARGV);
@@ -73,7 +73,7 @@ public partial class UnityEngineManual
         vc.datax.setVector3(JSDataExchangeMgr.eSetType.SetRval, ret);
         return true;
     }
-//#endif
+#endif
     public static bool Vector3_Reflect__Vector3__Vector3(JSVCall vc, int start, int count)
     {
         Vector3 a0 = vc.datax.getVector3(JSDataExchangeMgr.eGetType.GetARGV);
