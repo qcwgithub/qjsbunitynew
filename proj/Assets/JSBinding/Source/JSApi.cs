@@ -86,6 +86,11 @@ public class JSApi
     [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 #endif
     public delegate bool JSNative(IntPtr cx, uint argc, IntPtr vp);
+
+#if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+    [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+#endif
+    public delegate void JSGCCallback(/*JSRuntime **/IntPtr rt, /*JSGCStatus*/int status, /*void **/ IntPtr data);
     
 
     //     [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -234,31 +239,11 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr JSh_ThisObject(IntPtr cx, IntPtr vp);
 
+    /* Remember to propagate changes to the C defines below. */
 
-
-    /*
-     * Arguments from JavaScript
-     */
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_ArgvIsUndefined(IntPtr cx, IntPtr vp, int i);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_ArgvIsNull(IntPtr cx, IntPtr vp, int i);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_ArgvIsNullOrUndefined(IntPtr cx, IntPtr vp, int i);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_ArgvIsInt32(IntPtr cx, IntPtr vp, int i);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_ArgvIsDouble(IntPtr cx, IntPtr vp, int i);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_ArgvIsBool(IntPtr cx, IntPtr vp, int i);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_ArgvIsString(IntPtr cx, IntPtr vp, int i);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_ArgvIsNumber(IntPtr cx, IntPtr vp, int i);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_ArgvIsObject(IntPtr cx, IntPtr vp, int i);
-
-
+    public static extern uint JSh_ArgvTag(IntPtr cx, IntPtr vp, int i);
+    
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool JSh_ArgvBool(IntPtr cx, IntPtr vp, int i);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -365,9 +350,45 @@ public class JSApi
     //     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     //     public static extern bool JSh_SetClassFinalize(IntPtr cx, string className, SC_FINALIZE finalizeOp);
 
+    public enum JSValueType
+    {
+        JSVAL_TYPE_DOUBLE = 0x00,
+        JSVAL_TYPE_INT32 = 0x01,
+        JSVAL_TYPE_UNDEFINED = 0x02,
+        JSVAL_TYPE_BOOLEAN = 0x03,
+        JSVAL_TYPE_MAGIC = 0x04,
+        JSVAL_TYPE_STRING = 0x05,
+        JSVAL_TYPE_NULL = 0x06,
+        JSVAL_TYPE_OBJECT = 0x07,
+
+        /* These never appear in a jsval; they are only provided as an out-of-band value. */
+        JSVAL_TYPE_UNKNOWN = 0x20,
+        JSVAL_TYPE_MISSING = 0x21
+    }
+
+    public struct JSValueTag
+    {
+        public static uint JSVAL_TAG_CLEAR = 0xFFFFFF80;
+        public static uint JSVAL_TAG_INT32 = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_INT32;
+        public static uint JSVAL_TAG_UNDEFINED = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_UNDEFINED;
+        public static uint JSVAL_TAG_STRING = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_STRING;
+        public static uint JSVAL_TAG_BOOLEAN = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_BOOLEAN;
+        public static uint JSVAL_TAG_MAGIC = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_MAGIC;
+        public static uint JSVAL_TAG_NULL = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_NULL;
+        public static uint JSVAL_TAG_OBJECT = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_OBJECT;
+    }
     public struct jsval
     {
         public UInt64 asBits;
+        public static bool isUndefined(uint tag) { return JSValueTag.JSVAL_TAG_UNDEFINED == tag; }
+        public static bool isNull(uint tag) { return JSValueTag.JSVAL_TAG_NULL == tag; }
+        public static bool isNullOrUndefined(uint tag) { return isUndefined(tag) || isNull(tag); }
+        public static bool isInt32(uint tag) { return JSValueTag.JSVAL_TAG_INT32 == tag; }
+        public static bool isDouble(uint tag) { return JSValueTag.JSVAL_TAG_CLEAR >= tag; }
+        public static bool isBoolean(uint tag) { return JSValueTag.JSVAL_TAG_BOOLEAN == tag; }
+        public static bool isString(uint tag) { return JSValueTag.JSVAL_TAG_STRING == tag; }
+        public static bool isNumber(uint tag) { return JSValueTag.JSVAL_TAG_INT32 >= tag; }
+        public static bool isObject(uint tag) { return JSValueTag.JSVAL_TAG_OBJECT == tag; }
     }
 
     //
@@ -451,6 +472,13 @@ public class JSApi
     public static extern void JSh_SetPPointer(IntPtr pp, IntPtr value);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr JSh_GetPPointer(IntPtr pp);
+    
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern IntPtr JSh_NewHeapObject(/* JSObject* */IntPtr obj);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern void JSh_DelHeapObject(/* JS::Heap<JSObject*>* */IntPtr heapObj);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern void JSh_SetGCCallback(/*JSRuntime* */ IntPtr rt, JSGCCallback cb, IntPtr data);
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -54,7 +54,8 @@ public class JSDataExchangeMgr
             case eGetType.GetARGV:
                 {
                     int i = vc.currIndex++;
-                    if (JSApi.JSh_ArgvIsDouble(JSMgr.cx, vc.vp, i))
+                    var tag = JSApi.JSh_ArgvTag(JSMgr.cx, vc.vp, i);
+                    if (jsval.isDouble(tag))
                         return JSApi.JSh_ArgvDouble(JSMgr.cx, vc.vp, i);
                     else
                         return (double)JSApi.JSh_ArgvInt(JSMgr.cx, vc.vp, i);
@@ -509,17 +510,18 @@ public class JSDataExchangeMgr
             case eGetType.GetARGV:
             {
                 int i = vc.currIndex;
-                if (JSApi.JSh_ArgvIsNullOrUndefined(JSMgr.cx, vc.vp, i))
+                var tag = JSApi.JSh_ArgvTag(JSMgr.cx, vc.vp, i);
+                if (jsval.isNullOrUndefined(tag))
                     return null;
-                else if (JSApi.JSh_ArgvIsBool(JSMgr.cx, vc.vp, i))
+                else if (jsval.isBoolean(tag))
                     return getBoolean(e);
-                else if (JSApi.JSh_ArgvIsInt32(JSMgr.cx, vc.vp, i))
+                else if (jsval.isInt32(tag))
                     return getInt32(e);
-                else if (JSApi.JSh_ArgvIsDouble(JSMgr.cx, vc.vp, i))
+                else if (jsval.isDouble(tag))
                     return getSingle(e);
-                else if (JSApi.JSh_ArgvIsString(JSMgr.cx, vc.vp, i))
+                else if (jsval.isString(tag))
                     return getString(e);
-                else if (JSApi.JSh_ArgvIsObject(JSMgr.cx, vc.vp, i))
+                else if (jsval.isObject(tag))
                 {
                     IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, i);
                     if (UnityEngineManual.IsJSObjVector3(jsObj))

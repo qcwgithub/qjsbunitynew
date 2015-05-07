@@ -80,6 +80,22 @@ public static class JSMgr
         return true;
     }
 
+    static bool GC_ing = false;
+    [MonoPInvokeCallbackAttribute(typeof(JSApi.JSGCCallback))]
+    static void jsGCCallback(/*JSRuntime **/IntPtr rt, /*JSGCStatus*/int status, /*void **/ IntPtr data)
+    {
+        if (status == 0)
+        {
+            GC_ing = true;
+            Debug.Log("///// JSGC_BEGIN");
+        }
+        else if (status == 1)
+        {
+            // JSGC_END
+            Debug.Log("///// JSGC_END");
+        }
+    }
+
     // load generated js files
     public delegate void OnInitJSEngine(bool bSuccess);
     public static OnInitJSEngine onInitJSEngine;
@@ -216,6 +232,7 @@ public static class JSMgr
         }
 
         JSApi.JSh_InitReflect(cx, glob);
+        JSApi.JSh_SetGCCallback(rt, jsGCCallback, IntPtr.Zero);
 
 //         JSApi.JSh_DefineFunction(cx, glob, "printInt", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(printInt)), 1, 0/*4164*/);
 //         JSApi.JSh_DefineFunction(cx, glob, "printString", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(printString)), 1, 0/*4164*/);
@@ -993,7 +1010,8 @@ public static class JSMgr
     {
         if (argc != 1 && argc != 2)
             return true;
-        if (!JSApi.JSh_ArgvIsString(cx, vp, 0))
+        var tag = JSApi.JSh_ArgvTag(cx, vp, 0);
+        if (!jsval.isString(tag))
             return true;
 
         string jsScriptName = JSApi.JSh_ArgvStringS(cx, vp, 0);
@@ -1105,6 +1123,7 @@ public static class JSMgr
             // when GC occurs . Same jsObj will get here before finalizer called
             mDict1.Remove(nativeObj.ToInt64());
             //if (Rel.csObj != null && Rel.csObj.GetType().IsClass)
+            // 直接尝试删，没删到也没事
             mDict2.Remove(Rel.hash);
         }
         int hash = csObj.GetHashCode();
@@ -1112,7 +1131,10 @@ public static class JSMgr
 
         if (csObj.GetType().IsClass) 
         {
-            mDict2.Add(hash, new JS_CS_Relation(jsObj, csObj, hash));
+            if (!mDict2.ContainsKey(hash))
+                mDict2.Add(hash, new JS_CS_Relation(jsObj, csObj, hash));
+            else
+                Debug.Log("");
         }
 
         //         if (!csObj.GetType().IsValueType)
@@ -1174,6 +1196,12 @@ public static class JSMgr
     // dict2 stores hashCode as key, may cause problems (2 object may share same hashCode)
     // but if use object as key, after calling 'UnityObject.Destroy(this)' in js, 
     // can't remove element from mDict2 due to csObj is null (JSObjectFinalizer)
+    //
+    // mDict2 存储 object.GetHashCode() -> jsObj
+    // 这样有可能有问题，因为2个不同的对象可能会有相同的 hashCode
+    // 但是如果使用 object 为 key，如果代码里调用了类似 Destroy(go) 的代码，导致 object 变为 null
+    // 那么 mDict2 就无法再删除那个条目。(进入一种很奇怪的状态，托管不空，NATIVE为空的状况)
+    // 
     static Dictionary<int, JS_CS_Relation> mDict2 = new Dictionary<int, JS_CS_Relation>(); // key = object.hashCode()
 
     public static void GetDictCount(out int countDict1, out int countDict2)
@@ -1182,11 +1210,6 @@ public static class JSMgr
         countDict2 = mDict2.Count;
     }
     public static Dictionary<long, JS_CS_Relation> GetDict1() { return mDict1;  }
-
-    // dict2 stores hashCode as key, may cause problems (2 object may share same hashCode)
-    // but if use object as key, after calling 'UnityObject.Destroy(this)' in js, 
-    // can't remove element from mDict2 due to csObj is null (JSObjectFinalizer)
-    //static Dictionary<int, JS_CS_Relation> mDict2 = new Dictionary<int, JS_CS_Relation>(); // key = nativeObj.hashCode()
 
     [MonoPInvokeCallbackAttribute(typeof(JSApi.SC_FINALIZE))]
     static void JSObjectFinalizer(IntPtr freeOp, IntPtr nativeObj)

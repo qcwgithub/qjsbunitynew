@@ -107,48 +107,48 @@ public class JSVCall
     //
     // get parameters
     //
-    public Boolean getBool() { return JSApi.JSh_ArgvBool(cx, vp, currIndex++); }
-    public String getString() { return JSApi.JSh_ArgvStringS(cx, vp, currIndex++); }
-    public Char getChar() { return (Char)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public Byte getByte() { return (Byte)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public SByte getSByte() { return (SByte)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public UInt16 getUInt16() { return (UInt16)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public Int16 getInt16() { return (Int16)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public UInt32 getUInt32() { return (UInt32)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public Int32 getInt32() { return (Int32)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public UInt64 getUInt64() { return (UInt64)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public Int64 getInt64() { return (Int64)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public Int32 getEnum() { return (Int32)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    public Single getFloat()
-    {
-        // js has only int32 and double, so...
-        int i = currIndex++;
-        if (JSApi.JSh_ArgvIsDouble(cx, vp, i))
-            return (Single)JSApi.JSh_ArgvDouble(cx, vp, i);
-        else
-            return (Single)JSApi.JSh_ArgvInt(cx, vp, i);
-    }
-    public Double getDouble()
-    {
-        // js has only int32 and double, so...
-        int i = currIndex++;
-        if (JSApi.JSh_ArgvIsDouble(cx, vp, i))
-            return (Double)JSApi.JSh_ArgvDouble(cx, vp, i);
-        else
-            return (Double)JSApi.JSh_ArgvInt(cx, vp, i);
-    }
-//     public JSValueWrap.Wrap getWrap()
-//     {
-//         IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-//         object csObj = JSMgr.getCSObj(jsObj);
-//         return (JSValueWrap.Wrap)csObj;
-//     }
-    
-//     public object getObject(Type typeParam = null)
-//     {
-//         IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-//         if (jsObj == IntPtr.Zero)
-//             return null;
+    //    public Boolean getBool() { return JSApi.JSh_ArgvBool(cx, vp, currIndex++); }
+    //    public String getString() { return JSApi.JSh_ArgvStringS(cx, vp, currIndex++); }
+    //    public Char getChar() { return (Char)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public Byte getByte() { return (Byte)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public SByte getSByte() { return (SByte)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public UInt16 getUInt16() { return (UInt16)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public Int16 getInt16() { return (Int16)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public UInt32 getUInt32() { return (UInt32)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public Int32 getInt32() { return (Int32)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public UInt64 getUInt64() { return (UInt64)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public Int64 getInt64() { return (Int64)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public Int32 getEnum() { return (Int32)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
+    //    public Single getFloat()
+    //    {
+    //        // js has only int32 and double, so...
+    //        int i = currIndex++;
+    //        if (JSApi.JSh_ArgvIsDouble(cx, vp, i))
+    //            return (Single)JSApi.JSh_ArgvDouble(cx, vp, i);
+    //        else
+    //            return (Single)JSApi.JSh_ArgvInt(cx, vp, i);
+    //    }
+    //   public Double getDouble()
+    //   {
+    //       // js has only int32 and double, so...
+    //       int i = currIndex++;
+    //       if (JSApi.JSh_ArgvIsDouble(cx, vp, i))
+    //           return (Double)JSApi.JSh_ArgvDouble(cx, vp, i);
+    //       else
+    //           return (Double)JSApi.JSh_ArgvInt(cx, vp, i);
+    //   }
+    ////     public JSValueWrap.Wrap getWrap()
+    ////     {
+    ////         IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
+    ////         object csObj = JSMgr.getCSObj(jsObj);
+    ////         return (JSValueWrap.Wrap)csObj;
+    ////     }
+    //   
+    ////     public object getObject(Type typeParam = null)
+    ////     {
+    ////         IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
+    ////         if (jsObj == IntPtr.Zero)
+    ////             return null;
 // 
 //         object csObj = JSMgr.getCSObj(jsObj);
 //         if (csObj is JSValueWrap.Wrap)
@@ -180,43 +180,43 @@ public class JSVCall
     //
     // get returnvalue from js
     //
-    public Boolean getRtBool() { return JSApi.JSh_GetJsvalBool(ref rvalCallJS); }
-    public String getRtString() { return JSApi.JSh_GetJsvalStringS(cx, ref rvalCallJS); }
-    public Char getRtChar() { return (Char)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public Byte getRtByte() { return (Byte)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public SByte getRtSByte() { return (SByte)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public UInt16 getRtUInt16() { return (UInt16)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public Int16 getRtInt16() { return (Int16)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public UInt32 getRtUInt32() { return (UInt32)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public Int32 getRtInt32() { return (Int32)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public UInt64 getRtUInt64() { return (UInt64)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public Int64 getRtInt64() { return (Int64)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public Int32 getRtEnum() { return (Int32)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-    public Single getRtFloat()
-    {
-        if (JSApi.JSh_JsvalIsDouble(ref rvalCallJS))
-            return (Single)JSApi.JSh_GetJsvalDouble(ref rvalCallJS);
-        else
-            return (Single)JSApi.JSh_GetJsvalInt(ref rvalCallJS);
-    }
-    public Double getRtDouble()
-    {
-        // js has only int32 and double, so...
-        if (JSApi.JSh_JsvalIsDouble(ref rvalCallJS))
-            return (Double)JSApi.JSh_GetJsvalDouble(ref rvalCallJS);
-        else
-            return (Double)JSApi.JSh_GetJsvalInt(ref rvalCallJS);
-    }/*
-    public JSValueWrap.Wrap getWrap()
-    {
-        IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-        object csObj = JSMgr.getCSObj(jsObj);
-        return (JSValueWrap.Wrap)csObj;
-    }*/
-//     public object getRtObject(Type typeParam = null)
-//     {
-//         IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref rvalCallJS);
-//         if (jsObj == IntPtr.Zero)
+//    public Boolean getRtBool() { return JSApi.JSh_GetJsvalBool(ref rvalCallJS); }
+//    public String getRtString() { return JSApi.JSh_GetJsvalStringS(cx, ref rvalCallJS); }
+//    public Char getRtChar() { return (Char)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public Byte getRtByte() { return (Byte)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public SByte getRtSByte() { return (SByte)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public UInt16 getRtUInt16() { return (UInt16)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public Int16 getRtInt16() { return (Int16)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public UInt32 getRtUInt32() { return (UInt32)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public Int32 getRtInt32() { return (Int32)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public UInt64 getRtUInt64() { return (UInt64)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public Int64 getRtInt64() { return (Int64)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public Int32 getRtEnum() { return (Int32)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
+//    public Single getRtFloat()
+//    {
+//        if (JSApi.JSh_JsvalIsDouble(ref rvalCallJS))
+//            return (Single)JSApi.JSh_GetJsvalDouble(ref rvalCallJS);
+//        else
+//            return (Single)JSApi.JSh_GetJsvalInt(ref rvalCallJS);
+//    }
+//    public Double getRtDouble()
+//    {
+//        // js has only int32 and double, so...
+//        if (JSApi.JSh_JsvalIsDouble(ref rvalCallJS))
+//            return (Double)JSApi.JSh_GetJsvalDouble(ref rvalCallJS);
+//        else
+//            return (Double)JSApi.JSh_GetJsvalInt(ref rvalCallJS);
+//    }/*
+//    public JSValueWrap.Wrap getWrap()
+//    {
+    //        IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
+    //        object csObj = JSMgr.getCSObj(jsObj);
+    //        return (JSValueWrap.Wrap)csObj;
+    //    }*/
+    ////     public object getRtObject(Type typeParam = null)
+    ////     {
+    ////         IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref rvalCallJS);
+    ////         if (jsObj == IntPtr.Zero)
 //             return null;
 // 
 //         object csObj = JSMgr.getCSObj(jsObj);
@@ -247,36 +247,36 @@ public class JSVCall
 //         return arr;
 //     }
 
-    public struct stJSCS
-    {
-        public IntPtr jsObj;
-        public object csObj;
-        public stJSCS(IntPtr j, object c) { jsObj = j; csObj = c; }
-    }
-    // only for parameters
-    //     public stJSCS getValueTypeObject()
+    //    public struct stJSCS
+    //    {
+    //        public IntPtr jsObj;
+    //        public object csObj;
+    //        public stJSCS(IntPtr j, object c) { jsObj = j; csObj = c; }
+    //    }
+    //    // only for parameters
+    //    //     public stJSCS getValueTypeObject()
     //     {
     //         IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
     //         object csObj = JSMgr.getCSObj(jsObj);
     //         return new stJSCS(jsObj, csObj);
     //     }
-    public stJSCS getJSCSObject()
-    {
-        IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-        object csObj = JSMgr.getCSObj(jsObj);
-        return new stJSCS(jsObj, csObj);
-    }
-    public IntPtr getJSFunction()
-    {
-        return JSApi.JSh_ArgvFunction(cx, vp, currIndex++);
-    }
+    //    public stJSCS getJSCSObject()
+    //    {
+    //        IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
+    //        object csObj = JSMgr.getCSObj(jsObj);
+    //        return new stJSCS(jsObj, csObj);
+    //    }
+    //    public IntPtr getJSFunction()
+    //    {
+    //        return JSApi.JSh_ArgvFunction(cx, vp, currIndex++);
+    //    }
     List<JSMgr.IntPtrClass> lst = new List<JSMgr.IntPtrClass>();
     public jsval getJSFunctionValue()
     {
         jsval val = new jsval();
         var i = currIndex++;
         JSApi.JSh_ArgvFunctionValue(cx, vp, i, ref val);
-
+ 
         if (JSEngine.inst && JSEngine.inst.forceProtectJSFunction)
         {
             IntPtr obj = JSApi.JSh_ArgvObject(cx, vp, i);
@@ -287,29 +287,28 @@ public class JSVCall
         }
         return val;
     }
-
-    public void returnBool(bool v) { JSApi.JSh_SetRvalBool(cx, vp, v); }
-    public void returnString(String v) { JSApi.JSh_SetRvalString(cx, vp, v); }
-    public void returnChar(Char v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    public void returnByte(Byte v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    public void returnSByte(SByte v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    public void returnUInt16(UInt16 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    public void returnInt16(Int16 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    public void returnUInt32(UInt32 v) { JSApi.JSh_SetRvalInt(cx, vp, (Int32)v); }
-    public void returnInt32(Int32 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    public void returnUInt64(UInt64 v) { JSApi.JSh_SetRvalInt(cx, vp, (Int32)v); }
-    public void returnInt64(Int64 v)
-    {
-        JSApi.JSh_SetRvalInt(cx, vp, (Int32)v);
-    }
-    public void returnEnum(Int32 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    public void returnFloat(Single v) { JSApi.JSh_SetRvalDouble(cx, vp, v); }
-    public void returnDouble(Double v) { JSApi.JSh_SetRvalDouble(cx, vp, v); }
-//     public void returnObject(string className, object csObj)
-//     {
-//         JSApi.JSh_SetJsvalUndefined(ref this.valReturn);
-//         if (csObj == null)
-//         {
+    ////    public void returnBool(bool v) { JSApi.JSh_SetRvalBool(cx, vp, v); }
+    ////    public void returnString(String v) { JSApi.JSh_SetRvalString(cx, vp, v); }
+    ////    public void returnChar(Char v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
+    ////    public void returnByte(Byte v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
+    ////    public void returnSByte(SByte v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
+//    public void returnUInt16(UInt16 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
+//    public void returnInt16(Int16 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
+//    public void returnUInt32(UInt32 v) { JSApi.JSh_SetRvalInt(cx, vp, (Int32)v); }
+//    public void returnInt32(Int32 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
+//    public void returnUInt64(UInt64 v) { JSApi.JSh_SetRvalInt(cx, vp, (Int32)v); }
+//    public void returnInt64(Int64 v)
+    //    {
+    //        JSApi.JSh_SetRvalInt(cx, vp, (Int32)v);
+    //    }
+    //    public void returnEnum(Int32 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
+    //    public void returnFloat(Single v) { JSApi.JSh_SetRvalDouble(cx, vp, v); }
+    //    public void returnDouble(Double v) { JSApi.JSh_SetRvalDouble(cx, vp, v); }
+    ////     public void returnObject(string className, object csObj)
+    ////     {
+    ////         JSApi.JSh_SetJsvalUndefined(ref this.valReturn);
+    ////         if (csObj == null)
+    ////         {
 //             JSApi.JSh_SetRvalJSVAL(cx, vp, ref this.valReturn);
 //             return;
 //         }
@@ -395,13 +394,15 @@ public class JSVCall
         for (int i = 0; i < count; i++)
         {
             int index = i + start;
-            bool bUndefined = JSApi.JSh_ArgvIsUndefined(cx, vp, index);
+            
+            var tag = JSApi.JSh_ArgvTag(cx, vp, index);
+            bool bUndefined = JSApi.jsval.isUndefined(tag);
             if (bUndefined)
                 return true;
 
             JSParam jsParam = arrJSParam[arrJSParamsLength++]; //new JSParam();
             jsParam.index = index;
-            jsParam.isNull = JSApi.JSh_ArgvIsNull(cx, vp, index);
+            jsParam.isNull = JSApi.jsval.isNullOrUndefined(JSApi.JSh_ArgvTag(cx, vp, index));
             jsParam.isArray = false;
             jsParam.csObj = null;
             jsParam.valRO.asBits = 0;
@@ -507,12 +508,13 @@ public class JSVCall
                 {
                     if (arrJSParam[csParamIndex].valRO.asBits == 0)
                     {
+                        var tag = JSApi.JSh_ArgvTag(cx, vp, arrJSParam[csParamIndex].index);
                         if (csType == typeof(bool))
-                            return JSApi.JSh_ArgvIsBool(cx, vp, arrJSParam[csParamIndex].index);
+                            return JSApi.jsval.isBoolean(tag);
                         else if (csType == typeof(string))
-                            return JSApi.JSh_ArgvIsString(cx, vp, arrJSParam[csParamIndex].index);
+                            return JSApi.jsval.isString(tag);
                         else if (csType.IsEnum || csType.IsPrimitive)
-                            return JSApi.JSh_ArgvIsNumber(cx, vp, arrJSParam[csParamIndex].index);
+                            return JSApi.jsval.isNumber(tag);
                         else if (csType.IsArray)
                             return true;
                         else
@@ -706,7 +708,7 @@ public class JSVCall
         //         }
         else// if (typeof(UnityEngine.Object).IsAssignableFrom(t) || t.IsValueType)
         {
-            if (JSApi.JSh_ArgvIsNull(cx, vp, paramIndex))
+            if (JSApi.jsval.isNullOrUndefined(JSApi.JSh_ArgvTag(cx, vp, paramIndex)))
                 return null;
 
             IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, paramIndex);
@@ -1152,7 +1154,7 @@ public class JSVCall
                     {
                         // for not-overloaded function
                         int i = (int)argc;
-                        while (i > 0 && JSApi.JSh_ArgvIsUndefined(cx, vp, --i))
+                        while (i > 0 && JSApi.jsval.isUndefined(JSApi.JSh_ArgvTag(cx, vp, --i)))
                             jsParamCount--;
                     }
                     else
