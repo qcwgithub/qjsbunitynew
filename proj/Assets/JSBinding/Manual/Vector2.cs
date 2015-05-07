@@ -3,13 +3,15 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+using jsval = JSApi.jsval;
+
 public partial class UnityEngineManual
 {
     public static bool IsJSObjVector2(IntPtr jsObj)
     {
         JSApi.jsval val = new JSApi.jsval();
         JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "_fullname", -1, ref val);
-        if (JSApi.JSh_JsvalIsString(ref val))
+        if (jsval.isString(val.tag))
         {
             string s = JSApi.JSh_GetJsvalStringS(JSMgr.cx, ref val);
             return s == "UnityEngine.Vector2";

@@ -66,9 +66,9 @@ public class JSDataExchangeMgr
                     jsval val = new jsval();
                     JSApi.JSh_SetJsvalUndefined(ref val);
                     getJSValueOfParam(ref val, vc.currIndex++);
-                    if (JSApi.JSh_JsvalIsNullOrUndefined(ref val))
+                    if (jsval.isNullOrUndefined(val.tag))
                         return 0;
-                    if (JSApi.JSh_JsvalIsDouble(ref val))
+                    if (jsval.isDouble(val.tag))
                         return JSApi.JSh_GetJsvalDouble(ref val);
                     else
                         return JSApi.JSh_GetJsvalInt(ref val);
@@ -76,7 +76,7 @@ public class JSDataExchangeMgr
                 break;
             case eGetType.GetJSFUNRET:
                 {
-                    if (JSApi.JSh_JsvalIsDouble(ref vc.rvalCallJS))
+                    if (jsval.isDouble(vc.rvalCallJS.tag))
                         return JSApi.JSh_GetJsvalDouble(ref vc.rvalCallJS);
                     else
                         return (double)JSApi.JSh_GetJsvalInt(ref vc.rvalCallJS);
@@ -85,7 +85,7 @@ public class JSDataExchangeMgr
             case eGetType.Jsval:
                 {
                     // 通过 vc.valTemp 传递值
-                    if (JSApi.JSh_JsvalIsDouble(ref vc.valTemp))
+                    if (jsval.isDouble(vc.valTemp.tag))
                         return JSApi.JSh_GetJsvalDouble(ref vc.valTemp);
                     else
                         return (double)JSApi.JSh_GetJsvalInt(ref vc.valTemp);
@@ -328,13 +328,13 @@ public class JSDataExchangeMgr
         jsval val = new jsval();
 
         JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
-        if (JSApi.JSh_JsvalIsInt32(ref val))
+        if (jsval.isInt32(val.tag))
             v.x = (float)JSApi.JSh_GetJsvalInt(ref val);
         else
             v.x = (float)JSApi.JSh_GetJsvalDouble(ref val);
 
         JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
-        if (JSApi.JSh_JsvalIsInt32(ref val))
+        if (jsval.isInt32(val.tag))
             v.y = (float)JSApi.JSh_GetJsvalInt(ref val);
         else
             v.y = (float)JSApi.JSh_GetJsvalDouble(ref val);
@@ -386,19 +386,19 @@ public class JSDataExchangeMgr
         jsval val = new jsval();
 
         JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
-        if (JSApi.JSh_JsvalIsInt32(ref val))
+        if (jsval.isInt32(val.tag))
             v.x = (float)JSApi.JSh_GetJsvalInt(ref val);
         else
             v.x = (float)JSApi.JSh_GetJsvalDouble(ref val);
 
         JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
-        if (JSApi.JSh_JsvalIsInt32(ref val))
+        if (jsval.isInt32(val.tag))
             v.y = (float)JSApi.JSh_GetJsvalInt(ref val);
         else
             v.y = (float)JSApi.JSh_GetJsvalDouble(ref val);
 
         JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "z", -1, ref val);
-        if (JSApi.JSh_JsvalIsInt32(ref val))
+        if (jsval.isInt32(val.tag))
             v.z = (float)JSApi.JSh_GetJsvalInt(ref val);
         else
             v.z = (float)JSApi.JSh_GetJsvalDouble(ref val);
@@ -537,18 +537,19 @@ public class JSDataExchangeMgr
             break;
         case eGetType.Jsval:
             {
+                var tag = vc.valTemp.tag;
                 // 通过 vc.valTemp 传递值
-                if (JSApi.JSh_JsvalIsNullOrUndefined(ref vc.valTemp))
+                if (jsval.isNullOrUndefined(tag))
                     return null;
-                else if (JSApi.JSh_JsvalIsBool(ref vc.valTemp))
+                else if (jsval.isBoolean(tag))
                     return getBoolean(e);
-                else if (JSApi.JSh_JsvalIsInt32(ref vc.valTemp))
+                else if (jsval.isInt32(tag))
                     return getInt32(e);
-                else if (JSApi.JSh_JsvalIsDouble(ref vc.valTemp))
+                else if (jsval.isDouble(tag))
                     return getSingle(e);
-                else if (JSApi.JSh_JsvalIsString(ref vc.valTemp))
+                else if (jsval.isString(tag))
                     return getString(e);
-                else if (JSApi.JSh_JsvalIsObject(ref vc.valTemp))
+                else if (jsval.isObject(tag))
                 {
                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
                     if (UnityEngineManual.IsJSObjVector3(jsObj))
@@ -1545,7 +1546,7 @@ public class JSDataExchangeMgr
         jsval valRet = new jsval();
         valRet.asBits = 0;
         JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_NewObject", 1, valParam, ref valRet);
-        if (JSApi.JSh_JsvalIsNullOrUndefined(ref valRet))
+        if (jsval.isNullOrUndefined(valRet.tag))
             return IntPtr.Zero;
 
         IntPtr jsObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
@@ -1861,7 +1862,7 @@ public class JSDataExchangeMgr
         jsval val = new jsval(); val.asBits = 0;
         JSApi.JSh_ArgvFunctionValue(vc.cx, vc.vp, i, ref val);
 		if (val.asBits == 0) return false;
-        return !JSApi.JSh_JsvalIsNullOrUndefined(ref val);
+        return !jsval.isNullOrUndefined(val.tag);
     }
 }
 

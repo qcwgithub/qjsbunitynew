@@ -297,29 +297,6 @@ public class JSApi
     public static extern void JSh_SetJsvalUndefined(ref jsval vp);
 
 
-    /*
-     * get from jsval
-     */
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_JsvalIsUndefined(ref jsval vp);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_JsvalIsNull(ref jsval vp);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_JsvalIsNullOrUndefined(ref jsval vp);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_JsvalIsInt32(ref jsval vp);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_JsvalIsDouble(ref jsval vp);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_JsvalIsBool(ref jsval vp);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_JsvalIsString(ref jsval vp);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_JsvalIsNumber(ref jsval vp);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool JSh_JsvalIsObject(ref jsval vp);
-
-
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool JSh_GetJsvalBool(ref jsval vp);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -389,6 +366,13 @@ public class JSApi
         public static bool isString(uint tag) { return JSValueTag.JSVAL_TAG_STRING == tag; }
         public static bool isNumber(uint tag) { return JSValueTag.JSVAL_TAG_INT32 >= tag; }
         public static bool isObject(uint tag) { return JSValueTag.JSVAL_TAG_OBJECT == tag; }
+
+
+        public uint tag { 
+            get {
+                return (uint)(asBits >> 32);
+            } 
+        }
     }
 
     //

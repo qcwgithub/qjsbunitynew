@@ -425,7 +425,7 @@ public class JSVCall
                     jsval valo = new jsval();
                     JSApi.JSh_SetJsvalUndefined(ref valo);
                     JSApi.GetProperty(cx, jsObj, "Value", -1, ref valo);
-                    if (!JSApi.JSh_JsvalIsNullOrUndefined(ref valo))
+                    if (!jsval.isNullOrUndefined(valo.tag))
                     {
                         jsParam.valRO = valo;
                         jsObj = JSApi.JSh_GetJsvalObject(ref valo);
@@ -524,11 +524,11 @@ public class JSVCall
                     {
                         jsval val = arrJSParam[csParamIndex].valRO;
                         if (csType == typeof(bool))
-                            return JSApi.JSh_JsvalIsBool(ref val);
+                            return jsval.isBoolean(val.tag);
                         else if (csType == typeof(string))
-                            return JSApi.JSh_JsvalIsString(ref val);
+                            return jsval.isString(val.tag);
                         else if (csType.IsEnum || csType.IsPrimitive)
-                            return JSApi.JSh_JsvalIsNumber(ref val);
+                            return jsval.isNumber(val.tag);
                         else if (csType.IsArray)
                             return true;
                         else
