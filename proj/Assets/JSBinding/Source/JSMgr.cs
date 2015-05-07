@@ -221,6 +221,7 @@ public static class JSMgr
         JSApi.JSh_SetErrorReporter(cx, new JSApi.JSErrorReporter(errorReporter));
 
         glob = JSApi.JSh_NewGlobalObject(cx, 1);
+        JSApi.InitPersistentObject(rt, cx, glob, mjsFinalizer);
 
         oldCompartment = JSApi.JSh_EnterCompartment(cx, glob);
 

@@ -465,6 +465,14 @@ public class JSApi
     public static extern void JSh_SetGCCallback(/*JSRuntime* */ IntPtr rt, JSGCCallback cb, IntPtr data);
 
 
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern void InitPersistentObject(IntPtr rt, IntPtr cx, IntPtr global, SC_FINALIZE finalizer);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern bool NewJSClassObject(string name, /*JSObject***/ ref IntPtr retJSObj, /*JSObject***/ ref IntPtr retNativeObj);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern bool NewJSClassObjectRef(string name, /*JSObject***/ ref IntPtr retJSObj, /*JSObject***/ ref IntPtr retNativeObj, /*JSObject**/ IntPtr objWrap);
+
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////// String Marshal ////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
