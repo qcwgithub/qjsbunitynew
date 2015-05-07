@@ -1056,19 +1056,19 @@ public class JSDataExchangeMgr
                 break;
         }
     }
-    public void setVector2(ref IntPtr jsObj, Vector2 v)
-    {
-        if (jsObj == IntPtr.Zero)
-            return;
-
-        jsval val = new jsval();
-
-        JSApi.JSh_SetJsvalDouble(ref val, v.x);
-        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
-
-        JSApi.JSh_SetJsvalDouble(ref val, v.y);
-        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
-    }
+//    public void setVector2(ref IntPtr jsObj, Vector2 v)
+//    {
+//        if (jsObj == IntPtr.Zero)
+//            return;
+//
+//        jsval val = new jsval();
+//
+//        JSApi.JSh_SetJsvalDouble(ref val, v.x);
+//        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
+//
+//        JSApi.JSh_SetJsvalDouble(ref val, v.y);
+//        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
+//    }
     public void setVector2(eSetType e, Vector2 csObj)
     {
         switch (e)
@@ -1081,7 +1081,8 @@ public class JSDataExchangeMgr
                     IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
                     if (jsObj != IntPtr.Zero)
                     {
-                        setVector2(ref jsObj, csObj);
+                        //setVector2(ref jsObj, csObj);
+                        JSApi.SetVector2(jsObj, csObj.x, csObj.y, IntPtr.Zero);
                         JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
                     }
                     else
@@ -1108,13 +1109,14 @@ public class JSDataExchangeMgr
                         IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
                         if (jsObj != IntPtr.Zero)
                         {
-                            setVector2(ref jsObj, csObj);
+                            //setVector2(ref jsObj, csObj);
+                            JSApi.SetVector2(jsObj, csObj.x, csObj.y, argvJSObj);
 
                             // 3)
                             // argvObj.Value = jsObj
                             //
-                            JSApi.JSh_SetJsvalObject(ref val, jsObj);
-                            JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
+                            //JSApi.JSh_SetJsvalObject(ref val, jsObj);
+                            //JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
                             success = true;
                         }
                         else
@@ -1135,22 +1137,24 @@ public class JSDataExchangeMgr
                 break;
         }
     }
-    public void setVector3(ref IntPtr jsObj, Vector3 v)
-    {
-        if (jsObj == IntPtr.Zero)
-            return;
-
-        jsval val = new jsval();
-
-        JSApi.JSh_SetJsvalDouble(ref val, v.x);
-        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
-
-        JSApi.JSh_SetJsvalDouble(ref val, v.y);
-        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
-
-        JSApi.JSh_SetJsvalDouble(ref val, v.z);
-        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "z", -1, ref val);
-    }
+//    public void setVector3(ref IntPtr jsObj, Vector3 v)
+//    {
+//        if (jsObj == IntPtr.Zero)
+//            return;
+//
+//        jsval val = new jsval();
+//
+//
+//
+//        JSApi.JSh_SetJsvalDouble(ref val, v.x);
+//        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
+//
+//        JSApi.JSh_SetJsvalDouble(ref val, v.y);
+//        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
+//
+//        JSApi.JSh_SetJsvalDouble(ref val, v.z);
+//        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "z", -1, ref val);
+//    }
     public void setVector3(eSetType e, Vector3 csObj)
     {
         switch (e)
@@ -1163,7 +1167,8 @@ public class JSDataExchangeMgr
                     IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
                     if (jsObj != IntPtr.Zero)
                     {
-                        setVector3(ref jsObj, csObj);
+                        // setVector3(ref jsObj, csObj);
+                        JSApi.SetVector3(jsObj, csObj.x, csObj.y, csObj.z, IntPtr.Zero);
                         JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
                     }
                     else
@@ -1190,13 +1195,14 @@ public class JSDataExchangeMgr
                         IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
                         if (jsObj != IntPtr.Zero)
                         {
-                            setVector3(ref jsObj, csObj);
+                            //setVector3(ref jsObj, csObj);
+                            JSApi.SetVector3(jsObj, csObj.x, csObj.y, csObj.z, argvJSObj);
 
                             // 3)
                             // argvObj.Value = jsObj
                             //
-                            JSApi.JSh_SetJsvalObject(ref val, jsObj);
-                            JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
+                            //JSApi.JSh_SetJsvalObject(ref val, jsObj);
+                            //JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
                             success = true;
                         }
                         else
@@ -1248,7 +1254,7 @@ public class JSDataExchangeMgr
                                 
                                 string typeName = JSNameMgr.GetJSTypeFullName(csType);
                                 IntPtr __nativeObj = IntPtr.Zero;
-                                if (JSApi.NewJSClassObject(typeName, ref jsObj, ref __nativeObj))
+                                if (JSApi.NewJSClassObject(typeName, ref jsObj, ref __nativeObj, IntPtr.Zero))
                                 {
                                     JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
                                     JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
@@ -1321,7 +1327,7 @@ public class JSDataExchangeMgr
                             {
                                 string typeName = JSNameMgr.GetJSTypeFullName(csObj.GetType());
                                 IntPtr __nativeObj = IntPtr.Zero;
-                                if (JSApi.NewJSClassObjectRef(typeName, ref jsObj, ref __nativeObj, argvJSObj))
+                                if (JSApi.NewJSClassObject(typeName, ref jsObj, ref __nativeObj, argvJSObj))
                                 {
                                     JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
                                     success = true;
