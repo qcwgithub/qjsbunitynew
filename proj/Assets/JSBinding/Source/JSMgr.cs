@@ -205,6 +205,13 @@ public static class JSMgr
     static JSFileLoader jsLoader;
     public static bool InitJSEngine(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
     {
+//         int err = JSApi.InitJSEngine(new JSApi.JSErrorReporter(errorReporter));
+//         if (err != 0)
+//         {
+//             Debug.LogError("InitJSEngine fail. error code: " + err);
+//             onInitJSEngine(false);
+//         }
+
         //GenericTest(typeof(List<Component>), "List<Component> \n");
         if (!JSApi.JSh_Init())
         {

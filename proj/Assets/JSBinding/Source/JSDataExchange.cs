@@ -693,8 +693,6 @@ public class JSDataExchangeMgr
             setObject(e, obj);
         }
     }
-
-
     public void setBoolean(eSetType e, bool v)
     {
         switch (e)
@@ -1899,34 +1897,34 @@ public class JSDataExchangeMgr
 }
 
 // TODO: delete
-public class JSDataExchange 
-{
-    // get value from param
-    public virtual string Get_GetParam(Type t) { 
-        Debug.LogError("X Get_GetParam "); return string.Empty; 
-    }
-    public virtual bool isGetParamNeedCast { get { return false; } }
+//public class JSDataExchange 
+//{
+//    // get value from param
+//    public virtual string Get_GetParam(Type t) { 
+//        Debug.LogError("X Get_GetParam "); return string.Empty; 
+//    }
+//    public virtual bool isGetParamNeedCast { get { return false; } }
+//
+//    public virtual string Get_Return(string expVar) { 
+//        Debug.LogError("X Get_Return "); return string.Empty; 
+//    }
+//    public virtual string Get_GetJSReturn() { 
+//        Debug.LogError("X Get_GetJSReturn "); return string.Empty; 
+//    }
+//
+//    public virtual string Get_GetRefOutParam(Type t) { 
+//        Debug.LogError("X Get_GetRefOutParam "); return string.Empty; 
+//    }
+//    public virtual string Get_ReturnRefOut(string expVar) { 
+//        Debug.LogError("X Get_ReturnRefOut "); return string.Empty; 
+//    }
+//}
 
-    public virtual string Get_Return(string expVar) { 
-        Debug.LogError("X Get_Return "); return string.Empty; 
-    }
-    public virtual string Get_GetJSReturn() { 
-        Debug.LogError("X Get_GetJSReturn "); return string.Empty; 
-    }
-
-    public virtual string Get_GetRefOutParam(Type t) { 
-        Debug.LogError("X Get_GetRefOutParam "); return string.Empty; 
-    }
-    public virtual string Get_ReturnRefOut(string expVar) { 
-        Debug.LogError("X Get_ReturnRefOut "); return string.Empty; 
-    }
-}
-
-public class JSDataExchange_Arr : JSDataExchange
+public class JSDataExchange_Arr// : JSDataExchange
 {
     public Type elementType = null;
 
-    public override string Get_GetParam(Type t)
+    public string Get_GetParam(Type t)
     {
         elementType = t.GetElementType();
         if (elementType.IsArray) { 
@@ -1965,11 +1963,11 @@ public class JSDataExchange_Arr : JSDataExchange
         return sb.ToString(); 
     }
 
-    public override string Get_GetJSReturn()
+    public string Get_GetJSReturn()
     {
         return "null";
     }
-    public override string Get_Return(string expVar)
+    public string Get_Return(string expVar)
     {
         if (elementType == null)
         {

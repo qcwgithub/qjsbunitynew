@@ -12,13 +12,13 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
 {
     JSDataExchangeEditor(JSVCall vc):base(vc) {  }
 
-    static Dictionary<Type, JSDataExchange> dict;
+    //static Dictionary<Type, JSDataExchange> dict;
     static JSDataExchange_Arr arrayExchange;
 
     // Editor only
     public static void reset()
     {
-        dict = new Dictionary<Type, JSDataExchange>();
+        //dict = new Dictionary<Type, JSDataExchange>();
 
         arrayExchange = new JSDataExchange_Arr();
     }
@@ -31,18 +31,18 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         public string updater;
     }
     // Editor only
-    public static ParamHandler Get_TType(int index)
-    {
-        ParamHandler ph = new ParamHandler();
-        ph.argName = "t" + index.ToString();
-
-        string get_getParam = dict[typeof(string)].Get_GetParam(null);
-        ph.getter = "System.Type " + ph.argName + " = JSDataExchangeMgr.GetTypeByName(" + get_getParam + ");";
+//    public static ParamHandler Get_TType(int index)
+//    {
+//        ParamHandler ph = new ParamHandler();
+//        ph.argName = "t" + index.ToString();
+//
+//        string get_getParam = dict[typeof(string)].Get_GetParam(null);
+//        ph.getter = "System.Type " + ph.argName + " = JSDataExchangeMgr.GetTypeByName(" + get_getParam + ");";
 
         //         string get_getParam = objExchange.Get_GetParam(typeof(Type));
         //         ph.getter = "System.Type " + ph.argName + " = (System.Type)" + get_getParam + ";";
-        return ph;
-    }
+//        return ph;
+//    }
     public static bool IsDelegateSelf(Type type)
     {
         return type == typeof(System.Delegate) || type == typeof(System.MulticastDelegate);
