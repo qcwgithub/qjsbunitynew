@@ -70,7 +70,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 1
   port: 5086
-  GCInterval: 1
+  forceProtectJSFunction: 0
+  GCInterval: 1e+08
   jsLoader: {fileID: 11400002}
   InitLoadScripts:
   - includes
@@ -88,6 +89,8 @@ MonoBehaviour:
   - Src/
   - StreamingAssets/
   - UnityVS/
+  - DaikonForge Tween (Pro)/
+  showStatistics: 1
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1

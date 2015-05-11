@@ -474,6 +474,8 @@ public static class JSMgr
     static Dictionary<string, IntPtrClass> compiledScript = new Dictionary<string, IntPtrClass>();
     static Dictionary<IntPtr, IntPtr> executedScript = new Dictionary<IntPtr, IntPtr>();
 
+    // TODO 
+    // delete
     public static void AddRootedObject(IntPtr obj)
     {
         if (!rootedObject.ContainsKey(obj.ToInt64()))

@@ -473,6 +473,9 @@ public class JSApi
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void InitPersistentObject(IntPtr rt, IntPtr cx, IntPtr global, SC_FINALIZE finalizer);
+
+    // TODO
+    // 检查所有使用的地方看是否都正确使用（会有死循环的情况存在！）
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int NewJSClassObject(string name);
 
@@ -501,8 +504,8 @@ public class JSApi
     public static extern /*JSRuntime**/ IntPtr GetRuntime();
 
 
-
-
+    // TODO
+    // CHECK: exactly same value as C?
     public enum GetType
     {
         Arg = 0,
@@ -513,8 +516,8 @@ public class JSApi
     public enum SetType
     {
         Rval = 0,
-        UpdateArgRef = 1,
-        Jsval = 2,
+        ArgRef = 1,
+        TempVal = 2,
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -595,7 +598,10 @@ public class JSApi
     {
         setVector3(e, v.x, v.y, v.z);
     }
+    // TODO
+    // 这个函数应该只有 JSDataExchangeMgr.setObject 调用？
     public static void setObject(SetType e, int id);
+    public static void setArray(SetType e, int count);
 
     public static bool isVector2(int i);
     public static bool isVector3(int i);
@@ -604,6 +610,15 @@ public class JSApi
 
     
     public static bool callFunction(int jsObjID, string functionName, int argCount);
+
+    public static bool addObjectRoot(int id);
+    public static bool removeObjectRoot(int id);
+
+
+    public static int moveVal2HeapMap();
+    public static void removeHeapMapVal(int index);
+
+    public static bool moveValFromMap2Arr(int iMap, int iArr);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////// String Marshal ////////////////////////////////////////////////////////////////////////////////////////////////

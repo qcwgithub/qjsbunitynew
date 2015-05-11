@@ -20,9 +20,7 @@ public partial class UnityEngineManual
         {
             if (jsCom.jsScriptName == typeString)
             {
-                // vc.datax.setObject(JSDataExchangeMgr.eSetType.SetRval, jsCom);
-                JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsCom.jsObj);
-                JSApi.JSh_SetRvalJSVAL(JSMgr.cx, vc.vp, ref vc.valReturn);
+                JSApi.setObject(JSApi.SetType.Rval, jsCom.jsObjID);
                 break;
             }
         }
@@ -37,12 +35,19 @@ public partial class UnityEngineManual
                 lst.Add(c);
             }
         }
-        var arrVal = new JSApi.jsval[lst.Count];
         for (int i = 0; i < lst.Count; i++)
         {
-            JSApi.JSh_SetJsvalObject(ref arrVal[i], lst[i].jsObj);
+            JSApi.setObject(JSApi.SetType.TempVal, lst[i].jsObjID);
+            JSApi.moveTempVal2Arr(i);
         }
-        vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal);
+        JSApi.setArray(JSApi.SetType.Rval, lst.Count);
+
+//         var arrVal = new JSApi.jsval[lst.Count];
+//         for (int i = 0; i < lst.Count; i++)
+//         {
+//             JSApi.JSh_SetJsvalObject(ref arrVal[i], lst[i].jsObj);
+//         }
+//         vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal);
     }
 
 
@@ -88,7 +93,8 @@ public partial class UnityEngineManual
             jsComp.jsScriptName = typeString;
             jsComp.Awake();
 
-            JSApi.JSh_SetRvalObject(vc.cx, vc.vp, jsComp.jsObj);
+            //JSApi.JSh_SetRvalObject(vc.cx, vc.vp, jsComp.jsObj);
+            JSApi.setObject(JSApi.SetType.Rval, jsComp.jsObjID);
         }
         return true;
     }

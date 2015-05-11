@@ -971,7 +971,7 @@ public class JSDataExchangeMgr
     }
     // TODO
     // 如果是 UpdateRefARGV，之前要设置 currIndex
-    public void setObject(JSApi.SetType e, object csObj)
+    public int setObject(JSApi.SetType e, object csObj)
     {
         int jsObjID = 0;
         if (csObj != null)
@@ -1000,6 +1000,7 @@ public class JSDataExchangeMgr
         }
 
         JSApi.setObject(e, jsObjID);
+        return jsObjID;
     }
     // TODO what?
 //     public void setDelegate(eSetType e, object csObj)

@@ -59,21 +59,23 @@ public class JSSerializer : MonoBehaviour
         ListObj,
         ListEnd,
     }
+    // TODO 修改注释
+    // and check
     /// <summary>
     /// 根据 eType 将 strValue 转换为 jsval
     /// </summary>
     /// <param name="eType"></param>
     /// <param name="strValue"></param>
     /// <returns></returns>
-    bool ToJsval(UnitType eType, string strValue)
+    int ToHeapValID(UnitType eType, string strValue)
     {
-        bool ret = true;
         switch ((UnitType)eType)
         {
             case UnitType.ST_Boolean:
                 {
                     bool v = strValue == "True";
-                    JSMgr.vCall.datax.setBoolean(JSDataExchangeMgr.eSetType.Jsval, v);
+                    JSApi.setBoolean(JSApi.SetType.TempVal, v);
+                    return JSApi.moveVal2HeapMap();
                 }
                 break;
 
@@ -85,9 +87,9 @@ public class JSSerializer : MonoBehaviour
                     int v;
                     if (int.TryParse(strValue, out v))
                     {
-                        JSMgr.vCall.datax.setInt32(JSDataExchangeMgr.eSetType.Jsval, v);
+                        JSApi.setInt32(JSApi.SetType.TempVal, v);
+                        return JSApi.moveVal2HeapMap();
                     }
-                    else ret = false;
                 }
                 break;
 
@@ -99,9 +101,9 @@ public class JSSerializer : MonoBehaviour
                     uint v;
                     if (uint.TryParse(strValue, out v))
                     {
-                        JSMgr.vCall.datax.setUInt32(JSDataExchangeMgr.eSetType.Jsval, v);
+                        JSApi.setUInt32(JSApi.SetType.TempVal, v);
+                        return JSApi.moveVal2HeapMap();
                     }
-                    else ret = false;
                 }
                 break;
             case UnitType.ST_Int64:
@@ -112,25 +114,25 @@ public class JSSerializer : MonoBehaviour
                     double v;
                     if (double.TryParse(strValue, out v))
                     {
-                        JSMgr.vCall.datax.setDouble(JSDataExchangeMgr.eSetType.Jsval, v);
+                        JSApi.setDouble(JSApi.SetType.TempVal, v);
+                        return JSApi.moveVal2HeapMap();
                     }
-                    else ret = false;
                 }
                 break;
             case UnitType.ST_String:
                 {
                     // TODO check
                     // JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
-                    JSApi.setString((int)JSApi.GetType.Jsval, strValue);
+                    JSApi.setString(JSApi.SetType.TempVal, strValue);
+                    return JSApi.moveVal2HeapMap();
                 }
                 break;
             default:
-                ret = false;
                 break;
         }
-        return ret;
+        return 0;
     }
-    public IntPtr GetGameObjectMonoBehaviourJSObj(GameObject go, string scriptName)
+    public int GetGameObjectMonoBehaviourJSObj(GameObject go, string scriptName)
     {
         JSComponent[] jsComs = go.GetComponents<JSComponent>();
         foreach (var com in jsComs)
@@ -138,10 +140,10 @@ public class JSSerializer : MonoBehaviour
             // 注意：同一个GameObject不能绑相同名字的脚本2次以上
             if (com.jsScriptName == scriptName)
             {
-                return com.GetJSObj();
+                return com.GetJSObjID();
             }
         }
-        return IntPtr.Zero;
+        return 0;
     }
     public class SerializeStruct
     {
@@ -150,6 +152,7 @@ public class JSSerializer : MonoBehaviour
         public string name;
         public string typeName;
         public JSApi.jsval val; // only valid when type == SType.Unit
+        public int iHeapVal;
         public SerializeStruct father;
         public List<SerializeStruct> lstChildren;
         public void AddChild(SerializeStruct ss)
@@ -165,13 +168,14 @@ public class JSSerializer : MonoBehaviour
             this.father = father;
             val.asBits = 0;
             typeName = "WRONGTYPENAME!";
+            iHeapVal = 0;
         }
         /// <summary>
         /// Calc jsval
         /// save in this.val    and return it
         /// </summary>
         /// <returns></returns>
-        public JSApi.jsval CalcJSVal()
+        public int CalcHeapValID()
         {
             switch (this.type)
             {
@@ -180,13 +184,14 @@ public class JSSerializer : MonoBehaviour
                     break;
                 case SType.Array:
                     {
-                        var arrVal = new JSApi.jsval[lstChildren.Count];
-                        for (var i = 0; i < arrVal.Length; i++)
+                        int Count = lstChildren.Count;
+                        for (var i = 0; i < Count; i++)
                         {
-                            arrVal[i] = lstChildren[i].CalcJSVal();
+                            int iHeapVal = lstChildren[i].CalcHeapValID();
+                            JSApi.moveValFromMap2Arr(iHeapVal, i);
                         }
-                        JSMgr.vCall.datax.setArray(JSDataExchangeMgr.eSetType.Jsval, arrVal);
-                        this.val = JSMgr.vCall.valTemp;
+                        JSApi.setArray(JSApi.SetType.TempVal, Count);
+                        this.iHeapVal = JSApi.moveVal2HeapMap();
                     }
                     break;
                 case SType.Struct:
@@ -214,7 +219,7 @@ public class JSSerializer : MonoBehaviour
                             for (var i = 0; i < lstChildren.Count; i++)
                             {
                                 var child = lstChildren[i];
-                                JSApi.jsval mVal = child.CalcJSVal();
+                                JSApi.jsval mVal = child.CalcHeapValID();
                                 JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, child.name, -1, ref mVal);
                             }
                             JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
@@ -268,7 +273,7 @@ public class JSSerializer : MonoBehaviour
                     }
                     break;
             }
-            return this.val;
+            return this.iHeapVal;
         }
     }
     /// <summary>
@@ -334,10 +339,10 @@ public class JSSerializer : MonoBehaviour
                             string s2 = s.Substring(y + 1, s.Length - y - 1);
                             var valName = s1;
                             var objIndex = int.Parse(s2);
-                            JSMgr.vCall.datax.setObject(JSDataExchangeMgr.eSetType.Jsval, this.arrObject[objIndex]);
+                            JSMgr.vCall.datax.setObject(JSApi.SetType.TempVal, this.arrObject[objIndex]);
 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-                            child.val = JSMgr.vCall.valTemp;
+                            child.iHeapVal = JSApi.moveVal2HeapMap();
                             st.AddChild(child);
                         }
                         else if (eUnitType == UnitType.ST_MonoBehaviour)
@@ -349,14 +354,15 @@ public class JSSerializer : MonoBehaviour
                             var scriptName = arr[1];
 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-                            IntPtr refJSObj = this.GetGameObjectMonoBehaviourJSObj((GameObject)this.arrObject[objIndex], scriptName);
-                            if (refJSObj == IntPtr.Zero)
+                            int refJSObjID = this.GetGameObjectMonoBehaviourJSObj((GameObject)this.arrObject[objIndex], scriptName);
+                            if (refJSObjID == 0)
                             {
-                                JSApi.JSh_SetJsvalUndefined(ref child.val);
+                                child.iHeapVal = 0;
                             }
                             else
                             {
-                                JSApi.JSh_SetJsvalObject(ref child.val, refJSObj);
+                                JSApi.setObject(JSApi.SetType.TempVal, refJSObjID);
+                                child.iHeapVal = JSApi.moveVal2HeapMap();
                             }
 
                             st.AddChild(child);
@@ -365,9 +371,10 @@ public class JSSerializer : MonoBehaviour
                         {
                             string s2 = s.Substring(y + 1, s.Length - y - 1);
                             var valName = s1;
-                            ToJsval(eUnitType, s2);
+                            int iHeapVal = ToHeapValID(eUnitType, s2);
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-                            child.val = JSMgr.vCall.valTemp;
+                            //child.val = JSMgr.vCall.valTemp;
+                            child.iHeapVal = iHeapVal;
                             st.AddChild(child);
                         }
                     }
@@ -403,7 +410,7 @@ public class JSSerializer : MonoBehaviour
         {
             foreach (var child in root.lstChildren)
             {
-                child.CalcJSVal();
+                child.CalcHeapValID();
                 JSApi.JSh_SetUCProperty(cx, jsObj, child.name, -1, ref child.val);
             }
         }

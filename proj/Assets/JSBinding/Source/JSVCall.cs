@@ -981,14 +981,16 @@ public class JSVCall
 //     }
 
     // typeName doesn't include ctor
-    public IntPtr CallJSClassCtorByName(string typeName)
+    public int CallJSClassCtorByName(string typeName)
     {
-        JSApi.jsval valParam = new JSApi.jsval(); 
-        valParam.asBits = 0;
-        JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam, typeName);
-        JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[] { valParam }, ref JSMgr.vCall.rvalCallJS);
-        IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
-        return jsObj;
+        int jsObjID = JSApi.NewJSClassObject(typeName);
+        return jsObjID;
+//         JSApi.jsval valParam = new JSApi.jsval(); 
+//         valParam.asBits = 0;
+//         JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam, typeName);
+//         JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[] { valParam }, ref JSMgr.vCall.rvalCallJS);
+//         IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
+//         return jsObj;
     }
 
     public bool CallJSFunctionName(int jsObjID, string functionName, params object[] args)
@@ -1026,7 +1028,7 @@ public class JSVCall
 
             for (int i = 0; i < argsLen; i++)
             {
-                this.datax.setWhatever(JSApi.SetType.Jsval, args[i]);
+                this.datax.setWhatever(JSApi.SetType.TempVal, args[i]);
                 JSApi.moveTempVal2Arr(i);
             }
 
@@ -1034,6 +1036,7 @@ public class JSVCall
         }
     }
 
+    // TODO: delete
     public jsval[] arrJsval0 = new jsval[0];
     public bool CallJSFunctionValue(IntPtr jsThis, ref jsval valFunction, params object[] args)
     {
@@ -1053,7 +1056,7 @@ public class JSVCall
                 for (int i = 0; i < args.Length; i++)
                 {
                     // vals[i + 2] = CSObject_2_JSValue(args[i]);
-                    this.datax.setWhatever(JSApi.SetType.Jsval, args[i]);
+                    this.datax.setWhatever(JSApi.SetType.TempVal, args[i]);
                     vals[i + 2] = valTemp;
                 }
             }

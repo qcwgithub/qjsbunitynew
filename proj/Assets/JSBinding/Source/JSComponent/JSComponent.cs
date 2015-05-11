@@ -115,9 +115,11 @@ public class JSComponent : JSSerializer
             Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");
             initFail = true;
             return;
-        }
+        } 
         JSMgr.AddJSCSRel(jsObjID, this);
         initMemberFun();
+        // TODO add root
+        JSApi.addObjectRoot(jsObjID);
         initSuccess = true;
 
 //         jsval[] valParam = new jsval[2];
@@ -190,14 +192,14 @@ public class JSComponent : JSSerializer
     /// <returns></returns>
     /// 
     // TODO
-    public IntPtr GetJSObj()
+    public int GetJSObjID()
     {
-        if (jsObj == IntPtr.Zero)
+        if (jsObjID == 0)
         {
             if (!initFail) 
                 initJS();
         }
-        return jsObj;
+        return jsObjID;
     }
 
     private bool firstStart = true;

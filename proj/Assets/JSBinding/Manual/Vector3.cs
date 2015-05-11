@@ -29,9 +29,9 @@ public partial class UnityEngineManual
         Vector3 a1 = JSApi.getVector3S(JSApi.GetType.ArgRef);
         Vector3 a2 = JSApi.getVector3S(JSApi.GetType.ArgRef);
         Vector3.OrthoNormalize(ref a0, ref a1, ref a2);
-        JSApi.setVector3(JSApi.SetType.UpdateArgRef, a0);
-        JSApi.setVector3(JSApi.SetType.UpdateArgRef, a1);
-        JSApi.setVector3(JSApi.SetType.UpdateArgRef, a2);
+        JSApi.setVector3(JSApi.SetType.ArgRef, a0);
+        JSApi.setVector3(JSApi.SetType.ArgRef, a1);
+        JSApi.setVector3(JSApi.SetType.ArgRef, a2);
         return true;
     }
 
@@ -40,8 +40,8 @@ public partial class UnityEngineManual
         Vector3 a0 = JSApi.getVector3S(JSApi.GetType.ArgRef);
         Vector3 a1 = JSApi.getVector3S(JSApi.GetType.ArgRef);
         Vector3.OrthoNormalize(ref a0, ref a1);
-        JSApi.setVector3(JSApi.SetType.UpdateArgRef, a0);
-        JSApi.setVector3(JSApi.SetType.UpdateArgRef, a1);
+        JSApi.setVector3(JSApi.SetType.ArgRef, a0);
+        JSApi.setVector3(JSApi.SetType.ArgRef, a1);
         return true;
     }
 
@@ -104,7 +104,7 @@ public partial class UnityEngineManual
         float a4 = JSApi.getSingle(JSApi.GetType.Arg);
         float a5 = JSApi.getSingle(JSApi.GetType.Arg);
         Vector3 ret = Vector3.SmoothDamp(a0, a1, ref a2, a3, a4, a5);
-        JSApi.setVector3(JSApi.SetType.UpdateArgRef, a2);
+        JSApi.setVector3(JSApi.SetType.ArgRef, a2);
         JSApi.setVector3(JSApi.SetType.Rval, ret);
         return true;
     }
@@ -117,7 +117,7 @@ public partial class UnityEngineManual
         float a3 = JSApi.getSingle(JSApi.GetType.Arg);
         float a4 = JSApi.getSingle(JSApi.GetType.Arg);
         Vector3 ret = Vector3.SmoothDamp(a0, a1, ref a2, a3, a4);
-        JSApi.setVector3(JSApi.SetType.UpdateArgRef, a2);
+        JSApi.setVector3(JSApi.SetType.ArgRef, a2);
         JSApi.setVector3(JSApi.SetType.Rval, ret);
         return true;
     }
@@ -129,7 +129,7 @@ public partial class UnityEngineManual
         Vector3 a2 = JSApi.getVector3S(JSApi.GetType.ArgRef);
         float a3 = JSApi.getSingle(JSApi.GetType.Arg);
         Vector3 ret = Vector3.SmoothDamp(a0, a1, ref a2, a3);
-        JSApi.setVector3(JSApi.SetType.UpdateArgRef, a2);
+        JSApi.setVector3(JSApi.SetType.ArgRef, a2);
         JSApi.setVector3(JSApi.SetType.Rval, ret);
         return true;
     }
