@@ -73,11 +73,15 @@ public class JSVCall
     public MethodBase m_Method;
     public ParameterInfo[] m_ParamInfo;
 
+    // TODO delete
+    ////////////////////////////////
     public IntPtr cx;
     public IntPtr vp;
     public int currIndex = 0;
     public jsval valReturn = new jsval();
     public jsval valTemp = new jsval();
+    ////////////////////////////////
+
 
     public void Reset(IntPtr cx, IntPtr vp)
     {
@@ -101,6 +105,8 @@ public class JSVCall
 
         this.cx = cx;
         this.vp = vp;
+
+        // TODO
         currIndex = 0;
     }
     //
@@ -1057,7 +1063,121 @@ public class JSVCall
     //         }
     //     }
 
-    public int CallCallback(IntPtr cx, uint argc, IntPtr vp)
+    public bool CallCallback(int iOP, int slot, int index, bool isStatic, int argc)
+    {
+        this.Reset(cx, vp);
+
+        Oper op = (Oper)iOP;
+
+        if (slot < 0 || slot >= JSMgr.allCallbackInfo.Count)
+        {
+            throw (new Exception("Bad slot: " + slot));
+            return false;
+        }
+        JSMgr.CallbackInfo aInfo = JSMgr.allCallbackInfo[slot];
+
+        currentParamCount = 4;
+        if (!isStatic)
+        {
+            this.jsObj = JSApi.JSh_ArgvObject(cx, vp, 4);
+            if (this.jsObj == IntPtr.Zero)
+            {
+                throw (new Exception("Invalid this jsObj"));
+                return false;
+            }
+
+            this.csObj = JSMgr.getCSObj(jsObj);
+            currentParamCount++;
+        }
+
+        switch (op)
+        {
+            case Oper.GET_FIELD:
+            case Oper.SET_FIELD:
+                {
+                    currIndex = currentParamCount;
+                    this.bGet = (op == Oper.GET_FIELD);
+                    JSMgr.CSCallbackField fun = aInfo.fields[index];
+                    if (fun == null)
+                    {
+                        throw (new Exception("Field not found"));
+                        return false;
+                    }
+                    fun(this);
+                }
+                break;
+            case Oper.GET_PROPERTY:
+            case Oper.SET_PROPERTY:
+                {
+                    currIndex = currentParamCount;
+                    this.bGet = (op == Oper.GET_PROPERTY);
+                    JSMgr.CSCallbackProperty fun = aInfo.properties[index];
+                    if (fun == null)
+                    {
+                        throw (new Exception("Property not found"));
+                        return false;
+                    }
+                    fun(this);
+                }
+                break;
+            case Oper.METHOD:
+            case Oper.CONSTRUCTOR:
+                {
+                    bool overloaded = JSApi.JSh_ArgvBool(cx, vp, currentParamCount);
+                    currentParamCount++;
+
+                    JSMgr.MethodCallBackInfo[] arrMethod;
+                    if (op == Oper.METHOD)
+                        arrMethod = aInfo.methods;
+                    else
+                        arrMethod = aInfo.constructors;
+
+                    // params count
+                    // for overloaded function, it's caculated by ExtractJSParams
+                    int jsParamCount = (int)argc - currentParamCount;
+                    if (!overloaded)
+                    {
+                        // for not-overloaded function
+                        int i = (int)argc;
+                        while (i > 0 && JSApi.jsval.isUndefined(JSApi.JSh_ArgvTag(cx, vp, --i)))
+                            jsParamCount--;
+                    }
+                    else
+                    {
+                        if (!this.ExtractJSParams(currentParamCount, (int)argc - currentParamCount))
+                            return false;
+
+                        string methodName = arrMethod[index].methodName;
+
+                        int i = index;
+                        while (true)
+                        {
+                            if (IsMethodMatch(arrMethod[i].arrCSParam))
+                            {
+                                index = i;
+                                break;
+                            }
+                            i++;
+                            if (arrMethod[i].methodName != methodName)
+                            {
+                                throw (new Exception("Overloaded function can't find match: " + methodName));
+                                return false;
+                            }
+                        }
+
+                        jsParamCount = arrJSParamsLength;
+                    }
+
+                    currIndex = currentParamCount;
+                    arrMethod[index].fun(this, currentParamCount, jsParamCount);
+                }
+                break;
+        }
+        return true;
+    }
+
+    // TODO delete
+    public int CallCallback2(IntPtr cx, uint argc, IntPtr vp)
     {
         this.Reset(cx, vp);
 

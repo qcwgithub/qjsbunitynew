@@ -87,6 +87,12 @@ public class JSApi
 #endif
     public delegate bool JSNative(IntPtr cx, uint argc, IntPtr vp);
 
+    // CSEntry
+#if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+    [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+#endif
+    public delegate bool CSEntry(int op, int slot, int index, bool bStatic, int argc);
+
 #if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
     [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 #endif
@@ -477,6 +483,17 @@ public class JSApi
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int InitJSEngine(JSErrorReporter er);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern void ShutdownJSEngine();
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern void SetCSEntry(CSEntry entry);
+
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern /*JSContext**/ IntPtr GetContext();
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern /*JSObject**/ IntPtr GetGlobal();
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern /*JSRuntime**/ IntPtr GetRuntime();
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////// String Marshal ////////////////////////////////////////////////////////////////////////////////////////////////

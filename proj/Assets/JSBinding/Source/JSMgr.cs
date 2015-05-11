@@ -205,76 +205,61 @@ public static class JSMgr
     static JSFileLoader jsLoader;
     public static bool InitJSEngine(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
     {
-//         int err = JSApi.InitJSEngine(new JSApi.JSErrorReporter(errorReporter));
-//         if (err != 0)
-//         {
-//             Debug.LogError("InitJSEngine fail. error code: " + err);
-//             onInitJSEngine(false);
-//         }
-
-        //GenericTest(typeof(List<Component>), "List<Component> \n");
-        if (!JSApi.JSh_Init())
+        int initResult = JSApi.InitJSEngine(new JSApi.JSErrorReporter(errorReporter));
+        if (initResult != 0)
         {
+            Debug.LogError("InitJSEngine fail. error = " + initResult);
             onInitJSEngine(false);
             return false;
         }
+        JSApi.SetCSEntry(new JSApi.CSEntry(JSMgr.CSEntry));
 
-        rt = JSApi.JSh_NewRuntime(8 * 1024 * 1024, 0);
-        JSApi.JSh_SetNativeStackQuota(rt, 500000, 0, 0);
+        rt = JSApi.GetRuntime();
+        cx = JSApi.GetContext();
+        glob = JSApi.GetGlobal();
 
-        cx = JSApi.JSh_NewContext(rt, 8192);
-
-        // Set error reporter
-        JSApi.JSh_SetErrorReporter(cx, new JSApi.JSErrorReporter(errorReporter));
-
-        glob = JSApi.JSh_NewGlobalObject(cx, 1);
-        JSApi.InitPersistentObject(rt, cx, glob, mjsFinalizer);
-
-        oldCompartment = JSApi.JSh_EnterCompartment(cx, glob);
-
-        if (!JSApi.JSh_InitStandardClasses(cx, glob))
-        {
-            Debug.LogError("JSh_InitStandardClasses fail. Make sure JSh_SetNativeStackQuota was called.");
-            onInitJSEngine(false);
-            return false;
-        }
-
-        JSApi.JSh_InitReflect(cx, glob);
-        JSApi.JSh_SetGCCallback(rt, jsGCCallback, IntPtr.Zero);
-
-//         JSApi.JSh_DefineFunction(cx, glob, "printInt", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(printInt)), 1, 0/*4164*/);
-//         JSApi.JSh_DefineFunction(cx, glob, "printString", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(printString)), 1, 0/*4164*/);
-//         JSApi.JSh_DefineFunction(cx, glob, "printDouble", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(printDouble)), 1, 0/*4164*/);
-
-        // Resources.Load
         JSMgr.RegisterCS(cx, glob);
-        //JSValueWrap.Register(CSOBJ, cx);
-        //         if (useReflection)
-        //         {
-        //             for (int i = 0; i < JSBindingSettings.classes.Length; i++)
-        //                 JSMgr.AddTypeInfo(JSBindingSettings.classes[i]);
-        //         }
-
-        // bool jsRegistered = false;
-
         RefCallStaticMethod("CSharpGenerated", "RegisterAll");
-        //CSharpGenerated.RegisterAll(); // register cs function
         JSMgr.jsLoader = jsLoader;
 
-        /* 不这么干了，放在 includes.javascript 去 CS.require
-        jsGeneratedFileNames = (string[])RefGetStaticField("JSGeneratedFileNames", "names");
-        if (jsGeneratedFileNames == null)
-        {
-            Debug.LogError("InitJSEngine failed. Click menu [Assets -> JSBinding -> Generate JS and CS Bindings]");
-            onInitJSEngine(false);
-            return false;
-        }
-        JSMgr.onInitJSEngine = onInitJSEngine;
-        foreach (var shortName in jsGeneratedFileNames)
-            jsLoader.LoadJSSync(shortName, true, JSMgr.OnLoadGeneratedJS);
-        */
-
         onInitJSEngine(true);
+        return true;
+    }
+    // old code
+    public static bool InitJSEngine2(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
+    {
+//         if (!JSApi.JSh_Init())
+//         {
+//             onInitJSEngine(false);
+//             return false;
+//         }
+// 
+//         rt = JSApi.JSh_NewRuntime(8 * 1024 * 1024, 0);
+//         JSApi.JSh_SetNativeStackQuota(rt, 500000, 0, 0);
+// 
+//         cx = JSApi.JSh_NewContext(rt, 8192);
+//         JSApi.JSh_SetErrorReporter(cx, new JSApi.JSErrorReporter(errorReporter));
+// 
+//         glob = JSApi.JSh_NewGlobalObject(cx, 1);
+//         JSApi.InitPersistentObject(rt, cx, glob, mjsFinalizer);
+// 
+//         oldCompartment = JSApi.JSh_EnterCompartment(cx, glob);
+// 
+//         if (!JSApi.JSh_InitStandardClasses(cx, glob))
+//         {
+//             Debug.LogError("JSh_InitStandardClasses fail. Make sure JSh_SetNativeStackQuota was called.");
+//             onInitJSEngine(false);
+//             return false;
+//         }
+// 
+//         JSApi.JSh_InitReflect(cx, glob);
+//         JSApi.JSh_SetGCCallback(rt, jsGCCallback, IntPtr.Zero);
+// 
+//         JSMgr.RegisterCS(cx, glob);
+//         RefCallStaticMethod("CSharpGenerated", "RegisterAll");
+//         JSMgr.jsLoader = jsLoader;
+// 
+//         onInitJSEngine(true);
 
         return true;
     }
@@ -284,18 +269,30 @@ public static class JSMgr
     public static bool isShutDown { get { return ShutDown; } }
     public static void ShutdownJSEngine()
     {
-        JSApi.JSh_LeaveCompartment(cx, oldCompartment);
-
-
+        // TODO
         JSMgr.ClearJSCSRelation();
         JSMgr.ClearRootedObject();
         JSMgr.ClearCompiledScript();
 
-        JSApi.JSh_DestroyContext(cx);
-        JSApi.JSh_DestroyRuntime(rt);
-        JSApi.JSh_ShutDown();
+        JSApi.ShutdownJSEngine();
+
         ShutDown = true;
     }
+    // old code
+//     public static void ShutdownJSEngine()
+//     {
+//         JSApi.JSh_LeaveCompartment(cx, oldCompartment);
+// 
+// 
+//         JSMgr.ClearJSCSRelation();
+//         JSMgr.ClearRootedObject();
+//         JSMgr.ClearCompiledScript();
+// 
+//         JSApi.JSh_DestroyContext(cx);
+//         JSApi.JSh_DestroyRuntime(rt);
+//         JSApi.JSh_ShutDown();
+//         ShutDown = true;
+//     }
 
 
 //     public static void EvaluateFile(string fullName, IntPtr obj)
@@ -977,6 +974,27 @@ public static class JSMgr
     public static IntPtr CSOBJ = IntPtr.Zero;
     public static JSVCall vCall = new JSVCall();
 
+    [MonoPInvokeCallbackAttribute(typeof(JSApi.CSEntry))]
+    static bool CSEntry(int iOP, int slot, int index, bool isStatic, int argc)
+    {
+        if (JSMgr.isShutDown) return false; 
+        try
+        {
+            vCall.CallCallback(iOP, slot, index, isStatic, argc);
+        }
+        catch (System.Exception ex)
+        {
+            /* 
+             * if exception occurs, catch it, pass the error to js, and return false
+             * js then print the error string and js call stack
+             * note: the error contains cs call stack, so now we have both cs and js call stack
+             */
+            JSApi.JSh_ReportError(cx, ex.ToString());
+            return false;
+        }
+
+        return true;
+    }
     /*
      * 'Call'
      * This is the entry for calling cs from js
@@ -1097,6 +1115,7 @@ public static class JSMgr
     /*
      * record js/cs relation
      */
+    // TODO delete
     public class JS_CS_Relation
     {
         //
@@ -1118,6 +1137,22 @@ public static class JSMgr
             name = csObj.GetType().Name;// csObj.ToString();
             this.hash = h;
         }
+    }
+    // TODO check
+    public class JS_CS_Rel
+    {
+        public int jsObjID;
+        public object csObj;
+        public string name;
+        public int hash;
+        public JS_CS_Rel(int jsObjID, object csObj, int h)
+        {
+            this.jsObjID = jsObjID;
+            this.csObj = csObj;
+            this.name = csObj.GetType().Name;// csObj.ToString();
+            this.hash = h;
+        }
+
     }
 
     // 
@@ -1211,6 +1246,9 @@ public static class JSMgr
     // 那么 mDict2 就无法再删除那个条目。(进入一种很奇怪的状态，托管不空，NATIVE为空的状况)
     // 
     static Dictionary<int, JS_CS_Relation> mDict2 = new Dictionary<int, JS_CS_Relation>(); // key = object.hashCode()
+
+    static Dictionary<int, JS_CS_Rel> mDictionary1 = new Dictionary<int, JS_CS_Rel>(); // key = OBJID
+    static Dictionary<int, JS_CS_Rel> mDictionary2 = new Dictionary<int, JS_CS_Rel>(); // key = object.hashCode()
 
     public static void GetDictCount(out int countDict1, out int countDict2)
     {

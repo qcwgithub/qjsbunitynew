@@ -123,7 +123,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
       propertyPath: showStatistics
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
       propertyPath: debug
@@ -296,7 +296,7 @@ MonoBehaviour:
   - StreamingAssets/
   - UnityVS/
   - DaikonForge Tween (Pro)/
-  showStatistics: 0
+  showStatistics: 1
 --- !u!1 &1486263794
 GameObject:
   m_ObjectHideFlags: 0
