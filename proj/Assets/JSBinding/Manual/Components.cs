@@ -61,7 +61,7 @@ public partial class UnityEngineManual
         {
             go = (UnityEngine.GameObject)vc.csObj;
         }
-        typeString = vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV);
+        typeString = JSApi.getStringS((int)JSApi.GetType.Arg);
         type = JSDataExchangeMgr.GetTypeByName(typeString);
     }
 
@@ -209,7 +209,9 @@ public partial class UnityEngineManual
     public static bool GameObject_GetComponentsInChildrenT1__Boolean(JSVCall vc, int start, int count)
     {
         help_getGoAndType(vc);
-        bool includeInactive = vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
+        // TODO check
+//        bool includeInactive = vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
+        bool includeInactive = JSApi.getBoolean((int)JSApi.GetType.Arg);
 
         if (isCSMonoBehaviour(type))
         {
@@ -288,7 +290,9 @@ public partial class UnityEngineManual
     public static bool GameObject_GetComponentsInParentT1__Boolean(JSVCall vc, int start, int count)
     {
         help_getGoAndType(vc);
-        bool includeInactive = vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
+        // TODO check
+//        bool includeInactive = vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
+        bool includeInactive = JSApi.getBoolean((int)JSApi.GetType.Arg);
 
         if (isCSMonoBehaviour(type))
         {

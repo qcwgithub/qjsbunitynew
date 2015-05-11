@@ -991,6 +991,49 @@ public class JSVCall
         return jsObj;
     }
 
+    public bool CallJSFunctionName(int jsObjID, string functionName, params object[] args)
+    {
+        if (JSMgr.isShutDown) return false;
+
+        int argsLen = (args != null ? args.Length : 0);
+
+//         if (JSEngine.inst.OutputFullCallingStackOnError)
+//         {
+//             JSApi.setObject(JSApi.SetType.Jsval, jsObjID);
+//             JSApi.moveTempVal2Arr(0);
+// 
+//             JSApi.setString(JSApi.SetType.Jsval, functionName);
+//             JSApi.moveTempVal2Arr(1);
+// 
+//             if (argsLen > 0)
+//             {
+//                 for (int i = 0; i < args.Length; i++)
+//                 {
+//                     this.datax.setWhatever(JSApi.SetType.Jsval, args[i]);
+//                     JSApi.moveTempVal2Arr(i + 2);
+//                 }
+//             }
+//             // TODO 修改 ErrorHandler.javascript
+//             // return JSApi.callFunction(jsObjID, functionName, argsLen);
+//             //return JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", (UInt32)(argsLen + 2), vals, ref rvalCallJS);
+//         }
+//         else
+        {
+            if (argsLen == 0)
+            {
+                return JSApi.callFunction(jsObjID, functionName, 0);
+            }
+
+            for (int i = 0; i < argsLen; i++)
+            {
+                this.datax.setWhatever(JSApi.SetType.Jsval, args[i]);
+                JSApi.moveTempVal2Arr(i);
+            }
+
+            return JSApi.callFunction(jsObjID, functionName, argsLen);
+        }
+    }
+
     public jsval[] arrJsval0 = new jsval[0];
     public bool CallJSFunctionValue(IntPtr jsThis, ref jsval valFunction, params object[] args)
     {
@@ -1010,7 +1053,7 @@ public class JSVCall
                 for (int i = 0; i < args.Length; i++)
                 {
                     // vals[i + 2] = CSObject_2_JSValue(args[i]);
-                    this.datax.setWhatever(JSDataExchangeMgr.eSetType.Jsval, args[i]);
+                    this.datax.setWhatever(JSApi.SetType.Jsval, args[i]);
                     vals[i + 2] = valTemp;
                 }
             }
@@ -1047,6 +1090,8 @@ public class JSVCall
     }
 
     public bool bGet = false, bStatic = false;
+    public int jsObjID = 0;
+    // TODO delete
     public IntPtr jsObj = IntPtr.Zero;
     public object csObj, result, arg;
     public object[] args;
@@ -1063,6 +1108,10 @@ public class JSVCall
     //         }
     //     }
 
+    //
+    // argc 还有几个参数
+    //
+    //
     public bool CallCallback(int iOP, int slot, int index, bool isStatic, int argc)
     {
         this.Reset(cx, vp);
@@ -1075,19 +1124,21 @@ public class JSVCall
             return false;
         }
         JSMgr.CallbackInfo aInfo = JSMgr.allCallbackInfo[slot];
-
-        currentParamCount = 4;
         if (!isStatic)
         {
-            this.jsObj = JSApi.JSh_ArgvObject(cx, vp, 4);
-            if (this.jsObj == IntPtr.Zero)
+            this.jsObjID = JSApi.getObject((int)JSApi.GetType.Arg);
+            if (this.jsObjID == 0)
             {
-                throw (new Exception("Invalid this jsObj"));
+                throw (new Exception("Invalid this jsObjID"));
                 return false;
             }
 
-            this.csObj = JSMgr.getCSObj(jsObj);
-            currentParamCount++;
+            // for manual js code, this.csObj will be null
+            this.csObj = JSMgr.getCSObj2(jsObjID);
+            //if (this.csObj == null) {
+            //	throw(new Exception("Invalid this csObj"));
+            //    return JSApi.JS_FALSE;
+            //}
         }
 
         switch (op)
@@ -1095,7 +1146,6 @@ public class JSVCall
             case Oper.GET_FIELD:
             case Oper.SET_FIELD:
                 {
-                    currIndex = currentParamCount;
                     this.bGet = (op == Oper.GET_FIELD);
                     JSMgr.CSCallbackField fun = aInfo.fields[index];
                     if (fun == null)
@@ -1109,7 +1159,6 @@ public class JSVCall
             case Oper.GET_PROPERTY:
             case Oper.SET_PROPERTY:
                 {
-                    currIndex = currentParamCount;
                     this.bGet = (op == Oper.GET_PROPERTY);
                     JSMgr.CSCallbackProperty fun = aInfo.properties[index];
                     if (fun == null)
@@ -1123,8 +1172,9 @@ public class JSVCall
             case Oper.METHOD:
             case Oper.CONSTRUCTOR:
                 {
-                    bool overloaded = JSApi.JSh_ArgvBool(cx, vp, currentParamCount);
-                    currentParamCount++;
+                    // TODO dont need this param
+                    bool overloaded = JSApi.getBoolean((int)JSApi.GetType.Arg);
+                    overloaded = false; // force to false
 
                     JSMgr.MethodCallBackInfo[] arrMethod;
                     if (op == Oper.METHOD)
@@ -1132,44 +1182,9 @@ public class JSVCall
                     else
                         arrMethod = aInfo.constructors;
 
-                    // params count
-                    // for overloaded function, it's caculated by ExtractJSParams
-                    int jsParamCount = (int)argc - currentParamCount;
-                    if (!overloaded)
-                    {
-                        // for not-overloaded function
-                        int i = (int)argc;
-                        while (i > 0 && JSApi.jsval.isUndefined(JSApi.JSh_ArgvTag(cx, vp, --i)))
-                            jsParamCount--;
-                    }
-                    else
-                    {
-                        if (!this.ExtractJSParams(currentParamCount, (int)argc - currentParamCount))
-                            return false;
-
-                        string methodName = arrMethod[index].methodName;
-
-                        int i = index;
-                        while (true)
-                        {
-                            if (IsMethodMatch(arrMethod[i].arrCSParam))
-                            {
-                                index = i;
-                                break;
-                            }
-                            i++;
-                            if (arrMethod[i].methodName != methodName)
-                            {
-                                throw (new Exception("Overloaded function can't find match: " + methodName));
-                                return false;
-                            }
-                        }
-
-                        jsParamCount = arrJSParamsLength;
-                    }
-
                     currIndex = currentParamCount;
-                    arrMethod[index].fun(this, currentParamCount, jsParamCount);
+                    // TODO 改成 argc
+                    arrMethod[index].fun(this, currentParamCount, argc - 1);
                 }
                 break;
         }

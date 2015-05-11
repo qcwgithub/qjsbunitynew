@@ -119,7 +119,9 @@ public class JSSerializer : MonoBehaviour
                 break;
             case UnitType.ST_String:
                 {
-                    JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
+                    // TODO check
+                    // JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
+                    JSApi.setString((int)JSApi.GetType.Jsval, strValue);
                 }
                 break;
             default:

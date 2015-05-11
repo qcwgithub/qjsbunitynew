@@ -474,7 +474,12 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void InitPersistentObject(IntPtr rt, IntPtr cx, IntPtr global, SC_FINALIZE finalizer);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool NewJSClassObject(string name, /*JSObject***/ ref IntPtr retJSObj, /*JSObject***/ ref IntPtr retNativeObj, /*JSObject**/ IntPtr objWrap);
+    public static extern int NewJSClassObject(string name);
+
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern bool RemoveJSClassObject(int odjID);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern bool IsJSClassObjectFunctionExist(int objID, string functionName);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void SetVector2(IntPtr jsObj, float x, float y, /*JSObject**/ IntPtr objWrap);
@@ -482,11 +487,11 @@ public class JSApi
     public static extern void SetVector3(IntPtr jsObj, float x, float y, float z, /*JSObject**/ IntPtr objWrap);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern int InitJSEngine(JSErrorReporter er);
+    public static extern int InitJSEngine(JSErrorReporter er, CSEntry csEntry, JSNative req);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void ShutdownJSEngine();
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern void SetCSEntry(CSEntry entry);
+//     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+//     public static extern void SetCSEntry(CSEntry entry);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern /*JSContext**/ IntPtr GetContext();
@@ -494,6 +499,111 @@ public class JSApi
     public static extern /*JSObject**/ IntPtr GetGlobal();
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern /*JSRuntime**/ IntPtr GetRuntime();
+
+
+
+
+    public enum GetType
+    {
+        Arg = 0,
+        ArgRef = 1,
+        JSFunRet = 2,
+        Jsval = 3,
+    }
+    public enum SetType
+    {
+        Rval = 0,
+        UpdateArgRef = 1,
+        Jsval = 2,
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // 先写上去吧。
+
+    public static  int getCurrIndex();
+    public static void setCurIndex(int i);
+    public static uint argTag(int i);
+
+    public static short getChar(GetType e);
+    public static char getSByte(GetType e);
+    public static byte getByte(GetType e);
+    public static short getInt16(GetType e);
+    public static ushort getUInt16(GetType e);
+    public static int getInt32(GetType e);
+    public static uint getUInt32(GetType e);
+    public static long getInt64(GetType e);
+    public static ulong getUInt64(GetType e);
+    public static int getEnum(GetType e);
+    public static float getSingle(GetType e);
+    public static double getDouble(GetType e);
+    public static long getIntPtr(GetType e);
+    // TODO 如果e没填，就用 ARGV
+    public static bool getBoolean(GetType e);
+    public static IntPtr getString(GetType e);
+    public static string getStringS(GetType e)
+    {
+        return Marshal.PtrToStringUni(getString(e));
+    }
+
+    public static  void setFloatPtr2(ref float f0, ref float f1);
+    public static  void setFloatPtr3(ref float f0, ref float f1, ref float f2);
+    public static bool getVector2(GetType e);
+    public static Vector2 getVector2S(GetType e)
+    {
+        // TODO does this work?
+        // ref v.x, ref v.y  <-- TODO is it OK?
+        float x = 0, y = 0;
+        setFloatPtr2(ref x, ref y);
+        getVector2(e);
+        return new Vector2(x, y);
+    }
+    public static bool getVector3(GetType e);
+    public static Vector2 getVector3S(GetType e)
+    {
+        // TODO does this work?
+        float x = 0, y = 0, z = 0;
+        setFloatPtr3(ref x, ref y, ref z);
+        getVector3(e);
+        return new Vector3(x, y, z);
+    }
+    public static  int getObject(GetType e);
+
+    // TODO 改成 (GetType e, ...)
+    public static  void setChar    (SetType e, char v);
+    public static  void setSByte   (SetType e, sbyte v);
+    public static  void setByte    (SetType e, byte v);
+    public static  void setInt16   (SetType e, short v);
+    public static  void setUInt16  (SetType e, ushort v);
+    public static  void setInt32   (SetType e, int v);
+    public static  void setUInt32  (SetType e, uint v);
+    public static  void setInt64   (SetType e, long v);
+    public static  void setUInt64  (SetType e, ulong v);
+    public static  void setEnum    (SetType e, int v);
+    public static  void setSingle  (SetType e, float v);
+    public static  void setDouble  (SetType e, double v);
+    public static  void setIntPtr  (SetType e, long v);
+    public static  void setBoolean(SetType e, bool v);
+    // TODO 字符串
+    public static void setString(SetType e, string value);
+    public static void setVector2(SetType e, float x, float y);
+    public static void setVector2(SetType e, Vector2 v)
+    {
+        setVector2(e, v.x, v.y);
+    }
+    public static void setVector3(SetType e, float x, float y, float z);
+    public static void setVector3(SetType e, Vector3 v)
+    {
+        setVector3(e, v.x, v.y, v.z);
+    }
+    public static void setObject(SetType e, int id);
+
+    public static bool isVector2(int i);
+    public static bool isVector3(int i);
+
+    public static void moveTempVal2Arr(int i);
+
+    
+    public static bool callFunction(int jsObjID, string functionName, int argCount);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////// String Marshal ////////////////////////////////////////////////////////////////////////////////////////////////

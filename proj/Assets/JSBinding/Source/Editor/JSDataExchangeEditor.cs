@@ -110,13 +110,13 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             {
                 ph.getter = new StringBuilder()
                     .AppendFormat("int r_arg{0} = vc.currIndex;\n", paramIndex)
-                    .AppendFormat("{0} {1} = ({0})vc.datax.get{2}(JSDataExchangeMgr.eGetType.GetARGVRefOut);", typeFullName, ph.argName, keyword)
+                    .AppendFormat("{0} {1} = ({0}){2}(JSDataExchangeMgr.eGetType.GetARGVRefOut);", typeFullName, ph.argName, keyword)
                     .ToString();
             }
             else
             {
                 ph.getter = new StringBuilder()
-                    .AppendFormat("{0} {1} = ({0})vc.datax.get{2}(JSDataExchangeMgr.eGetType.GetARGV);", typeFullName, ph.argName, keyword)
+                    .AppendFormat("{0} {1} = ({0}){2}(JSDataExchangeMgr.eGetType.GetARGV);", typeFullName, ph.argName, keyword)
                     .ToString();
             }
 
@@ -124,7 +124,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             {
                 ph.updater = new StringBuilder()
                     .AppendFormat("vc.currIndex = r_arg{0};\n", paramIndex)
-                    .AppendFormat("vc.datax.set{0}(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, {1});", keyword, ph.argName)
+                    .AppendFormat("{0}(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, {1});", keyword.Replace("get", "set"), ph.argName)
                     .ToString();
             }
         }

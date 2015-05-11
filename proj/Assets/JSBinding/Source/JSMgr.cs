@@ -205,20 +205,23 @@ public static class JSMgr
     static JSFileLoader jsLoader;
     public static bool InitJSEngine(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
     {
-        int initResult = JSApi.InitJSEngine(new JSApi.JSErrorReporter(errorReporter));
+        int initResult = JSApi.InitJSEngine(new JSApi.JSErrorReporter(errorReporter), new JSApi.CSEntry(JSMgr.CSEntry), new JSApi.JSNative(require));
         if (initResult != 0)
         {
             Debug.LogError("InitJSEngine fail. error = " + initResult);
             onInitJSEngine(false);
             return false;
         }
-        JSApi.SetCSEntry(new JSApi.CSEntry(JSMgr.CSEntry));
+        //JSApi.SetCSEntry(new JSApi.CSEntry(JSMgr.CSEntry));
 
         rt = JSApi.GetRuntime();
         cx = JSApi.GetContext();
         glob = JSApi.GetGlobal();
 
-        JSMgr.RegisterCS(cx, glob);
+        // 
+        // move to C
+        //JSMgr.RegisterCS(cx, glob);
+        //
         RefCallStaticMethod("CSharpGenerated", "RegisterAll");
         JSMgr.jsLoader = jsLoader;
 
@@ -270,7 +273,7 @@ public static class JSMgr
     public static void ShutdownJSEngine()
     {
         // TODO
-        JSMgr.ClearJSCSRelation();
+        JSMgr.ClearJSCSRelation2();
         JSMgr.ClearRootedObject();
         JSMgr.ClearCompiledScript();
 
@@ -971,6 +974,7 @@ public static class JSMgr
         }
     }
 
+    // TODO delete
     public static IntPtr CSOBJ = IntPtr.Zero;
     public static JSVCall vCall = new JSVCall();
 
@@ -1000,31 +1004,31 @@ public static class JSMgr
      * This is the entry for calling cs from js
      * 99% js calls comes here
      */
-    [MonoPInvokeCallbackAttribute(typeof(JSApi.JSNative))]
-    static bool Call(IntPtr cx, uint argc, IntPtr vp)
-    {
-        //         if (useReflection)
-        //             return vCall.CallReflection(cx, argc, vp);
-        //         else
-
-        if (JSMgr.isShutDown) return false;
-        try
-        {
-            vCall.CallCallback(cx, argc, vp);
-        }
-        catch (System.Exception ex)
-        {
-            /* 
-             * if exception occurs, catch it, pass the error to js, and return false
-             * js then print the error string and js call stack
-             * note: the error contains cs call stack, so now we have both cs and js call stack
-             */
-            JSApi.JSh_ReportError(cx, ex.ToString());
-            return false;
-        }
-        
-        return true;
-    }
+//     [MonoPInvokeCallbackAttribute(typeof(JSApi.JSNative))]
+//     static bool Call(IntPtr cx, uint argc, IntPtr vp)
+//     {
+//         //         if (useReflection)
+//         //             return vCall.CallReflection(cx, argc, vp);
+//         //         else
+// 
+//         if (JSMgr.isShutDown) return false;
+//         try
+//         {
+//             vCall.CallCallback(cx, argc, vp);
+//         }
+//         catch (System.Exception ex)
+//         {
+//             /* 
+//              * if exception occurs, catch it, pass the error to js, and return false
+//              * js then print the error string and js call stack
+//              * note: the error contains cs call stack, so now we have both cs and js call stack
+//              */
+//             JSApi.JSh_ReportError(cx, ex.ToString());
+//             return false;
+//         }
+//         
+//         return true;
+//     }
 
     /*
      * 'require'
@@ -1095,17 +1099,17 @@ public static class JSMgr
     /*
      * Create the 'CS' global object
      */
-    public static void RegisterCS(IntPtr cx, IntPtr glob)
-    {
-        IntPtr jsClass = JSApi.JSh_NewClass("CS", 0, null);
-        IntPtr obj = JSApi.JSh_InitClass(cx, glob, jsClass);
-
-        JSApi.JSh_DefineFunction(cx, obj, "Call", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(Call)), 0/* narg */, 0);
-        JSApi.JSh_DefineFunction(cx, obj, "require", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(require)), 0/* narg */, 0);
-        JSApi.JSh_DefineFunction(cx, obj, "SetErrorReporter", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(SetErrorReporter)), 0/* narg */, 0);
-        
-        CSOBJ = obj;
-    }
+//     public static void RegisterCS(IntPtr cx, IntPtr glob)
+//     {
+//         IntPtr jsClass = JSApi.JSh_NewClass("CS", 0, null);
+//         IntPtr obj = JSApi.JSh_InitClass(cx, glob, jsClass);
+// 
+//         JSApi.JSh_DefineFunction(cx, obj, "Call", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(Call)), 0/* narg */, 0);
+//         JSApi.JSh_DefineFunction(cx, obj, "require", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(require)), 0/* narg */, 0);
+//         JSApi.JSh_DefineFunction(cx, obj, "SetErrorReporter", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(SetErrorReporter)), 0/* narg */, 0);
+//         
+//         CSOBJ = obj;
+//     }
 
     public static void JS_GC()
     {
@@ -1155,6 +1159,17 @@ public static class JSMgr
 
     }
 
+    public static void AddJSCSRel(int jsObjID, object csObj)
+    {
+        int hash = csObj.GetHashCode();
+        mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, csObj, hash));
+
+        if (csObj.GetType().IsClass)
+        {
+            mDictionary2.Add(hash, new JS_CS_Rel(jsObjID, csObj, hash));
+        }
+    }
+
     // 
     public static void addJSCSRelation(IntPtr jsObj, IntPtr nativeObj, object csObj)
     {
@@ -1186,6 +1201,14 @@ public static class JSMgr
         //         }
         //Debug.Log("+jsObj " + jsObj.ToString() +" "+ (mDict1.Count).ToString() + " " + csObj.GetType().Name + "/" + (typeof(UnityEngine.Object).IsAssignableFrom(csObj.GetType()) ? ((UnityEngine.Object)csObj).name : ""));
     }
+    public static object getCSObj2(int jsObjID)
+    {
+        JS_CS_Rel obj;
+        if (mDictionary1.TryGetValue(jsObjID, out obj))
+            return obj.csObj;
+        return null;
+    }
+    // TODO delete
     public static object getCSObj(IntPtr nativeObj)
     {
         JS_CS_Relation obj;
@@ -1193,6 +1216,17 @@ public static class JSMgr
             return obj.csObj;
         return null;
     }
+    public static int getJSObj2(object csObj)
+    {
+        if (csObj.GetType().IsValueType)
+            return 0;
+
+        JS_CS_Rel Rel;
+        if (mDictionary2.TryGetValue(csObj.GetHashCode(), out Rel))
+            return Rel.jsObjID;
+        return 0;
+    }
+    // TODO delete
     public static IntPtr getJSObj(object csObj)
     {
         if (csObj.GetType().IsValueType)
@@ -1203,6 +1237,21 @@ public static class JSMgr
             return Rel.jsObj;
         return IntPtr.Zero;
     }
+    public static void changeJSObj2(int jsObjID, object csObjNew)
+    {
+        if (!csObjNew.GetType().IsValueType)
+        {
+            Debug.LogError("class can not call changeJSObj2");
+            return;
+        }
+        JS_CS_Rel Rel;
+        if (mDictionary1.TryGetValue(jsObjID, out Rel))
+        {
+            mDictionary1.Remove(jsObjID);
+            mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, csObjNew, csObjNew.GetHashCode()));
+        }
+    }
+    // TODO delete
     public static void changeJSObj(IntPtr nativeObj, object csObjNew)
     {
         if (!csObjNew.GetType().IsValueType)
@@ -1229,6 +1278,11 @@ public static class JSMgr
     //         mDict2.Remove(csObj.GetHashCode());
     //         addJSCSRelation(jsObj, csObjNew);
     //     }
+    public static void ClearJSCSRelation2()
+    {
+        mDictionary1.Clear();
+        mDictionary2.Clear();
+    }
     public static void ClearJSCSRelation() {
         mDict1.Clear();
         mDict2.Clear();
@@ -1248,7 +1302,7 @@ public static class JSMgr
     static Dictionary<int, JS_CS_Relation> mDict2 = new Dictionary<int, JS_CS_Relation>(); // key = object.hashCode()
 
     static Dictionary<int, JS_CS_Rel> mDictionary1 = new Dictionary<int, JS_CS_Rel>(); // key = OBJID
-    static Dictionary<int, JS_CS_Rel> mDictionary2 = new Dictionary<int, JS_CS_Rel>(); // key = object.hashCode()
+    static Dictionary<int, JS_CS_Rel> mDictionary2 = new Dictionary<int, JS_CS_Rel>(); // key = object.GetHashCode()
 
     public static void GetDictCount(out int countDict1, out int countDict2)
     {
@@ -1257,6 +1311,7 @@ public static class JSMgr
     }
     public static Dictionary<long, JS_CS_Relation> GetDict1() { return mDict1;  }
 
+    // TODO delete
     [MonoPInvokeCallbackAttribute(typeof(JSApi.SC_FINALIZE))]
     static void JSObjectFinalizer(IntPtr freeOp, IntPtr nativeObj)
     {

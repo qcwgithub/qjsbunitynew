@@ -34,184 +34,19 @@ public class JSDataExchangeMgr
 
     #region Get Operation
 
-    public void getJSValueOfParam(ref jsval val, int pIndex)
-    {
-        IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, pIndex);
-        if (jsObj != IntPtr.Zero) 
-        {
-            JSApi.GetProperty(JSMgr.cx, jsObj, "Value", VALUE_LEN, ref val);
-        }
-        else
-        {
-            Debug.LogError("ref/out param must be js object");
-        }
-    }
+//     public void getJSValueOfParam(ref jsval val, int pIndex)
+//     {
+//         IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, pIndex);
+//         if (jsObj != IntPtr.Zero) 
+//         {
+//             JSApi.GetProperty(JSMgr.cx, jsObj, "Value", VALUE_LEN, ref val);
+//         }
+//         else
+//         {
+//             Debug.LogError("ref/out param must be js object");
+//         }
+//     }
 
-    public double getNumberic(eGetType e)
-    {
-        switch (e)
-        {
-            case eGetType.GetARGV:
-                {
-                    int i = vc.currIndex++;
-                    var tag = JSApi.JSh_ArgvTag(JSMgr.cx, vc.vp, i);
-                    if (jsval.isDouble(tag))
-                        return JSApi.JSh_ArgvDouble(JSMgr.cx, vc.vp, i);
-                    else
-                        return (double)JSApi.JSh_ArgvInt(JSMgr.cx, vc.vp, i);
-                }
-                break;
-            case eGetType.GetARGVRefOut:
-                {
-                    jsval val = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref val);
-                    getJSValueOfParam(ref val, vc.currIndex++);
-                    if (jsval.isNullOrUndefined(val.tag))
-                        return 0;
-                    if (jsval.isDouble(val.tag))
-                        return JSApi.JSh_GetJsvalDouble(ref val);
-                    else
-                        return JSApi.JSh_GetJsvalInt(ref val);
-                }
-                break;
-            case eGetType.GetJSFUNRET:
-                {
-                    if (jsval.isDouble(vc.rvalCallJS.tag))
-                        return JSApi.JSh_GetJsvalDouble(ref vc.rvalCallJS);
-                    else
-                        return (double)JSApi.JSh_GetJsvalInt(ref vc.rvalCallJS);
-                }
-                break;
-            case eGetType.Jsval:
-                {
-                    // 通过 vc.valTemp 传递值
-                    if (jsval.isDouble(vc.valTemp.tag))
-                        return JSApi.JSh_GetJsvalDouble(ref vc.valTemp);
-                    else
-                        return (double)JSApi.JSh_GetJsvalInt(ref vc.valTemp);
-                }
-                break;
-            default:
-                Debug.LogError("Not Supported");
-                break;
-        }
-        return 0;
-    }
-
-    public Boolean getBoolean(eGetType e)
-    {
-        switch (e)
-        {
-            case eGetType.GetARGV:
-                return JSApi.JSh_ArgvBool(JSMgr.cx, vc.vp, vc.currIndex++);
-                break;
-            case eGetType.GetARGVRefOut:
-                {
-                    jsval val = new jsval();
-                    getJSValueOfParam(ref val, vc.currIndex++);
-                    return JSApi.JSh_GetJsvalBool(ref val);
-                }
-                break;
-            case eGetType.GetJSFUNRET:
-                return JSApi.JSh_GetJsvalBool(ref vc.rvalCallJS);
-                break;
-            case eGetType.Jsval:
-                {
-                    // 通过 vc.valTemp 传递值
-                    return JSApi.JSh_GetJsvalBool(ref vc.valTemp);
-                }
-                break;
-            default:
-                Debug.LogError("Not Supported");
-                break;
-        }
-        return false;
-    }
-    public String getString(eGetType e)
-    {
-        switch (e)
-        {
-            case eGetType.GetARGV:
-		        {
-                    string s = JSApi.JSh_ArgvStringS(JSMgr.cx, vc.vp, vc.currIndex++);
-			        return s;
-		        }
-                break;
-            case eGetType.GetARGVRefOut:
-                {
-                    jsval val = new jsval();
-                    getJSValueOfParam(ref val, vc.currIndex++);
-                    return JSApi.JSh_GetJsvalStringS(JSMgr.cx, ref val);
-                }
-                break;
-            case eGetType.GetJSFUNRET:
-                return JSApi.JSh_GetJsvalStringS(JSMgr.cx, ref vc.rvalCallJS);
-                break;
-            case eGetType.Jsval:
-                {
-                    // 通过 vc.valTemp 传递值
-                    return JSApi.JSh_GetJsvalStringS(JSMgr.cx, ref vc.valTemp);
-                }
-                break;
-            default:
-                Debug.LogError("Not Supported");
-                break;
-        }
-        return string.Empty;
-    }
-    public Char getChar(eGetType e)
-    {
-        return (Char)getNumberic(e);
-    }
-    public SByte getSByte(eGetType e)
-    {
-        return (SByte)getNumberic(e);
-    }
-    public Byte getByte(eGetType e)
-    {
-        return (Byte)getNumberic(e);
-    }
-    public Int16 getInt16(eGetType e)
-    {
-        return (Int16)getNumberic(e);
-    }
-    public UInt16 getUInt16(eGetType e)
-    {
-        return (UInt16)getNumberic(e);
-    }
-    public Int32 getInt32(eGetType e)
-    {
-        return (Int32)getNumberic(e);
-    }
-    public UInt32 getUInt32(eGetType e)
-    {
-        return (UInt32)getNumberic(e);
-    }
-    public Int64 getInt64(eGetType e)
-    {
-        return (Int64)getNumberic(e);
-    }
-    public UInt64 getUInt64(eGetType e)
-    {
-        return (UInt64)getNumberic(e);
-    }
-    public Int32 getEnum(eGetType e)
-    {
-        return (Int32)getNumberic(e);
-    }
-    public Single getSingle(eGetType e)
-    {
-        return (Single)getNumberic(e);
-    }
-    public Double getDouble(eGetType e)
-    {
-        return (Double)getNumberic(e);
-    }
-    public IntPtr getIntPtr(eGetType e)
-    {
-        long l = (long)getNumberic(e);
-        return new IntPtr(l);
-    }
     public jsval getFunction(eGetType e)
     {
         jsval val = new jsval();
@@ -243,206 +78,90 @@ public class JSDataExchangeMgr
         }
         return val;
     }
-    public object getObject(eGetType e)
+    public object getObject(JSApi.GetType e)
     {
-        switch (e)
-        {
-            case eGetType.GetARGV:
-                {
-                    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
-                    if (jsObj == IntPtr.Zero)
-                        return null;
+        int jsObjID = JSApi.getObject(e);
+        if (jsObjID == 0)
+            return null;
 
-                    jsval val = new jsval();
-                    JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-                    IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
-                    if (__nativeObj != IntPtr.Zero)
-                    {
-                        object csObj = JSMgr.getCSObj(__nativeObj);
-                        return csObj;
-                    }
-                    else
-                    {
-                        return new CSRepresentedObject(jsObj);
-                    }
-                }
-                break;
-            case eGetType.GetARGVRefOut:
-                {
-                    jsval val = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref val);
-                    getJSValueOfParam(ref val, vc.currIndex++);
+        // TODO CSRepresentedObject2 怎么办
+        object csObj = JSMgr.getCSObj2(jsObjID);
+        return csObj;
 
-                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
-                    if (jsObj == IntPtr.Zero)
-                        return null;
-
-                    JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-                    IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
-                    if (__nativeObj != IntPtr.Zero)
-                    {
-                        object csObj = JSMgr.getCSObj(__nativeObj);
-                        return csObj;
-                    }
-                    else
-                    {
-                        return new CSRepresentedObject(jsObj);
-                    }
-                }
-                break;
-            case eGetType.Jsval:
-                {
-                    // 通过 vc.valTemp 传递值
-                    jsval val = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref val);
-
-                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
-                    if (jsObj == IntPtr.Zero)
-                        return null;
-
-                    JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-                    IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
-                    if (__nativeObj != IntPtr.Zero)
-                    {
-                        object csObj = JSMgr.getCSObj(__nativeObj);
-                        return csObj;
-                    }
-                    else
-                    {
-                        return new CSRepresentedObject(jsObj);
-                    }
-                }
-                break;
-            default:
-                Debug.LogError("Not Supported");
-                break;
-        }
-        return null;
+//         switch (e)
+//         {
+//             case JSApi.GetType.Arg:
+//                 {
+//                     IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
+//                     if (jsObj == IntPtr.Zero)
+//                         return null;
+// 
+//                     jsval val = new jsval();
+//                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+//                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
+//                     if (__nativeObj != IntPtr.Zero)
+//                     {
+//                         object csObj = JSMgr.getCSObj(__nativeObj);
+//                         return csObj;
+//                     }
+//                     else
+//                     {
+//                         return new CSRepresentedObject(jsObj);
+//                     }
+//                 }
+//                 break;
+//             case eGetType.GetARGVRefOut:
+//                 {
+//                     jsval val = new jsval();
+//                     JSApi.JSh_SetJsvalUndefined(ref val);
+//                     getJSValueOfParam(ref val, vc.currIndex++);
+// 
+//                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
+//                     if (jsObj == IntPtr.Zero)
+//                         return null;
+// 
+//                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+//                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
+//                     if (__nativeObj != IntPtr.Zero)
+//                     {
+//                         object csObj = JSMgr.getCSObj(__nativeObj);
+//                         return csObj;
+//                     }
+//                     else
+//                     {
+//                         return new CSRepresentedObject(jsObj);
+//                     }
+//                 }
+//                 break;
+//             case eGetType.Jsval:
+//                 {
+//                     // 通过 vc.valTemp 传递值
+//                     jsval val = new jsval();
+//                     JSApi.JSh_SetJsvalUndefined(ref val);
+// 
+//                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
+//                     if (jsObj == IntPtr.Zero)
+//                         return null;
+// 
+//                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
+//                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
+//                     if (__nativeObj != IntPtr.Zero)
+//                     {
+//                         object csObj = JSMgr.getCSObj(__nativeObj);
+//                         return csObj;
+//                     }
+//                     else
+//                     {
+//                         return new CSRepresentedObject(jsObj);
+//                     }
+//                 }
+//                 break;
+//             default:
+//                 Debug.LogError("Not Supported");
+//                 break;
+//         }
+//         return null;
     }
-    public Vector2 getVector2(IntPtr jsObj)
-    {
-        if (jsObj == IntPtr.Zero)
-            return Vector2.zero;
-
-        Vector2 v = Vector2.zero;
-        jsval val = new jsval();
-
-        JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
-        if (jsval.isInt32(val.tag))
-            v.x = (float)JSApi.JSh_GetJsvalInt(ref val);
-        else
-            v.x = (float)JSApi.JSh_GetJsvalDouble(ref val);
-
-        JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
-        if (jsval.isInt32(val.tag))
-            v.y = (float)JSApi.JSh_GetJsvalInt(ref val);
-        else
-            v.y = (float)JSApi.JSh_GetJsvalDouble(ref val);
-        return v;
-    }
-    public Vector2 getVector2(eGetType e)
-    {
-        switch (e)
-        {
-            case eGetType.GetARGV:
-                {
-                    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
-                    return getVector2(jsObj);
-                }
-                break;
-            case eGetType.GetARGVRefOut:
-                {
-                    jsval val = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref val);
-                    getJSValueOfParam(ref val, vc.currIndex++);
-
-                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
-                    return getVector2(jsObj);
-                }
-                break;
-            case eGetType.Jsval:
-                {
-                    // 通过 vc.valTemp 传递值
-                    jsval val = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref val);
-
-                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
-                    if (jsObj == IntPtr.Zero)
-                        return getVector2(jsObj);
-                }
-                break;
-            default:
-                Debug.LogError("Not Supported");
-                break;
-        }
-        return Vector2.zero;
-    }
-    public Vector3 getVector3(IntPtr jsObj) 
-    {
-        if (jsObj == IntPtr.Zero)
-            return Vector3.zero;
-
-        Vector3 v = Vector3.zero;
-        jsval val = new jsval();
-
-        JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
-        if (jsval.isInt32(val.tag))
-            v.x = (float)JSApi.JSh_GetJsvalInt(ref val);
-        else
-            v.x = (float)JSApi.JSh_GetJsvalDouble(ref val);
-
-        JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
-        if (jsval.isInt32(val.tag))
-            v.y = (float)JSApi.JSh_GetJsvalInt(ref val);
-        else
-            v.y = (float)JSApi.JSh_GetJsvalDouble(ref val);
-
-        JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "z", -1, ref val);
-        if (jsval.isInt32(val.tag))
-            v.z = (float)JSApi.JSh_GetJsvalInt(ref val);
-        else
-            v.z = (float)JSApi.JSh_GetJsvalDouble(ref val);
-        return v;
-    }
-    public Vector3 getVector3(eGetType e)
-    {
-        switch (e)
-        {
-            case eGetType.GetARGV:
-                {
-                    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
-                    return getVector3(jsObj);
-                }
-                break;
-            case eGetType.GetARGVRefOut:
-                {
-                    jsval val = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref val);
-                    getJSValueOfParam(ref val, vc.currIndex++);
-
-                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
-                    return getVector3(jsObj);
-                }
-                break;
-            case eGetType.Jsval:
-                {
-                    // 通过 vc.valTemp 传递值
-                    jsval val = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref val);
-
-                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
-                    if (jsObj == IntPtr.Zero)
-                        return getVector3(jsObj);
-                }
-                break;
-            default:
-                Debug.LogError("Not Supported");
-                break;
-        }
-        return Vector3.zero;
-    }
-
-
 
      /*
      * for concrete type e.g. setInt32 setString
@@ -452,116 +171,133 @@ public class JSDataExchangeMgr
      * so this method need a 'Type' argument
      * it is passed through mTempObj
      */
-    public object getByType(eGetType e)
+    public object getByType(JSApi.GetType e)
     {
         Type type = (Type)mTempObj;
         if (type.IsByRef)
             type = type.GetElementType();
 
         if (type == typeof(string))
-            return getString(e);
+            return JSApi.getStringS(e);
         else if (type.IsEnum)
-            return getEnum(e);
+            return JSApi.getEnum(e);
         else if (type.IsPrimitive)
         {
             if (type == typeof(System.Boolean))
-                return getBoolean(e);
+                return JSApi.getBoolean(e);
             else if (type == typeof(System.Char))
-                return getChar(e);
+                return JSApi.getChar(e);
             else if (type == typeof(System.Byte))
-                return getByte(e);
+                return JSApi.getByte(e);
             else if (type == typeof(System.SByte))
-                return getSByte(e);
+                return JSApi.getSByte(e);
             else if (type == typeof(System.UInt16))
-                return getUInt16(e);
+                return JSApi.getUInt16(e);
             else if (type == typeof(System.Int16))
-                return getInt16(e);
+                return JSApi.getInt16(e);
             else if (type == typeof(System.UInt32))
-                return getUInt32(e);
+                return JSApi.getUInt32(e);
             else if (type == typeof(System.Int32))
-                return getInt32(e);
+                return JSApi.getInt32(e);
             else if (type == typeof(System.UInt64))
-                return getUInt64(e);
+                return JSApi.getUInt64(e);
             else if (type == typeof(System.Int64))
-                return getInt64(e);
+                return JSApi.getInt64(e);
             else if (type == typeof(System.Single))
-                return getSingle(e);
+                return JSApi.getSingle(e);
             else if (type == typeof(System.Double))
-                return getDouble(e);
+                return JSApi.getDouble(e);
             else if (type == typeof(System.IntPtr))
-                return getIntPtr(e);
+                return JSApi.getIntPtr(e);
             else
                 Debug.LogError("Unknown primitive type" + type.Name);
         }
+        else if (type == typeof(Vector2))
+        {
+            return JSApi.getVector2S(e);
+        }
         else if (type == typeof(Vector3))
         {
-            return getVector3(e);
+            return JSApi.getVector3S(e);
         }
         else
         {
-            return getObject(e);
+            return JSApi.getObject(e);
         }
         return null;
     }
-    public object getWhatever(eGetType e)
+    public object getWhatever(JSApi.GetType e)
     {
         switch (e)
         {
-            case eGetType.GetARGV:
+            case JSApi.GetType.Arg:
             {
                 int i = vc.currIndex;
-                var tag = JSApi.JSh_ArgvTag(JSMgr.cx, vc.vp, i);
+                var tag = JSApi.argTag(i);
                 if (jsval.isNullOrUndefined(tag))
                     return null;
                 else if (jsval.isBoolean(tag))
-                    return getBoolean(e);
+                    return JSApi.getBoolean(e);
                 else if (jsval.isInt32(tag))
-                    return getInt32(e);
+                    return JSApi.getInt32(e);
                 else if (jsval.isDouble(tag))
-                    return getSingle(e);
+                    return JSApi.getSingle(e);
                 else if (jsval.isString(tag))
-                    return getString(e);
+                    return JSApi.getStringS(e);
                 else if (jsval.isObject(tag))
                 {
-                    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, i);
-                    if (UnityEngineManual.IsJSObjVector3(jsObj))
-                        return getVector3(e);
-                    else if (UnityEngineManual.IsJSObjVector2(jsObj))
-                        return getVector2(e);
+                    if (JSApi.isVector2(i))
+                    {
+                        return JSApi.getVector2S(e);
+                    }
+                    else if (JSApi.isVector3(i))
+                    {
+                        return JSApi.getVector3S(e);
+                    }
                     else
+                    {
                         return getObject(e);
+                    }
+//                     IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, i);
+//                     if (UnityEngineManual.IsJSObjVector3(jsObj))
+//                         return getVector3(e);
+//                     else if (UnityEngineManual.IsJSObjVector2(jsObj))
+//                         return getVector2(e);
+//                     else
+//                         return getObject(e);
                 }
                 return null;
+            }
+            break;
 
-            }
-            break;
-        case eGetType.Jsval:
-            {
-                var tag = vc.valTemp.tag;
-                // 通过 vc.valTemp 传递值
-                if (jsval.isNullOrUndefined(tag))
-                    return null;
-                else if (jsval.isBoolean(tag))
-                    return getBoolean(e);
-                else if (jsval.isInt32(tag))
-                    return getInt32(e);
-                else if (jsval.isDouble(tag))
-                    return getSingle(e);
-                else if (jsval.isString(tag))
-                    return getString(e);
-                else if (jsval.isObject(tag))
-                {
-                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
-                    if (UnityEngineManual.IsJSObjVector3(jsObj))
-                        return getVector3(e);
-                    else if (UnityEngineManual.IsJSObjVector2(jsObj))
-                        return getVector2(e);
-                    else
-                        return getObject(e);
-                }
-                return null;
-            }
-            break;
+//         case eGetType.Jsval:
+//             {
+//                 var tag = vc.valTemp.tag;
+//                 // 通过 vc.valTemp 传递值
+//                 if (jsval.isNullOrUndefined(tag))
+//                     return null;
+//                 else if (jsval.isBoolean(tag))
+//                     return getBoolean(e);
+//                 else if (jsval.isInt32(tag))
+//                     return getInt32(e);
+//                 else if (jsval.isDouble(tag))
+//                     return getSingle(e);
+//                 else if (jsval.isString(tag))
+//                     return getString(e);
+//                 else if (jsval.isObject(tag))
+//                 {
+//                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
+//                     if (UnityEngineManual.IsJSObjVector3(jsObj))
+//                         return getVector3(e);
+//                     else if (UnityEngineManual.IsJSObjVector2(jsObj))
+//                         return getVector2(e);
+//                     else
+//                         return getObject(e);
+//                 }
+//                 return null;
+//             }
+//             break;
+
         default:
             Debug.LogError("getWhatever ////// Not Supported");
             break;
@@ -574,16 +310,24 @@ public class JSDataExchangeMgr
         {
             case eGetType.GetARGV:
                 {
-                    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
-                    if (jsObj == IntPtr.Zero)
+                    // TODO 检查 index要++
+                    int jsObjID = JSApi.getObject(JSApi.GetType.Arg);
+                    if (jsObjID == 0)
                         return null;
 
-                    object csObj = JSMgr.getCSObj(jsObj);
+                    object csObj = JSMgr.getCSObj2(jsObjID);
                     return csObj;
+
+//                     IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
+//                     if (jsObj == IntPtr.Zero)
+//                         return null;
+// 
+//                     object csObj = JSMgr.getCSObj(jsObj);
+//                     return csObj;
                 }
                 break;
-            case eGetType.GetARGVRefOut:
-                {
+//             case eGetType.GetARGVRefOut:
+//                 {
 //                     jsval val = new jsval();
 //                     JSApi.JSh_SetJsvalUndefined(ref val);
 //                     getJSValueOfParam(ref val, vc.currIndex++);
@@ -599,22 +343,22 @@ public class JSDataExchangeMgr
 // 
 //                     object csObj = JSMgr.getCSObj(__nativeObj);
 //                     return csObj;
-                }
-                break;
-            case eGetType.Jsval:
-                {
-                    // 通过 vc.valTemp 传递值
-                    jsval val = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref val);
-
-                    IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
-                    if (jsObj == IntPtr.Zero)
-                        return null;
-
-                    object csObj = JSMgr.getCSObj(jsObj);
-                    return csObj;
-                }
-                break;
+//                 }
+//                 break;
+//             case eGetType.Jsval:
+//                 {
+//                     // 通过 vc.valTemp 传递值
+//                     jsval val = new jsval();
+//                     JSApi.JSh_SetJsvalUndefined(ref val);
+// 
+//                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
+//                     if (jsObj == IntPtr.Zero)
+//                         return null;
+//
+//                     object csObj = JSMgr.getCSObj(jsObj);
+//                     return csObj;
+//                 }
+//                 break;
             default:
                 Debug.LogError("Not Supported");
                 break;
@@ -636,7 +380,7 @@ public class JSDataExchangeMgr
 
     // for generic type
     // type is assigned during runtime
-    public void setWhatever(eSetType e, object obj)
+    public void setWhatever(JSApi.SetType e, object obj)
     {
 //         Type type = (Type)mTempObj;
 //         if (type.IsByRef)
@@ -652,42 +396,46 @@ public class JSDataExchangeMgr
         Type type = obj.GetType();
 
         if (type == typeof(string))
-            setString(e, (string)obj);
+            JSApi.setString(e, (string)obj);
         else if (type.IsEnum)
-            setEnum(e, (int)obj);
+            JSApi.setEnum(e, (int)obj);
         else if (type.IsPrimitive)
         {
             if (type == typeof(System.Boolean))
-                setBoolean(e, (bool)obj);
+                JSApi.setBoolean(e, (bool)obj);
             else if (type == typeof(System.Char))
-                setChar(e, (char)obj);
+                JSApi.setChar(e, (char)obj);
             else if (type == typeof(System.Byte))
-                setByte(e, (Byte)obj);
+                JSApi.setByte(e, (Byte)obj);
             else if (type == typeof(System.SByte))
-                setSByte(e, (SByte)obj);
+                JSApi.setSByte(e, (SByte)obj);
             else if (type == typeof(System.UInt16))
-                setUInt16(e, (UInt16)obj);
+                JSApi.setUInt16(e, (UInt16)obj);
             else if (type == typeof(System.Int16))
-                setInt16(e, (Int16)obj);
+                JSApi.setInt16(e, (Int16)obj);
             else if (type == typeof(System.UInt32))
-                setUInt32(e, (UInt32)obj);
+                JSApi.setUInt32(e, (UInt32)obj);
             else if (type == typeof(System.Int32))
-                setInt32(e, (Int32)obj);
+                JSApi.setInt32(e, (Int32)obj);
             else if (type == typeof(System.UInt64))
-                setUInt64(e, (UInt64)obj);
+                JSApi.setUInt64(e, (UInt64)obj);
             else if (type == typeof(System.Int64))
-                setInt64(e, (Int64)obj);
+                JSApi.setInt64(e, (Int64)obj);
             else if (type == typeof(System.Single))
-                setSingle(e, (Single)obj);
+                JSApi.setSingle(e, (Single)obj);
             else if (type == typeof(System.Double))
-                setDouble(e, (Double)obj);
+                JSApi.setDouble(e, (Double)obj);
             else
                 Debug.LogError("Unknown primitive type");
         }
         else if (type == typeof(Vector3))
-            setVector3(e, (Vector3)obj);
+        {
+            JSApi.setVector3(e, (Vector3)obj);
+        }
         else if (type == typeof(Vector2))
-            setVector3(e, (Vector2)obj);
+        {
+            JSApi.setVector3(e, (Vector2)obj);
+        }
         else
         {
             setObject(e, obj);
@@ -1221,167 +969,39 @@ public class JSDataExchangeMgr
                 break;
         }
     }
-    public void setObject(eSetType e, object csObj)
+    // TODO
+    // 如果是 UpdateRefARGV，之前要设置 currIndex
+    public void setObject(JSApi.SetType e, object csObj)
     {
-        switch (e)
+        int jsObjID = 0;
+        if (csObj != null)
         {
-            case eSetType.Jsval:
-            case eSetType.SetRval:
+            Type csType = csObj.GetType();
+            if (csType.IsClass)
+            {
+                jsObjID = JSMgr.getJSObj2(csObj);
+            }
+            if (jsObjID == 0)
+            {
+                if (csObj is CSRepresentedObject2)
                 {
-                    JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
-                    if (csObj != null)
-                    {
-                        IntPtr jsObj = IntPtr.Zero;
-                        Type csType = csObj.GetType();
-                        if (csType.IsClass && (jsObj = JSMgr.getJSObj(csObj)) != IntPtr.Zero)
-                        {
-                            JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
-                        }
-                        else
-                        {
-                            if (csObj is CSRepresentedObject)
-                            {
-                                JSApi.JSh_SetJsvalObject(ref vc.valReturn, ((CSRepresentedObject)csObj).jsObj);
-                            }
-                            else
-                            {
-                                //
-                                // 返回给JS的对象：需要 prototype
-                                // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
-                                //
-                                
-                                string typeName = JSNameMgr.GetJSTypeFullName(csType);
-                                IntPtr __nativeObj = IntPtr.Zero;
-                                if (JSApi.NewJSClassObject(typeName, ref jsObj, ref __nativeObj, IntPtr.Zero))
-                                {
-                                    JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
-                                    JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
-                                }
-                                else
-                                {
-                                    Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
-                                }
-
-
-//                                string typeName = JSNameMgr.GetJSTypeFullName(csType);
-//                                IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
-//                                if (jstypeObj != IntPtr.Zero)
-//                                {
-//                                    jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
-
-                                    // __nativeObj
-//                                    IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-//                                    JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
-
-                                    // jsObj.__nativeObj = __nativeObj
-//                                    jsval val = new jsval();
-//                                    JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
-//                                    JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-
-//                                    JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
-//                                }
-//                                else
-//                                {
-//                                    Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
-//                                }
-                            }
-                        }
-                    }
-
-                    if (e == eSetType.Jsval)
-                        vc.valTemp = vc.valReturn;
-                    else if (e == eSetType.SetRval)
-                        JSApi.JSh_SetRvalJSVAL(JSMgr.cx, vc.vp, ref vc.valReturn);
+                    jsObjID = ((CSRepresentedObject2)csObj).jsObjID;
                 }
-                break;
-            case eSetType.UpdateARGVRefOut:
+                else
                 {
-                    jsval val = new jsval(); val.asBits = 0;
-                    IntPtr argvJSObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex);
-                    if (argvJSObj != IntPtr.Zero)
-                    {
-                        bool success = false;
-
-                        IntPtr jsObj = IntPtr.Zero;
-                        Type csType = csObj.GetType();
-                        if (csType.IsClass && (jsObj = JSMgr.getJSObj(csObj)) != IntPtr.Zero)
-                        {
-                            // 3)
-                            // argvObj.Value = jsObj
-                            //
-                            JSApi.JSh_SetJsvalObject(ref val, jsObj);
-                            JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
-                            success = true;
-                        }
-                        else
-                        {
-                            if (csObj is CSRepresentedObject)
-                            {
-                                JSApi.JSh_SetJsvalObject(ref val, ((CSRepresentedObject)csObj).jsObj);
-                                JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
-                                success = true;
-                            }
-                            else
-                            {
-                                string typeName = JSNameMgr.GetJSTypeFullName(csObj.GetType());
-                                IntPtr __nativeObj = IntPtr.Zero;
-                                if (JSApi.NewJSClassObject(typeName, ref jsObj, ref __nativeObj, argvJSObj))
-                                {
-                                    JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
-                                    success = true;
-                                }
-                                else
-                                {
-                                    Debug.LogError("Return a \"" + JSNameMgr.GetTypeFullName(csObj.GetType()) + "\" to JS failed. Did you forget to export that class?");
-                                }
-
-                                // csObj must not be null
-//                                IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(JSNameMgr.GetTypeFullName(csObj.GetType()));
-//                                if (jstypeObj != IntPtr.Zero)
-//                                {
-//                                    // 1)
-//                                    // jsObj: prototype  
-//                                    // __nativeObj: csObj + finalizer
-//                                    // 
-//                                    jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
-//                                    // __nativeObj
-//                                    IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-//                                    JSMgr.addJSCSRelation(jsObj, __nativeObj, csObj);
-//
-//                                    //
-//                                    // 2)
-//                                    // jsObj.__nativeObj = __nativeObj
-//                                    //
-//                                    JSApi.JSh_SetJsvalObject(ref val, __nativeObj);
-//                                    JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-//
-//                                    // 3)
-//                                    // argvObj.Value = jsObj
-//                                    //
-//                                    JSApi.JSh_SetJsvalObject(ref val, jsObj);
-//                                    JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
-//                                    success = true;
-//                                }
-//                                else
-//                                {
-//                                    Debug.LogError("Return a \"" + JSNameMgr.GetTypeFullName(csObj.GetType()) + "\" to JS failed. Did you forget to export that class?");
-//                                }
-                            }
-                        }
-
-                        if (!success)
-                        {
-                            JSApi.JSh_SetJsvalUndefined(ref val);
-                            JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
-                        }
-                    }
+                    string typeName = JSNameMgr.GetJSTypeFullName(csType);
+                    jsObjID = JSApi.NewJSClassObject(typeName);
+                    if (jsObjID != 0)
+                        JSMgr.AddJSCSRel(jsObjID, csObj);
+                    else
+                        Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
                 }
-                break;
-            default:
-                Debug.LogError("Not Supported");
-                break;
+            }
         }
+
+        JSApi.setObject(e, jsObjID);
     }
+    // TODO what?
 //     public void setDelegate(eSetType e, object csObj)
 //     {
 //         switch (e)
@@ -1691,7 +1311,7 @@ public class JSDataExchangeMgr
             for (int i = 0; i < TCount; i++)
             {
                 // Get generic types from js.
-                System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV), typeof(CSRepresentedObject));
+                System.Type t = JSDataExchangeMgr.GetTypeByName(JSApi.getStringS(JSApi.GetType.Arg), typeof(CSRepresentedObject));
                 genericTypes[i] = t;
                 if (t == null)
                 {
@@ -1745,7 +1365,7 @@ public class JSDataExchangeMgr
         for (int i = 0; i < TCount; i++)
         {
             // Get generic types from js.
-            System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV), typeof(CSRepresentedObject));
+            System.Type t = JSDataExchangeMgr.GetTypeByName(JSApi.getStringS(JSApi.GetType.Arg), typeof(CSRepresentedObject));
             genericTypes[i] = t;
             if (t == null)
             {
@@ -1837,48 +1457,48 @@ public class JSDataExchangeMgr
         }
 
         if (type == typeof(string))
-            ret = "String";
+            ret = "JApi.getSttringS";
         else if (type.IsEnum)
-            ret = "Enum";
+            ret = "JApi.getEnum";
         else if (type.IsPrimitive)
         {
             if (type == typeof(System.Boolean))
-                ret = "Boolean";
+                ret = "JApi.getBoolean";
             else if (type == typeof(System.Char))
-                ret = "Char";
+                ret = "JApi.getChar";
             else if (type == typeof(System.Byte))
-                ret = "Byte";
+                ret = "JApi.getByte";
             else if (type == typeof(System.SByte))
-                ret = "SByte";
+                ret = "JApi.getSByte";
             else if (type == typeof(System.UInt16))
-                ret = "UInt16";
+                ret = "JApi.getUInt16";
             else if (type == typeof(System.Int16))
-                ret = "Int16";
+                ret = "JApi.getInt16";
             else if (type == typeof(System.UInt32))
-                ret = "UInt32";
+                ret = "JApi.getUInt32";
             else if (type == typeof(System.Int32))
-                ret = "Int32";
+                ret = "JApi.getInt32";
             else if (type == typeof(System.UInt64))
-                ret = "UInt64";
+                ret = "JApi.getUInt64";
             else if (type == typeof(System.Int64))
-                ret = "Int64";
+                ret = "JApi.getInt64";
             else if (type == typeof(System.Single))
-                ret = "Single";
+                ret = "JApi.getSingle";
             else if (type == typeof(System.Double))
-                ret = "Double";
+                ret = "JApi.getDouble";
             else if (type == typeof(System.IntPtr))
-                ret = "IntPtr";
+                ret = "JApi.getIntPtr";
             else
                 Debug.LogError("444 Unknown primitive type");
         }
         else if (type == typeof(System.Object) || type.IsGenericParameter)
-            ret = "Whatever";
+            ret = "vc.datax.getWhatever";
         else if (type == typeof(Vector3))
-            ret = "Vector3";
+            ret = "JApi.getVector3";
         else if (type == typeof(Vector2))
-            ret = "Vector2";
+            ret = "JApi.getVector2";
         else
-            ret = "Object";
+            ret = "vc.datax.getObject";
 
         return ret;
     }
@@ -2012,10 +1632,20 @@ public class JSDataExchange_Arr// : JSDataExchange
  * it can be transfered between js<->c#
  * but no member functions are available
  */
+// TODO 如何处理这个玩意
 public class CSRepresentedObject
 {
     public CSRepresentedObject(IntPtr jsObj) {
         this.jsObj = jsObj;
     }
     public IntPtr jsObj;
+}
+
+public class CSRepresentedObject2
+{
+    public CSRepresentedObject2(int jsObjID)
+    {
+        this.jsObjID = jsObjID;
+    }
+    public int jsObjID;
 }
