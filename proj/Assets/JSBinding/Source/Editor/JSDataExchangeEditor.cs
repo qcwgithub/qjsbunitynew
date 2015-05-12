@@ -102,29 +102,29 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             if (isOut)
             {
                 ph.getter = new StringBuilder()
-                    .AppendFormat("int r_arg{0} = vc.currIndex++;\n", paramIndex)
+                    .AppendFormat("int r_arg{0} = JSApi.incArgIndex();\n", paramIndex)
                     .AppendFormat("{0} {1};", typeFullName, ph.argName)
                     .ToString();
             }
             else if (isRef)
             {
                 ph.getter = new StringBuilder()
-                    .AppendFormat("int r_arg{0} = vc.currIndex;\n", paramIndex)
-                    .AppendFormat("{0} {1} = ({0}){2}(JSDataExchangeMgr.eGetType.GetARGVRefOut);", typeFullName, ph.argName, keyword)
+                    .AppendFormat("int r_arg{0} = JSApi.getArgIndex();\n", paramIndex)
+                    .AppendFormat("{0} {1} = ({0}){2}((int)JSApi.GetType.ArgRef);", typeFullName, ph.argName, keyword)
                     .ToString();
             }
             else
             {
                 ph.getter = new StringBuilder()
-                    .AppendFormat("{0} {1} = ({0}){2}(JSDataExchangeMgr.eGetType.GetARGV);", typeFullName, ph.argName, keyword)
+                    .AppendFormat("{0} {1} = ({0}){2}((int)JSApi.GetType.Arg);", typeFullName, ph.argName, keyword)
                     .ToString();
             }
 
             if (isOut)
             {
                 ph.updater = new StringBuilder()
-                    .AppendFormat("vc.currIndex = r_arg{0};\n", paramIndex)
-                    .AppendFormat("{0}(JSDataExchangeMgr.eSetType.UpdateARGVRefOut, {1});", keyword.Replace("get", "set"), ph.argName)
+                    .AppendFormat("JSApi.setArgIndex(r_arg{0});\n", paramIndex)
+                    .AppendFormat("{0}(JSApi.SetType.ArgRef, {1});", keyword.Replace("get", "set"), ph.argName)
                     .ToString();
             }
         }
@@ -167,7 +167,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             var sb = new StringBuilder();
             var keyword = GetMetatypeKeyword(type);
 
-            sb.AppendFormat("JSMgr.vCall.datax.get{0}(JSDataExchangeMgr.eGetType.GetJSFUNRET)", keyword);
+            sb.AppendFormat("{0}(JSApi.GetType.JSFunRet)", keyword);
             return sb.ToString();
         }
     }
@@ -198,11 +198,11 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             var keyword = GetMetatypeKeyword(type);
 
             if (type.IsPrimitive)
-                sb.AppendFormat("JSMgr.vCall.datax.set{0}(JSDataExchangeMgr.eSetType.SetRval, ({1})({2}));", keyword, JSNameMgr.GetTypeFullName(type), expVar);
+                sb.AppendFormat("{0}((int)JSApi.SetType.Rval, ({1})({2}));", keyword, JSNameMgr.GetTypeFullName(type), expVar);
             else if (type.IsEnum)
-                sb.AppendFormat("JSMgr.vCall.datax.set{0}(JSDataExchangeMgr.eSetType.SetRval, (int){1});", keyword, expVar);
+                sb.AppendFormat("{0}((int)JSApi.SetType.Rval, (int){1});", keyword, expVar);
             else
-                sb.AppendFormat("JSMgr.vCall.datax.set{0}(JSDataExchangeMgr.eSetType.SetRval, {1});", keyword, expVar);
+                sb.AppendFormat("{0}((int)JSApi.SetType.Rval, {1});", keyword, expVar);
             return sb.ToString();
         }
     }

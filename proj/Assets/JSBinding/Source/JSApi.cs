@@ -164,9 +164,11 @@ public class JSApi
     // 先写上去吧。
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int getCurrIndex();
+    public static extern int getArgIndex();
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void setCurIndex(int i);
+    public static extern void setArgIndex(int i);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    public static extern int incArgIndex();
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern uint argTag(int i);

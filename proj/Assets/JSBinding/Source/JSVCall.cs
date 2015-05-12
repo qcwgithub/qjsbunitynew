@@ -75,15 +75,11 @@ public class JSVCall
 
     // TODO delete
     ////////////////////////////////
-    public IntPtr cx;
-    public IntPtr vp;
     public int currIndex = 0;
-    public jsval valReturn = new jsval();
-    public jsval valTemp = new jsval();
     ////////////////////////////////
 
 
-    public void Reset(IntPtr cx, IntPtr vp)
+    public void Reset()
     {
         if (arrJSParam == null)
         {
@@ -103,180 +99,9 @@ public class JSVCall
         m_Method = null;
         m_ParamInfo = null;
 
-        this.cx = cx;
-        this.vp = vp;
-
         // TODO
         currIndex = 0;
     }
-    //
-    //
-    // get parameters
-    //
-    //    public Boolean getBool() { return JSApi.JSh_ArgvBool(cx, vp, currIndex++); }
-    //    public String getString() { return JSApi.JSh_ArgvStringS(cx, vp, currIndex++); }
-    //    public Char getChar() { return (Char)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public Byte getByte() { return (Byte)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public SByte getSByte() { return (SByte)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public UInt16 getUInt16() { return (UInt16)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public Int16 getInt16() { return (Int16)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public UInt32 getUInt32() { return (UInt32)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public Int32 getInt32() { return (Int32)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public UInt64 getUInt64() { return (UInt64)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public Int64 getInt64() { return (Int64)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public Int32 getEnum() { return (Int32)JSApi.JSh_ArgvInt(cx, vp, currIndex++); }
-    //    public Single getFloat()
-    //    {
-    //        // js has only int32 and double, so...
-    //        int i = currIndex++;
-    //        if (JSApi.JSh_ArgvIsDouble(cx, vp, i))
-    //            return (Single)JSApi.JSh_ArgvDouble(cx, vp, i);
-    //        else
-    //            return (Single)JSApi.JSh_ArgvInt(cx, vp, i);
-    //    }
-    //   public Double getDouble()
-    //   {
-    //       // js has only int32 and double, so...
-    //       int i = currIndex++;
-    //       if (JSApi.JSh_ArgvIsDouble(cx, vp, i))
-    //           return (Double)JSApi.JSh_ArgvDouble(cx, vp, i);
-    //       else
-    //           return (Double)JSApi.JSh_ArgvInt(cx, vp, i);
-    //   }
-    ////     public JSValueWrap.Wrap getWrap()
-    ////     {
-    ////         IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-    ////         object csObj = JSMgr.getCSObj(jsObj);
-    ////         return (JSValueWrap.Wrap)csObj;
-    ////     }
-    //   
-    ////     public object getObject(Type typeParam = null)
-    ////     {
-    ////         IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-    ////         if (jsObj == IntPtr.Zero)
-    ////             return null;
-// 
-//         object csObj = JSMgr.getCSObj(jsObj);
-//         if (csObj is JSValueWrap.Wrap)
-//             return ((JSValueWrap.Wrap)csObj).obj;
-//         else if (csObj != null)
-//             return csObj;
-// 
-//         if (!JSApi.JSh_IsArrayObject(cx, jsObj))
-//             return null;
-// 
-// 
-//         // array params don't work.
-//         // code must be generated, cann't be dynamically run.
-//         // because type is unknown during run-time.
-//         Type typeElement = typeParam.GetElementType();
-//         jsval valElement = new jsval();
-// 
-//         int length = JSApi.JSh_GetArrayLength(cx, jsObj);
-//         object[] arr = new object[length];
-//         for (int i = 0; i < length; i++)
-//         {
-//             JSApi.JSh_GetElement(cx, jsObj, (uint)i, ref valElement);
-//             object csObjElement = JSValue_2_CSObject(typeElement, ref valElement);
-//             arr[i] = csObjElement;
-//         }
-//         return arr;
-//     }
-
-    //
-    // get returnvalue from js
-    //
-//    public Boolean getRtBool() { return JSApi.JSh_GetJsvalBool(ref rvalCallJS); }
-//    public String getRtString() { return JSApi.JSh_GetJsvalStringS(cx, ref rvalCallJS); }
-//    public Char getRtChar() { return (Char)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public Byte getRtByte() { return (Byte)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public SByte getRtSByte() { return (SByte)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public UInt16 getRtUInt16() { return (UInt16)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public Int16 getRtInt16() { return (Int16)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public UInt32 getRtUInt32() { return (UInt32)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public Int32 getRtInt32() { return (Int32)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public UInt64 getRtUInt64() { return (UInt64)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public Int64 getRtInt64() { return (Int64)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public Int32 getRtEnum() { return (Int32)JSApi.JSh_GetJsvalInt(ref rvalCallJS); }
-//    public Single getRtFloat()
-//    {
-//        if (JSApi.JSh_JsvalIsDouble(ref rvalCallJS))
-//            return (Single)JSApi.JSh_GetJsvalDouble(ref rvalCallJS);
-//        else
-//            return (Single)JSApi.JSh_GetJsvalInt(ref rvalCallJS);
-//    }
-//    public Double getRtDouble()
-//    {
-//        // js has only int32 and double, so...
-//        if (JSApi.JSh_JsvalIsDouble(ref rvalCallJS))
-//            return (Double)JSApi.JSh_GetJsvalDouble(ref rvalCallJS);
-//        else
-//            return (Double)JSApi.JSh_GetJsvalInt(ref rvalCallJS);
-//    }/*
-//    public JSValueWrap.Wrap getWrap()
-//    {
-    //        IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-    //        object csObj = JSMgr.getCSObj(jsObj);
-    //        return (JSValueWrap.Wrap)csObj;
-    //    }*/
-    ////     public object getRtObject(Type typeParam = null)
-    ////     {
-    ////         IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref rvalCallJS);
-    ////         if (jsObj == IntPtr.Zero)
-//             return null;
-// 
-//         object csObj = JSMgr.getCSObj(jsObj);
-//         if (csObj is JSValueWrap.Wrap)
-//             return ((JSValueWrap.Wrap)csObj).obj;
-//         else if (csObj != null)
-//             return csObj;
-// 
-//         if (!JSApi.JSh_IsArrayObject(cx, jsObj))
-//             return null;
-// 
-//         if (typeParam == null)
-//             return null;
-// 
-// 
-//         // Create array of typeElement
-//         Type typeElement = typeParam.GetElementType();
-//         jsval valElement = new jsval();
-// 
-//         int length = JSApi.JSh_GetArrayLength(cx, jsObj);        
-//         Array arr = Array.CreateInstance(typeElement, length);
-//         for (int i = 0; i < length; i++)
-//         {
-//             JSApi.JSh_GetElement(cx, jsObj, (uint)i, ref valElement);
-//             object csObjElement = JSValue_2_CSObject(typeElement, ref valElement);
-//             arr.SetValue(csObjElement, i);
-//         }
-//         return arr;
-//     }
-
-    //    public struct stJSCS
-    //    {
-    //        public IntPtr jsObj;
-    //        public object csObj;
-    //        public stJSCS(IntPtr j, object c) { jsObj = j; csObj = c; }
-    //    }
-    //    // only for parameters
-    //    //     public stJSCS getValueTypeObject()
-    //     {
-    //         IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-    //         object csObj = JSMgr.getCSObj(jsObj);
-    //         return new stJSCS(jsObj, csObj);
-    //     }
-    //    public stJSCS getJSCSObject()
-    //    {
-    //        IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, currIndex++);
-    //        object csObj = JSMgr.getCSObj(jsObj);
-    //        return new stJSCS(jsObj, csObj);
-    //    }
-    //    public IntPtr getJSFunction()
-    //    {
-    //        return JSApi.JSh_ArgvFunction(cx, vp, currIndex++);
-    //    }
-
 
     // TODO
     // 改
@@ -289,212 +114,6 @@ public class JSVCall
         }
         return funID;
     }
-    /*
-     * ExtractCSParams
-     *
-     * extract some info to use latter
-     * write into m_ParamInfo and lstCSParam
-     * ONLY for Reflection
-     */
-    public void ExtractCSParams()
-    {
-        if (m_ParamInfo == null)
-            m_ParamInfo = m_Method.GetParameters();
-
-        arrCSParamsLength = m_ParamInfo.Length;
-        for (int i = 0; i < m_ParamInfo.Length; i++)
-        {
-            ParameterInfo p = m_ParamInfo[i];
-
-            CSParam csParam = arrCSParam[i];
-            csParam.isOptional = p.IsOptional;
-            csParam.isRef = p.ParameterType.IsByRef;
-            csParam.isArray = p.ParameterType.IsArray;
-            csParam.type = p.ParameterType;
-        }
-    }
-
-    /*
-     * ExtractJSParams
-     * 
-     * write into lstJSParam
-     * 
-     * RETURN
-     * false -- fail
-     * true  -- success
-     * 
-     * for primitive, enum, string: not handled
-     */
-//     public bool ExtractJSParams(int start, int count)
-//     {
-//         arrJSParamsLength = 0;
-//         for (int i = 0; i < count; i++)
-//         {
-//             int index = i + start;
-//             
-//             var tag = JSApi.JSh_ArgvTag(cx, vp, index);
-//             bool bUndefined = JSApi.jsval.isUndefined(tag);
-//             if (bUndefined)
-//                 return true;
-// 
-//             JSParam jsParam = arrJSParam[arrJSParamsLength++]; //new JSParam();
-//             jsParam.index = index;
-//             jsParam.isNull = JSApi.jsval.isNullOrUndefined(JSApi.JSh_ArgvTag(cx, vp, index));
-//             jsParam.isArray = false;
-//             jsParam.csObj = null;
-//             jsParam.valRO.asBits = 0;
-// 
-//             IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, index);
-//             if (jsObj == IntPtr.Zero)
-//             {
-//                 jsParam.csObj = null;
-//             }
-//             //             else if (false/*JSApi.JSh_IsArrayObject(cx, jsObj)*/)
-//             //             {
-//             //                 jsParam.isArray = true;
-//             //                 Debug.LogError("parse js array to cs is not supported");
-//             //             }
-//             else
-//             {
-//                 object csObj = JSMgr.getCSObj(jsObj);
-//                 if (csObj == null)
-//                 {
-//                     jsval valo = new jsval();
-//                     JSApi.JSh_SetJsvalUndefined(ref valo);
-//                     JSApi.GetProperty(cx, jsObj, "Value", -1, ref valo);
-//                     if (!jsval.isNullOrUndefined(valo.tag))
-//                     {
-//                         jsParam.valRO = valo;
-//                        jsObj = JSApi.JSh_GetJsvalObject(ref valo);
-//                         csObj = JSMgr.getCSObj(jsObj);
-//                    }
-//                     else{
-//                         Debug.Log("ExtractJSParams: CSObject is not found");
-//                         return false;
-//                     }
-//                 }
-//                 jsParam.csObj = csObj;
-//             }
-//             //lstJSParam.Add(jsParam);
-//         }
-//         return true;
-//     }
-
-    // index means 
-    // lstJSParam[index]
-    // lstCSParam[index]
-    // ps[index]
-    // for calling method
-//     public object JSValue_2_CSObject(int index)
-//     {
-//         JSParam jsParam = arrJSParam[index];
-//         int paramIndex = jsParam.index;
-//         CSParam csParam = arrCSParam[index];
-//         //ParameterInfo p = m_ParamInfo[index];
-// 
-//         Type t = csParam.type;
-// 
-//         if (csParam.isRef)
-//             t = t.GetElementType();
-// 
-//         if (jsParam.isNull) return null;
-//         else if (jsParam.isWrap) return jsParam.wrappedObj;
-//         else if (jsParam.csObj != null) return jsParam.csObj;
-// 
-//         //         if (typeof(UnityEngine.Object).IsAssignableFrom(t))
-//         //         {
-//         //             if (jsParam.isNull)
-//         //                 return null;
-//         // 
-//         //             if (jsParam.isWrap)
-//         //                 return jsParam.wrappedObj;
-//         // 
-//         //             return jsParam.csObj;
-//         //         }
-// 
-//         return JSValue_2_CSObject(csParam.type, paramIndex);
-//     }
-
-    /*
-     * BuildMethodArgs
-     * 
-     * RETURN
-     * null -- fail
-     * not null -- success
-     */
-//     public bool BuildMethodArgs(bool addDefaultValue)
-//     {
-//         //ArrayList args = new ArrayList();
-//         callParamsLength = 0;
-//         for (int i = 0; i < this.arrCSParamsLength; i++)
-//         {
-//             callParamsLength++;
-// 
-//             if (i < this.arrJSParamsLength)
-//             {
-//                 JSParam jsParam = arrJSParam[i];
-//                 if (jsParam.isWrap)
-//                 {
-//                     //args.Add(jsParam.wrappedObj);
-//                     callParams[i] = jsParam.wrappedObj;
-//                 }
-//                 else if (jsParam.isArray)
-//                 {
-//                     // todo
-//                     // 
-//                     Debug.Log("array parameter not supported");
-//                     callParams[i] = null;
-//                 }
-//                 else if (jsParam.isNull)
-//                 {
-//                     //args.Add(null);
-//                     callParams[i] = null;
-//                 }
-//                 else
-//                 {
-//                     //args.Add(JSValue_2_CSObject(i));
-//                     callParams[i] = JSValue_2_CSObject(i);
-//                 }
-//             }
-//             else
-//             {
-//                 if (arrCSParam[i].isOptional)
-//                 {
-//                     if (addDefaultValue)//args.Add(arrCSParam[i].defaultValue);
-//                         callParams[i] = arrCSParam[i].defaultValue;
-//                     else
-//                         break;
-//                 }
-//                 else
-//                 {
-//                     Debug.LogError("Not enough arguments calling function '" + m_Method.Name + "'");
-//                     return false;
-//                 }
-//             }
-//         }
-//         //return args.ToArray();
-//         return true;
-//     }
-
-
-//     public void PushResult(object csObj)
-//     {
-//         if (/*this.op == Oper.METHOD && */ arrCSParam != null)
-//         {
-//             // handle ref/out parameters
-//             for (int i = 0; i < arrCSParamsLength; i++)
-//             {
-//                 if (arrCSParam[i].isRef)
-//                 {
-//                     arrJSParam[i].wrappedObj = callParams[i];
-//                 }
-//             }
-//         }
-// 
-//         jsval val = CSObject_2_JSValue(csObj);
-//         JSApi.JSh_SetRvalJSVAL(cx, vp, ref val);
-//     }
-
     //public jsval rvalCallJS = new jsval();
     // better not use this function, use CallJSFunctionValue instead
 //     public bool CallJSFunction(IntPtr jsThis, IntPtr/* JSFunction* */ jsFunction, params object[] args)
@@ -647,24 +266,14 @@ public class JSVCall
     // TODO delete
     public int currentParamCount = 0;
     public Oper op;
-    //     public static bool CSCallback()
-    //     {
-    //         if (JSVCall.bGet)
-    //             result = ((GameObject)JSVCall.jsObj).activeSelf;
-    //         else
-    //         {
-    //             object arg = JSValue_2_CSObject(typeof(bool), JSVCall.currentParamCount);
-    //             ((GameObject)JSVCall.jsObj).activeSelf = (bool)JSVCall.arg;
-    //         }
-    //     }
-
+    
     //
     // argc 还有几个参数
     //
     //
     public bool CallCallback(int iOP, int slot, int index, bool isStatic, int argc)
     {
-        this.Reset(cx, vp);
+        this.Reset();
 
         Oper op = (Oper)iOP;
 
