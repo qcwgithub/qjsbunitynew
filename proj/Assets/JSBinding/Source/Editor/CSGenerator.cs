@@ -603,7 +603,7 @@ static bool {0}(JSVCall vc, int start, int count)
 ]]
 ";
         StringBuilder sb = new StringBuilder();
-        if (constructors.Length == 0 && JSBindingSettings.IsGeneratedDefaultConstructor(type) &&
+        if (constructors.Length == 0 && JSBindingSettings.NeedGenDefaultConstructor(type) &&
             (type.IsValueType || (type.IsClass && !type.IsAbstract && !type.IsInterface)))
         {
             int olIndex = 1;

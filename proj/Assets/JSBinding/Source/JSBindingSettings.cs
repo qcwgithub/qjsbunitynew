@@ -815,7 +815,7 @@ public class JSBindingSettings
 #endif
         return false;
     }
-    public static bool IsGeneratedDefaultConstructor(Type type)
+    public static bool NeedGenDefaultConstructor(Type type)
     {
         if (typeof(Delegate).IsAssignableFrom(type))
             return false;

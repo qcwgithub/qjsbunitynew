@@ -579,7 +579,7 @@ public static class JSMgr
         ti.properties = type.GetProperties(BindingFlagsProperty);
         ti.methods = type.GetMethods(BindingFlagsMethod);
         ti.constructors = type.GetConstructors();
-        if (JSBindingSettings.IsGeneratedDefaultConstructor(type))
+        if (JSBindingSettings.NeedGenDefaultConstructor(type))
         {
             // 表示默认构造函数！
             var l = new List<ConstructorInfo>();

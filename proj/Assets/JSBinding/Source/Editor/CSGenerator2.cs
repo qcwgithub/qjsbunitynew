@@ -827,7 +827,7 @@ static bool {0}(JSVCall vc, int start, int count)
         // 如果产生默认的构造函数，后续的索引都加1
         int deltaIndex = 0;
 
-        if (JSBindingSettings.IsGeneratedDefaultConstructor(type))
+        if (JSBindingSettings.NeedGenDefaultConstructor(type))
         {
             deltaIndex = 1;
 
