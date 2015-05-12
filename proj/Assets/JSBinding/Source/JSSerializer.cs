@@ -67,14 +67,14 @@ public class JSSerializer : MonoBehaviour
     /// <param name="eType"></param>
     /// <param name="strValue"></param>
     /// <returns></returns>
-    int ToHeapValID(UnitType eType, string strValue)
+    int toHeapValID(UnitType eType, string strValue)
     {
         switch ((UnitType)eType)
         {
             case UnitType.ST_Boolean:
                 {
                     bool v = strValue == "True";
-                    JSApi.setBoolean(JSApi.SetType.TempVal, v);
+                    JSApi.setBoolean((int)JSApi.SetType.TempVal, v);
                     return JSApi.moveVal2HeapMap();
                 }
                 break;
@@ -87,7 +87,7 @@ public class JSSerializer : MonoBehaviour
                     int v;
                     if (int.TryParse(strValue, out v))
                     {
-                        JSApi.setInt32(JSApi.SetType.TempVal, v);
+                        JSApi.setInt32((int)JSApi.SetType.TempVal, v);
                         return JSApi.moveVal2HeapMap();
                     }
                 }
@@ -101,7 +101,7 @@ public class JSSerializer : MonoBehaviour
                     uint v;
                     if (uint.TryParse(strValue, out v))
                     {
-                        JSApi.setUInt32(JSApi.SetType.TempVal, v);
+                        JSApi.setUInt32((int)JSApi.SetType.TempVal, v);
                         return JSApi.moveVal2HeapMap();
                     }
                 }
@@ -114,7 +114,7 @@ public class JSSerializer : MonoBehaviour
                     double v;
                     if (double.TryParse(strValue, out v))
                     {
-                        JSApi.setDouble(JSApi.SetType.TempVal, v);
+                        JSApi.setDouble((int)JSApi.SetType.TempVal, v);
                         return JSApi.moveVal2HeapMap();
                     }
                 }
@@ -123,7 +123,7 @@ public class JSSerializer : MonoBehaviour
                 {
                     // TODO check
                     // JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
-                    JSApi.setString(JSApi.SetType.TempVal, strValue);
+                    JSApi.setString((int)JSApi.SetType.TempVal, strValue);
                     return JSApi.moveVal2HeapMap();
                 }
                 break;
@@ -151,7 +151,6 @@ public class JSSerializer : MonoBehaviour
         public SType type;
         public string name;
         public string typeName;
-        public JSApi.jsval val; // only valid when type == SType.Unit
         public int iHeapVal;
         public SerializeStruct father;
         public List<SerializeStruct> lstChildren;
@@ -166,7 +165,6 @@ public class JSSerializer : MonoBehaviour
             type = t;
             this.name = name;
             this.father = father;
-            val.asBits = 0;
             typeName = "WRONGTYPENAME!";
             iHeapVal = 0;
         }
@@ -175,7 +173,7 @@ public class JSSerializer : MonoBehaviour
         /// save in this.val    and return it
         /// </summary>
         /// <returns></returns>
-        public int CalcHeapValID()
+        public int calcHeapValID()
         {
             switch (this.type)
             {
@@ -187,10 +185,10 @@ public class JSSerializer : MonoBehaviour
                         int Count = lstChildren.Count;
                         for (var i = 0; i < Count; i++)
                         {
-                            int iHeapVal = lstChildren[i].CalcHeapValID();
+                            int iHeapVal = lstChildren[i].calcHeapValID();
                             JSApi.moveValFromMap2Arr(iHeapVal, i);
                         }
-                        JSApi.setArray(JSApi.SetType.TempVal, Count);
+                        JSApi.setArray((int)JSApi.SetType.TempVal, Count);
                         this.iHeapVal = JSApi.moveVal2HeapMap();
                     }
                     break;
@@ -207,11 +205,12 @@ public class JSSerializer : MonoBehaviour
                         //JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam, this.typeName);
                         //JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[]{valParam}, ref JSMgr.vCall.rvalCallJS);
                         //IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
-                        IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(this.typeName);
-                        if (jsObj == IntPtr.Zero)
+                        int jsObjID = JSMgr.vCall.CallJSClassCtorByName(this.typeName);
+                        if (jsObjID == 0)
                         {
                             Debug.LogError("Serialize error: call \"" + this.typeName + "\".ctor return null, , did you forget to export that class?");
-                            JSApi.JSh_SetJsvalUndefined(ref this.val);
+                            //JSApi.JSh_SetJsvalUndefined(ref this.val);
+                            this.iHeapVal = 0;
                         }
                         else
                         {
@@ -219,10 +218,13 @@ public class JSSerializer : MonoBehaviour
                             for (var i = 0; i < lstChildren.Count; i++)
                             {
                                 var child = lstChildren[i];
-                                JSApi.jsval mVal = child.CalcHeapValID();
-                                JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, child.name, -1, ref mVal);
+                                int iHeap = child.calcHeapValID();
+                                //JSApi.JSh_SetUCProperty(JSMgr.cx, jsObjID, child.name, -1, ref mVal);
+                                JSApi.setProperty(jsObjID, child.name, iHeap);
                             }
-                            JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
+                            //JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
+                            JSApi.setObject((int)JSApi.SetType.TempVal, jsObjID);
+                            this.iHeapVal = JSApi.moveVal2HeapMap();
                         }
                         
                         /*
@@ -286,7 +288,7 @@ public class JSSerializer : MonoBehaviour
     /// <param name="index"></param>
     /// <param name="st"></param>
     /// <returns></returns>
-    public void TraverseSerialize(IntPtr cx, IntPtr jsObj, SerializeStruct st)
+    public void TraverseSerialize(int jsObjID, SerializeStruct st)
     {
         while (true)
         {
@@ -305,7 +307,7 @@ public class JSSerializer : MonoBehaviour
                         SerializeStruct.SType sType = SerializeStruct.SType.Array;
                         var ss = new SerializeStruct(sType, s1, st);
                         st.AddChild(ss);
-                        TraverseSerialize(cx, jsObj, ss);
+                        TraverseSerialize(jsObjID, ss);
                     }
                     break;
                 // 这2个还带有类型
@@ -320,7 +322,7 @@ public class JSSerializer : MonoBehaviour
                         var ss = new SerializeStruct(sType, s1, st);
                         ss.typeName = s2;
                         st.AddChild(ss);
-                        TraverseSerialize(cx, jsObj, ss);
+                        TraverseSerialize(jsObjID, ss);
                     }
                     break;
                 case "ArrayEnd":
@@ -339,7 +341,7 @@ public class JSSerializer : MonoBehaviour
                             string s2 = s.Substring(y + 1, s.Length - y - 1);
                             var valName = s1;
                             var objIndex = int.Parse(s2);
-                            JSMgr.vCall.datax.setObject(JSApi.SetType.TempVal, this.arrObject[objIndex]);
+                            JSMgr.vCall.datax.setObject((int)JSApi.SetType.TempVal, this.arrObject[objIndex]);
 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
                             child.iHeapVal = JSApi.moveVal2HeapMap();
@@ -361,7 +363,7 @@ public class JSSerializer : MonoBehaviour
                             }
                             else
                             {
-                                JSApi.setObject(JSApi.SetType.TempVal, refJSObjID);
+                                JSApi.setObject((int)JSApi.SetType.TempVal, refJSObjID);
                                 child.iHeapVal = JSApi.moveVal2HeapMap();
                             }
 
@@ -371,7 +373,7 @@ public class JSSerializer : MonoBehaviour
                         {
                             string s2 = s.Substring(y + 1, s.Length - y - 1);
                             var valName = s1;
-                            int iHeapVal = ToHeapValID(eUnitType, s2);
+                            int iHeapVal = toHeapValID(eUnitType, s2);
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
                             //child.val = JSMgr.vCall.valTemp;
                             child.iHeapVal = iHeapVal;
@@ -397,7 +399,7 @@ public class JSSerializer : MonoBehaviour
     /// </summary>
     /// <param name="cx"></param>
     /// <param name="jsObj"></param>
-    public void initSerializedData(IntPtr cx, IntPtr jsObj)
+    public void initSerializedData(int jsObjID)
     {
         if (arrString == null || arrString.Length == 0)
         {
@@ -405,13 +407,13 @@ public class JSSerializer : MonoBehaviour
         }
 
         var root = new SerializeStruct(SerializeStruct.SType.Root, "this-name-doesn't-matter", null);
-        TraverseSerialize(cx, jsObj, root);
+        TraverseSerialize(jsObjID, root);
         if (root.lstChildren != null)
         {
             foreach (var child in root.lstChildren)
             {
-                child.CalcHeapValID();
-                JSApi.JSh_SetUCProperty(cx, jsObj, child.name, -1, ref child.val);
+                child.calcHeapValID();
+                JSApi.setProperty(jsObjID, child.name, child.iHeapVal);
             }
         }
     }

@@ -23,7 +23,7 @@ public class JSFileLoader : MonoBehaviour
         byte[] bytes = LoadJSSync(fullName);
         onLoadJS(shortName, bytes, fullName);
     }
-    public byte[] LoadJSSync(string fullName)
+    public virtual byte[] LoadJSSync(string fullName)
     {
         byte[] bytes = null;
 

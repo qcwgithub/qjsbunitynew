@@ -22,9 +22,9 @@ public class JSComponent : JSSerializer
 {
     //public string jsScriptName = string.Empty;
 
-    [HideInInspector]
-    [NonSerialized]
-    public IntPtr jsObj = IntPtr.Zero;
+//     [HideInInspector]
+//     [NonSerialized]
+//     public IntPtr jsObj = IntPtr.Zero;
 
     [HideInInspector]
     [NonSerialized]
@@ -63,37 +63,37 @@ public class JSComponent : JSSerializer
         }
     }
 
-    jsval valAwake = new jsval();
-    jsval valStart = new jsval();
-    jsval valFixedUpdate = new jsval();
-    jsval valUpdate = new jsval();
-    jsval valDestroy = new jsval();
-    jsval valOnGUI = new jsval();
-    jsval valOnEnable = new jsval();
-    jsval valOnTriggerEnter2D = new jsval();
-    jsval valOnTriggerStay = new jsval();
-    jsval valOnTriggerExit = new jsval();
-    jsval valOnAnimatorMove = new jsval();
-    jsval valOnAnimatorIK = new jsval();
-
-    jsval valDestroyChildGameObject = new jsval();
-    jsval valDisableChildGameObject = new jsval();
-    jsval valDestroyGameObject = new jsval();
+//     jsval valAwake = new jsval();
+//     jsval valStart = new jsval();
+//     jsval valFixedUpdate = new jsval();
+//     jsval valUpdate = new jsval();
+//     jsval valDestroy = new jsval();
+//     jsval valOnGUI = new jsval();
+//     jsval valOnEnable = new jsval();
+//     jsval valOnTriggerEnter2D = new jsval();
+//     jsval valOnTriggerStay = new jsval();
+//     jsval valOnTriggerExit = new jsval();
+//     jsval valOnAnimatorMove = new jsval();
+//     jsval valOnAnimatorIK = new jsval();
+// 
+//     jsval valDestroyChildGameObject = new jsval();
+//     jsval valDisableChildGameObject = new jsval();
+//     jsval valDestroyGameObject = new jsval();
 
     int initState = 0;
     bool initSuccess { get { return initState == 1; } set { if (value) initState = 1; } }
     bool initFail { get { return initState == 2; } set { if (value) initState = 2; } }
 
-    void initVal(ref jsval val, string jsFunName)
-    {
-        val.asBits = 0;
-        JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, jsFunName, ref val);
-    }
-    void callIfExist(ref jsval val, params object[] args)
-    {
-        if (val.asBits > 0)
-            JSMgr.vCall.CallJSFunctionValue(jsObj, ref val, args);
-    }
+//     void initVal(ref jsval val, string jsFunName)
+//     {
+//         val.asBits = 0;
+//         JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, jsFunName, ref val);
+//     }
+//     void callIfExist(ref jsval val, params object[] args)
+//     {
+//         if (val.asBits > 0)
+//             JSMgr.vCall.CallJSFunctionValue(jsObj, ref val, args);
+//     }
     void callIfExist(string name, params object[] args)
     {
         JSMgr.vCall.CallJSFunctionName(jsObjID, name, args);
@@ -179,9 +179,10 @@ public class JSComponent : JSSerializer
             return;
 
         initJS();
+
         if (initSuccess)
         {
-            initSerializedData(JSMgr.cx, jsObj);
+            initSerializedData(jsObjID);
         }
     }
     /// <summary>
@@ -233,7 +234,8 @@ public class JSComponent : JSSerializer
 
         if (initSuccess)
         {
-            JSMgr.RemoveRootedObject(jsObj);
+            // JSMgr.RemoveRootedObject(jsObj);
+            JSApi.removeObjectRoot(jsObjID);
         }
     }
     void OnEnable()

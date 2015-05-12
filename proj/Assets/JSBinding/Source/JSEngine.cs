@@ -53,21 +53,24 @@ public class JSEngine : MonoBehaviour
             {
                 for (var i = 0; i < InitLoadScripts.Length; i++)
                 {
-                    JSMgr.ExecuteFile(InitLoadScripts[i]);
+                    // JSMgr.ExecuteFile(InitLoadScripts[i]);
+                    JSMgr.evaluate(InitLoadScripts[i]);
                 }
             }
 
             //
             // Check to see ErrorHandler exists?
             //
-            jsval valJSFunEntry = new jsval();
-            valJSFunEntry.asBits = 0;
-            if (JSApi.JSh_GetFunctionValue(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", ref valJSFunEntry) && valJSFunEntry.asBits > 0)
-            {
-                Debug.Log("JS: Enable printing calling stack on error.");
-                OutputFullCallingStackOnError = true;
-            }
-            else
+            // TODO
+            // ¼Ó»ØÀ´
+//             jsval valJSFunEntry = new jsval();
+//             valJSFunEntry.asBits = 0;
+//             if (JSApi.JSh_GetFunctionValue(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", ref valJSFunEntry) && valJSFunEntry.asBits > 0)
+//             {
+//                 Debug.Log("JS: Enable printing calling stack on error.");
+//                 OutputFullCallingStackOnError = true;
+//             }
+//             else
             {
 
                 Debug.Log("JS: Disable printing calling stack on error.");
@@ -81,7 +84,7 @@ public class JSEngine : MonoBehaviour
             if (mDebug)
             {
                 Debug.Log("JS: Enable Debugger");
-                JSApi.JSh_EnableDebugger(JSMgr.cx, JSMgr.glob, path, 2, port);
+                JSApi.enableDebugger(path, 2, port);
             }
         }
         else
@@ -121,7 +124,6 @@ public class JSEngine : MonoBehaviour
         inst = this;
 
         // Can only be false
-        JSMgr.useReflection = false;
         JSMgr.InitJSEngine(jsLoader, OnInitJSEngine);
     }
 
@@ -132,7 +134,7 @@ public class JSEngine : MonoBehaviour
         if (inited)
         {
             if (mDebug)
-                JSApi.JSh_UpdateDebugger();
+                JSApi.updateDebugger();
         }
     }
 
@@ -148,7 +150,7 @@ public class JSEngine : MonoBehaviour
             {
                 accum = 0f;
                 //Debug.Log("_GC_Begin");
-                JSApi.JSh_GC(JSMgr.rt);
+                JSApi.gc();
                 //Debug.Log("_GC_End");
             }
         }
@@ -160,7 +162,7 @@ public class JSEngine : MonoBehaviour
         {
             JSMgr.ShutdownJSEngine();
             if (mDebug)
-                JSApi.JSh_CleanupDebugger();
+                JSApi.cleanupDebugger();
             Debug.Log("----------JSEngine Destroy ---");
         }
     }
@@ -174,11 +176,13 @@ public class JSEngine : MonoBehaviour
 		if (!showStatistics)
 			return;
         int countDict1, countDict2;
+
         JSMgr.GetDictCount(out countDict1, out countDict2);
+
         GUI.TextArea(new Rect(0, 10, 400, 20), "C#<->JS Object Total: " + countDict1.ToString() + ", Class: " + countDict2.ToString());
 
         int clsCount = 0;
-        Dictionary<long, JSMgr.JS_CS_Relation> dict1 = JSMgr.GetDict1();
+        Dictionary<int, JSMgr.JS_CS_Rel> dict1 = JSMgr.GetDict1();
         Dictionary<string, int> tj = new Dictionary<string, int>();
         foreach (var v in dict1)
         {

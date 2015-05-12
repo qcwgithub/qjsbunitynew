@@ -276,88 +276,19 @@ public class JSVCall
     //    {
     //        return JSApi.JSh_ArgvFunction(cx, vp, currIndex++);
     //    }
-    List<JSMgr.IntPtrClass> lst = new List<JSMgr.IntPtrClass>();
-    public jsval getJSFunctionValue()
-    {
-        jsval val = new jsval();
-        var i = currIndex++;
-        JSApi.JSh_ArgvFunctionValue(cx, vp, i, ref val);
- 
-        if (JSEngine.inst && JSEngine.inst.forceProtectJSFunction)
-        {
-            IntPtr obj = JSApi.JSh_ArgvObject(cx, vp, i);
-            var cls = new JSMgr.IntPtrClass(obj);
-            JSApi.JSh_AddObjectRoot(cx, cls.pptr);
-            lst.Add(cls);
-            //Debug.Log("functionRootCount = " + lst.Count);
-        }
-        return val;
-    }
-    ////    public void returnBool(bool v) { JSApi.JSh_SetRvalBool(cx, vp, v); }
-    ////    public void returnString(String v) { JSApi.JSh_SetRvalString(cx, vp, v); }
-    ////    public void returnChar(Char v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    ////    public void returnByte(Byte v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    ////    public void returnSByte(SByte v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-//    public void returnUInt16(UInt16 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-//    public void returnInt16(Int16 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-//    public void returnUInt32(UInt32 v) { JSApi.JSh_SetRvalInt(cx, vp, (Int32)v); }
-//    public void returnInt32(Int32 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-//    public void returnUInt64(UInt64 v) { JSApi.JSh_SetRvalInt(cx, vp, (Int32)v); }
-//    public void returnInt64(Int64 v)
-    //    {
-    //        JSApi.JSh_SetRvalInt(cx, vp, (Int32)v);
-    //    }
-    //    public void returnEnum(Int32 v) { JSApi.JSh_SetRvalInt(cx, vp, v); }
-    //    public void returnFloat(Single v) { JSApi.JSh_SetRvalDouble(cx, vp, v); }
-    //    public void returnDouble(Double v) { JSApi.JSh_SetRvalDouble(cx, vp, v); }
-    ////     public void returnObject(string className, object csObj)
-    ////     {
-    ////         JSApi.JSh_SetJsvalUndefined(ref this.valReturn);
-    ////         if (csObj == null)
-    ////         {
-//             JSApi.JSh_SetRvalJSVAL(cx, vp, ref this.valReturn);
-//             return;
-//         }
-// 
-//         if (!csObj.GetType().IsArray)
-//         {
-//             IntPtr jsObj;
-//             //jsObj = JSMgr.getJSObj(csObj);
-//             //if (jsObj == IntPtr.Zero)
-//             { // always add a new jsObj
-//                 jsObj = JSApi.JSh_NewObjectAsClass(cx, JSMgr.glob, /*className*/csObj.GetType().Name, JSMgr.mjsFinalizer);
-//                 if (jsObj == IntPtr.Zero)
-//                     jsObj = JSApi.JSh_NewObjectAsClass(cx, JSMgr.glob, /*className*/csObj.GetType().BaseType.Name, JSMgr.mjsFinalizer);
-//                 if (jsObj != IntPtr.Zero)
-//                     JSMgr.addJSCSRelation(jsObj, csObj);
-//             }
-// 
-//             if (jsObj == IntPtr.Zero)
-//                 JSApi.JSh_SetJsvalUndefined(ref this.valReturn);
-//             else
-//                 JSApi.JSh_SetJsvalObject(ref this.valReturn, jsObj);
-//         }
-//         else
-//         {
-//             Array arr = csObj as Array;
-//             if (arr.Length > 0 && arr.GetValue(0).GetType().IsArray)
-//             {
-//                 Debug.LogWarning("cs return [][] may cause problems.");
-//             }
-// 
-//             IntPtr jsArr = JSApi.JSh_NewArrayObjectS(cx, arr.Length);
-// 
-//             for (int i = 0; i < arr.Length; i++)
-//             {
-//                 jsval subVal = CSObject_2_JSValue(arr.GetValue(i));
-//                 JSApi.JSh_SetElement(cx, jsArr, (uint)i, ref subVal);
-//             }
-//             JSApi.JSh_SetJsvalObject(ref this.valReturn, jsArr);
-//         }
-// 
-//         JSApi.JSh_SetRvalJSVAL(cx, vp, ref this.valReturn);
-//     }
 
+
+    // TODO
+    // 改
+    public int getJSFunctionValue()
+    {
+        int funID = JSApi.getFunction((int)JSApi.GetType.Arg);
+        if (JSEngine.inst != null && JSEngine.inst.forceProtectJSFunction)
+        {
+            JSApi.addValueRoot(funID);
+        }
+        return funID;
+    }
     /*
      * ExtractCSParams
      *
@@ -394,342 +325,60 @@ public class JSVCall
      * 
      * for primitive, enum, string: not handled
      */
-    public bool ExtractJSParams(int start, int count)
-    {
-        arrJSParamsLength = 0;
-        for (int i = 0; i < count; i++)
-        {
-            int index = i + start;
-            
-            var tag = JSApi.JSh_ArgvTag(cx, vp, index);
-            bool bUndefined = JSApi.jsval.isUndefined(tag);
-            if (bUndefined)
-                return true;
-
-            JSParam jsParam = arrJSParam[arrJSParamsLength++]; //new JSParam();
-            jsParam.index = index;
-            jsParam.isNull = JSApi.jsval.isNullOrUndefined(JSApi.JSh_ArgvTag(cx, vp, index));
-            jsParam.isArray = false;
-            jsParam.csObj = null;
-            jsParam.valRO.asBits = 0;
-
-            IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, index);
-            if (jsObj == IntPtr.Zero)
-            {
-                jsParam.csObj = null;
-            }
-            //             else if (false/*JSApi.JSh_IsArrayObject(cx, jsObj)*/)
-            //             {
-            //                 jsParam.isArray = true;
-            //                 Debug.LogError("parse js array to cs is not supported");
-            //             }
-            else
-            {
-                object csObj = JSMgr.getCSObj(jsObj);
-                if (csObj == null)
-                {
-                    jsval valo = new jsval();
-                    JSApi.JSh_SetJsvalUndefined(ref valo);
-                    JSApi.GetProperty(cx, jsObj, "Value", -1, ref valo);
-                    if (!jsval.isNullOrUndefined(valo.tag))
-                    {
-                        jsParam.valRO = valo;
-                        jsObj = JSApi.JSh_GetJsvalObject(ref valo);
-                        csObj = JSMgr.getCSObj(jsObj);
-                    }
-                    else{
-                        Debug.Log("ExtractJSParams: CSObject is not found");
-                        return false;
-                    }
-                }
-                jsParam.csObj = csObj;
-            }
-            //lstJSParam.Add(jsParam);
-        }
-        return true;
-    }
-
-    // not to involved with ParamterInfo
-    // use lstJSParam
-    // to determine wether param match or not
-    public bool IsParamMatch(int csParamIndex, bool csIsOptional, Type csType)
-    {
-        if (csParamIndex < arrJSParamsLength)
-        {
-            if (csType == typeof(object))
-            {
-                return true;
-            }
-            else if (csType.IsArray)
-            {
-                // todo
-                // overloaded functions only matchs wether it's array or not
-                //                 if (!arrJSParam[csParamIndex].isArray)
-                //                     return false;
-                return true;
-            }
-//             else if (arrJSParam[csParamIndex].isWrap)
-//             {
-//                 Type jsType = arrJSParam[csParamIndex].wrappedObj.GetType();
+//     public bool ExtractJSParams(int start, int count)
+//     {
+//         arrJSParamsLength = 0;
+//         for (int i = 0; i < count; i++)
+//         {
+//             int index = i + start;
+//             
+//             var tag = JSApi.JSh_ArgvTag(cx, vp, index);
+//             bool bUndefined = JSApi.jsval.isUndefined(tag);
+//             if (bUndefined)
+//                 return true;
 // 
-//                 if (!csType.IsByRef)
-//                 {
-//                     if (csType != jsType && !csType.IsAssignableFrom(jsType))
-//                     {
-//                         return false;
-//                     }
-//                 }
-//                 else
-//                 {
-//                     Type csElementType = csType.GetElementType();
-//                     if (csElementType != jsType && !csElementType.IsAssignableFrom(jsType))
-//                     {
-//                         return false;
-//                     }
-//                 }
+//             JSParam jsParam = arrJSParam[arrJSParamsLength++]; //new JSParam();
+//             jsParam.index = index;
+//             jsParam.isNull = JSApi.jsval.isNullOrUndefined(JSApi.JSh_ArgvTag(cx, vp, index));
+//             jsParam.isArray = false;
+//             jsParam.csObj = null;
+//             jsParam.valRO.asBits = 0;
+// 
+//             IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, index);
+//             if (jsObj == IntPtr.Zero)
+//             {
+//                 jsParam.csObj = null;
 //             }
-            else// if (!arrJSParam[csParamIndex].isWrap)
-            {
-                if (arrJSParam[csParamIndex].csObj != null)
-                {
-                    // cann't use rrJSParam[csParamIndex].index here
-                    Type jsType = arrJSParam[csParamIndex].csObj.GetType();
-                    if (!csType.IsByRef)
-                    {
-                        if (csType != jsType && !csType.IsAssignableFrom(jsType))
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        Type csElementType = csType.GetElementType();
-                        if (csElementType != jsType && !csElementType.IsAssignableFrom(jsType))
-                        {
-                            return false;
-                        }
-                    }
-                }
-                else
-                {
-                    if (arrJSParam[csParamIndex].valRO.asBits == 0)
-                    {
-                        var tag = JSApi.JSh_ArgvTag(cx, vp, arrJSParam[csParamIndex].index);
-                        if (csType == typeof(bool))
-                            return JSApi.jsval.isBoolean(tag);
-                        else if (csType == typeof(string))
-                            return JSApi.jsval.isString(tag);
-                        else if (csType.IsEnum || csType.IsPrimitive)
-                            return JSApi.jsval.isNumber(tag);
-                        else if (csType.IsArray)
-                            return true;
-                        else
-                            return false;
-                    }
-                    else
-                    {
-                        jsval val = arrJSParam[csParamIndex].valRO;
-                        if (csType == typeof(bool))
-                            return jsval.isBoolean(val.tag);
-                        else if (csType == typeof(string))
-                            return jsval.isString(val.tag);
-                        else if (csType.IsEnum || csType.IsPrimitive)
-                            return jsval.isNumber(val.tag);
-                        else if (csType.IsArray)
-                            return true;
-                        else
-                            return false;
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (!csIsOptional)
-                return false;
-        }
-        return true;
-    }
-
-    /*
-     * MatchOverloadedMethod
-     * 
-     * write into this.method and this.ps
-     *
-     * ONLY for reflection
-     */
-    public int MatchOverloadedMethod(MethodBase[] methods, int methodIndex)
-    {
-        for (int i = methodIndex; i < methods.Length; i++)
-        {
-            MethodBase method = methods[i];
-            if (method.Name != methods[methodIndex].Name)
-                return -1;
-            ParameterInfo[] ps = method.GetParameters();
-            if (arrJSParamsLength > ps.Length)
-                continue;
-
-            bool matchSuccess = true;
-            for (int j = 0; j < ps.Length; j++)
-            {
-                ParameterInfo p = ps[j];
-
-                if (!IsParamMatch(j, p.IsOptional, p.ParameterType))
-                {
-                    matchSuccess = false;
-                    break;
-                }
-            }
-
-            if (matchSuccess)
-            {
-                // yes, this method is what we want
-                this.m_Method = method;
-                this.m_ParamInfo = ps;
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /*
-     * directly-call scheme use this function
-     */
-    public bool IsMethodMatch(CSParam[] arrCSParam)
-    {
-        for (int i = 0; i < arrCSParam.Length; i++)
-        {
-            if (!IsParamMatch(i, arrCSParam[i].isOptional, arrCSParam[i].type))
-                return false;
-        }
-        return true;
-    }
-
-    // used for js->cs array
-    // 
-    public object JSValue_2_CSObject(Type t, ref jsval val)
-    {
-        if (t.IsArray)
-        {
-            Debug.LogError("JSValue_2_CSObject: could not pass an array");
-            return null;
-        }
-
-        if (t.IsByRef)
-            t = t.GetElementType();
-
-        if (t == typeof(string))
-            return JSApi.JSh_GetJsvalString(cx, ref val);
-        else if (t.IsEnum)
-            return JSApi.JSh_GetJsvalInt(ref val);
-        else if (t.IsPrimitive)
-        {
-            if (t == typeof(System.Boolean))
-            {
-                return JSApi.JSh_GetJsvalBool(ref val);
-            }
-            else if (t == typeof(System.Char) ||
-                t == typeof(System.Byte) || t == typeof(System.SByte) ||
-                t == typeof(System.UInt16) || t == typeof(System.Int16) ||
-                t == typeof(System.UInt32) || t == typeof(System.Int32) ||
-                t == typeof(System.UInt64) || t == typeof(System.Int64))
-            {
-                return JSApi.JSh_GetJsvalInt(ref val);
-            }
-            else if (t == typeof(System.Single) || t == typeof(System.Double))
-            {
-                return JSApi.JSh_GetJsvalDouble(ref val);
-            }
-            else
-            {
-                Debug.Log("ConvertJSValue2CSValue: Unknown primitive type: " + t.ToString());
-            }
-        }
-        //         else if (t.IsValueType)
-        //         {
-        // 
-        //         }
-        else// if (typeof(UnityEngine.Object).IsAssignableFrom(t) || t.IsValueType)
-        {
-            IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
-            if (jsObj == IntPtr.Zero)
-                return null;
-
-            object csObject = JSMgr.getCSObj(jsObj);
-            return csObject;
-        }
-        //         else
-        //         {
-        //             Debug.Log("ConvertJSValue2CSValue: Unknown CS type: " + t.ToString());
-        //         }
-        return null;
-    }
-
-    // index means 
-    // lstJSParam[index]
-    // lstCSParam[index]
-    // ps[index]
-    // for calling property/field
-    public object JSValue_2_CSObject(Type t, int paramIndex)
-    {
-        if (t.IsArray)
-        {
-            Debug.LogError("JSValue_2_CSObject: could not pass an array");
-            return null;
-        }
-
-        if (t.IsByRef)
-            t = t.GetElementType();
-
-        if (t == typeof(string))
-            return JSApi.JSh_ArgvStringS(cx, vp, paramIndex);
-        else if (t.IsEnum)
-            return JSApi.JSh_ArgvInt(cx, vp, paramIndex);
-        else if (t.IsPrimitive)
-        {
-            if (t == typeof(System.Boolean))
-            {
-                return JSApi.JSh_ArgvBool(cx, vp, paramIndex);
-            }
-            else if (t == typeof(System.Char) ||
-                t == typeof(System.Byte) || t == typeof(System.SByte) ||
-                t == typeof(System.UInt16) || t == typeof(System.Int16) ||
-                t == typeof(System.UInt32) || t == typeof(System.Int32) ||
-                t == typeof(System.UInt64) || t == typeof(System.Int64))
-            {
-                return JSApi.JSh_ArgvInt(cx, vp, paramIndex);
-            }
-            else if (t == typeof(System.Single) || t == typeof(System.Double))
-            {
-                return JSApi.JSh_ArgvDouble(cx, vp, paramIndex);
-            }
-            else
-            {
-                Debug.Log("ConvertJSValue2CSValue: Unknown primitive type: " + t.ToString());
-            }
-        }
-        //         else if (t.IsValueType)
-        //         {
-        // 
-        //         }
-        else// if (typeof(UnityEngine.Object).IsAssignableFrom(t) || t.IsValueType)
-        {
-            if (JSApi.jsval.isNullOrUndefined(JSApi.JSh_ArgvTag(cx, vp, paramIndex)))
-                return null;
-
-            IntPtr jsObj = JSApi.JSh_ArgvObject(cx, vp, paramIndex);
-            if (jsObj == IntPtr.Zero)
-                return null;
-
-            object csObject = JSMgr.getCSObj(jsObj);
-            return csObject;
-        }
-        //         else
-        //         {
-        //             Debug.Log("ConvertJSValue2CSValue: Unknown CS type: " + t.ToString());
-        //         }
-        return null;
-    }
+//             //             else if (false/*JSApi.JSh_IsArrayObject(cx, jsObj)*/)
+//             //             {
+//             //                 jsParam.isArray = true;
+//             //                 Debug.LogError("parse js array to cs is not supported");
+//             //             }
+//             else
+//             {
+//                 object csObj = JSMgr.getCSObj(jsObj);
+//                 if (csObj == null)
+//                 {
+//                     jsval valo = new jsval();
+//                     JSApi.JSh_SetJsvalUndefined(ref valo);
+//                     JSApi.GetProperty(cx, jsObj, "Value", -1, ref valo);
+//                     if (!jsval.isNullOrUndefined(valo.tag))
+//                     {
+//                         jsParam.valRO = valo;
+//                        jsObj = JSApi.JSh_GetJsvalObject(ref valo);
+//                         csObj = JSMgr.getCSObj(jsObj);
+//                    }
+//                     else{
+//                         Debug.Log("ExtractJSParams: CSObject is not found");
+//                         return false;
+//                     }
+//                 }
+//                 jsParam.csObj = csObj;
+//             }
+//             //lstJSParam.Add(jsParam);
+//         }
+//         return true;
+//     }
 
     // index means 
     // lstJSParam[index]
@@ -827,107 +476,6 @@ public class JSVCall
 //         return true;
 //     }
 
-    // CS -> JS
-    // this is function obstacle
-    public jsval CSObject_2_JSValue(object csObj)
-    {
-        jsval val = new jsval();
-        JSApi.JSh_SetJsvalUndefined(ref val);
-
-        if (csObj == null)
-        {
-            return val;
-        }
-
-        Type t = csObj.GetType();
-        if (t == typeof(void))
-        {
-            return val;
-        }
-        else if (t == typeof(string))
-        {
-            JSApi.JSh_SetJsvalString(cx, ref val, (string)csObj);
-        }
-        else if (t.IsEnum)
-        {
-            JSApi.JSh_SetJsvalInt(ref val, (int)csObj);
-        }
-        else if (t.IsPrimitive)
-        {
-            if (t == typeof(System.Boolean))
-            {
-                JSApi.JSh_SetJsvalBool(ref val, (bool)csObj);
-            }
-            else if (t == typeof(System.UInt32) || t == typeof(System.Int32))
-            {
-                int v = (Int32)csObj;
-                JSApi.JSh_SetJsvalInt(ref val, v);
-            }
-            else if (t == typeof(System.Char) ||
-                t == typeof(System.Byte) || t == typeof(System.SByte) ||
-                t == typeof(System.UInt16) || t == typeof(System.Int16) ||
-                //t == typeof(System.UInt32) || t == typeof(System.Int32) ||
-                t == typeof(System.UInt64) || t == typeof(System.Int64))
-            {
-                JSApi.JSh_SetJsvalInt(ref val, (Int32)(Int64)csObj);
-            }
-            else if (t == typeof(System.Single) || t == typeof(System.Double))
-            {
-                JSApi.JSh_SetJsvalDouble(ref val, (double)csObj);
-            }
-            else
-            {
-                Debug.Log("CS -> JS: Unknown primitive type: " + t.ToString());
-            }
-        }
-        //         else if (t.IsValueType)
-        //         {
-        // 
-        //         }
-        else if (t.IsArray)
-        {
-            Debug.LogError("CSObject_2_JSValue: Cannot handle array here");
-
-            // todo
-            // return [][] may cause problems
-            //             Array arr = csObj as Array;
-            //             if (arr.Length > 0 && arr.GetValue(0).GetType().IsArray)
-            //             {
-            //                 Debug.LogWarning("cs return [][] may cause problems.");
-            //             }
-            // 
-            //             IntPtr jsArr = JSApi.JSh_NewArrayObjectS(cx, arr.Length);
-            //             
-            //             for (int i = 0; i < arr.Length; i++)
-            //             {
-            //                 jsval subVal = CSObject_2_JSValue(arr.GetValue(i));
-            //                 JSApi.JSh_SetElement(cx, jsArr, (uint)i, ref subVal);
-            //             }
-            //             JSApi.JSh_SetJsvalObject(ref val, jsArr);
-        }
-        else// if (typeof(UnityEngine.Object).IsAssignableFrom(t) || t.IsClass || t.IsValueType)
-        {
-            IntPtr jsObj;
-            //             jsObj = JSMgr.getJSObj(csObj);
-            //             if (jsObj == IntPtr.Zero)
-            {
-                // always add a new jsObj
-                jsObj = JSApi.JSh_NewObjectAsClass(cx, JSMgr.glob, t.Name, JSMgr.mjsFinalizer);
-//                 if (jsObj != IntPtr.Zero)
-//                     JSMgr.addJSCSRelation(jsObj, csObj);
-            }
-            if (jsObj == IntPtr.Zero)
-                JSApi.JSh_SetJsvalUndefined(ref val);
-            else
-                JSApi.JSh_SetJsvalObject(ref val, jsObj);
-        }
-        //         else
-        //         {
-        //             Debug.Log("CS -> JS: Unknown CS type: " + t.ToString());
-        //             JSApi.JSh_SetJsvalUndefined(ref val);
-        //         }
-        return val;
-    }
 
 //     public void PushResult(object csObj)
 //     {
@@ -947,23 +495,23 @@ public class JSVCall
 //         JSApi.JSh_SetRvalJSVAL(cx, vp, ref val);
 //     }
 
-    public jsval rvalCallJS = new jsval();
+    //public jsval rvalCallJS = new jsval();
     // better not use this function, use CallJSFunctionValue instead
-    public bool CallJSFunction(IntPtr jsThis, IntPtr/* JSFunction* */ jsFunction, params object[] args)
-    {
-        if (args == null || args.Length == 0)
-        {
-            return JSApi.JSh_CallFunction(JSMgr.cx, jsThis, jsFunction, 0, null/*IntPtr.Zero*/, ref rvalCallJS);
-        }
-
-        jsval[] vals = new jsval[args.Length];
-        for (int i = 0; i < args.Length; i++)
-        {
-            vals[i] = CSObject_2_JSValue(args[i]);
-        }
-
-        return JSApi.JSh_CallFunction(JSMgr.cx, jsThis, jsFunction, (UInt32)args.Length, vals, ref rvalCallJS);
-    }
+//     public bool CallJSFunction(IntPtr jsThis, IntPtr/* JSFunction* */ jsFunction, params object[] args)
+//     {
+//         if (args == null || args.Length == 0)
+//         {
+//             return JSApi.JSh_CallFunction(JSMgr.cx, jsThis, jsFunction, 0, null/*IntPtr.Zero*/, ref rvalCallJS);
+//         }
+// 
+//         jsval[] vals = new jsval[args.Length];
+//         for (int i = 0; i < args.Length; i++)
+//         {
+//             vals[i] = CSObject_2_JSValue(args[i]);
+//         }
+// 
+//         return JSApi.JSh_CallFunction(JSMgr.cx, jsThis, jsFunction, (UInt32)args.Length, vals, ref rvalCallJS);
+//     }
 //     public bool CallJSFunctionValue(IntPtr jsThis, ref jsval valFunction, params object[] args)
 //     {
 //         if (args == null || args.Length == 0)
@@ -999,31 +547,32 @@ public class JSVCall
 
         int argsLen = (args != null ? args.Length : 0);
 
-//         if (JSEngine.inst.OutputFullCallingStackOnError)
-//         {
-//             JSApi.setObject(JSApi.SetType.Jsval, jsObjID);
-//             JSApi.moveTempVal2Arr(0);
-// 
-//             JSApi.setString(JSApi.SetType.Jsval, functionName);
-//             JSApi.moveTempVal2Arr(1);
-// 
-//             if (argsLen > 0)
-//             {
-//                 for (int i = 0; i < args.Length; i++)
-//                 {
-//                     this.datax.setWhatever(JSApi.SetType.Jsval, args[i]);
-//                     JSApi.moveTempVal2Arr(i + 2);
-//                 }
-//             }
-//             // TODO 修改 ErrorHandler.javascript
-//             // return JSApi.callFunction(jsObjID, functionName, argsLen);
-//             //return JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", (UInt32)(argsLen + 2), vals, ref rvalCallJS);
-//         }
-//         else
+        // TODO 把这个加回来
+        if (JSEngine.inst.OutputFullCallingStackOnError)
+        {
+            JSApi.setObject((int)JSApi.SetType.TempVal, jsObjID);
+            JSApi.moveTempVal2Arr(0);
+
+            JSApi.setString((int)JSApi.SetType.TempVal, functionName);
+            JSApi.moveTempVal2Arr(1);
+
+            if (argsLen > 0)
+            {
+                for (int i = 0; i < args.Length; i++)
+                {
+                    this.datax.setWhatever(JSApi.SetType.TempVal, args[i]);
+                    JSApi.moveTempVal2Arr(i + 2);
+                }
+            }
+            // TODO 修改 ErrorHandler.javascript
+            return JSApi.callFunctionName(jsObjID, functionName, argsLen);
+            //return JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", (UInt32)(argsLen + 2), vals, ref rvalCallJS);
+        }
+        else
         {
             if (argsLen == 0)
             {
-                return JSApi.callFunction(jsObjID, functionName, 0);
+                return JSApi.callFunctionName(jsObjID, functionName, 0);
             }
 
             for (int i = 0; i < argsLen; i++)
@@ -1032,55 +581,55 @@ public class JSVCall
                 JSApi.moveTempVal2Arr(i);
             }
 
-            return JSApi.callFunction(jsObjID, functionName, argsLen);
+            return JSApi.callFunctionName(jsObjID, functionName, argsLen);
         }
     }
 
     // TODO: delete
-    public jsval[] arrJsval0 = new jsval[0];
-    public bool CallJSFunctionValue(IntPtr jsThis, ref jsval valFunction, params object[] args)
-    {
-        if (JSMgr.isShutDown) return false;
-
-        int argsLen = (args != null ? args.Length : 0);
-
-        if (JSEngine.inst.OutputFullCallingStackOnError)
-        {
-            jsval[] vals = new jsval[argsLen + 2];
-
-            JSApi.JSh_SetJsvalObject(ref vals[0], jsThis);
-            vals[1] = valFunction;
-
-            if (argsLen > 0)
-            {
-                for (int i = 0; i < args.Length; i++)
-                {
-                    // vals[i + 2] = CSObject_2_JSValue(args[i]);
-                    this.datax.setWhatever(JSApi.SetType.TempVal, args[i]);
-                    vals[i + 2] = valTemp;
-                }
-            }
-
-            return JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", (UInt32)(argsLen + 2), vals, ref rvalCallJS);
-        }
-        else
-        {
-            if (argsLen == 0)
-            {
-                return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, 0, arrJsval0, ref rvalCallJS);
-            }
-
-            jsval[] vals = new jsval[argsLen];
-            for (int i = 0; i < argsLen; i++)
-            {
-                // vals[i] = CSObject_2_JSValue(args[i]);
-                this.datax.setWhatever(JSDataExchangeMgr.eSetType.Jsval, args[i]);
-                vals[i] = valTemp;
-            }
-
-            return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, (UInt32)argsLen, vals, ref rvalCallJS);
-        }
-    }
+//     public jsval[] arrJsval0 = new jsval[0];
+//     public bool CallJSFunctionValue(IntPtr jsThis, ref jsval valFunction, params object[] args)
+//     {
+//         if (JSMgr.isShutDown) return false;
+// 
+//         int argsLen = (args != null ? args.Length : 0);
+// 
+//         if (JSEngine.inst.OutputFullCallingStackOnError)
+//         {
+//             jsval[] vals = new jsval[argsLen + 2];
+// 
+//             JSApi.JSh_SetJsvalObject(ref vals[0], jsThis);
+//             vals[1] = valFunction;
+// 
+//             if (argsLen > 0)
+//             {
+//                 for (int i = 0; i < args.Length; i++)
+//                 {
+//                     // vals[i + 2] = CSObject_2_JSValue(args[i]);
+//                     this.datax.setWhatever(JSApi.SetType.TempVal, args[i]);
+//                     vals[i + 2] = valTemp;
+//                 }
+//             }
+// 
+//             return JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", (UInt32)(argsLen + 2), vals, ref rvalCallJS);
+//         }
+//         else
+//         {
+//             if (argsLen == 0)
+//            {
+//                 return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, 0, arrJsval0, ref rvalCallJS);
+//            }
+// 
+//             jsval[] vals = new jsval[argsLen];
+//             for (int i = 0; i < argsLen; i++)
+//            {
+//                 // vals[i] = CSObject_2_JSValue(args[i]);
+//                 this.datax.setWhatever(JSDataExchangeMgr.eSetType.Jsval, args[i]);
+//                 vals[i] = valTemp;
+//            }
+// 
+//             return JSApi.JSh_CallFunctionValue(JSMgr.cx, jsThis, ref valFunction, (UInt32)argsLen, vals, ref rvalCallJS);
+//         }
+//     }
 
     public enum Oper
     {
@@ -1094,10 +643,8 @@ public class JSVCall
 
     public bool bGet = false, bStatic = false;
     public int jsObjID = 0;
+    public object csObj;
     // TODO delete
-    public IntPtr jsObj = IntPtr.Zero;
-    public object csObj, result, arg;
-    public object[] args;
     public int currentParamCount = 0;
     public Oper op;
     //     public static bool CSCallback()
@@ -1195,179 +742,139 @@ public class JSVCall
     }
 
     // TODO delete
-    public int CallCallback2(IntPtr cx, uint argc, IntPtr vp)
-    {
-        this.Reset(cx, vp);
-
-        // first 4 params are fixed
-        this.op = (Oper)JSApi.JSh_ArgvInt(cx, vp, 0);
-        int slot = JSApi.JSh_ArgvInt(cx, vp, 1);
-        int index = JSApi.JSh_ArgvInt(cx, vp, 2);
-        bool isStatic = JSApi.JSh_ArgvBool(cx, vp, 3);
-
-        //StreamWriter sw = File.AppendText(Application.dataPath + "/VCall.txt");
-        //string nnname = string.Empty;
-        //if (op == Oper.GET_FIELD || op == Oper.SET_FIELD) nnname = JSMgr.allCallbackInfo[slot].fields[index].Method.Name;
-        //else if (op == Oper.GET_PROPERTY || op == Oper.SET_PROPERTY) nnname = JSMgr.allCallbackInfo[slot].properties[index].Method.Name;
-        //else if (op == Oper.METHOD) nnname = JSMgr.allCallbackInfo[slot].methods[index].fun.Method.Name;
-        //else if (op == Oper.CONSTRUCTOR) nnname = JSMgr.allCallbackInfo[slot].constructors[index].fun.Method.Name;
-        //sw.WriteLine(new StringBuilder().AppendFormat("{0},{1},{2},{3}  {4}", this.op, slot, index, isStatic, nnname).ToString());
-        //sw.Close();
-
-        if (slot < 0 || slot >= JSMgr.allCallbackInfo.Count)
-        {
-			throw(new Exception("Bad slot: " + slot));
-            return JSApi.JS_FALSE;
-        }
-        JSMgr.CallbackInfo aInfo = JSMgr.allCallbackInfo[slot];
-
-        currentParamCount = 4;
-        if (!isStatic)
-        {
-            this.jsObj = JSApi.JSh_ArgvObject(cx, vp, 4);
-			if (this.jsObj == IntPtr.Zero) {
-				throw(new Exception("Invalid this jsObj"));
-                return JSApi.JS_FALSE;
-			}
-
-            this.csObj = JSMgr.getCSObj(jsObj);
-            //
-            // for manual js code
-            // this.csObj will be null
-            //
-			//if (this.csObj == null) {
+//     public int CallCallback2(IntPtr cx, uint argc, IntPtr vp)
+//     {
+//         this.Reset(cx, vp);
+// 
+//         // first 4 params are fixed
+//         this.op = (Oper)JSApi.JSh_ArgvInt(cx, vp, 0);
+//         int slot = JSApi.JSh_ArgvInt(cx, vp, 1);
+//         int index = JSApi.JSh_ArgvInt(cx, vp, 2);
+//         bool isStatic = JSApi.JSh_ArgvBool(cx, vp, 3);
+// 
+//         //StreamWriter sw = File.AppendText(Application.dataPath + "/VCall.txt");
+//         //string nnname = string.Empty;
+//         //if (op == Oper.GET_FIELD || op == Oper.SET_FIELD) nnname = JSMgr.allCallbackInfo[slot].fields[index].Method.Name;
+//         //else if (op == Oper.GET_PROPERTY || op == Oper.SET_PROPERTY) nnname = JSMgr.allCallbackInfo[slot].properties[index].Method.Name;
+//         //else if (op == Oper.METHOD) nnname = JSMgr.allCallbackInfo[slot].methods[index].fun.Method.Name;
+//         //else if (op == Oper.CONSTRUCTOR) nnname = JSMgr.allCallbackInfo[slot].constructors[index].fun.Method.Name;
+//         //sw.WriteLine(new StringBuilder().AppendFormat("{0},{1},{2},{3}  {4}", this.op, slot, index, isStatic, nnname).ToString());
+//         //sw.Close();
+// 
+//         if (slot < 0 || slot >= JSMgr.allCallbackInfo.Count)
+//         {
+//			throw(new Exception("Bad slot: " + slot));
+//             return JSApi.JS_FALSE;
+//         }
+//         JSMgr.CallbackInfo aInfo = JSMgr.allCallbackInfo[slot];
+// 
+//         currentParamCount = 4;
+//         if (!isStatic)
+//         {
+//             this.jsObj = JSApi.JSh_ArgvObject(cx, vp, 4);
+// 			if (this.jsObj == IntPtr.Zero) {
+//				throw(new Exception("Invalid this jsObj"));
+//                 return JSApi.JS_FALSE;
+//			}
+// 
+//             this.csObj = JSMgr.getCSObj(jsObj);
+//             //
+//             // for manual js code
+//             // this.csObj will be null
+//             //
+// 			//if (this.csObj == null) {
 			//	throw(new Exception("Invalid this csObj"));
-            //    return JSApi.JS_FALSE;
+//             //    return JSApi.JS_FALSE;
 			//}
-
-            currentParamCount++;
-        }
-
-        switch (op)
-        {
-            case Oper.GET_FIELD:
-            case Oper.SET_FIELD:
-                {
-                    currIndex = currentParamCount;
-                    this.bGet = (op == Oper.GET_FIELD);
-                    JSMgr.CSCallbackField fun = aInfo.fields[index];
-                    if (fun == null)
-                    {
-                        throw (new Exception("Field not found"));
-                        return JSApi.JS_FALSE;
-                    }
-                    fun(this);
-                }
-                break;
-            case Oper.GET_PROPERTY:
-            case Oper.SET_PROPERTY:
-                {
-                    currIndex = currentParamCount;
-                    this.bGet = (op == Oper.GET_PROPERTY);
-                    JSMgr.CSCallbackProperty fun = aInfo.properties[index];
-                    if (fun == null)
-                    {
-                        throw (new Exception("Property not found"));
-                        return JSApi.JS_FALSE;
-                    }
-                    fun(this);
-                }
-                break;
-            case Oper.METHOD:
-            case Oper.CONSTRUCTOR:
-                {
-                    bool overloaded = JSApi.JSh_ArgvBool(cx, vp, currentParamCount);
-                    currentParamCount++;
-
-                    JSMgr.MethodCallBackInfo[] arrMethod;
-                    if (op == Oper.METHOD)
-                        arrMethod = aInfo.methods;
-                    else
-                        arrMethod = aInfo.constructors;
-
-                    // params count
-                    // for overloaded function, it's caculated by ExtractJSParams
-                    int jsParamCount = (int)argc - currentParamCount;
-                    if (!overloaded)
-                    {
-                        // for not-overloaded function
-                        int i = (int)argc;
-                        while (i > 0 && JSApi.jsval.isUndefined(JSApi.JSh_ArgvTag(cx, vp, --i)))
-                            jsParamCount--;
-                    }
-                    else
-                    {
-                        if (!this.ExtractJSParams(currentParamCount, (int)argc - currentParamCount))
-                            return JSApi.JS_FALSE;
-
-                        string methodName = arrMethod[index].methodName;
-
-                        int i = index;
-                        while (true)
-                        {
-                            if (IsMethodMatch(arrMethod[i].arrCSParam))
-                            {
-                                index = i;
-                                break;
-                            }
-                            i++;
-                            if (arrMethod[i].methodName != methodName)
-                            {
-								throw(new Exception("Overloaded function can't find match: " + methodName));
-                                return JSApi.JS_FALSE;
-                            }
-                        }
-
-                        jsParamCount = arrJSParamsLength;
-                    }
-
-                    currIndex = currentParamCount;
-                    arrMethod[index].fun(this, currentParamCount, jsParamCount);
-                    //Debug.Log(slot.ToString()+"/"+index.ToString()+"Call OK");
-
-                    //                     if (overloaded)
-                    //                     {
-                    //                         string methodName = arrMethod[index].methodName;
-                    // 
-                    //                         int i = index;
-                    //                         while (true)
-                    //                         {
-                    //                             if (IsMethodMatch(arrMethod[i].arrCSParam))
-                    //                             {
-                    //                                 index = i;
-                    //                                 break;
-                    //                             }
-                    //                             i++;
-                    //                             if (arrMethod[i].methodName != methodName)
-                    //                             {
-                    //                                 Debug.LogError("Overloaded function can't find match: " + methodName);
-                    //                                 return JSApi.JS_FALSE;
-                    //                             }
-                    //                         }
-                    //                     }
-                    // 
-                    //                     JSMgr.CSCallbackMethod fun;
-                    //                     
-                    //                     fun = arrMethod[index].fun;
-                    //                     arrCSParam = arrMethod[index].arrCSParam;
-                    //                     arrCSParamsLength = arrCSParam.Length;
-                    // 
-                    //                     if (fun == null || arrCSParam == null) 
-                    //                         return JSApi.JS_FALSE;
-                    // 
-                    //                     if (!BuildMethodArgs(false))
-                    //                          return JSApi.JS_FALSE;
-                    //                     
-                    //                     if (!fun(this, currentParamCount, (int)argc - currentParamCount))
-                    //                         return JSApi.JS_FALSE;
-                }
-                break;
-        }
-
-        //         this.PushResult(result);
-        //         return JSApi.JS_TRUE;
-        return JSApi.JS_TRUE;
-    }
+// 
+//             currentParamCount++;
+//         }
+// 
+//         switch (op)
+//         {
+//             case Oper.GET_FIELD:
+//             case Oper.SET_FIELD:
+//                 {
+//                     currIndex = currentParamCount;
+//                     this.bGet = (op == Oper.GET_FIELD);
+//                     JSMgr.CSCallbackField fun = aInfo.fields[index];
+//                     if (fun == null)
+//                     {
+//                         throw (new Exception("Field not found"));
+//                         return JSApi.JS_FALSE;
+//                     }
+//                     fun(this);
+//                 }
+//                 break;
+//             case Oper.GET_PROPERTY:
+//             case Oper.SET_PROPERTY:
+//                 {
+//                     currIndex = currentParamCount;
+//                     this.bGet = (op == Oper.GET_PROPERTY);
+//                     JSMgr.CSCallbackProperty fun = aInfo.properties[index];
+//                     if (fun == null)
+//                     {
+//                         throw (new Exception("Property not found"));
+//                         return JSApi.JS_FALSE;
+//                     }
+//                     fun(this);
+//                 }
+//                 break;
+//             case Oper.METHOD:
+//             case Oper.CONSTRUCTOR:
+//                 {
+//                     bool overloaded = JSApi.JSh_ArgvBool(cx, vp, currentParamCount);
+//                     currentParamCount++;
+// 
+//                     JSMgr.MethodCallBackInfo[] arrMethod;
+//                     if (op == Oper.METHOD)
+//                         arrMethod = aInfo.methods;
+//                     else
+//                         arrMethod = aInfo.constructors;
+// 
+//                     // params count
+//                     // for overloaded function, it's caculated by ExtractJSParams
+//                     int jsParamCount = (int)argc - currentParamCount;
+//                     if (!overloaded)
+//                     {
+//                         // for not-overloaded function
+//                         int i = (int)argc;
+//                         while (i > 0 && JSApi.jsval.isUndefined(JSApi.JSh_ArgvTag(cx, vp, --i)))
+//                             jsParamCount--;
+//                     }
+//                     else
+//                     {
+//                         if (!this.ExtractJSParams(currentParamCount, (int)argc - currentParamCount))
+//                             return JSApi.JS_FALSE;
+// 
+//                         string methodName = arrMethod[index].methodName;
+// 
+//                         int i = index;
+//                         while (true)
+//                         {
+//                             if (IsMethodMatch(arrMethod[i].arrCSParam))
+//                             {
+//                                 index = i;
+//                                 break;
+//                             }
+//                             i++;
+//                             if (arrMethod[i].methodName != methodName)
+//                             {
+//								throw(new Exception("Overloaded function can't find match: " + methodName));
+//                                 return JSApi.JS_FALSE;
+//                             }
+//                         }
+// 
+//                         jsParamCount = arrJSParamsLength;
+//                     }
+// 
+//                     currIndex = currentParamCount;
+//                     arrMethod[index].fun(this, currentParamCount, jsParamCount);
+//                 }
+//                 break;
+//         }
+//         return JSApi.JS_TRUE;
+//     }
 
 //     public int CallReflection(IntPtr cx, uint argc, IntPtr vp)
 //     {
