@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 
 public static class JSGenerator2
 {
-    static string thisString = "this.__nativeObj";
     // input
     static StringBuilder sb = null;
     public static Type type = null;
@@ -144,7 +143,7 @@ _jstype.{7}.{0} =  [[
                 slot, //[3]
                 i,//[4]
                 (field.IsStatic ? "true" : "false"),//[5]
-                (field.IsStatic ? "" : ", " + thisString), //[6]
+                (field.IsStatic ? "" : ", this"), //[6]
                 (field.IsStatic ? "staticFields" : "fields"));//[7]
         }
         return sb;
@@ -184,7 +183,7 @@ _jstype.{7}.set_{0} = function({10}v) [[ return CS.Call({2}, {3}, {4}, {5}{6}{8}
                 slot,                           // [3]
                 i,                              // [4]
                 (isStatic ? "true" : "false"),  // [5] isStatic
-                (isStatic ? "" : ", " + thisString),     // [6] this
+                (isStatic ? "" : ", this"),     // [6] this
                 (isStatic ? "staticDefinition" : "definition"),                // [7]
                 indexerParamC, // [8]
                 indexerParamA, 
@@ -257,7 +256,7 @@ if (!_found) [[
     public static StringBuilder BuildConstructors(Type type, ConstructorInfo[] constructors, int slot, int howmanyConstructors)
     {
         string fmt = @"
-_jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
+_jstype.definition.{0} = function({1}) [[ CS.Call({2}); ]]";
 
         StringBuilder sb = new StringBuilder();
         var argActual = new cg.args();
@@ -272,8 +271,8 @@ _jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
                 (int)JSVCall.Oper.CONSTRUCTOR, // OP
                 slot,
                 i,  // 注意
-                "true", // IsStatics
-                "false" // IsOverloaded
+                "true", // IsStatics                
+                "this"
                 );
 
             argFormal.Clear();
@@ -281,6 +280,7 @@ _jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
             // add T to formal param
             if (type.IsGenericTypeDefinition)
             {
+                // TODO check
                 int TCount = type.GetGenericArguments().Length;
                 for (int j = 0; j < TCount; j++)
                 {
@@ -296,11 +296,10 @@ _jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
                 argFormal.Add("a" + j.ToString());
                 argActual.Add("a" + j.ToString());
             }
-            sb.AppendFormat(fmt, 
+            sb.AppendFormat(fmt,
                 SharpKitMethodName("ctor", ps, howmanyConstructors > 1), // [0]
                 argFormal,    // [1]
-                argActual,    // [2]
-                thisString);  // [3] thisString
+                argActual);    // [2]
         }
         return sb;
     }
@@ -384,7 +383,7 @@ _jstype.staticDefinition.{1} = function({2}) [[
                     sbActualParam,             // [5] actual param
                     method.ReturnType.Name,    // [6] return type name
                     (int)JSVCall.Oper.METHOD,  // [7] OP
-                    thisString,                // [8] this.__nativeObj
+                    "this",                // [8] this
                     sbInitT                    //[9] generic types init
                     );
             else

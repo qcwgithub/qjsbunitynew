@@ -26,7 +26,6 @@ public class JSEngine : MonoBehaviour
     /*
      * 
      */
-    [NonSerialized]
     public string[] InitLoadScripts = new string[0];
 
     /*

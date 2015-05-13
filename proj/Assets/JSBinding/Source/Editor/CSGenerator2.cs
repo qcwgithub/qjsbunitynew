@@ -534,6 +534,12 @@ public static class CSGenerator2
 
         if (bConstructor)
         {
+            sb.Append("    int _this = JSApi.getObject((int)JSApi.GetType.Arg);\n");
+            sb.Append("    JSApi.attachFinalizerObject(_this);\n");
+        }
+
+        if (bConstructor)
+        {
             if (type.IsGenericTypeDefinition)
             {
                 // 不是 T 函数，但是类带T
@@ -717,7 +723,8 @@ public static class CSGenerator2
                     sbCall.AppendFormat("constructor.Invoke(null, new object[][[{0}]])", sbActualParam);
                 }
 
-                string callAndReturn = JSDataExchangeEditor.Get_Return(type/*don't use returnType*/, sbCall.ToString());
+                // string callAndReturn = JSDataExchangeEditor.Get_Return(type/*don't use returnType*/, sbCall.ToString());
+                string callAndReturn = new StringBuilder().AppendFormat("JSMgr.AddJSCSRel(_this, {0});\n", sbCall).ToString();
                 sb.AppendFormat(@"    {1}if (len == {0}) 
     [[
 {2}

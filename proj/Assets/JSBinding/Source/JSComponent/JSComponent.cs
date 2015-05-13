@@ -97,7 +97,7 @@ public class JSComponent : JSSerializer
             return;
         }
 
-        jsObjID = JSApi.NewJSClassObject(this.jsScriptName);
+        jsObjID = JSApi.createJSClassObject(this.jsScriptName);
         if (jsObjID == 0)
         {
             Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");

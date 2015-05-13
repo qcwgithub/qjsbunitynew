@@ -599,6 +599,10 @@ public class JSDataExchangeMgr
 //         }
 //        // TODO
     // 如果是 UpdateRefARGV，之前要设置 currIndex
+    // setObject 情况是：有CS对象
+    // 操作：
+    // JS对象已存在：返回那个JS对象
+    // JS对象不存在：新建一个 JS 对象，并与现有CS对象关联起来
     public int setObject(/* JSApi.SetType */int e, object csObj)
     {
         int jsObjID = 0;
@@ -618,7 +622,7 @@ public class JSDataExchangeMgr
                 else
                 {
                     string typeName = JSNameMgr.GetJSTypeFullName(csType);
-                    jsObjID = JSApi.NewJSClassObject(typeName);
+                    jsObjID = JSApi.createJSClassObject(typeName);
                     if (jsObjID != 0)
                         JSMgr.AddJSCSRel(jsObjID, csObj);
                     else

@@ -75,7 +75,7 @@ public class JSSerializer : MonoBehaviour
                 {
                     bool v = strValue == "True";
                     JSApi.setBoolean((int)JSApi.SetType.TempVal, v);
-                    return JSApi.moveVal2HeapMap();
+                    return JSApi.moveTempVal2Map();
                 }
                 break;
 
@@ -88,7 +88,7 @@ public class JSSerializer : MonoBehaviour
                     if (int.TryParse(strValue, out v))
                     {
                         JSApi.setInt32((int)JSApi.SetType.TempVal, v);
-                        return JSApi.moveVal2HeapMap();
+                        return JSApi.moveTempVal2Map();
                     }
                 }
                 break;
@@ -102,7 +102,7 @@ public class JSSerializer : MonoBehaviour
                     if (uint.TryParse(strValue, out v))
                     {
                         JSApi.setUInt32((int)JSApi.SetType.TempVal, v);
-                        return JSApi.moveVal2HeapMap();
+                        return JSApi.moveTempVal2Map();
                     }
                 }
                 break;
@@ -115,7 +115,7 @@ public class JSSerializer : MonoBehaviour
                     if (double.TryParse(strValue, out v))
                     {
                         JSApi.setDouble((int)JSApi.SetType.TempVal, v);
-                        return JSApi.moveVal2HeapMap();
+                        return JSApi.moveTempVal2Map();
                     }
                 }
                 break;
@@ -124,7 +124,7 @@ public class JSSerializer : MonoBehaviour
                     // TODO check
                     // JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
                     JSApi.setStringS((int)JSApi.SetType.TempVal, strValue);
-                    return JSApi.moveVal2HeapMap();
+                    return JSApi.moveTempVal2Map();
                 }
                 break;
             default:
@@ -189,7 +189,7 @@ public class JSSerializer : MonoBehaviour
                             JSApi.moveValFromMap2Arr(iHeapVal, i);
                         }
                         JSApi.setArray((int)JSApi.SetType.TempVal, Count);
-                        this.iHeapVal = JSApi.moveVal2HeapMap();
+                        this.iHeapVal = JSApi.moveTempVal2Map();
                     }
                     break;
                 case SType.Struct:
@@ -205,7 +205,7 @@ public class JSSerializer : MonoBehaviour
                         //JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam, this.typeName);
                         //JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[]{valParam}, ref JSMgr.vCall.rvalCallJS);
                         //IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
-                        int jsObjID = JSMgr.vCall.CallJSClassCtorByName(this.typeName);
+                        int jsObjID = JSApi.newJSClassObject(this.typeName);
                         if (jsObjID == 0)
                         {
                             Debug.LogError("Serialize error: call \"" + this.typeName + "\".ctor return null, , did you forget to export that class?");
@@ -224,7 +224,7 @@ public class JSSerializer : MonoBehaviour
                             }
                             //JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
                             JSApi.setObject((int)JSApi.SetType.TempVal, jsObjID);
-                            this.iHeapVal = JSApi.moveVal2HeapMap();
+                            this.iHeapVal = JSApi.moveTempVal2Map();
                         }
                         
                         /*
@@ -344,7 +344,7 @@ public class JSSerializer : MonoBehaviour
                             JSMgr.vCall.datax.setObject((int)JSApi.SetType.TempVal, this.arrObject[objIndex]);
 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-                            child.iHeapVal = JSApi.moveVal2HeapMap();
+                            child.iHeapVal = JSApi.moveTempVal2Map();
                             st.AddChild(child);
                         }
                         else if (eUnitType == UnitType.ST_MonoBehaviour)
@@ -364,7 +364,7 @@ public class JSSerializer : MonoBehaviour
                             else
                             {
                                 JSApi.setObject((int)JSApi.SetType.TempVal, refJSObjID);
-                                child.iHeapVal = JSApi.moveVal2HeapMap();
+                                child.iHeapVal = JSApi.moveTempVal2Map();
                             }
 
                             st.AddChild(child);

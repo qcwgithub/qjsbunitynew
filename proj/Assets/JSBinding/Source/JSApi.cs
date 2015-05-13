@@ -111,11 +111,12 @@ public class JSApi
     // TODO
     // 检查所有使用的地方看是否都正确使用（会有死循环的情况存在！）
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern int NewJSClassObject(string name);
-
+    public static extern bool attachFinalizerObject(int id);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool IsJSClassObjectFunctionExist(int objID, string functionName);
-
+    public static extern int createJSClassObject(string name);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+    public static extern int newJSClassObject(string name);
+    
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int InitJSEngine(JSErrorReporter er, CSEntry csEntry, JSNative req);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -235,6 +236,8 @@ public class JSApi
     public static extern int getObject(int e);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern bool isFunction(int e);
+    // TODO
+    // protect
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern int getFunction(int e);
 
@@ -311,8 +314,6 @@ public class JSApi
      * ****************** Other APIs ****************** 
      */
 
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void moveTempVal2Arr(int i);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool callFunctionValue(int jsObjID, int funID, int argCount);
@@ -326,14 +327,16 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern bool removeValueRoot(int id);
 
-
+    // val movement
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int moveVal2HeapMap();
+    public static extern void moveTempVal2Arr(int i);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void removeHeapMapVal(int index);
-
+    public static extern int moveTempVal2Map();
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    public static extern void removeValFromMap(int index);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern bool moveValFromMap2Arr(int iMap, int iArr);
+
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool setProperty(int id, string name, int iMap);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
