@@ -250,6 +250,8 @@ public class JSVCall
             //	throw(new Exception("Invalid this csObj"));
             //    return JSApi.JS_FALSE;
             //}
+
+            --argc;
         }
 
         switch (op)

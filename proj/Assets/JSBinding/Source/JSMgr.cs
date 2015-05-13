@@ -34,7 +34,7 @@ public static class JSMgr
         string fileName = JSApi.getErroReportFileNameS(report);
         int lineno = JSApi.getErroReportLineNo(report);
         string str = fileName + "(" + lineno.ToString() + "): " + message;
-        Debug.LogWarning(str);
+        Debug.LogError(str);
         return 1;
     }
 
@@ -145,7 +145,12 @@ public static class JSMgr
     static JSFileLoader jsLoader;
     public static bool InitJSEngine(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
     {
-        int initResult = JSApi.InitJSEngine(new JSApi.JSErrorReporter(errorReporter), new JSApi.CSEntry(JSMgr.CSEntry), new JSApi.JSNative(require));
+        int initResult = JSApi.InitJSEngine(
+            new JSApi.JSErrorReporter(errorReporter), 
+            new JSApi.CSEntry(JSMgr.CSEntry),
+            new JSApi.JSNative(require), 
+            new JSApi.OnObjCollected(onObjCollected));
+
         if (initResult != 0)
         {
             Debug.LogError("InitJSEngine fail. error = " + initResult);
@@ -1135,6 +1140,14 @@ public static class JSMgr
     public static void AddJSCSRel(int jsObjID, object csObj)
     {
         int hash = csObj.GetHashCode();
+        if (mDictionary1.ContainsKey(jsObjID))
+        {
+            if (csObj.GetType().IsValueType)
+            {
+                mDictionary1.Remove(jsObjID);
+            }
+        }
+
         mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, csObj, hash));
 
         if (csObj.GetType().IsClass)
@@ -1251,6 +1264,18 @@ public static class JSMgr
     {
         mDictionary1.Clear();
         mDictionary2.Clear();
+    }
+
+
+    [MonoPInvokeCallbackAttribute(typeof(JSApi.OnObjCollected))]
+    static void onObjCollected(int id)
+    {
+        JS_CS_Rel Rel;
+        if (mDictionary1.TryGetValue(id, out Rel))
+        {
+            mDictionary1.Remove(id);
+            mDictionary2.Remove(Rel.hash);
+        }
     }
 //     public static void ClearJSCSRelation() {
 //         mDict1.Clear();

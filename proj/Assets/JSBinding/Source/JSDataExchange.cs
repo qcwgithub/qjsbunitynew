@@ -229,80 +229,31 @@ public class JSDataExchangeMgr
     }
     public object getWhatever(int e)
     {
-        JSApi.GetType eType = (JSApi.GetType)e;
-        switch (eType)
+        var tag = JSApi.getTag(e);
+        if (jsval.isNullOrUndefined(tag))
+            return null;
+        else if (jsval.isBoolean(tag))
+            return JSApi.getBoolean(e);
+        else if (jsval.isInt32(tag))
+            return JSApi.getInt32(e);
+        else if (jsval.isDouble(tag))
+            return JSApi.getSingle(e);
+        else if (jsval.isString(tag))
+            return JSApi.getStringS(e);
+        else if (jsval.isObject(tag))
         {
-            case JSApi.GetType.Arg:
+            if (JSApi.isVector2(e))
             {
-                int i = JSApi.getArgIndex();
-                var tag = JSApi.argTag(i);
-                if (jsval.isNullOrUndefined(tag))
-                    return null;
-                else if (jsval.isBoolean(tag))
-                    return JSApi.getBoolean(e);
-                else if (jsval.isInt32(tag))
-                    return JSApi.getInt32(e);
-                else if (jsval.isDouble(tag))
-                    return JSApi.getSingle(e);
-                else if (jsval.isString(tag))
-                    return JSApi.getStringS(e);
-                else if (jsval.isObject(tag))
-                {
-                    if (JSApi.isVector2(i))
-                    {
-                        return JSApi.getVector2S(e);
-                    }
-                    else if (JSApi.isVector3(i))
-                    {
-                        return JSApi.getVector3S(e);
-                    }
-                    else
-                    {
-                        return getObject(e);
-                    }
-//                     IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, i);
-//                     if (UnityEngineManual.IsJSObjVector3(jsObj))
-//                         return getVector3(e);
-//                     else if (UnityEngineManual.IsJSObjVector2(jsObj))
-//                         return getVector2(e);
-//                     else
-//                         return getObject(e);
-                }
-                return null;
+                return JSApi.getVector2S(e);
             }
-            break;
-
-//         case eGetType.Jsval:
-//             {
-//                 var tag = vc.valTemp.tag;
-//                 // 通过 vc.valTemp 传递值
-//                 if (jsval.isNullOrUndefined(tag))
-//                     return null;
-//                 else if (jsval.isBoolean(tag))
-//                     return getBoolean(e);
-//                 else if (jsval.isInt32(tag))
-//                     return getInt32(e);
-//                 else if (jsval.isDouble(tag))
-//                     return getSingle(e);
-//                 else if (jsval.isString(tag))
-//                     return getString(e);
-//                 else if (jsval.isObject(tag))
-//                 {
-//                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
-//                     if (UnityEngineManual.IsJSObjVector3(jsObj))
-//                         return getVector3(e);
-//                     else if (UnityEngineManual.IsJSObjVector2(jsObj))
-//                         return getVector2(e);
-//                     else
-//                         return getObject(e);
-//                 }
-//                 return null;
-//             }
-//             break;
-
-        default:
-            Debug.LogError("getWhatever ////// Not Supported");
-            break;
+            else if (JSApi.isVector3(e))
+            {
+                return JSApi.getVector3S(e);
+            }
+            else
+            {
+                return getObject(e);
+            }
         }
         return null;
     }

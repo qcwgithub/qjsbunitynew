@@ -536,6 +536,7 @@ public static class CSGenerator2
         {
             sb.Append("    int _this = JSApi.getObject((int)JSApi.GetType.Arg);\n");
             sb.Append("    JSApi.attachFinalizerObject(_this);\n");
+            sb.Append("    --argc;\n");
         }
 
         if (bConstructor)

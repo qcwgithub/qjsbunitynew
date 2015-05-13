@@ -311,7 +311,7 @@ _jstype.definition.{0} = function({1}) [[ CS.Call({2}); ]]";
 /* {6} */
 _jstype.definition.{1} = function({2}) [[ 
     {9}
-    return CS.Call({7}, {3}, {4}, false{8}{5}); 
+    return CS.Call({7}, {3}, {4}, false, {8}{5}); 
 ]]";
         string fmtStatic = @"
 /* static {6} {8} */

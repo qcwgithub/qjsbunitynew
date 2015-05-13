@@ -20,12 +20,6 @@ using jsval = JSApi.jsval;
  */
 public class JSComponent : JSSerializer
 {
-    //public string jsScriptName = string.Empty;
-
-//     [HideInInspector]
-//     [NonSerialized]
-//     public IntPtr jsObj = IntPtr.Zero;
-
     [HideInInspector]
     [NonSerialized]
     public int jsObjID = 0;
@@ -33,20 +27,20 @@ public class JSComponent : JSSerializer
     void initMemberFunction()
     {
         idAwake = JSApi.getObjFunction(jsObjID, "Awake");
-        idStart = JSApi.getObjFunction(jsObjID, "idStart"); ;
-        idFixedUpdate = JSApi.getObjFunction(jsObjID, "idFixedUpdate"); ;
-        idUpdate = JSApi.getObjFunction(jsObjID, "idUpdate"); ;
-        idOnDestroy = JSApi.getObjFunction(jsObjID, "idDestroy"); ;
-        idOnGUI = JSApi.getObjFunction(jsObjID, "idOnGUI"); ;
-        idOnEnable = JSApi.getObjFunction(jsObjID, "idOnEnable"); ;
-        idOnTriggerEnter2D = JSApi.getObjFunction(jsObjID, "idOnTriggerEnter2D"); ;
-        idOnTriggerStay = JSApi.getObjFunction(jsObjID, "idOnTriggerStay"); ;
-        idOnTriggerExit = JSApi.getObjFunction(jsObjID, "idOnTriggerExit"); ;
-        idOnAnimatorMove = JSApi.getObjFunction(jsObjID, "idOnAnimatorMove"); ;
-        idOnAnimatorIK = JSApi.getObjFunction(jsObjID, "idOnAnimatorIK"); ;
-        idDestroyChildGameObject = JSApi.getObjFunction(jsObjID, "idDestroyChildGameObject"); ;
-        idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "idDisableChildGameObject"); ;
-        idDestroyGameObject = JSApi.getObjFunction(jsObjID, "idDestroyGameObject"); ;
+        idStart = JSApi.getObjFunction(jsObjID, "Start"); ;
+        idFixedUpdate = JSApi.getObjFunction(jsObjID, "FixedUpdate"); ;
+        idUpdate = JSApi.getObjFunction(jsObjID, "Update"); ;
+        idOnDestroy = JSApi.getObjFunction(jsObjID, "OnDestroy"); ;
+        idOnGUI = JSApi.getObjFunction(jsObjID, "OnGUI"); ;
+        idOnEnable = JSApi.getObjFunction(jsObjID, "OnEnable"); ;
+        idOnTriggerEnter2D = JSApi.getObjFunction(jsObjID, "OnTriggerEnter2D"); ;
+        idOnTriggerStay = JSApi.getObjFunction(jsObjID, "OnTriggerStay"); ;
+        idOnTriggerExit = JSApi.getObjFunction(jsObjID, "OnTriggerExit"); ;
+        idOnAnimatorMove = JSApi.getObjFunction(jsObjID, "OnAnimatorMove"); ;
+        idOnAnimatorIK = JSApi.getObjFunction(jsObjID, "OnAnimatorIK"); ;
+        idDestroyChildGameObject = JSApi.getObjFunction(jsObjID, "DestroyChildGameObject"); ;
+        idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "DisableChildGameObject"); ;
+        idDestroyGameObject = JSApi.getObjFunction(jsObjID, "DestroyGameObject"); ;
     }
 
     int idAwake = 0;
@@ -97,7 +91,10 @@ public class JSComponent : JSSerializer
             return;
         }
 
-        jsObjID = JSApi.createJSClassObject(this.jsScriptName);
+        // ATTENSION
+        // cannot use createJSClassObject here
+        // because we have to call ctor, to run initialization code
+        jsObjID = JSApi.newJSClassObject(this.jsScriptName);
         if (jsObjID == 0)
         {
             Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");
