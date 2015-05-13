@@ -78,9 +78,9 @@ public class JSDataExchangeMgr
 //         }
 //         return val;
 //     }
-    public object getObject(JSApi.GetType e)
+    public object getObject(int e)
     {
-        int jsObjID = JSApi.getObject((int)e);
+        int jsObjID = JSApi.getObject(e);
         if (jsObjID == 0)
             return null;
 
@@ -227,33 +227,34 @@ public class JSDataExchangeMgr
         }
         return null;
     }
-    public object getWhatever(JSApi.GetType e)
+    public object getWhatever(int e)
     {
-        switch (e)
+        JSApi.GetType eType = (JSApi.GetType)e;
+        switch (eType)
         {
             case JSApi.GetType.Arg:
             {
-                int i = vc.currIndex;
+                int i = JSApi.getArgIndex();
                 var tag = JSApi.argTag(i);
                 if (jsval.isNullOrUndefined(tag))
                     return null;
                 else if (jsval.isBoolean(tag))
-                    return JSApi.getBoolean((int)e);
+                    return JSApi.getBoolean(e);
                 else if (jsval.isInt32(tag))
-                    return JSApi.getInt32((int)e);
+                    return JSApi.getInt32(e);
                 else if (jsval.isDouble(tag))
-                    return JSApi.getSingle((int)e);
+                    return JSApi.getSingle(e);
                 else if (jsval.isString(tag))
-                    return JSApi.getStringS((int)e);
+                    return JSApi.getStringS(e);
                 else if (jsval.isObject(tag))
                 {
                     if (JSApi.isVector2(i))
                     {
-                        return JSApi.getVector2S((int)e);
+                        return JSApi.getVector2S(e);
                     }
                     else if (JSApi.isVector3(i))
                     {
-                        return JSApi.getVector3S((int)e);
+                        return JSApi.getVector3S(e);
                     }
                     else
                     {
@@ -381,15 +382,13 @@ public class JSDataExchangeMgr
 
     // for generic type
     // type is assigned during runtime
-    public void setWhatever(JSApi.SetType eType, object obj)
+    public void setWhatever(int e, object obj)
     {
 //         Type type = (Type)mTempObj;
 //         if (type.IsByRef)
 //             type = type.GetElementType();
 
         // ?? TODO use mTempObj or not?
-
-        int e = (int)eType;
 
         // TODO check
         if (obj == null)
@@ -400,7 +399,7 @@ public class JSDataExchangeMgr
         Type type = obj.GetType();
 
         if (type == typeof(string))
-            JSApi.setString(e, (string)obj);
+            JSApi.setStringS(e, (string)obj);
         else if (type.IsEnum)
             JSApi.setEnum(e, (int)obj);
         else if (type.IsPrimitive)
@@ -434,11 +433,11 @@ public class JSDataExchangeMgr
         }
         else if (type == typeof(Vector3))
         {
-            JSApi.setVector3(e, (Vector3)obj);
+            JSApi.setVector3S(e, (Vector3)obj);
         }
         else if (type == typeof(Vector2))
         {
-            JSApi.setVector3(e, (Vector2)obj);
+            JSApi.setVector3S(e, (Vector2)obj);
         }
         else
         {
@@ -1065,46 +1064,46 @@ public class JSDataExchangeMgr
         }
 
         if (type == typeof(string))
-            ret = "JApi.getStringS";
+            ret = "JSApi.getStringS";
         else if (type.IsEnum)
-            ret = "JApi.getEnum";
+            ret = "JSApi.getEnum";
         else if (type.IsPrimitive)
         {
             if (type == typeof(System.Boolean))
-                ret = "JApi.getBoolean";
+                ret = "JSApi.getBoolean";
             else if (type == typeof(System.Char))
-                ret = "JApi.getChar";
+                ret = "JSApi.getChar";
             else if (type == typeof(System.Byte))
-                ret = "JApi.getByte";
+                ret = "JSApi.getByte";
             else if (type == typeof(System.SByte))
-                ret = "JApi.getSByte";
+                ret = "JSApi.getSByte";
             else if (type == typeof(System.UInt16))
-                ret = "JApi.getUInt16";
+                ret = "JSApi.getUInt16";
             else if (type == typeof(System.Int16))
-                ret = "JApi.getInt16";
+                ret = "JSApi.getInt16";
             else if (type == typeof(System.UInt32))
-                ret = "JApi.getUInt32";
+                ret = "JSApi.getUInt32";
             else if (type == typeof(System.Int32))
-                ret = "JApi.getInt32";
+                ret = "JSApi.getInt32";
             else if (type == typeof(System.UInt64))
-                ret = "JApi.getUInt64";
+                ret = "JSApi.getUInt64";
             else if (type == typeof(System.Int64))
-                ret = "JApi.getInt64";
+                ret = "JSApi.getInt64";
             else if (type == typeof(System.Single))
-                ret = "JApi.getSingle";
+                ret = "JSApi.getSingle";
             else if (type == typeof(System.Double))
-                ret = "JApi.getDouble";
+                ret = "JSApi.getDouble";
             else if (type == typeof(System.IntPtr))
-                ret = "JApi.getIntPtr";
+                ret = "JSApi.getIntPtr";
             else
                 Debug.LogError("444 Unknown primitive type");
         }
         else if (type == typeof(System.Object) || type.IsGenericParameter)
             ret = "vc.datax.getWhatever";
         else if (type == typeof(Vector3))
-            ret = "JApi.getVector3";
+            ret = "JSApi.getVector3S";
         else if (type == typeof(Vector2))
-            ret = "JApi.getVector2";
+            ret = "JSApi.getVector2S";
         else
             ret = "vc.datax.getObject";
 
@@ -1149,17 +1148,27 @@ public class JSDataExchange_Arr
             arrayFullName = JSNameMgr.GetTypeFullName(t);
             elementFullName = JSNameMgr.GetTypeFullName(elementType);
         }
-
         sb.AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(() => [[\n", arrayFullName)
-        .AppendFormat("    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);\n")
-        .AppendFormat("    int length = JSApi.JSh_GetArrayLength(JSMgr.cx, jsObj);\n")
+        .AppendFormat("    int jsObjID = JSApi.getObject((int)JSApi.GetType.Arg);\n")
+        .AppendFormat("    int length = JSApi.getArrayLength(jsObjID);\n")
         .AppendFormat("    var ret = new {0}[length];\n", elementFullName)
         .AppendFormat("    for (var i = 0; i < length; i++) [[\n")
-        .AppendFormat("        JSApi.JSh_GetElement(JSMgr.cx, jsObj, (uint)i, ref vc.valTemp);\n")
+        .AppendFormat("        JSApi.getElement(jsObjID, i);\n")
         .AppendFormat("        ret[i] = ({0}){1}((int)JSApi.GetType.Jsval);\n", elementFullName, getVal)
         .AppendFormat("    ]]\n")
         .AppendFormat("    return ret;\n")
         .AppendFormat("]])\n");
+
+//         sb.AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(() => [[\n", arrayFullName)
+//         .AppendFormat("    IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);\n")
+//         .AppendFormat("    int length = JSApi.JSh_GetArrayLength(JSMgr.cx, jsObj);\n")
+//         .AppendFormat("    var ret = new {0}[length];\n", elementFullName)
+//         .AppendFormat("    for (var i = 0; i < length; i++) [[\n")
+//         .AppendFormat("        JSApi.JSh_GetElement(JSMgr.cx, jsObj, (uint)i, ref vc.valTemp);\n")
+//         .AppendFormat("        ret[i] = ({0}){1}((int)JSApi.GetType.Jsval);\n", elementFullName, getVal)
+//         .AppendFormat("    ]]\n")
+//         .AppendFormat("    return ret;\n")
+//         .AppendFormat("]])\n");
 
         sb.Replace("[[", "{");
         sb.Replace("]]", "}");
@@ -1189,16 +1198,16 @@ public class JSDataExchange_Arr
             .AppendFormat("        {0}((int)JSApi.GetType.Jsval, arrRet.GetValue(i));\n", getValMethod)
             .AppendFormat("        JSApi.moveTempVal2Arr(i);\n")
             .AppendFormat("    ]]\n")
-            .AppendFormat("    JSApi.setArray(JSApi.SetType.Rval, arrRet.Length);"); // no ;
+            .AppendFormat("    JSApi.setArray((int)JSApi.SetType.Rval, arrRet.Length);"); // no ;
         }
         else
         {
             sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar)
             .AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n")
-            .AppendFormat("        ((int)JSApi.GetType.Jsval, arrRet[i]);\n", getValMethod)
+            .AppendFormat("        {0}((int)JSApi.GetType.Jsval, arrRet[i]);\n", getValMethod)
             .AppendFormat("        JSApi.moveTempVal2Arr(i);\n")
             .AppendFormat("    ]]\n")
-            .AppendFormat("    JSApi.setArray(JSApi.SetType.Rval, arrRet.Length);"); // no ;
+            .AppendFormat("    JSApi.setArray((int)JSApi.SetType.Rval, arrRet.Length);"); // no ;
         }
 
         sb.Replace("[[", "{");

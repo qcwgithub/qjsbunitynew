@@ -310,7 +310,7 @@ public static class CSGenerator2
                         {
                             sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSNameMgr.GetTypeFullName(type));
                             sb.AppendFormat("argThis{0} = {1};", sbActualParam, paramHandler.argName);
-                            sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
+                            sb.Append("        JSMgr.changeJSObj2(vc.jsObjID, argThis);\n");
                         }
                         else
                         {
@@ -328,7 +328,7 @@ public static class CSGenerator2
                         {
                             sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSNameMgr.GetTypeFullName(type));
                             sb.AppendFormat("        argThis.{0} = {1};\n", property.Name, paramHandler.argName);
-                            sb.Append("        JSMgr.changeJSObj(vc.jsObj, argThis);\n");
+                            sb.Append("        JSMgr.changeJSObj2(vc.jsObjID, argThis);\n");
                         }
                         else
                         {
@@ -631,11 +631,11 @@ public static class CSGenerator2
 
         
         if (bConstructor && type.IsGenericTypeDefinition)
-            sb.AppendFormat("    int len = count - {0};\n", type.GetGenericArguments().Length);
+            sb.AppendFormat("    int len = argc - {0};\n", type.GetGenericArguments().Length);
         else if (TCount == 0)
-            sb.AppendFormat("    int len = count;\n");
+            sb.AppendFormat("    int len = argc;\n");
         else
-            sb.AppendFormat("    int len = count - {0};\n", TCount);
+            sb.AppendFormat("    int len = argc - {0};\n", TCount);
 
         for (int j = minNeedParams; j <= ps.Length; j++)
         {
@@ -785,7 +785,7 @@ public static class CSGenerator2
                  (j == minNeedParams) ? "" : "else ",  // [1] else
                  (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? sbStruct.ToString() : "",  // [2] if Struct, get argThis first
                  callAndReturn,  // [3] function call and return to js
-                 (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? "JSMgr.changeJSObj(vc.jsObj, argThis);" : "",  // [4] if Struct, update 'this' object
+                 (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? "JSMgr.changeJSObj2(vc.jsObjID, argThis);" : "",  // [4] if Struct, update 'this' object
                  sbGetParam,        // [5] get param
                  sbUpdateRefParam); // [6] update ref/out param
 
@@ -803,7 +803,7 @@ public static class CSGenerator2
         * 2 function call
         */
         string fmt = @"
-static bool {0}(JSVCall vc, int start, int count)
+static bool {0}(JSVCall vc, int argc)
 [[
 {1}
     return true;
@@ -888,7 +888,7 @@ static bool {0}(JSVCall vc, int start, int count)
         * 2 function call
         */
         string fmt = @"
-static bool {0}(JSVCall vc, int start, int count)
+static bool {0}(JSVCall vc, int argc)
 [[
 {1}
     return true;
@@ -933,7 +933,7 @@ static bool {0}(JSVCall vc, int start, int count)
             }
             if (UnityEngineManual.isManual(functionName))
             {
-                sb.AppendFormat(fmt, functionName, "    UnityEngineManual." + functionName + "(vc, start, count);");
+                sb.AppendFormat(fmt, functionName, "    UnityEngineManual." + functionName + "(vc, argc);");
             }
             else
             {

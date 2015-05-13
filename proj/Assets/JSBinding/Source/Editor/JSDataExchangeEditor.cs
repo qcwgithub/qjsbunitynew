@@ -124,7 +124,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             {
                 ph.updater = new StringBuilder()
                     .AppendFormat("JSApi.setArgIndex(r_arg{0});\n", paramIndex)
-                    .AppendFormat("{0}(JSApi.SetType.ArgRef, {1});", keyword.Replace("get", "set"), ph.argName)
+                    .AppendFormat("{0}((int)JSApi.SetType.ArgRef, {1});", keyword.Replace("get", "set"), ph.argName)
                     .ToString();
             }
         }
@@ -195,7 +195,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         else
         {
             var sb = new StringBuilder();
-            var keyword = GetMetatypeKeyword(type);
+            var keyword = GetMetatypeKeyword(type).Replace("get", "set");
 
             if (type.IsPrimitive)
                 sb.AppendFormat("{0}((int)JSApi.SetType.Rval, ({1})({2}));", keyword, JSNameMgr.GetTypeFullName(type), expVar);
@@ -218,10 +218,10 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
     {
         return new StringBuilder()
             .AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(()=>[[\n", JSNameMgr.GetTypeFullName(delType))
-            .AppendFormat("    if (vc.datax.IsArgvFunction())\n")
-            .AppendFormat("        return {0}(vc.getJSFunctionValue());\n", getDelegateFunctionName)
+            .AppendFormat("    if (JSApi.isFunction((int)JSApi.GetType.Arg))\n")
+            .AppendFormat("        return {0}(JSApi.getFunction((int)JSApi.GetType.Arg));\n", getDelegateFunctionName)
             .Append("    else\n")
-            .AppendFormat("        return ({0})vc.datax.getObject(JSDataExchangeMgr.eGetType.GetARGV);\n", JSNameMgr.GetTypeFullName(delType))
+            .AppendFormat("        return ({0})vc.datax.getObject((int)JSApi.GetType.Arg);\n", JSNameMgr.GetTypeFullName(delType))
             .Append("]])\n")
             .ToString();
     }
@@ -256,15 +256,15 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         }
 
         // this function name is used in BuildFields, don't change
-        sb.AppendFormat("public static {0} {1}{2}(jsval jsFunction)\n[[\n",
+        sb.AppendFormat("public static {0} {1}{2}(int idFunction)\n[[\n",
             JSNameMgr.GetTypeFullName(delType),  // [0]
             getDelFunctionName, // [2]
             stringTOfMethod  // [1]
             );
-        sb.Append("    if (jsFunction.asBits == 0)\n        return null;\n");
+        sb.Append("    if (idFunction == 0)\n        return null;\n");
         sb.AppendFormat("    {0} action = ({1}) => \n", JSNameMgr.GetTypeFullName(delType), argsParam.Format(cg.args.ArgsFormat.OnlyList));
         sb.AppendFormat("    [[\n");
-        sb.AppendFormat("        JSMgr.vCall.CallJSFunctionValue(IntPtr.Zero, ref jsFunction{0}{1});\n", (argsParam.Count > 0) ? "," : "", argsParam);
+        sb.AppendFormat("        JSMgr.vCall.CallJSFunctionValue(0, idFunction{0}{1});\n", (argsParam.Count > 0) ? "," : "", argsParam);
 
         if (returnType != typeof(void))
             sb.Append("        return (" + JSNameMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeEditor.Get_GetJSReturn(returnType) + ";\n");
@@ -333,7 +333,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                     sb.AppendFormat(" = {0};\n", newValue);
                     if (!bStatic && bStruct)
                     {
-                        sb.Append("        JSMgr.changeJSObj(vc.jsObj, _this);\n");
+                        sb.Append("        JSMgr.changeJSObj2(vc.jsObjID, _this);\n");
                     }
                 }
             }

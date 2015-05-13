@@ -454,7 +454,7 @@ public static class JSMgr
     /// 
     public delegate void CSCallbackField(JSVCall vc);
     public delegate void CSCallbackProperty(JSVCall vc);
-    public delegate bool CSCallbackMethod(JSVCall vc, int start, int count);
+    public delegate bool CSCallbackMethod(JSVCall vc, int argc);
 
     public class MethodCallBackInfo
     {
@@ -981,6 +981,7 @@ public static class JSMgr
         {
             return true;
         }
+        // add even failed
         evaluatedScript.Add(jsScriptName, true);
 
         string fullName = JSMgr.getJSFullName(jsScriptName, false);

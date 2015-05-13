@@ -123,7 +123,7 @@ public class JSSerializer : MonoBehaviour
                 {
                     // TODO check
                     // JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
-                    JSApi.setString((int)JSApi.SetType.TempVal, strValue);
+                    JSApi.setStringS((int)JSApi.SetType.TempVal, strValue);
                     return JSApi.moveVal2HeapMap();
                 }
                 break;

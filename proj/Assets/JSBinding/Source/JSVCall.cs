@@ -160,48 +160,23 @@ public class JSVCall
 //         return jsObj;
     }
 
-    public bool CallJSFunctionName(int jsObjID, string functionName, params object[] args)
+    public bool CallJSFunctionValue(int jsObjID, int funID, params object[] args)
     {
         if (JSMgr.isShutDown) return false;
 
         int argsLen = (args != null ? args.Length : 0);
-
-        // TODO 把这个加回来
-        if (JSEngine.inst.OutputFullCallingStackOnError)
+        if (argsLen == 0)
         {
-            JSApi.setObject((int)JSApi.SetType.TempVal, jsObjID);
-            JSApi.moveTempVal2Arr(0);
-
-            JSApi.setString((int)JSApi.SetType.TempVal, functionName);
-            JSApi.moveTempVal2Arr(1);
-
-            if (argsLen > 0)
-            {
-                for (int i = 0; i < args.Length; i++)
-                {
-                    this.datax.setWhatever(JSApi.SetType.TempVal, args[i]);
-                    JSApi.moveTempVal2Arr(i + 2);
-                }
-            }
-            // TODO 修改 ErrorHandler.javascript
-            return JSApi.callFunctionName(jsObjID, functionName, argsLen);
-            //return JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", (UInt32)(argsLen + 2), vals, ref rvalCallJS);
+            return JSApi.callFunctionValue(jsObjID, funID, 0);
         }
-        else
+
+        for (int i = 0; i < argsLen; i++)
         {
-            if (argsLen == 0)
-            {
-                return JSApi.callFunctionName(jsObjID, functionName, 0);
-            }
-
-            for (int i = 0; i < argsLen; i++)
-            {
-                this.datax.setWhatever(JSApi.SetType.TempVal, args[i]);
-                JSApi.moveTempVal2Arr(i);
-            }
-
-            return JSApi.callFunctionName(jsObjID, functionName, argsLen);
+            this.datax.setWhatever((int)JSApi.SetType.TempVal, args[i]);
+            JSApi.moveTempVal2Arr(i);
         }
+
+        return JSApi.callFunctionValue(jsObjID, funID, argsLen);
     }
 
     // TODO: delete
@@ -264,7 +239,6 @@ public class JSVCall
     public int jsObjID = 0;
     public object csObj;
     // TODO delete
-    public int currentParamCount = 0;
     public Oper op;
     
     //
@@ -331,19 +305,13 @@ public class JSVCall
             case Oper.METHOD:
             case Oper.CONSTRUCTOR:
                 {
-                    // TODO dont need this param
-                    bool overloaded = JSApi.getBoolean((int)JSApi.GetType.Arg);
-                    overloaded = false; // force to false
-
                     JSMgr.MethodCallBackInfo[] arrMethod;
                     if (op == Oper.METHOD)
                         arrMethod = aInfo.methods;
                     else
                         arrMethod = aInfo.constructors;
 
-                    currIndex = currentParamCount;
-                    // TODO 改成 argc
-                    arrMethod[index].fun(this, currentParamCount, argc - 1);
+                    arrMethod[index].fun(this, argc);
                 }
                 break;
         }

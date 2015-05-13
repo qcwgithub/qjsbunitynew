@@ -311,14 +311,14 @@ _jstype.definition.{0} = function({1}) [[ {3} = CS.Call({2}).__nativeObj; ]]";
         string fmt = @"
 /* {6} */
 _jstype.definition.{1} = function({2}) [[ 
-    {10}
-    return CS.Call({7}, {3}, {4}, false, {9}, {8}{5}); 
+    {9}
+    return CS.Call({7}, {3}, {4}, false{8}{5}); 
 ]]";
         string fmtStatic = @"
-/* static {6} {9} */
+/* static {6} {8} */
 _jstype.staticDefinition.{1} = function({2}) [[ 
-    {10}
-    return CS.Call({7}, {3}, {4}, true, {8}{5}); 
+    {9}
+    return CS.Call({7}, {3}, {4}, true{5}); 
 ]]";
 
         bool bIsSystemObject = (type == typeof(System.Object));
@@ -384,9 +384,8 @@ _jstype.staticDefinition.{1} = function({2}) [[
                     sbActualParam,             // [5] actual param
                     method.ReturnType.Name,    // [6] return type name
                     (int)JSVCall.Oper.METHOD,  // [7] OP
-                    "false",                   // [8] isOverloaded
-                    thisString,                // [9] this.__nativeObj
-                    sbInitT                    //[10] generic types init
+                    thisString,                // [8] this.__nativeObj
+                    sbInitT                    //[9] generic types init
                     );
             else
                 sb.AppendFormat(fmtStatic, 
@@ -398,7 +397,6 @@ _jstype.staticDefinition.{1} = function({2}) [[
                     sbActualParam, 
                     method.ReturnType.Name, 
                     (int)JSVCall.Oper.METHOD, 
-                    "false", 
                     "",
                     sbInitT);
         }

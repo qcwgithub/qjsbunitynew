@@ -30,55 +30,40 @@ public class JSComponent : JSSerializer
     [NonSerialized]
     public int jsObjID = 0;
 
-    Dictionary<string, bool> existMemberFunctions = new Dictionary<string, bool>();
-    void initMemberFun()
+    void initMemberFunction()
     {
-        var arr = new string[] 
-        {
-            "Awake",
-            "Start",
-            "FixedUpdate",
-            "Update",
-            "Destroy",
-            "OnGUI",
-            "OnEnable",
-
-            "OnTriggerEnter2D",
-            "OnTriggerStay",
-            "OnTriggerExit",
-            "OnAnimatorMove",
-            "OnAnimatorIK",
-
-            "DestroyChildGameObject",
-            "DisableChildGameObject",
-            "DestroyGameObject",
-        };
-        foreach (var name in arr)
-        {
-            bool bExist = JSApi.IsJSClassObjectFunctionExist(jsObjID, name);
-            if (bExist)
-            {
-                existMemberFunctions.Add(name, true);
-            }
-        }
+        idAwake = JSApi.getObjFunction(jsObjID, "Awake");
+        idStart = JSApi.getObjFunction(jsObjID, "idStart"); ;
+        idFixedUpdate = JSApi.getObjFunction(jsObjID, "idFixedUpdate"); ;
+        idUpdate = JSApi.getObjFunction(jsObjID, "idUpdate"); ;
+        idOnDestroy = JSApi.getObjFunction(jsObjID, "idDestroy"); ;
+        idOnGUI = JSApi.getObjFunction(jsObjID, "idOnGUI"); ;
+        idOnEnable = JSApi.getObjFunction(jsObjID, "idOnEnable"); ;
+        idOnTriggerEnter2D = JSApi.getObjFunction(jsObjID, "idOnTriggerEnter2D"); ;
+        idOnTriggerStay = JSApi.getObjFunction(jsObjID, "idOnTriggerStay"); ;
+        idOnTriggerExit = JSApi.getObjFunction(jsObjID, "idOnTriggerExit"); ;
+        idOnAnimatorMove = JSApi.getObjFunction(jsObjID, "idOnAnimatorMove"); ;
+        idOnAnimatorIK = JSApi.getObjFunction(jsObjID, "idOnAnimatorIK"); ;
+        idDestroyChildGameObject = JSApi.getObjFunction(jsObjID, "idDestroyChildGameObject"); ;
+        idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "idDisableChildGameObject"); ;
+        idDestroyGameObject = JSApi.getObjFunction(jsObjID, "idDestroyGameObject"); ;
     }
 
-//     jsval valAwake = new jsval();
-//     jsval valStart = new jsval();
-//     jsval valFixedUpdate = new jsval();
-//     jsval valUpdate = new jsval();
-//     jsval valDestroy = new jsval();
-//     jsval valOnGUI = new jsval();
-//     jsval valOnEnable = new jsval();
-//     jsval valOnTriggerEnter2D = new jsval();
-//     jsval valOnTriggerStay = new jsval();
-//     jsval valOnTriggerExit = new jsval();
-//     jsval valOnAnimatorMove = new jsval();
-//     jsval valOnAnimatorIK = new jsval();
-// 
-//     jsval valDestroyChildGameObject = new jsval();
-//     jsval valDisableChildGameObject = new jsval();
-//     jsval valDestroyGameObject = new jsval();
+    int idAwake = 0;
+    int idStart = 0;
+    int idFixedUpdate = 0;
+    int idUpdate = 0;
+    int idOnDestroy = 0;
+    int idOnGUI = 0;
+    int idOnEnable = 0;
+    int idOnTriggerEnter2D = 0;
+    int idOnTriggerStay = 0;
+    int idOnTriggerExit = 0;
+    int idOnAnimatorMove = 0;
+    int idOnAnimatorIK = 0;
+    int idDestroyChildGameObject = 0;
+    int idDisableChildGameObject = 0;
+    int idDestroyGameObject = 0;
 
     int initState = 0;
     bool initSuccess { get { return initState == 1; } set { if (value) initState = 1; } }
@@ -94,9 +79,12 @@ public class JSComponent : JSSerializer
 //         if (val.asBits > 0)
 //             JSMgr.vCall.CallJSFunctionValue(jsObj, ref val, args);
 //     }
-    void callIfExist(string name, params object[] args)
+    void callIfExist(int funID, params object[] args)
     {
-        JSMgr.vCall.CallJSFunctionName(jsObjID, name, args);
+        if (funID > 0)
+        {
+            JSMgr.vCall.CallJSFunctionValue(jsObjID, funID, args);
+        }
     }
 
     public void initJS()
@@ -117,7 +105,7 @@ public class JSComponent : JSSerializer
             return;
         } 
         JSMgr.AddJSCSRel(jsObjID, this);
-        initMemberFun();
+        initMemberFunction();
         // TODO add root
         JSApi.addObjectRoot(jsObjID);
         initSuccess = true;
@@ -209,18 +197,18 @@ public class JSComponent : JSSerializer
         if (firstStart)
         {
             firstStart = false;
-            callIfExist("Awake");
+            callIfExist(idAwake);
         }
-        callIfExist("Start");
+        callIfExist(idStart);
     }
 
     void FixedUpdate()
     {
-        callIfExist("FixedUpdate");
+        callIfExist(idFixedUpdate);
     }
     void Update()
     {
-        callIfExist("Update");
+        callIfExist(idUpdate);
     }
 
     void OnDestroy()
@@ -230,7 +218,7 @@ public class JSComponent : JSSerializer
             return;
         }
 
-        callIfExist("OnDestroy");
+        callIfExist(idOnDestroy);
 
         if (initSuccess)
         {
@@ -240,11 +228,11 @@ public class JSComponent : JSSerializer
     }
     void OnEnable()
     {
-        callIfExist("OnEnable");
+        callIfExist(idOnEnable);
     }
     void OnGUI()
     {
-        callIfExist("OnGUI");
+        callIfExist(idOnGUI);
     }
 
     void OnTriggerEnter2D (Collider2D other)
@@ -253,37 +241,37 @@ public class JSComponent : JSSerializer
 //            Debug.Log("OnTriggerEnter2D(null)");
 //        else
 //            Debug.Log("OnTriggerEnter2D(" + other.GetType().Name + ")");
-        callIfExist("OnTriggerEnter2D", other);
+        callIfExist(idOnTriggerEnter2D, other);
     }
     void OnTriggerStay(Collider other)
     {
-        callIfExist("OnTriggerStay", other);
+        callIfExist(idOnTriggerStay, other);
     }
     void OnTriggerExit(Collider other)
     {
-        callIfExist("OnTriggerExit", other);
+        callIfExist(idOnTriggerExit, other);
     }
     void OnAnimatorMove()
     {
-        callIfExist("OnAnimatorMove");
+        callIfExist(idOnAnimatorMove);
     }
     void OnAnimatorIK(int layerIndex)
     {
-        callIfExist("OnAnimatorIK");
+        callIfExist(idOnAnimatorIK);
     }
 
     void DestroyChildGameObject()
     {
-        callIfExist("DestroyChildGameObject");
+        callIfExist(idDestroyChildGameObject);
     }
 
     void DisableChildGameObject()
     {
-        callIfExist("DisableChildGameObject");
+        callIfExist(idDisableChildGameObject);
     }
 
     void DestroyGameObject()
     {
-        callIfExist("DestroyGameObject");
+        callIfExist(idDestroyGameObject);
     }
 }

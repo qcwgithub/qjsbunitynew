@@ -27,7 +27,6 @@ public class JSEngine : MonoBehaviour
      * 
      */
     [NonSerialized]
-    public bool OutputFullCallingStackOnError = false;
     public string[] InitLoadScripts = new string[0];
 
     /*
@@ -71,9 +70,14 @@ public class JSEngine : MonoBehaviour
 //                 OutputFullCallingStackOnError = true;
 //             }
 //             else
-            {
 
-                Debug.Log("JS: Disable printing calling stack on error.");
+            if (JSApi.initErrorHandler())
+            {
+                Debug.Log("JS: printing calling stack on error: YES");
+            }
+            else
+            {
+                Debug.Log("JS: printing calling stack on error: NO");
             }
 
             inited = true;
@@ -123,7 +127,6 @@ public class JSEngine : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         inst = this;
 
-        // Can only be false
         JSMgr.InitJSEngine(jsLoader, OnInitJSEngine);
     }
 

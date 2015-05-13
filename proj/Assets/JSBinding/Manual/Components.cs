@@ -78,7 +78,7 @@ public partial class UnityEngineManual
     /* 
      * GameObject.AddComponent<T>()
      */
-    public static bool GameObject_AddComponentT1(JSVCall vc, int start, int count)
+    public static bool GameObject_AddComponentT1(JSVCall vc, int count)
     {
         help_getGoAndType(vc);
 
@@ -101,14 +101,14 @@ public partial class UnityEngineManual
     /*
      * GameObject.GetComponent<T>()
      */
-    public static bool Component_GetComponentT1(JSVCall vc, int start, int count)
+    public static bool Component_GetComponentT1(JSVCall vc, int count)
     {
         help_getComponentGo(vc);
-        GameObject_GetComponentT1(vc, start, count);
+        GameObject_GetComponentT1(vc, count);
         goFromComponent = null;
         return true;
     }
-    public static bool GameObject_GetComponentT1(JSVCall vc, int start, int count)
+    public static bool GameObject_GetComponentT1(JSVCall vc, int count)
     {
         help_getGoAndType(vc);
 
@@ -127,14 +127,14 @@ public partial class UnityEngineManual
     /*
      * GameObject.GetComponents<T>()
      */
-    public static bool Component_GetComponentsT1(JSVCall vc, int start, int count)
+    public static bool Component_GetComponentsT1(JSVCall vc, int count)
     {
         help_getComponentGo(vc);
-        GameObject_GetComponentsT1(vc, start, count);
+        GameObject_GetComponentsT1(vc, count);
         goFromComponent = null;
         return true;
     }
-    public static bool GameObject_GetComponentsT1(JSVCall vc, int start, int count)
+    public static bool GameObject_GetComponentsT1(JSVCall vc, int count)
     {
         help_getGoAndType(vc);
 
@@ -153,14 +153,14 @@ public partial class UnityEngineManual
     /*
      * GameObject.GetComponentInChildren<T>()
      */
-    public static bool Component_GetComponentInChildrenT1(JSVCall vc, int start, int count)
+    public static bool Component_GetComponentInChildrenT1(JSVCall vc, int count)
     {
         help_getComponentGo(vc);
-        GameObject_GetComponentInChildrenT1(vc, start, count);
+        GameObject_GetComponentInChildrenT1(vc, count);
         goFromComponent = null;
         return true;
     }
-    public static bool GameObject_GetComponentInChildrenT1(JSVCall vc, int start, int count)
+    public static bool GameObject_GetComponentInChildrenT1(JSVCall vc, int count)
     {
         help_getGoAndType(vc);
 
@@ -179,14 +179,14 @@ public partial class UnityEngineManual
     /*
      * GetComponentsInChildren<T>()
      */
-    public static bool Component_GetComponentsInChildrenT1(JSVCall vc, int start, int count)
+    public static bool Component_GetComponentsInChildrenT1(JSVCall vc, int count)
     {
         help_getComponentGo(vc);
-        GameObject_GetComponentsInChildrenT1(vc, start, count);
+        GameObject_GetComponentsInChildrenT1(vc, count);
         goFromComponent = null;
         return true;
     }
-    public static bool GameObject_GetComponentsInChildrenT1(JSVCall vc, int start, int count)
+    public static bool GameObject_GetComponentsInChildrenT1(JSVCall vc, int count)
     {
         help_getGoAndType(vc);
 
@@ -205,14 +205,14 @@ public partial class UnityEngineManual
     /*
      * GetComponentsInChildren<T>(bool includeInactive)
      */
-    public static bool Component_GetComponentsInChildrenT1__Boolean(JSVCall vc, int start, int count)
+    public static bool Component_GetComponentsInChildrenT1__Boolean(JSVCall vc, int count)
     {
         help_getComponentGo(vc);
-        GameObject_GetComponentsInChildrenT1__Boolean(vc, start, count);
+        GameObject_GetComponentsInChildrenT1__Boolean(vc, count);
         goFromComponent = null;
         return true;
     }
-    public static bool GameObject_GetComponentsInChildrenT1__Boolean(JSVCall vc, int start, int count)
+    public static bool GameObject_GetComponentsInChildrenT1__Boolean(JSVCall vc, int count)
     {
         help_getGoAndType(vc);
         // TODO check
@@ -234,14 +234,14 @@ public partial class UnityEngineManual
     /*
      * GameObject.GetComponentInParent<T>()
      */
-    public static bool Component_GetComponentInParentT1(JSVCall vc, int start, int count)
+    public static bool Component_GetComponentInParentT1(JSVCall vc, int count)
     {
         help_getComponentGo(vc);
-        GameObject_GetComponentInParentT1(vc, start, count);
+        GameObject_GetComponentInParentT1(vc, count);
         goFromComponent = null;
         return true;
     }
-    public static bool GameObject_GetComponentInParentT1(JSVCall vc, int start, int count)
+    public static bool GameObject_GetComponentInParentT1(JSVCall vc, int count)
     {
         help_getGoAndType(vc);
 
@@ -260,14 +260,14 @@ public partial class UnityEngineManual
     /*
     * GetComponentsInParent<T>()
     */
-    public static bool Component_GetComponentsInParentT1(JSVCall vc, int start, int count)
+    public static bool Component_GetComponentsInParentT1(JSVCall vc, int count)
     {
         help_getComponentGo(vc);
-        GameObject_GetComponentsInParentT1(vc, start, count);
+        GameObject_GetComponentsInParentT1(vc, count);
         goFromComponent = null;
         return true;
     }
-    public static bool GameObject_GetComponentsInParentT1(JSVCall vc, int start, int count)
+    public static bool GameObject_GetComponentsInParentT1(JSVCall vc, int count)
     {
         help_getGoAndType(vc);
 
@@ -286,14 +286,14 @@ public partial class UnityEngineManual
     /*
      * GetComponentsInParent<T>(bool includeInactive)
      */
-    public static bool Component_GetComponentsInParentT1__Boolean(JSVCall vc, int start, int count)
+    public static bool Component_GetComponentsInParentT1__Boolean(JSVCall vc, int count)
     {
         help_getComponentGo(vc);
-        GameObject_GetComponentsInParentT1__Boolean(vc, start, count);
+        GameObject_GetComponentsInParentT1__Boolean(vc, count);
         goFromComponent = null;
         return true;
     }
-    public static bool GameObject_GetComponentsInParentT1__Boolean(JSVCall vc, int start, int count)
+    public static bool GameObject_GetComponentsInParentT1__Boolean(JSVCall vc, int count)
     {
         help_getGoAndType(vc);
         // TODO check
