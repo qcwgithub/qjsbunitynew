@@ -94,7 +94,9 @@ public class JSComponent : JSSerializer
         // ATTENSION
         // cannot use createJSClassObject here
         // because we have to call ctor, to run initialization code
+        // this object will not have finalizeOp
         jsObjID = JSApi.newJSClassObject(this.jsScriptName);
+        JSApi.setTrace(jsObjID, true);
         if (jsObjID == 0)
         {
             Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");
@@ -104,7 +106,6 @@ public class JSComponent : JSSerializer
         JSMgr.AddJSCSRel(jsObjID, this);
         initMemberFunction();
         // TODO add root
-        JSApi.addObjectRoot(jsObjID);
         initSuccess = true;
 
 //         jsval[] valParam = new jsval[2];
@@ -220,7 +221,8 @@ public class JSComponent : JSSerializer
         if (initSuccess)
         {
             // JSMgr.RemoveRootedObject(jsObj);
-            JSApi.removeObjectRoot(jsObjID);
+            JSApi.setTrace(jsObjID, false);
+            JSMgr.removeJSCSRel(jsObjID);
         }
     }
     void OnEnable()

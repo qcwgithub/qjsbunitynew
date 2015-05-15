@@ -94,17 +94,6 @@ public class JSVCall
         m_ParamInfo = null;
     }
 
-    // TODO
-    // 改
-    public int getJSFunctionValue()
-    {
-        int funID = JSApi.getFunction((int)JSApi.GetType.Arg);
-        if (JSEngine.inst != null && JSEngine.inst.forceProtectJSFunction)
-        {
-            JSApi.addValueRoot(funID);
-        }
-        return funID;
-    }
     //public jsval rvalCallJS = new jsval();
     // better not use this function, use CallJSFunctionValue instead
 //     public bool CallJSFunction(IntPtr jsThis, IntPtr/* JSFunction* */ jsFunction, params object[] args)
@@ -150,8 +139,8 @@ public class JSVCall
 
         for (int i = 0; i < argsLen; i++)
         {
-            this.datax.setWhatever((int)JSApi.SetType.TempVal, args[i]);
-            JSApi.moveTempVal2Arr(i);
+            this.datax.setWhatever((int)JSApi.SetType.SaveAndTempTrace, args[i]);
+            JSApi.moveSaveID2Arr(i);
         }
 
         return JSApi.callFunctionValue(jsObjID, funID, argsLen);

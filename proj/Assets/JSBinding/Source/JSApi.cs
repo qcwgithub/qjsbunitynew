@@ -113,8 +113,7 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void enableDebugger(string[] paths, UInt32 nums, int port);
 
-    // TODO
-    // 检查所有使用的地方看是否都正确使用（会有死循环的情况存在！）
+    // only used in Constructors!
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool attachFinalizerObject(int id);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -159,13 +158,13 @@ public class JSApi
         Arg = 0,
         ArgRef = 1,
         JSFunRet = 2,
-        Jsval = 3,
+        SaveAndRemove = 3,
     }
     public enum SetType
     {
         Rval = 0,
         ArgRef = 1,
-        TempVal = 2,
+        SaveAndTempTrace = 2,
     }
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
@@ -246,7 +245,16 @@ public class JSApi
     // TODO
     // protect
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int getFunction(int e);
+    private static extern int getFunction(int e);
+    public static int getFunctionS(int e)
+    {
+        int funID = JSApi.getFunction(e);
+        if (JSEngine.inst != null && JSEngine.inst.forceProtectJSFunction)
+        {
+            JSApi.setTrace(funID, true);
+        }
+        return funID;
+    }
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern void setUndefined(int e);
@@ -282,7 +290,6 @@ public class JSApi
     }
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern void setBoolean(int e, bool v);
-    // TODO 字符串
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
     private static extern void setString(int e, string value);
     public static void setStringS(int e, string value)
@@ -309,7 +316,7 @@ public class JSApi
     public static extern void setFunction(int e, int funID);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void setArray(int e, int count);
+    public static extern void setArray(int e, int count, bool bClear);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern bool isVector2(int e);
@@ -326,26 +333,23 @@ public class JSApi
     public static extern bool callFunctionValue(int jsObjID, int funID, int argCount);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool addObjectRoot(int id);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool removeObjectRoot(int id);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool addValueRoot(int id);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool removeValueRoot(int id);
+    public static extern bool setTrace(int id, bool trace);
 
     // val movement
+    // any call to move**2Arr is for subsequent call to JSApi.setArray
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void moveTempVal2Arr(int i);
+    public static extern void moveSaveID2Arr(int arrIndex);
+
+    // these 3 functions are only used by JSSerializer
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int moveTempVal2Map();
+    public static extern int getSaveID();
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void removeValFromMap(int index);
+    public static extern void removeByID(int id);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool moveValFromMap2Arr(int iMap, int iArr);
+    public static extern bool moveID2Arr(int id, int arrIndex);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool setProperty(int id, string name, int iMap);
+    public static extern bool setProperty(int id, string name, int valueID);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool getElement(int id, int i);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -368,8 +372,11 @@ public class JSApi
         }
         return Marshal.PtrToStringUni(pJSChar);
     }
+    // only used by JSComponent
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int getObjFunction(int id, string fname);
+
+    // only used by JSMgr.require
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern void setRvalBool(IntPtr vp, bool v);
 }

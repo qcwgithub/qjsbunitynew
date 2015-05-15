@@ -764,7 +764,7 @@ public class JSBindingSettings
 
         typeof(System.Delegate),
         typeof(System.MulticastDelegate),
-        typeof(SerializeStruct.AppleInfo),
+        //typeof(SerializeStruct.AppleInfo),
         typeof(StringBuilder),
     };
 

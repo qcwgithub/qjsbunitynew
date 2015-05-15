@@ -536,7 +536,7 @@ public static class CSGenerator2
         {
             sb.Append("    int _this = JSApi.getObject((int)JSApi.GetType.Arg);\n");
             sb.Append("    JSApi.attachFinalizerObject(_this);\n");
-            sb.Append("    --argc;\n");
+            sb.Append("    --argc;\n\n");
         }
 
         if (bConstructor)
@@ -1300,6 +1300,13 @@ using UnityEngine;
         // 检查类型有没有重复
         foreach (var type in JSBindingSettings.classes)
         {
+            if (JSSerializerEditor.WillTypeBeTranslatedToJavaScript(type))
+            {
+                sb.AppendFormat("\"{0}\" has JsType attribute, it can not be in JSBindingSettings.classes at the same time.\n", 
+                    JSNameMgr.GetTypeFullName(type));
+                ret = false;
+            }
+
             if (type.IsGenericType && !type.IsGenericTypeDefinition)
             {
                 sb.AppendFormat(

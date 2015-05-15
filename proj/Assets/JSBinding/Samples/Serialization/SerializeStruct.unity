@@ -173,13 +173,13 @@ MonoBehaviour:
   jsScriptName: SerializeStruct
   arrString:
   - StructBegin/appleInfo/SerializeStruct.AppleInfo
-  - 7/age/63
+  - 7/age/20
   - 15/go/0
-  - 13/firstName/wei
+  - 13/firstName/
   - 1/doYouLoveMe/False
   - StructEnd/appleInfo/SerializeStruct.AppleInfo
   arrObject:
-  - {fileID: 0}
+  - {fileID: 640072853}
 --- !u!1 &252056170
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,10 +243,6 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-      propertyPath: m_RootMapOrder
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
@@ -298,15 +294,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 1
   port: 5086
-  GCInterval: 1
+  forceProtectJSFunction: 0
+  GCInterval: 1e+08
   jsLoader: {fileID: 1920571566}
   InitLoadScripts:
   - includes
   DirectoriesNotToExport:
   - JSBinding/
   - Stealth/
+  - DaikonForge Tween (Pro)/
   DirectoriesToExport:
   - JSBinding/Samples/
+  - DaikonForge Tween (Pro)/Examples/Scripts
+  DirectoriesNotToReplace:
+  - JSBinding/
+  - Plugins/
+  - Resources/
+  - Src/
+  - StreamingAssets/
+  - UnityVS/
+  - DaikonForge Tween (Pro)/
+  showStatistics: 1
 --- !u!1 &1920571565
 GameObject:
   m_ObjectHideFlags: 0

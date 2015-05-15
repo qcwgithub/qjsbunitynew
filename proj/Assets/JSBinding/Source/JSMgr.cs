@@ -213,6 +213,7 @@ public static class JSMgr
     public static bool isShutDown { get { return ShutDown; } }
     public static void ShutdownJSEngine()
     {
+        ShutDown = true;
         // TODO
         JSMgr.ClearJSCSRelation2();
 //        JSMgr.ClearRootedObject();
@@ -220,7 +221,6 @@ public static class JSMgr
 
         JSApi.ShutdownJSEngine();
 
-        ShutDown = true;
     }
     // old code
 //     public static void ShutdownJSEngine()
@@ -1156,6 +1156,20 @@ public static class JSMgr
         }
     }
 
+    public static void removeJSCSRel(int id)
+    {
+        JS_CS_Rel Rel;
+        if (mDictionary1.TryGetValue(id, out Rel))
+        {
+            mDictionary1.Remove(id);
+            mDictionary2.Remove(Rel.hash);
+        }
+        else if (!JSMgr.isShutDown)
+        {
+            Debug.LogError("JSMgr.removeJSCSRel: " + id + " not found.");
+        }
+    }
+
     // 
 //     public static void addJSCSRelation(IntPtr jsObj, IntPtr nativeObj, object csObj)
 //     {
@@ -1185,7 +1199,9 @@ public static class JSMgr
     {
         JS_CS_Rel obj;
         if (mDictionary1.TryGetValue(jsObjID, out obj))
+        {
             return obj.csObj;
+        }
         return null;
     }
     // TODO delete
@@ -1266,16 +1282,10 @@ public static class JSMgr
         mDictionary2.Clear();
     }
 
-
     [MonoPInvokeCallbackAttribute(typeof(JSApi.OnObjCollected))]
     static void onObjCollected(int id)
     {
-        JS_CS_Rel Rel;
-        if (mDictionary1.TryGetValue(id, out Rel))
-        {
-            mDictionary1.Remove(id);
-            mDictionary2.Remove(Rel.hash);
-        }
+        removeJSCSRel(id);
     }
 //     public static void ClearJSCSRelation() {
 //         mDict1.Clear();

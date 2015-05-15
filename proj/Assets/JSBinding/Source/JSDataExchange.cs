@@ -82,10 +82,17 @@ public class JSDataExchangeMgr
     {
         int jsObjID = JSApi.getObject(e);
         if (jsObjID == 0)
+        {
+            // no error
             return null;
+        }
 
         // TODO CSRepresentedObject2 ‘ı√¥∞Ï
         object csObj = JSMgr.getCSObj2(jsObjID);
+        if (csObj == null)
+        {
+            csObj = new CSRepresentedObject2(jsObjID);
+        }
         return csObj;
 
 //         switch (e)
@@ -1109,7 +1116,7 @@ public class JSDataExchange_Arr
         .AppendFormat("    var ret = new {0}[length];\n", elementFullName)
         .AppendFormat("    for (var i = 0; i < length; i++) [[\n")
         .AppendFormat("        JSApi.getElement(jsObjID, i);\n")
-        .AppendFormat("        ret[i] = ({0}){1}((int)JSApi.GetType.Jsval);\n", elementFullName, getVal)
+        .AppendFormat("        ret[i] = ({0}){1}((int)JSApi.GetType.SaveAndRemove);\n", elementFullName, getVal)
         .AppendFormat("    ]]\n")
         .AppendFormat("    return ret;\n")
         .AppendFormat("]])\n");
@@ -1150,19 +1157,19 @@ public class JSDataExchange_Arr
         {
             sb.AppendFormat("    var arrRet = (Array){0};\n", expVar)
             .AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n")
-            .AppendFormat("        {0}((int)JSApi.GetType.Jsval, arrRet.GetValue(i));\n", getValMethod)
-            .AppendFormat("        JSApi.moveTempVal2Arr(i);\n")
+            .AppendFormat("        {0}((int)JSApi.SetType.SaveAndTempTrace, arrRet.GetValue(i));\n", getValMethod)
+            .AppendFormat("        JSApi.moveSaveID2Arr(i);\n")
             .AppendFormat("    ]]\n")
-            .AppendFormat("    JSApi.setArray((int)JSApi.SetType.Rval, arrRet.Length);"); // no ;
+            .AppendFormat("    JSApi.setArray((int)JSApi.SetType.Rval, arrRet.Length, true);"); // no ;
         }
         else
         {
             sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar)
             .AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n")
-            .AppendFormat("        {0}((int)JSApi.GetType.Jsval, arrRet[i]);\n", getValMethod)
-            .AppendFormat("        JSApi.moveTempVal2Arr(i);\n")
+            .AppendFormat("        {0}((int)JSApi.SetType.SaveAndTempTrace, arrRet[i]);\n", getValMethod)
+            .AppendFormat("        JSApi.moveSaveID2Arr(i);\n")
             .AppendFormat("    ]]\n")
-            .AppendFormat("    JSApi.setArray((int)JSApi.SetType.Rval, arrRet.Length);"); // no ;
+            .AppendFormat("    JSApi.setArray((int)JSApi.SetType.Rval, arrRet.Length, true);"); // no ;
         }
 
         sb.Replace("[[", "{");
@@ -1187,6 +1194,22 @@ public class CSRepresentedObject
     public IntPtr jsObj;
 }
 
+/*
+ what's this?
+ example:
+ if we have a js object Message, like:
+ var Message = 
+ {
+    id = 4,
+    str = "hello, world"
+ }
+ 
+ when it comes to C# (e.g. store in a C# version List<>), there is no C# type matching it
+ so we make a CSRepresentedObject2 to wrap it
+ 
+ but in C# we can only get it, return it, no any other operation can be performed
+ 
+ */
 public class CSRepresentedObject2
 {
     public CSRepresentedObject2(int jsObjID)

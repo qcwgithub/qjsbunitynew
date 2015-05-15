@@ -67,15 +67,15 @@ public class JSSerializer : MonoBehaviour
     /// <param name="eType"></param>
     /// <param name="strValue"></param>
     /// <returns></returns>
-    int toHeapValID(UnitType eType, string strValue)
+    int toID(UnitType eType, string strValue)
     {
         switch ((UnitType)eType)
         {
             case UnitType.ST_Boolean:
                 {
                     bool v = strValue == "True";
-                    JSApi.setBoolean((int)JSApi.SetType.TempVal, v);
-                    return JSApi.moveTempVal2Map();
+                    JSApi.setBoolean((int)JSApi.SetType.SaveAndTempTrace, v);
+                    return JSApi.getSaveID();
                 }
                 break;
 
@@ -87,8 +87,8 @@ public class JSSerializer : MonoBehaviour
                     int v;
                     if (int.TryParse(strValue, out v))
                     {
-                        JSApi.setInt32((int)JSApi.SetType.TempVal, v);
-                        return JSApi.moveTempVal2Map();
+                        JSApi.setInt32((int)JSApi.SetType.SaveAndTempTrace, v);
+                        return JSApi.getSaveID();
                     }
                 }
                 break;
@@ -101,8 +101,8 @@ public class JSSerializer : MonoBehaviour
                     uint v;
                     if (uint.TryParse(strValue, out v))
                     {
-                        JSApi.setUInt32((int)JSApi.SetType.TempVal, v);
-                        return JSApi.moveTempVal2Map();
+                        JSApi.setUInt32((int)JSApi.SetType.SaveAndTempTrace, v);
+                        return JSApi.getSaveID();
                     }
                 }
                 break;
@@ -114,8 +114,8 @@ public class JSSerializer : MonoBehaviour
                     double v;
                     if (double.TryParse(strValue, out v))
                     {
-                        JSApi.setDouble((int)JSApi.SetType.TempVal, v);
-                        return JSApi.moveTempVal2Map();
+                        JSApi.setDouble((int)JSApi.SetType.SaveAndTempTrace, v);
+                        return JSApi.getSaveID();
                     }
                 }
                 break;
@@ -123,8 +123,8 @@ public class JSSerializer : MonoBehaviour
                 {
                     // TODO check
                     // JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
-                    JSApi.setStringS((int)JSApi.SetType.TempVal, strValue);
-                    return JSApi.moveTempVal2Map();
+                    JSApi.setStringS((int)JSApi.SetType.SaveAndTempTrace, strValue);
+                    return JSApi.getSaveID();
                 }
                 break;
             default:
@@ -151,7 +151,17 @@ public class JSSerializer : MonoBehaviour
         public SType type;
         public string name;
         public string typeName;
-        public int iHeapVal;
+        public int __id;
+        public int id
+        {
+            get { return __id; }
+            set
+            {
+                if (value != 0)
+                    JSApi.setTrace(value, true);
+                __id = value;
+            }
+        }
         public SerializeStruct father;
         public List<SerializeStruct> lstChildren;
         public void AddChild(SerializeStruct ss)
@@ -166,14 +176,29 @@ public class JSSerializer : MonoBehaviour
             this.name = name;
             this.father = father;
             typeName = "WRONGTYPENAME!";
-            iHeapVal = 0;
+            __id = 0;
+        }
+        public void removeID()
+        {
+            if (this.id != 0)
+            {
+                JSApi.removeByID(this.id);
+                this.id = 0;
+            }
+            if (lstChildren != null)
+            {
+                foreach (var child in lstChildren)
+                {
+                    child.removeID();
+                }
+            }
         }
         /// <summary>
         /// Calc jsval
         /// save in this.val    and return it
         /// </summary>
         /// <returns></returns>
-        public int calcHeapValID()
+        public int calcID()
         {
             switch (this.type)
             {
@@ -185,11 +210,11 @@ public class JSSerializer : MonoBehaviour
                         int Count = lstChildren.Count;
                         for (var i = 0; i < Count; i++)
                         {
-                            int iHeapVal = lstChildren[i].calcHeapValID();
-                            JSApi.moveValFromMap2Arr(iHeapVal, i);
+                            int id = lstChildren[i].calcID();
+                            JSApi.moveID2Arr(id, i);
                         }
-                        JSApi.setArray((int)JSApi.SetType.TempVal, Count);
-                        this.iHeapVal = JSApi.moveTempVal2Map();
+                        JSApi.setArray((int)JSApi.SetType.SaveAndTempTrace, Count, false);
+                        this.id = JSApi.getSaveID();
                     }
                     break;
                 case SType.Struct:
@@ -206,11 +231,12 @@ public class JSSerializer : MonoBehaviour
                         //JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[]{valParam}, ref JSMgr.vCall.rvalCallJS);
                         //IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
                         int jsObjID = JSApi.newJSClassObject(this.typeName);
+                        this.id = jsObjID;
                         if (jsObjID == 0)
                         {
                             Debug.LogError("Serialize error: call \"" + this.typeName + "\".ctor return null, , did you forget to export that class?");
                             //JSApi.JSh_SetJsvalUndefined(ref this.val);
-                            this.iHeapVal = 0;
+                            //this.id = 0;
                         }
                         else
                         {
@@ -218,13 +244,13 @@ public class JSSerializer : MonoBehaviour
                             for (var i = 0; i < lstChildren.Count; i++)
                             {
                                 var child = lstChildren[i];
-                                int iHeap = child.calcHeapValID();
+                                int id = child.calcID();
                                 //JSApi.JSh_SetUCProperty(JSMgr.cx, jsObjID, child.name, -1, ref mVal);
-                                JSApi.setProperty(jsObjID, child.name, iHeap);
+                                JSApi.setProperty(jsObjID, child.name, id);
                             }
                             //JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
-                            JSApi.setObject((int)JSApi.SetType.TempVal, jsObjID);
-                            this.iHeapVal = JSApi.moveTempVal2Map();
+//                             JSApi.setObject((int)JSApi.SetType.Save, jsObjID);
+//                             this.id = JSApi.getSaveID();
                         }
                         
                         /*
@@ -275,7 +301,7 @@ public class JSSerializer : MonoBehaviour
                     }
                     break;
             }
-            return this.iHeapVal;
+            return this.id;
         }
     }
     /// <summary>
@@ -341,10 +367,10 @@ public class JSSerializer : MonoBehaviour
                             string s2 = s.Substring(y + 1, s.Length - y - 1);
                             var valName = s1;
                             var objIndex = int.Parse(s2);
-                            JSMgr.vCall.datax.setObject((int)JSApi.SetType.TempVal, this.arrObject[objIndex]);
+                            JSMgr.vCall.datax.setObject((int)JSApi.SetType.SaveAndTempTrace, this.arrObject[objIndex]);
 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-                            child.iHeapVal = JSApi.moveTempVal2Map();
+                            child.id = JSApi.getSaveID();
                             st.AddChild(child);
                         }
                         else if (eUnitType == UnitType.ST_MonoBehaviour)
@@ -359,12 +385,12 @@ public class JSSerializer : MonoBehaviour
                             int refJSObjID = this.GetGameObjectMonoBehaviourJSObj((GameObject)this.arrObject[objIndex], scriptName);
                             if (refJSObjID == 0)
                             {
-                                child.iHeapVal = 0;
+                                child.id = 0;
                             }
                             else
                             {
-                                JSApi.setObject((int)JSApi.SetType.TempVal, refJSObjID);
-                                child.iHeapVal = JSApi.moveTempVal2Map();
+                                JSApi.setObject((int)JSApi.SetType.SaveAndTempTrace, refJSObjID);
+                                child.id = JSApi.getSaveID();
                             }
 
                             st.AddChild(child);
@@ -373,10 +399,10 @@ public class JSSerializer : MonoBehaviour
                         {
                             string s2 = s.Substring(y + 1, s.Length - y - 1);
                             var valName = s1;
-                            int iHeapVal = toHeapValID(eUnitType, s2);
+                            int id = toID(eUnitType, s2);
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
                             //child.val = JSMgr.vCall.valTemp;
-                            child.iHeapVal = iHeapVal;
+                            child.id = id;
                             st.AddChild(child);
                         }
                     }
@@ -412,9 +438,10 @@ public class JSSerializer : MonoBehaviour
         {
             foreach (var child in root.lstChildren)
             {
-                child.calcHeapValID();
-                JSApi.setProperty(jsObjID, child.name, child.iHeapVal);
+                child.calcID();
+                JSApi.setProperty(jsObjID, child.name, child.id);
             }
         }
+        root.removeID();
     }
 }

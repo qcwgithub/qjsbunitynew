@@ -9,10 +9,10 @@ public partial class UnityEngineManual
         int Count = arrRet.Length;
         for (int i = 0; i < arrRet.Length; i++)
         {
-            vc.datax.setObject((int)JSApi.SetType.TempVal, arrRet[i]);
-            JSApi.moveTempVal2Arr(i);
+            vc.datax.setObject((int)JSApi.SetType.SaveAndTempTrace, arrRet[i]);
+            JSApi.moveSaveID2Arr(i);
         }
-        JSApi.setArray((int)JSApi.SetType.Rval, Count);
+        JSApi.setArray((int)JSApi.SetType.Rval, Count, true);
     }
     static void help_searchAndRetCom(JSVCall vc, JSComponent[] jsComs, string typeString)
     {
@@ -37,10 +37,10 @@ public partial class UnityEngineManual
         }
         for (int i = 0; i < lst.Count; i++)
         {
-            JSApi.setObject((int)JSApi.SetType.TempVal, lst[i].jsObjID);
-            JSApi.moveTempVal2Arr(i);
+            JSApi.setObject((int)JSApi.SetType.SaveAndTempTrace, lst[i].jsObjID);
+            JSApi.moveSaveID2Arr(i);
         }
-        JSApi.setArray((int)JSApi.SetType.Rval, lst.Count);
+        JSApi.setArray((int)JSApi.SetType.Rval, lst.Count, true);
 
 //         var arrVal = new JSApi.jsval[lst.Count];
 //         for (int i = 0; i < lst.Count; i++)
