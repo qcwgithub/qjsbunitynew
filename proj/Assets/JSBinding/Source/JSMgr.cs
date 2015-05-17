@@ -927,7 +927,7 @@ public static class JSMgr
     public static JSVCall vCall = new JSVCall();
 
     [MonoPInvokeCallbackAttribute(typeof(JSApi.CSEntry))]
-    static bool CSEntry(int iOP, int slot, int index, bool isStatic, int argc)
+    static bool CSEntry(int iOP, int slot, int index, int isStatic, int argc)
     {
         if (JSMgr.isShutDown) return false; 
         try

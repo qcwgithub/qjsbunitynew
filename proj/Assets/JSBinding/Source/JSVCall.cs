@@ -212,9 +212,11 @@ public class JSVCall
     // argc 还有几个参数
     //
     //
-    public bool CallCallback(int iOP, int slot, int index, bool isStatic, int argc)
+    public bool CallCallback(int iOP, int slot, int index, int isStatic, int argc)
     {
         this.Reset();
+        this.jsObjID = 0;
+        this.csObj = null;
 
         Oper op = (Oper)iOP;
 
@@ -224,7 +226,7 @@ public class JSVCall
             return false;
         }
         JSMgr.CallbackInfo aInfo = JSMgr.allCallbackInfo[slot];
-        if (!isStatic)
+        if (isStatic == 0)
         {
             this.jsObjID = JSApi.getObject((int)JSApi.GetType.Arg);
             if (this.jsObjID == 0)

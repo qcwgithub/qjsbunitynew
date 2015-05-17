@@ -200,8 +200,13 @@ public class JSEngine : MonoBehaviour
             if (jscs.csObj != null && jscs.csObj.GetType().IsClass) clsCount++;
         }
         float y = 40;
+
         GUI.TextArea(new Rect(0, y, 400, 20), "class count: " + clsCount);
         y += 20;
+
+        GUI.TextArea(new Rect(0, y, 400, 20), "valueMapSize: " + JSApi.getValueMapSize());
+        y += 20;
+
         foreach (var v in tj)
         {
             GUI.TextArea(new Rect(0, y, 400, 20), v.Key + ": " + v.Value);

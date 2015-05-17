@@ -42,7 +42,7 @@ public class JSApi
 #if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
     [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 #endif
-    public delegate bool CSEntry(int op, int slot, int index, bool bStatic, int argc);
+    public delegate bool CSEntry(int op, int slot, int index, int bStatic, int argc);
     
 #if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
     [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -230,7 +230,7 @@ public class JSApi
     private static extern void setFloatPtr3(ref float f0, ref float f1, ref float f2);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern bool getVector3(int e);
-    public static Vector2 getVector3S(int e)
+    public static Vector3 getVector3S(int e)
     {
         // TODO does this work?
         float x = 0, y = 0, z = 0;
@@ -380,4 +380,7 @@ public class JSApi
     // only used by JSMgr.require
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern void setRvalBool(IntPtr vp, bool v);
+
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    public static extern int getValueMapSize();
 }

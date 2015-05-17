@@ -27,20 +27,55 @@ public class JSComponent : JSSerializer
     void initMemberFunction()
     {
         idAwake = JSApi.getObjFunction(jsObjID, "Awake");
-        idStart = JSApi.getObjFunction(jsObjID, "Start"); ;
-        idFixedUpdate = JSApi.getObjFunction(jsObjID, "FixedUpdate"); ;
-        idUpdate = JSApi.getObjFunction(jsObjID, "Update"); ;
-        idOnDestroy = JSApi.getObjFunction(jsObjID, "OnDestroy"); ;
-        idOnGUI = JSApi.getObjFunction(jsObjID, "OnGUI"); ;
-        idOnEnable = JSApi.getObjFunction(jsObjID, "OnEnable"); ;
-        idOnTriggerEnter2D = JSApi.getObjFunction(jsObjID, "OnTriggerEnter2D"); ;
-        idOnTriggerStay = JSApi.getObjFunction(jsObjID, "OnTriggerStay"); ;
-        idOnTriggerExit = JSApi.getObjFunction(jsObjID, "OnTriggerExit"); ;
-        idOnAnimatorMove = JSApi.getObjFunction(jsObjID, "OnAnimatorMove"); ;
-        idOnAnimatorIK = JSApi.getObjFunction(jsObjID, "OnAnimatorIK"); ;
-        idDestroyChildGameObject = JSApi.getObjFunction(jsObjID, "DestroyChildGameObject"); ;
-        idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "DisableChildGameObject"); ;
-        idDestroyGameObject = JSApi.getObjFunction(jsObjID, "DestroyGameObject"); ;
+        idStart = JSApi.getObjFunction(jsObjID, "Start");
+        idFixedUpdate = JSApi.getObjFunction(jsObjID, "FixedUpdate");
+        idUpdate = JSApi.getObjFunction(jsObjID, "Update");
+        idOnDestroy = JSApi.getObjFunction(jsObjID, "OnDestroy");
+        idOnGUI = JSApi.getObjFunction(jsObjID, "OnGUI");
+        idOnEnable = JSApi.getObjFunction(jsObjID, "OnEnable");
+        idOnTriggerEnter2D = JSApi.getObjFunction(jsObjID, "OnTriggerEnter2D");
+        idOnTriggerStay = JSApi.getObjFunction(jsObjID, "OnTriggerStay");
+        idOnTriggerExit = JSApi.getObjFunction(jsObjID, "OnTriggerExit");
+        idOnAnimatorMove = JSApi.getObjFunction(jsObjID, "OnAnimatorMove");
+        idOnAnimatorIK = JSApi.getObjFunction(jsObjID, "OnAnimatorIK");
+        idDestroyChildGameObject = JSApi.getObjFunction(jsObjID, "DestroyChildGameObject");
+        idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "DisableChildGameObject");
+        idDestroyGameObject = JSApi.getObjFunction(jsObjID, "DestroyGameObject");
+    }
+    void removeIfExist(int id)
+    {
+        if (id != 0) JSApi.removeByID(id);
+    }
+    void removeMemberFunction()
+    {
+        // ATTENSION
+        // same script have same idAwake idStart ... values
+        // if these lines are executed in OnDestroy (for example  for gameObject A)
+        // other gameObjects (for example B) with the same script
+        // will also miss these functions
+        // 
+        // and if another C (with the same script) is born later   
+        // it will re-get these values  but they are new values 
+        // 
+        // 
+        // but if they are not removed in OnDestroy 
+        // C valueMap may grow to a very big size
+        //
+//         removeIfExist(idAwake);
+//         removeIfExist(idStart);
+//         removeIfExist(idFixedUpdate);
+//         removeIfExist(idUpdate);
+//         removeIfExist(idOnDestroy);
+//         removeIfExist(idOnGUI);
+//         removeIfExist(idOnEnable);
+//         removeIfExist(idOnTriggerEnter2D);
+//         removeIfExist(idOnTriggerStay);
+//         removeIfExist(idOnTriggerExit);
+//         removeIfExist(idOnAnimatorMove);
+//         removeIfExist(idOnAnimatorIK);
+//         removeIfExist(idDestroyChildGameObject);
+//         removeIfExist(idDisableChildGameObject);
+//         removeIfExist(idDestroyGameObject);
     }
 
     int idAwake = 0;
@@ -223,6 +258,7 @@ public class JSComponent : JSSerializer
             // JSMgr.RemoveRootedObject(jsObj);
             JSApi.setTrace(jsObjID, false);
             JSMgr.removeJSCSRel(jsObjID);
+            removeMemberFunction();
         }
     }
     void OnEnable()
