@@ -71,7 +71,7 @@ MonoBehaviour:
   debug: 1
   port: 5086
   forceProtectJSFunction: 0
-  GCInterval: 1e+08
+  GCInterval: 1
   jsLoader: {fileID: 11400002}
   InitLoadScripts:
   - includes

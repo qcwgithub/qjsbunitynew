@@ -1,6 +1,7 @@
 using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
+
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Serialization/Wheel.javascript")]
 public class Wheel : MonoBehaviour
 {

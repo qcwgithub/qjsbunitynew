@@ -1219,7 +1219,9 @@ public static class JSMgr
 
         JS_CS_Rel Rel;
         if (mDictionary2.TryGetValue(csObj.GetHashCode(), out Rel))
+        {
             return Rel.jsObjID;
+        }
         return 0;
     }
     // TODO delete

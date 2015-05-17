@@ -332,6 +332,7 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool callFunctionValue(int jsObjID, int funID, int argCount);
 
+    // setTrace is currently for JSComponent object and JSApi.getFunctionS
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern bool setTrace(int id, bool trace);
 

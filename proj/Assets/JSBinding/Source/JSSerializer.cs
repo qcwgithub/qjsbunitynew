@@ -157,8 +157,8 @@ public class JSSerializer : MonoBehaviour
             get { return __id; }
             set
             {
-                if (value != 0)
-                    JSApi.setTrace(value, true);
+//                 if (value != 0)
+//                     JSApi.setTrace(value, true);
                 __id = value;
             }
         }
