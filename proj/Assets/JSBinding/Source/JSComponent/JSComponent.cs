@@ -258,6 +258,12 @@ public class JSComponent : JSSerializer
             // JSMgr.RemoveRootedObject(jsObj);
             JSApi.setTrace(jsObjID, false);
             JSMgr.removeJSCSRel(jsObjID);
+            //
+            // jsObj doesn't have finalize
+            // we must remove it here
+            // having a finalize is another approach
+            //
+            JSApi.removeByID(jsObjID);
             removeMemberFunction();
         }
     }
