@@ -72,11 +72,11 @@ public class JSEngine : MonoBehaviour
 
             if (JSApi.initErrorHandler())
             {
-                Debug.Log("JS: printing calling stack on error: YES");
+                Debug.Log("JS: print error stack: YES");
             }
             else
             {
-                Debug.Log("JS: printing calling stack on error: NO");
+                Debug.Log("JS: print error stack: NO");
             }
 
             inited = true;
