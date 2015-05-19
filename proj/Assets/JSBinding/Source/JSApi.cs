@@ -52,52 +52,28 @@ public class JSApi
     /*
      * ****************** jsval definition ****************** 
      */
-
-    public enum JSValueType
+    enum eValueTag
     {
-        JSVAL_TYPE_DOUBLE = 0x00,
-        JSVAL_TYPE_INT32 = 0x01,
-        JSVAL_TYPE_UNDEFINED = 0x02,
-        JSVAL_TYPE_BOOLEAN = 0x03,
-        JSVAL_TYPE_MAGIC = 0x04,
-        JSVAL_TYPE_STRING = 0x05,
-        JSVAL_TYPE_NULL = 0x06,
-        JSVAL_TYPE_OBJECT = 0x07,
-
-        /* These never appear in a jsval; they are only provided as an out-of-band value. */
-        JSVAL_TYPE_UNKNOWN = 0x20,
-        JSVAL_TYPE_MISSING = 0x21
-    }
-
-    public struct JSValueTag
-    {
-        public static uint JSVAL_TAG_CLEAR = 0xFFFFFF80;
-        public static uint JSVAL_TAG_INT32 = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_INT32;
-        public static uint JSVAL_TAG_UNDEFINED = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_UNDEFINED;
-        public static uint JSVAL_TAG_STRING = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_STRING;
-        public static uint JSVAL_TAG_BOOLEAN = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_BOOLEAN;
-        public static uint JSVAL_TAG_MAGIC = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_MAGIC;
-        public static uint JSVAL_TAG_NULL = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_NULL;
-        public static uint JSVAL_TAG_OBJECT = JSVAL_TAG_CLEAR | (uint)JSValueType.JSVAL_TYPE_OBJECT;
+        tagUNDEFINED = 1 << 0,
+        tagNULL = 1 << 1,
+        tagINT32 = 1 << 2,
+        tagDOUBLE = 1 << 3,
+        tagBOOLEAN = 1 << 4,
+        tagSTRING = 1 << 5,
+        tagNUMBER = 1 << 6,
+        tagOBJECT = 1 << 7,
     }
     public struct jsval
     {
-        public UInt64 asBits;
-        public static bool isUndefined(uint tag) { return JSValueTag.JSVAL_TAG_UNDEFINED == tag; }
-        public static bool isNull(uint tag) { return JSValueTag.JSVAL_TAG_NULL == tag; }
+        public static bool isUndefined(uint tag) { return 0 != (tag & (uint)eValueTag.tagUNDEFINED); }
+        public static bool isNull(uint tag) { return 0 != (tag & (uint)eValueTag.tagNULL); }
+        public static bool isInt32(uint tag) { return 0 != (tag & (uint)eValueTag.tagINT32); }
+        public static bool isDouble(uint tag) { return 0 != (tag & (uint)eValueTag.tagDOUBLE); }
+        public static bool isBoolean(uint tag) { return 0 != (tag & (uint)eValueTag.tagBOOLEAN); }
+        public static bool isString(uint tag) { return 0 != (tag & (uint)eValueTag.tagSTRING); }
+        public static bool isNumber(uint tag) { return 0 != (tag & (uint)eValueTag.tagNUMBER); }
+        public static bool isObject(uint tag) { return 0 != (tag & (uint)eValueTag.tagOBJECT); }
         public static bool isNullOrUndefined(uint tag) { return isUndefined(tag) || isNull(tag); }
-        public static bool isInt32(uint tag) { return JSValueTag.JSVAL_TAG_INT32 == tag; }
-        public static bool isDouble(uint tag) { return JSValueTag.JSVAL_TAG_CLEAR >= tag; }
-        public static bool isBoolean(uint tag) { return JSValueTag.JSVAL_TAG_BOOLEAN == tag; }
-        public static bool isString(uint tag) { return JSValueTag.JSVAL_TAG_STRING == tag; }
-        public static bool isNumber(uint tag) { return JSValueTag.JSVAL_TAG_INT32 >= tag; }
-        public static bool isObject(uint tag) { return JSValueTag.JSVAL_TAG_OBJECT == tag; }
-
-        public uint tag { 
-            get {
-                return (uint)(asBits >> 32);
-            } 
-        }
     }
 
     /*

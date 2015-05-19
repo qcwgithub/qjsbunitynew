@@ -1200,8 +1200,8 @@ public class CSRepresentedObject
  if we have a js object Message, like:
  var Message = 
  {
-    id = 4,
-    str = "hello, world"
+    id: 4,
+    str: "hello, world"
  }
  
  when it comes to C# (e.g. store in a C# version List<>), there is no C# type matching it
