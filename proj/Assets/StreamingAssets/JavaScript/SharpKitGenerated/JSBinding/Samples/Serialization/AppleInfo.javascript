@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var SerializeStruct$AppleInfo = {
     fullname: "SerializeStruct.AppleInfo",
     baseTypeName: "System.ValueType",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj1",
     Kind: "Struct",
     definition: {
         ctor: function (){

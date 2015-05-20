@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var SerializeStruct = {
     fullname: "SerializeStruct",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj1",
     Kind: "Class",
     definition: {
         ctor: function (){

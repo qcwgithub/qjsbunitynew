@@ -3,6 +3,28 @@
 * better not modify manually.
 */
 
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/BackgroundParallax.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/BackgroundPropSpawner.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Bomb.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/BombPickup.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/CameraFollow.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Destroyer.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Enemy_Data.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Enemy.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/FollowPlayer.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Gun.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/HealthPickup.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/LayBombs.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Pauser.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/PickupSpawner.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/PlayerControl.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/PlayerHealth.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Remover.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Rocket.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Score.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/ScoreShadow.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/SetParticleSortingLayer.javascript");
+CS.require("SharpKitGenerated/2DPlatformer/Scripts/Spawner.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/PerformanceTest1.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/Car.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/SerializeSimple.javascript");

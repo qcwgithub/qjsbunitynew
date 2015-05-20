@@ -14,7 +14,6 @@ var Destroyer = {
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Awake: function (){
-			//UnityEngine.Debug.Log$$Object(this.get_name());
             if (this.destroyOnAwake){
                 if (this.findChild){
                     UnityEngine.Object.Destroy$$Object(this.get_transform().Find(this.namedChild).get_gameObject());
