@@ -436,7 +436,7 @@ public class JSBindingSettings
         typeof(UnityEngine.Gyroscope),                               
         typeof(UnityEngine.LocationService),                         
         typeof(UnityEngine.Compass),                                 
-        //typeof(UnityEngine.Input),                                   
+        typeof(UnityEngine.Input),                                   
         typeof(UnityEngine.Object),
         typeof(UnityEngine.Component),                              
         typeof(UnityEngine.Light),                                  
@@ -472,7 +472,7 @@ public class JSBindingSettings
         typeof(UnityEngine.NavMeshTriangulation),           
         typeof(UnityEngine.WebCamDevice),                   
         typeof(UnityEngine.Keyframe),                       
-        typeof(AnimatorClipInfo),                  
+        typeof(UnityEngine.AnimationInfo),                  
         typeof(UnityEngine.AnimatorStateInfo),              
         typeof(UnityEngine.AnimatorTransitionInfo),         
         typeof(UnityEngine.MatchTargetWeightMask),          
@@ -530,16 +530,16 @@ public class JSBindingSettings
 #if UNITY_IPHONE
                          
                                           
-        typeof(Input),                             
+        typeof(iPhoneInput),                             
         typeof(UnityEngine.iPhoneSettings),                          
                                   
         typeof(UnityEngine.iPhoneUtils),                             
-        typeof(UnityEngine.iOS.LocalNotification),                       
-        typeof(UnityEngine.iOS.RemoteNotification),                      
-        typeof(UnityEngine.iOS.NotificationServices),
-        typeof(UnityEngine.iOS.Device),
-        typeof(UnityEngine.iOS.ADBannerView),
-        typeof(UnityEngine.iOS.ADInterstitialAd),
+        typeof(UnityEngine.LocalNotification),                       
+        typeof(UnityEngine.RemoteNotification),                      
+        typeof(UnityEngine.NotificationServices),
+        typeof(UnityEngine.Device),
+        typeof(UnityEngine.ADBannerView),
+        typeof(UnityEngine.ADInterstitialAd),
 #endif
 
         //////////////////////////////////////////////////////
