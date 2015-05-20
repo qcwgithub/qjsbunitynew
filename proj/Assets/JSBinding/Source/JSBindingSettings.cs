@@ -256,9 +256,9 @@ public class JSBindingSettings
         typeof(UnityEngine.ControllerColliderHit),
         typeof(UnityEngine.CharacterController),
         typeof(UnityEngine.Cloth),
-        typeof(UnityEngine.InteractiveCloth),
-        typeof(UnityEngine.SkinnedCloth),
-        typeof(UnityEngine.ClothRenderer),
+        //typeof(UnityEngine.InteractiveCloth),
+        //typeof(UnityEngine.SkinnedCloth),
+        //typeof(UnityEngine.ClothRenderer),
         typeof(UnityEngine.TerrainCollider),
         typeof(UnityEngine.Physics2D),
         typeof(UnityEngine.Rigidbody2D),
@@ -334,7 +334,7 @@ public class JSBindingSettings
         typeof(UnityEngine.ScriptableObject),                                  
         typeof(UnityEngine.Resources),                                         
         typeof(UnityEngine.Profiler),                                          
-        typeof(UnityEngineInternal.Reproduction),                              
+        // typeof(UnityEngineInternal.Reproduction),                              
         typeof(UnityEngine.CrashReport),                                       
         typeof(UnityEngine.Cursor),                                            
         typeof(UnityEngine.OcclusionArea),                                     
@@ -396,6 +396,8 @@ public class JSBindingSettings
         typeof(UnityEngine.Event),                                   
         typeof(UnityEngine.Gizmos),                    
         typeof(UnityEngine.LightProbeGroup),                         
+
+        /*
         typeof(UnityEngine.Ping),                                    
         typeof(UnityEngine.NetworkView),                             
         typeof(UnityEngine.Network),                                 
@@ -403,6 +405,8 @@ public class JSBindingSettings
         //typeof(UnityEngine.RPC),                                     
         typeof(UnityEngine.HostData),                                
         typeof(UnityEngine.MasterServer),                            
+        */
+
         typeof(UnityEngine.ParticleSystem),                          
         typeof(UnityEngine.ParticleSystemRenderer),                  
         typeof(UnityEngine.TextAsset),                               
@@ -426,13 +430,13 @@ public class JSBindingSettings
         typeof(UnityEngine.ComputeBuffer),                           
         typeof(UnityEngine.Debug),                                   
         typeof(UnityEngine.Display),
-        typeof(UnityEngine.Flash.ActionScript),                      
-        typeof(UnityEngine.Flash.FlashPlayer),                       
+        //typeof(UnityEngine.Flash.ActionScript),                      
+        //typeof(UnityEngine.Flash.FlashPlayer),                       
         typeof(UnityEngine.MonoBehaviour),                           
         typeof(UnityEngine.Gyroscope),                               
         typeof(UnityEngine.LocationService),                         
         typeof(UnityEngine.Compass),                                 
-        typeof(UnityEngine.Input),                                   
+        //typeof(UnityEngine.Input),                                   
         typeof(UnityEngine.Object),
         typeof(UnityEngine.Component),                              
         typeof(UnityEngine.Light),                                  
@@ -468,7 +472,7 @@ public class JSBindingSettings
         typeof(UnityEngine.NavMeshTriangulation),           
         typeof(UnityEngine.WebCamDevice),                   
         typeof(UnityEngine.Keyframe),                       
-        typeof(UnityEngine.AnimationInfo),                  
+        typeof(AnimatorClipInfo),                  
         typeof(UnityEngine.AnimatorStateInfo),              
         typeof(UnityEngine.AnimatorTransitionInfo),         
         typeof(UnityEngine.MatchTargetWeightMask),          
@@ -502,11 +506,13 @@ public class JSBindingSettings
         typeof(UnityEngine.Ray),                         
         typeof(UnityEngine.Ray2D),                       
         typeof(UnityEngine.Plane),                       
-        typeof(UnityEngine.Mathf),                       
+        typeof(UnityEngine.Mathf),         
+        
+        /*
         typeof(UnityEngine.NetworkPlayer),               
         typeof(UnityEngine.NetworkViewID),               
         typeof(UnityEngine.NetworkMessageInfo),          
-        
+        */
         typeof(UnityEngine.Touch),                       
         typeof(UnityEngine.AccelerationEvent),           
         typeof(UnityEngine.LocationInfo), 
@@ -524,16 +530,16 @@ public class JSBindingSettings
 #if UNITY_IPHONE
                          
                                           
-        typeof(UnityEngine.iPhoneInput),                             
+        typeof(Input),                             
         typeof(UnityEngine.iPhoneSettings),                          
                                   
         typeof(UnityEngine.iPhoneUtils),                             
-        typeof(UnityEngine.LocalNotification),                       
-        typeof(UnityEngine.RemoteNotification),                      
-        typeof(UnityEngine.NotificationServices),
-        typeof(UnityEngine.iPhone),
-        typeof(UnityEngine.ADBannerView),
-        typeof(UnityEngine.ADInterstitialAd),
+        typeof(UnityEngine.iOS.LocalNotification),                       
+        typeof(UnityEngine.iOS.RemoteNotification),                      
+        typeof(UnityEngine.iOS.NotificationServices),
+        typeof(UnityEngine.iOS.Device),
+        typeof(UnityEngine.iOS.ADBannerView),
+        typeof(UnityEngine.iOS.ADInterstitialAd),
 #endif
 
         //////////////////////////////////////////////////////
@@ -791,6 +797,8 @@ public class JSBindingSettings
 
         if ((type == typeof(Motion)) ||
             (type == typeof(AnimationClip) && memberInfo.DeclaringType == typeof(Motion)) ||
+            (type == typeof(Application) && memberName == "ExternalEval") ||
+            (type == typeof(Input) && memberName == "IsJoystickPreconfigured") ||
             (type == typeof(AnimatorOverrideController) && memberName == "PerformOverrideClipListCleanup") ||
             (type == typeof(Caching) && (memberName == "ResetNoBackupFlag" || memberName == "SetNoBackupFlag")) ||
             (type == typeof(Light) && (memberName == "areaSize")) ||

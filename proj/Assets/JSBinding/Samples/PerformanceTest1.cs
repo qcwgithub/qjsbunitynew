@@ -18,7 +18,7 @@ public class PerformanceTest1 : MonoBehaviour {
             sw.Start();
             var g = 0;
             var f = 10;
-            for (var i = 0; i < 100000000; i++)
+            for (var i = 0; i < 10000000; i++)
             {
                 g += 1;
                 f += 10;
