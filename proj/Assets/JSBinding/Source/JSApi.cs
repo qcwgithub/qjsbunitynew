@@ -94,7 +94,7 @@ public class JSApi
     public static extern bool attachFinalizerObject(int id);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int createJSClassObject(string name);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int newJSClassObject(string name);
     
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -180,7 +180,7 @@ public class JSApi
     public static extern long getIntPtr(int e);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern bool getBoolean(int e);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr getString(int e);
     public static string getStringS(int e)
     {
@@ -266,7 +266,7 @@ public class JSApi
     }
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern void setBoolean(int e, bool v);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern void setString(int e, string value);
     public static void setStringS(int e, string value)
     {
@@ -337,7 +337,7 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool evaluate(byte[] ascii, uint length, string filename);
 
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr getArgString(IntPtr vp, int i);
     public static string getArgStringS(IntPtr vp, int i)
     {
