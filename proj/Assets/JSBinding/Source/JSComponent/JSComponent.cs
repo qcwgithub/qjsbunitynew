@@ -131,7 +131,7 @@ public class JSComponent : JSSerializer
         // because we have to call ctor, to run initialization code
         // this object will not have finalizeOp
         jsObjID = JSApi.newJSClassObject(this.jsScriptName);
-        JSApi.setTrace(jsObjID, true);
+        JSApi.setTraceS(jsObjID, true);
         if (jsObjID == 0)
         {
             Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");
@@ -256,7 +256,7 @@ public class JSComponent : JSSerializer
         if (initSuccess)
         {
             // JSMgr.RemoveRootedObject(jsObj);
-            JSApi.setTrace(jsObjID, false);
+            JSApi.setTraceS(jsObjID, false);
             JSMgr.removeJSCSRel(jsObjID);
             //
             // jsObj doesn't have finalize

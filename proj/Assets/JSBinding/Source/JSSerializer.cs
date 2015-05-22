@@ -74,7 +74,7 @@ public class JSSerializer : MonoBehaviour
             case UnitType.ST_Boolean:
                 {
                     bool v = strValue == "True";
-                    JSApi.setBoolean((int)JSApi.SetType.SaveAndTempTrace, v);
+                    JSApi.setBooleanS((int)JSApi.SetType.SaveAndTempTrace, v);
                     return JSApi.getSaveID();
                 }
                 break;
@@ -213,7 +213,7 @@ public class JSSerializer : MonoBehaviour
                             int id = lstChildren[i].calcID();
                             JSApi.moveID2Arr(id, i);
                         }
-                        JSApi.setArray((int)JSApi.SetType.SaveAndTempTrace, Count, false);
+                        JSApi.setArrayS((int)JSApi.SetType.SaveAndTempTrace, Count, false);
                         this.id = JSApi.getSaveID();
                     }
                     break;

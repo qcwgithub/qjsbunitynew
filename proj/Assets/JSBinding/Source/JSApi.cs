@@ -42,7 +42,7 @@ public class JSApi
 #if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
     [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 #endif
-    public delegate bool CSEntry(int op, int slot, int index, int bStatic, int argc);
+    public delegate int CSEntry(int op, int slot, int index, int bStatic, int argc);
     
 #if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
     [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -100,7 +100,7 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int InitJSEngine(JSErrorReporter er, CSEntry csEntry, JSNative req, OnObjCollected onObjCollected);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool initErrorHandler();
+    public static extern int /* bool */ initErrorHandler();
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void ShutdownJSEngine();
 
@@ -128,7 +128,7 @@ public class JSApi
      */
 
     // TODO
-    // CHECK: exactly same value as C?
+    // 如果有修改，请检查 getVector2S, getVector3S
     public enum GetType
     {
         Arg = 0,
@@ -179,7 +179,11 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern long getIntPtr(int e);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool getBoolean(int e);
+    private static extern int/* bool */ getBoolean(int e);
+    public static bool getBooleanS(int e)
+    {
+        return (getBoolean(e) == 1);
+    }
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr getString(int e);
     public static string getStringS(int e)
@@ -189,35 +193,36 @@ public class JSApi
         return s;
     }
 
+
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void setFloatPtr2(ref float f0, ref float f1);
+    public static extern void getVector2(int e);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    private static extern bool getVector2(int e);
+    public static extern void getVector3(int e);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    public static extern float getObjX();
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    public static extern float getObjY();
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    public static extern float getObjZ();
+
     public static Vector2 getVector2S(int e)
     {
-        // TODO does this work?
-        // ref v.x, ref v.y  <-- TODO is it OK?
-        float x = 0, y = 0;
-        setFloatPtr2(ref x, ref y);
         getVector2(e);
-        return new Vector2(x, y);
+        return new Vector2(getObjX(), getObjY());
     }
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void setFloatPtr3(ref float f0, ref float f1, ref float f2);
-    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    private static extern bool getVector3(int e);
     public static Vector3 getVector3S(int e)
     {
-        // TODO does this work?
-        float x = 0, y = 0, z = 0;
-        setFloatPtr3(ref x, ref y, ref z);
         getVector3(e);
-        return new Vector3(x, y, z);
+        return new Vector3(getObjX(), getObjY(), getObjZ());
     }
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern int getObject(int e);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool isFunction(int e);
+    private static extern int /* bool */ isFunction(int e);
+    public static bool isFunctionS(int e)
+    {
+        return (isFunction(e) == 1);
+    }
     // TODO
     // protect
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
@@ -227,7 +232,7 @@ public class JSApi
         int funID = JSApi.getFunction(e);
         if (JSEngine.inst != null && JSEngine.inst.forceProtectJSFunction)
         {
-            JSApi.setTrace(funID, true);
+            JSApi.setTraceS(funID, true);
         }
         return funID;
     }
@@ -265,7 +270,11 @@ public class JSApi
         setIntPtr(e, v.ToInt64());
     }
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void setBoolean(int e, bool v);
+    private static extern void setBoolean(int e, int /* bool */ v);
+    public static void setBooleanS(int e, bool v)
+    {
+        setBoolean(e, v ? 1 : 0);
+    }
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern void setString(int e, string value);
     public static void setStringS(int e, string value)
@@ -292,12 +301,24 @@ public class JSApi
     public static extern void setFunction(int e, int funID);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void setArray(int e, int count, bool bClear);
+    private static extern void setArray(int e, int count, int bClear);
+    public static void setArrayS(int e, int count, bool bClear)
+    {
+        setArray(e, count, (bClear ? 1 : 0));
+    }
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool isVector2(int e);
+    private static extern int isVector2(int e);
+    public static bool isVector2S(int e)
+    {
+        return (isVector2(e) == 1);
+    }
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool isVector3(int e);
+    private static extern int isVector3(int e);
+    public static bool isVector3S(int e)
+    {
+        return (isVector3(e) == 1);
+    }
 
 
     /*
@@ -310,7 +331,11 @@ public class JSApi
 
     // setTrace is currently for JSComponent object and JSApi.getFunctionS
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool setTrace(int id, bool trace);
+    private static extern void setTrace(int id, int trace);
+    public static void setTraceS(int id, bool trace)
+    {
+        setTrace(id, (trace ? 1 : 0));
+    }
 
     // val movement
     // any call to move**2Arr is for subsequent call to JSApi.setArray
@@ -326,16 +351,16 @@ public class JSApi
     public static extern bool moveID2Arr(int id, int arrIndex);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool setProperty(int id, string name, int valueID);
+    public static extern int/* bool */ setProperty(int id, string name, int valueID);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool getElement(int id, int i);
+    public static extern int/* bool */ getElement(int id, int i);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int getArrayLength(int id);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void gc();
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool evaluate(byte[] ascii, uint length, string filename);
+    public static extern int/* bool */ evaluate(byte[] ascii, uint length, string filename);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr getArgString(IntPtr vp, int i);
@@ -355,7 +380,11 @@ public class JSApi
 
     // only used by JSMgr.require
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void setRvalBool(IntPtr vp, bool v);
+    private static extern void setRvalBool(IntPtr vp, int v);
+    public static void setRvalBoolS(IntPtr vp, bool v)
+    {
+        setRvalBool(vp, v ? 1 : 0);
+    }
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern int getValueMapSize();

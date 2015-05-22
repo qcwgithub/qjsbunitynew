@@ -218,7 +218,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
     {
         return new StringBuilder()
             .AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(()=>[[\n", JSNameMgr.GetTypeFullName(delType))
-            .AppendFormat("    if (JSApi.isFunction((int)JSApi.GetType.Arg))\n")
+            .AppendFormat("    if (JSApi.isFunctionS((int)JSApi.GetType.Arg))\n")
             .AppendFormat("        return {0}(JSApi.getFunctionS((int)JSApi.GetType.Arg));\n", getDelegateFunctionName)
             .Append("    else\n")
             .AppendFormat("        return ({0})vc.datax.getObject((int)JSApi.GetType.Arg);\n", JSNameMgr.GetTypeFullName(delType))

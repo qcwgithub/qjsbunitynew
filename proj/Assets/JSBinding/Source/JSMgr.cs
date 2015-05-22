@@ -927,9 +927,9 @@ public static class JSMgr
     public static JSVCall vCall = new JSVCall();
 
     [MonoPInvokeCallbackAttribute(typeof(JSApi.CSEntry))]
-    static bool CSEntry(int iOP, int slot, int index, int isStatic, int argc)
+    static int CSEntry(int iOP, int slot, int index, int isStatic, int argc)
     {
-        if (JSMgr.isShutDown) return false; 
+        if (JSMgr.isShutDown) return 0; 
         try
         {
             vCall.CallCallback(iOP, slot, index, isStatic, argc);
@@ -943,10 +943,10 @@ public static class JSMgr
              */
             //JSApi.JSh_ReportError(cx, ex.ToString());
             JSApi.reportError(ex.ToString());
-            return false;
+            return 0;
         }
 
-        return true;
+        return 1;
     }
     /*
      * 'Call'
@@ -1003,7 +1003,7 @@ public static class JSMgr
             return false;
         }
 
-        bool ret = JSApi.evaluate(bytes, (uint)bytes.Length, fullName);
+        bool ret = (1 == JSApi.evaluate(bytes, (uint)bytes.Length, fullName));
         return ret;
     }
 
@@ -1019,7 +1019,7 @@ public static class JSMgr
     {
         string jsScriptName = JSApi.getArgStringS(vp, 0);
         bool ret = evaluate(jsScriptName);
-        JSApi.setRvalBool(vp, ret);
+        JSApi.setRvalBoolS(vp, ret);
         return true;
 
 // 

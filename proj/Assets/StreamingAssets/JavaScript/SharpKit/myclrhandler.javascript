@@ -11,7 +11,7 @@
 Compile();
 
 
-print = UnityEngine.Debug.Log$$Object;
+// print = UnityEngine.Debug.Log$$Object;
 
 //print(UnityEngine.Vector3.ctor.prototype.x);
 

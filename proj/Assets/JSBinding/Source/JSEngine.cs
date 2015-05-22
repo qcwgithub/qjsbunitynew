@@ -70,7 +70,7 @@ public class JSEngine : MonoBehaviour
 //             }
 //             else
 
-            if (JSApi.initErrorHandler())
+            if (JSApi.initErrorHandler() == 1)
             {
                 Debug.Log("JS: print error stack: YES");
             }

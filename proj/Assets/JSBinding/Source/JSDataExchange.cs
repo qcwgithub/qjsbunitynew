@@ -192,7 +192,7 @@ public class JSDataExchangeMgr
         else if (type.IsPrimitive)
         {
             if (type == typeof(System.Boolean))
-                return JSApi.getBoolean(e);
+                return JSApi.getBooleanS(e);
             else if (type == typeof(System.Char))
                 return JSApi.getChar(e);
             else if (type == typeof(System.Byte))
@@ -240,7 +240,7 @@ public class JSDataExchangeMgr
         if (jsval.isNullOrUndefined(tag))
             return null;
         else if (jsval.isBoolean(tag))
-            return JSApi.getBoolean(e);
+            return JSApi.getBooleanS(e);
         else if (jsval.isInt32(tag))
             return JSApi.getInt32(e);
         else if (jsval.isDouble(tag))
@@ -249,11 +249,11 @@ public class JSDataExchangeMgr
             return JSApi.getStringS(e);
         else if (jsval.isObject(tag))
         {
-            if (JSApi.isVector2(e))
+            if (JSApi.isVector2S(e))
             {
                 return JSApi.getVector2S(e);
             }
-            else if (JSApi.isVector3(e))
+            else if (JSApi.isVector3S(e))
             {
                 return JSApi.getVector3S(e);
             }
@@ -363,7 +363,7 @@ public class JSDataExchangeMgr
         else if (type.IsPrimitive)
         {
             if (type == typeof(System.Boolean))
-                JSApi.setBoolean(e, (bool)obj);
+                JSApi.setBooleanS(e, (bool)obj);
             else if (type == typeof(System.Char))
                 JSApi.setChar(e, (char)obj);
             else if (type == typeof(System.Byte))
@@ -1032,7 +1032,7 @@ public class JSDataExchangeMgr
         else if (type.IsPrimitive)
         {
             if (type == typeof(System.Boolean))
-                ret = "JSApi.getBoolean";
+                ret = "JSApi.getBooleanS";
             else if (type == typeof(System.Char))
                 ret = "JSApi.getChar";
             else if (type == typeof(System.Byte))
@@ -1160,7 +1160,7 @@ public class JSDataExchange_Arr
             .AppendFormat("        {0}((int)JSApi.SetType.SaveAndTempTrace, arrRet.GetValue(i));\n", getValMethod)
             .AppendFormat("        JSApi.moveSaveID2Arr(i);\n")
             .AppendFormat("    ]]\n")
-            .AppendFormat("    JSApi.setArray((int)JSApi.SetType.Rval, arrRet.Length, true);"); // no ;
+            .AppendFormat("    JSApi.setArrayS((int)JSApi.SetType.Rval, arrRet.Length, true);"); // no ;
         }
         else
         {
@@ -1169,7 +1169,7 @@ public class JSDataExchange_Arr
             .AppendFormat("        {0}((int)JSApi.SetType.SaveAndTempTrace, arrRet[i]);\n", getValMethod)
             .AppendFormat("        JSApi.moveSaveID2Arr(i);\n")
             .AppendFormat("    ]]\n")
-            .AppendFormat("    JSApi.setArray((int)JSApi.SetType.Rval, arrRet.Length, true);"); // no ;
+            .AppendFormat("    JSApi.setArrayS((int)JSApi.SetType.Rval, arrRet.Length, true);"); // no ;
         }
 
         sb.Replace("[[", "{");
