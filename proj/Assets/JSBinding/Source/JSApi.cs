@@ -127,8 +127,6 @@ public class JSApi
      * ****************** Calling stack ****************** 
      */
 
-    // TODO
-    // 如果有修改，请检查 getVector2S, getVector3S
     public enum GetType
     {
         Arg = 0,

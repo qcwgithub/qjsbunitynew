@@ -192,6 +192,7 @@ public static class JSAnalyzer
                         //Debug.Log(jsTypeAttr.filename);
 
                         string mustBegin = "StreamingAssets/JavaScript/";
+                        //string mustBegin = JSBindingSettings.sharpKitGenFileDir;
                         int index = 0;
                         if ((index = jsTypeAttr.Filename.IndexOf(mustBegin)) >= 0)
                         {
@@ -208,7 +209,7 @@ public static class JSAnalyzer
 
         Debug.Log(sb);
 
-        string path = JSBindingSettings.jsDir + "/SharpKitGeneratedFiles.javascript";
+        string path = JSBindingSettings.sharpkitGeneratedFiles;
         File.WriteAllText(path, sb.ToString());
         Debug.Log("OK. File: " + path);
         // AssetDatabase.Refresh();
@@ -444,6 +445,7 @@ public static class JSAnalyzer
         {
             var lastDir = "";
             {
+                // add "../../...." to reach Assets/
                 int i = 0;
                 var np = nextPath;
                 while (true)
@@ -455,8 +457,9 @@ public static class JSAnalyzer
                 }
             }
 
-            sb.AppendFormat("\n[JsType(JsMode.Clr,\"{0}StreamingAssets/JavaScript/SharpKitGenerated/{1}{2}.javascript\")]\n{3}",
-                lastDir, nextPath, m.Groups["ClassName"], m.Groups["ClassDefinition"]);
+            sb.AppendFormat("\n[JsType(JsMode.Clr,\"{0}{1}{2}{3}{4}\")]\n{5}",
+                lastDir, JSBindingSettings.sharpKitGenFileDir, nextPath, m.Groups["ClassName"], JSBindingSettings.jsExtension, 
+                m.Groups["ClassDefinition"]);
         }
         else
         {
@@ -511,8 +514,12 @@ fields before this action.",
         var sb = new StringBuilder();
         //sb.Append("files to handle:\n-----------------------------------------\n");
         string srcFolder = Application.dataPath.Replace('\\', '/');
+
+        // Get all cs files in the project
         string[] files = Directory.GetFiles(srcFolder, "*.cs", SearchOption.AllDirectories);
         List<string> lstFiles = new List<string>();
+
+        // filter files
         foreach (var f in files)
         {
             var path = f.Replace('\\', '/');
@@ -556,14 +563,16 @@ fields before this action.",
             return;
         }
 
+        // path in lstFiles has full path
         foreach (string path in lstFiles)
         {
             matched = false;
-			// E:/code/qjsbunitynew/proj/Assets/JSBinding/Samples/Serialization/SerializeSimple.cs
+            // 
+			// "E:/code/qjsbunitynew/proj/Assets/JSBinding/Samples/Serialization/SerializeSimple.cs"
 			// ->
-			// JSBinding/Samples/
+            // "JSBinding/Samples/Serialization/"
             nextPath = path.Substring(srcFolder.Length + 1, path.LastIndexOf('/') - srcFolder.Length);
-            //Debug.Log(path+" -> "+nextPath);
+            //Debug.Log(path + " -> " + nextPath);
 
             string content = File.ReadAllText(path);
             var reg = new Regex(@"(?>^\s*\[\s*JsType.*$)?\s*(?<ClassDefinition>^(?>(?>public|protected|private|static|partial|abstract|internal)*\s*)*(?>class|struct)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);

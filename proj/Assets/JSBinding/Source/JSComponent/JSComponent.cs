@@ -140,7 +140,6 @@ public class JSComponent : JSSerializer
         } 
         JSMgr.AddJSCSRel(jsObjID, this);
         initMemberFunction();
-        // TODO add root
         initSuccess = true;
 
 //         jsval[] valParam = new jsval[2];

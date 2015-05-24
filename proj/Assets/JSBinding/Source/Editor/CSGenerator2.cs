@@ -1147,7 +1147,7 @@ public class JSGeneratedFileNames
             sb.AppendFormat("CS.require(\"Generated/{0}\");\n", name);
         }
 
-        string fileName = JSBindingSettings.jsDir + "/GeneratedFiles.javascript";
+        string fileName = JSBindingSettings.jsGeneratedFiles;
         var writer2 = OpenFile(fileName, false);
         writer2.Write(sb.ToString());
         writer2.Close();
