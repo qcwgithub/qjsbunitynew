@@ -165,6 +165,8 @@ public class JSEngine : MonoBehaviour
             JSMgr.ShutdownJSEngine();
             if (mDebug)
                 JSApi.cleanupDebugger();
+            JSEngine.inst = null;
+            JSEngine.inited = false;
             Debug.Log("----------JSEngine Destroy ---");
         }
     }

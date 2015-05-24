@@ -7,3 +7,53 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/2DPlatformer/Scenes/Level.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Serialization/Car.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Serialization/Car_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Serialization/SerializeSimple.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Serialization/SerializeSimple_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Serialization/SerializeStruct.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Serialization/SerializeStruct_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/ListTest.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/ListTest_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/PerformanceTest1.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/PerformanceTest1_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Serialization/SerializeStruct.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/TestCoroutine.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/V3Test.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/V3Test_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Viewer.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Camera Shake.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Camera Shake_JS.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Doge.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Doge_JS.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Easing Functions.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Easing Functions_JS.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Slinky.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Slinky_JS.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Tween Along Path.unity
+  - enabled: 1
+    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Tween Along Path_JS.unity

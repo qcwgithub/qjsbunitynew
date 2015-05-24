@@ -145,6 +145,8 @@ public static class JSMgr
     static JSFileLoader jsLoader;
     public static bool InitJSEngine(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
     {
+        ShutDown = false;
+
         int initResult = JSApi.InitJSEngine(
             new JSApi.JSErrorReporter(errorReporter), 
             new JSApi.CSEntry(JSMgr.CSEntry),
@@ -218,6 +220,7 @@ public static class JSMgr
         JSMgr.ClearJSCSRelation2();
 //        JSMgr.ClearRootedObject();
         //JSMgr.ClearCompiledScript();
+        evaluatedScript.Clear();
 
         JSApi.ShutdownJSEngine();
 
