@@ -167,7 +167,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             var sb = new StringBuilder();
             var keyword = GetMetatypeKeyword(type);
 
-            sb.AppendFormat("{0}(JSApi.GetType.JSFunRet)", keyword);
+            sb.AppendFormat("{0}((int)JSApi.GetType.JSFunRet)", keyword);
             return sb.ToString();
         }
     }

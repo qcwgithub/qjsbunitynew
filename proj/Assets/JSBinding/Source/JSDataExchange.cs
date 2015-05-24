@@ -1061,13 +1061,13 @@ public class JSDataExchangeMgr
                 Debug.LogError("444 Unknown primitive type");
         }
         else if (type == typeof(System.Object) || type.IsGenericParameter)
-            ret = "vc.datax.getWhatever";
+            ret = "JSMgr.vCall.datax.getWhatever";
         else if (type == typeof(Vector3))
             ret = "JSApi.getVector3S";
         else if (type == typeof(Vector2))
             ret = "JSApi.getVector2S";
         else
-            ret = "vc.datax.getObject";
+            ret = "JSMgr.vCall.datax.getObject";
 
         return ret;
     }

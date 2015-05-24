@@ -668,13 +668,13 @@ public static class CSGenerator2
 
 
                         sbGetParam.AppendFormat("object arg{0} = JSDataExchangeMgr.GetJSArg<object>(()=>[[\n", i);
-                        sbGetParam.AppendFormat("    if (vc.datax.IsArgvFunction()) [[\n");
+                        sbGetParam.AppendFormat("    if (JSApi.isFunctionS((int)JSApi.GetType.Arg)) [[\n");
                         sbGetParam.AppendFormat("        var getDelegateFun{0} = typeof({1}).GetMethod(\"{2}\").MakeGenericMethod\n", i, thisClassName, delegateGetName);
                         sbGetParam.AppendFormat("            (method.GetParameters()[{0}].ParameterType.GetGenericArguments());\n", i);
-                        sbGetParam.AppendFormat("        return getDelegateFun{0}.Invoke(null, new object[][[{1}]]);\n", i, "vc.getJSFunctionValue()");
+                        sbGetParam.AppendFormat("        return getDelegateFun{0}.Invoke(null, new object[][[{1}]]);\n", i, "JSApi.getFunctionS((int)JSApi.GetType.Arg)");
                         sbGetParam.Append("    ]]\n");
                         sbGetParam.Append("    else\n");
-                        sbGetParam.AppendFormat("        return vc.datax.getObject(JSDataExchangeMgr.eGetType.GetARGV);\n");
+                        sbGetParam.AppendFormat("        return vc.datax.getObject((int)JSApi.GetType.Arg);\n");
                         sbGetParam.Append("]]);\n");
 
 
