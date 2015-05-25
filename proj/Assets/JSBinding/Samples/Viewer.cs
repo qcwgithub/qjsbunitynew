@@ -69,7 +69,7 @@ public class Viewer : MonoBehaviour
         new stScene("Easing Functions", "DF Tween: Easing Functions"),  
         new stScene("Easing Functions_JS", "DF Tween: Easing Functions_JS"),  
         new stScene("Slinky", "DF Tween: Slinky"),  
-        new stScene("Slinky_JS", "DF Tween: Slinky_JS"),  
+        // new stScene("Slinky_JS", "DF Tween: Slinky_JS"),  // CRASH
         new stScene("Tween Along Path", "DF Tween: Tween Along Path"),  
         new stScene("Tween Along Path_JS", "DF Tween: Tween Along Path_JS"),  
     };
