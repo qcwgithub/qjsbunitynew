@@ -98,16 +98,6 @@ public class JSComponent : JSSerializer
     bool initSuccess { get { return initState == 1; } set { if (value) initState = 1; } }
     bool initFail { get { return initState == 2; } set { if (value) initState = 2; } }
 
-//     void initVal(ref jsval val, string jsFunName)
-//     {
-//         val.asBits = 0;
-//         JSApi.JSh_GetFunctionValue(JSMgr.cx, jsObj, jsFunName, ref val);
-//     }
-//     void callIfExist(ref jsval val, params object[] args)
-//     {
-//         if (val.asBits > 0)
-//             JSMgr.vCall.CallJSFunctionValue(jsObj, ref val, args);
-//     }
     void callIfExist(int funID, params object[] args)
     {
         if (funID > 0)
@@ -138,60 +128,9 @@ public class JSComponent : JSSerializer
             initFail = true;
             return;
         } 
-        JSMgr.AddJSCSRel(jsObjID, this);
+        JSMgr.addJSCSRel(jsObjID, this);
         initMemberFunction();
         initSuccess = true;
-
-//         jsval[] valParam = new jsval[2];
-//         jsval valRet = new jsval();
-// 
-//         // 1)
-//         // __nativeObj: csObj + finalizer
-//         //
-//         IntPtr __nativeObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-// 
-//         JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam[0], this.jsScriptName);
-//         JSApi.JSh_SetJsvalObject(ref valParam[1], __nativeObj);
-// 
-//         // 2)
-//         // jsObj: prototype
-//         // jsObj.__nativeObj = __nativeObj
-//         //
-//         valRet.asBits = 0;
-//         bool ret = JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_NewMonoBehaviour", 2, valParam, ref valRet);
-//         if (ret) jsObj = JSApi.JSh_GetJsvalObject(ref valRet);
-//         if (!ret || jsObj == IntPtr.Zero)
-//         {
-//             jsObj = IntPtr.Zero;
-//             Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");
-//             initFail = true;
-//             return;
-//         }
-//         JSMgr.addJSCSRelation(jsObj, __nativeObj, this);
-// 
-//         JSMgr.AddRootedObject(jsObj);
-// 
-//         initVal(ref valAwake, "Awake");
-//         initVal(ref valStart, "Start");
-//         initVal(ref valFixedUpdate, "FixedUpdate");
-//         initVal(ref valUpdate, "Update");
-//         initVal(ref valDestroy, "Destroy");
-//         initVal(ref valOnGUI, "OnGUI");
-//         initVal(ref valOnEnable, "OnEnable");
-//         
-//         initVal(ref valOnTriggerEnter2D, "OnTriggerEnter2D");
-//         initVal(ref valOnTriggerStay, "OnTriggerStay");
-//         initVal(ref valOnTriggerExit, "OnTriggerExit");
-//         initVal(ref valOnAnimatorMove, "OnAnimatorMove");
-//         initVal(ref valOnAnimatorIK, "OnAnimatorIK");
-// 
-// 
-//         // TODO
-//         // ??
-//         initVal(ref valDestroyChildGameObject, "DestroyChildGameObject");
-//         initVal(ref valDisableChildGameObject, "DisableChildGameObject");
-//         initVal(ref valDestroyGameObject, "DestroyGameObject");
-//         initSuccess = true;
     }
     public void Awake()
     {
@@ -277,10 +216,6 @@ public class JSComponent : JSSerializer
 
     void OnTriggerEnter2D (Collider2D other)
     {
-//        if (other == null)
-//            Debug.Log("OnTriggerEnter2D(null)");
-//        else
-//            Debug.Log("OnTriggerEnter2D(" + other.GetType().Name + ")");
         callIfExist(idOnTriggerEnter2D, other);
     }
     void OnTriggerStay(Collider other)

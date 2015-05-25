@@ -43,63 +43,17 @@ public static class JSMgr
     public static OnInitJSEngine onInitJSEngine;
     static int loadedGeneratedJS = 0;
     static string[] jsGeneratedFileNames;
-//    public static void OnLoadGeneratedJS(string shortName, byte[] bytes, string fullName)
-//    {
-//        if (bytes == null) {
-//            //onInitJSEngine(false);
-//            return;
-//        }
-//
-//        IntPtr ptrScript = JSMgr.CompileScriptContentByte(shortName, bytes, JSMgr.glob, fullName);
-//        if (ptrScript == IntPtr.Zero)
-//        {
-//            return;
-//        }
-//        JSMgr.ExecuteScript(ptrScript, JSMgr.glob);
-//
-//        loadedGeneratedJS++;
-//        if (loadedGeneratedJS >= jsGeneratedFileNames.Length) {
-//            onInitJSEngine(true);
-//        }
-//    }
 
-    // load js files
-    public delegate void OnLoadJS(IntPtr ptrScript);
-//    public static void LoadJS(string shortName, OnLoadJS onLoadJS)
-//    {
-//        IntPtr ptrScript = JSMgr.GetCompiledScript(shortName);
-//        if (ptrScript != IntPtr.Zero)
-//        {
-//            onLoadJS(ptrScript);
-//            return;
-//        }
-//        else
-//        {
-//            JSFileLoader.OnLoadJS action = (shName, bytes, fullName) =>
-//            {
-//                // find again
-//                ptrScript = JSMgr.GetCompiledScript(shortName);
-//                if (ptrScript != IntPtr.Zero)
-//                {
-//                    onLoadJS(ptrScript);
-//                    return;
-//                }
-//                ptrScript = JSMgr.CompileScriptContentByte(shName, bytes, JSMgr.glob, fullName);
-//                onLoadJS(ptrScript);
-//            };
-//            jsLoader.LoadJSSync(shortName, false, action);
-//        }
-//    }
-
-    static object RefCallStaticMethod(string className, string methodName)
+    static bool RefCallStaticMethod(string className, string methodName)
     {
         Type t = Type.GetType(className);
         if (t == null) 
-            return null;
+            return false;
         MethodInfo method = t.GetMethod(methodName);
         if (method == null)
-            return null;
-        return method.Invoke(null, null);
+            return false;
+        method.Invoke(null, null);
+        return true;
     }
     static object RefGetStaticField(string className, string fieldName)
     {
@@ -159,176 +113,28 @@ public static class JSMgr
             onInitJSEngine(false);
             return false;
         }
-        //JSApi.SetCSEntry(new JSApi.CSEntry(JSMgr.CSEntry));
 
-        // 
-        // move to C
-        //JSMgr.RegisterCS(cx, glob);
-        //
-        RefCallStaticMethod("CSharpGenerated", "RegisterAll");
+        if (!RefCallStaticMethod("CSharpGenerated", "RegisterAll"))
+        {
+            Debug.LogError("Call CSharpGenerated.RegisterAll() failed. Did you forget to click menu [JSB/Generate JS and CS Bindings]?");
+        }
+
         JSMgr.jsLoader = jsLoader;
 
         onInitJSEngine(true);
         return true;
     }
-    // old code
-    public static bool InitJSEngine2(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
-    {
-//         if (!JSApi.JSh_Init())
-//         {
-//             onInitJSEngine(false);
-//             return false;
-//         }
-// 
-//         rt = JSApi.JSh_NewRuntime(8 * 1024 * 1024, 0);
-//         JSApi.JSh_SetNativeStackQuota(rt, 500000, 0, 0);
-// 
-//         cx = JSApi.JSh_NewContext(rt, 8192);
-//         JSApi.JSh_SetErrorReporter(cx, new JSApi.JSErrorReporter(errorReporter));
-// 
-//         glob = JSApi.JSh_NewGlobalObject(cx, 1);
-//         JSApi.InitPersistentObject(rt, cx, glob, mjsFinalizer);
-// 
-//         oldCompartment = JSApi.JSh_EnterCompartment(cx, glob);
-// 
-//         if (!JSApi.JSh_InitStandardClasses(cx, glob))
-//         {
-//             Debug.LogError("JSh_InitStandardClasses fail. Make sure JSh_SetNativeStackQuota was called.");
-//             onInitJSEngine(false);
-//             return false;
-//         }
-// 
-//         JSApi.JSh_InitReflect(cx, glob);
-//         JSApi.JSh_SetGCCallback(rt, jsGCCallback, IntPtr.Zero);
-// 
-//         JSMgr.RegisterCS(cx, glob);
-//         RefCallStaticMethod("CSharpGenerated", "RegisterAll");
-//         JSMgr.jsLoader = jsLoader;
-// 
-//         onInitJSEngine(true);
-
-        return true;
-    }
-    public static JSApi.JSFinalizeOp mjsFinalizer = new JSApi.JSFinalizeOp(JSObjectFinalizer);
 
     public static bool ShutDown = false;
     public static bool isShutDown { get { return ShutDown; } }
     public static void ShutdownJSEngine()
     {
         ShutDown = true;
-        // TODO
-        JSMgr.ClearJSCSRelation2();
-//        JSMgr.ClearRootedObject();
-        //JSMgr.ClearCompiledScript();
+        JSMgr.ClearJSCSRel();
         evaluatedScript.Clear();
-
         JSApi.ShutdownJSEngine();
-
     }
-    // old code
-//     public static void ShutdownJSEngine()
-//     {
-//         JSApi.JSh_LeaveCompartment(cx, oldCompartment);
-// 
-// 
-//         JSMgr.ClearJSCSRelation();
-//         JSMgr.ClearRootedObject();
-//         JSMgr.ClearCompiledScript();
-// 
-//         JSApi.JSh_DestroyContext(cx);
-//         JSApi.JSh_DestroyRuntime(rt);
-//         JSApi.JSh_ShutDown();
-//         ShutDown = true;
-//     }
-
-
-//     public static void EvaluateFile(string fullName, IntPtr obj)
-//     {
-//         jsval val = new jsval();
-//         StreamReader r = new StreamReader(fullName, Encoding.UTF8);
-//         string s = r.ReadToEnd();
-//         JSApi.JSh_EvaluateScript(cx, obj, s, (uint)s.Length, fullName, 1, ref val);
-//         r.Close();
-//     }
-//     public static void EvaluateString(string name, string s, IntPtr obj)
-//     {
-//         jsval val = new jsval();
-//         JSApi.JSh_EvaluateScript(cx, obj, s, (uint)s.Length, name, 1, ref val);
-//     }
-//     static string calcFullJSFileName(string shortName, bool bGenerated)
-//     {
-//         string baseDir = bGenerated ? JSBindingSettings.jsGeneratedDir : JSBindingSettings.jsDir;
-// 
-// #if UNITY_ANDROID && !UNITY_EDITOR_WIN
-//         string fullName = baseDir + "/" + shortName + JSBindingSettings.jsExtension;
-// #else
-//         string fullName = baseDir + "/" + shortName + JSBindingSettings.jsExtension;
-// #endif
-//         return fullName;
-//     }
-//     public static string ReadFileString(string fullName)
-//     {
-//         //Debug.Log("-----calcFullJSFileName: " + fullName);
-// 
-// #if UNITY_ANDROID && !UNITY_EDITOR_WIN
-//         WWW w = new WWW(fullName);
-//         while (true)
-//         {
-//             if (w.error != null && w.error.Length > 0)
-//             {
-//                 Debug.Log("ERROR: /// " + w.error);
-//                 return "";
-//             }
-// 
-//             if (w.isDone)
-//                 break;
-// 
-//             //SleepTimeout()
-//         }
-//         //Debug.Log("======= WWW OK");
-//         string content = w.text;
-//         return content;
-// #else
-//         StreamReader r = new StreamReader(fullName, Encoding.UTF8);
-//         string content = r.ReadToEnd();
-//         return content;
-// #endif
-//     }
-//     public static bool EvaluateGeneratedScripts(string[] shortNames)
-//     {
-//         for (int i = 0; i < shortNames.Length; i++)
-//         {
-//             string content = ReadFileString(calcFullJSFileName(shortNames[i], true));
-//             if (content.Length == 0)
-//                 return false;
-//             EvaluateString(shortNames[i], content, glob);
-//         }
-//         return true;
-//     }
-    //     public static IntPtr CompileScript(string shortName, IntPtr obj)
-    //     {
-    //         string fullName = calcFullJSFileName(shortName);
-    // 
-    //         StreamReader r = new StreamReader(fullName, Encoding.UTF8);
-    //         string s = r.ReadToEnd();
-    // 
-    //         IntPtr ptr = JSApi.JSh_CompileScript(cx, obj, s, (uint)s.Length, shortName, 1);
-    //         r.Close();
-    //         return ptr;
-    //     }
-    public class IntPtrClass
-    {
-        public IntPtrClass(IntPtr ptr) 
-        {
-            // this.pptr = JSApi.JSh_NewPPointer(ptr); 
-            this.pptr = IntPtr.Zero; 
-            this.ptr = ptr; 
-        }
-        // ptr is a pointer
-        // and *pptr == ptr
-        public IntPtr pptr;
-        public IntPtr ptr;
-    }
+    
 
     /*
      * Get JS file full path by short name, and weather it's generated or not
@@ -347,113 +153,13 @@ public static class JSMgr
         return fullName;
     }
 
-//    public static IntPtr CompileScriptContentByte(string shortName, byte[] content, IntPtr obj, string fullName)
-//    {
-//        if (content == null)
-//        {
-//            Debug.LogError(shortName + "file content is null");
-//            return IntPtr.Zero;
-//        }
-//        else if (content.Length == 0)
-//        {
-//            Debug.LogError(shortName + "file content length = 0");
-//            return IntPtr.Zero;
-//        }
-//
-//        IntPtr ptr = JSApi.JSh_CompileScript(cx, obj, content, (uint)content.Length, fullName, 1);
-//        IntPtrClass ptrClass = new IntPtrClass(ptr);
-//        bool b = JSApi.JSh_AddNamedScriptRoot(JSMgr.cx, ptrClass.pptr, shortName);
-//        if (!b) Debug.LogWarning("JSh_AddNamedScriptRoot fail!!");
-//        //Debug.Log("``````" + shortName);
-//        compiledScript.Add(shortName, ptrClass);
-//        return ptr;
-//    }
-    // execute script even if the same script has been executed before
-//     public static bool ExecuteScript(IntPtr ptrScript, IntPtr obj)
-//     {
-//         jsval val = new jsval();
-//         return JSApi.JSh_ExecuteScript(cx, obj, ptrScript, ref val);
-//     }
-    // execute script only if the script not executed with the same obj
-    // but executing script for different objects is allowed
-    // ONLY for 'CS.require' use
-//    public static bool ExecuteScriptGlobal(IntPtr ptrScript, IntPtr obj)
-//    {
-//        IntPtr ptrObj;
-//        if (executedScript.TryGetValue(ptrScript, out ptrObj))
-//        {
-//            if (ptrObj == obj)
-//                return true;
-//        }
-//
-//        jsval val = new jsval();
-//		executedScript.Add(ptrScript, obj);
-//        bool b = JSApi.JSh_ExecuteScript(cx, obj, ptrScript, ref val);
-//        if (!b) 
-//		{
-//			executedScript.Remove(ptrScript);
-//			return false;
-//		}
-//        return true;
-//    }
-    /*
-     * Get Compiled Script ptr by short name
-     */
-//    static IntPtr GetCompiledScript(string shortName)
-//    {
-//        IntPtrClass ptrClass = null;
-//        if (compiledScript.TryGetValue(shortName, out ptrClass))
-//            return ptrClass.ptr;
-//        return IntPtr.Zero;
-//    }
-
-//    static void ClearCompiledScript()
-//    {
-//        foreach (var sc in compiledScript)
-//        {
-//            JSApi.JSh_RemoveScriptRoot(cx, sc.Value.pptr);
-//            JSApi.JSh_DelPPointer(sc.Value.pptr);
-//        }
-//        compiledScript.Clear();
-//    } 
-
     // TODO
     // delete these 2 dict
 //    static Dictionary<string, IntPtrClass> compiledScript = new Dictionary<string, IntPtrClass>();
 //    static Dictionary<IntPtr, IntPtr> executedScript = new Dictionary<IntPtr, IntPtr>();
     static Dictionary<string, bool> evaluatedScript = new Dictionary<string, bool>();
 
-    // TODO 
-    // delete
-//    public static void AddRootedObject(IntPtr obj)
-//    {
-//        if (!rootedObject.ContainsKey(obj.ToInt64()))
-//        {
-//            IntPtrClass cls = new IntPtrClass(obj);
-//            JSApi.JSh_AddObjectRoot(JSMgr.cx, cls.pptr);
-//            rootedObject.Add(obj.ToInt64(), cls);
-//        }
-//    }
-//    public static void RemoveRootedObject(IntPtr obj)
-//    {
-//        IntPtrClass cls;
-//        if (rootedObject.TryGetValue(obj.ToInt64(), out cls))
-//        {
-//            JSApi.JSh_RemoveObjectRoot(JSMgr.cx, cls.pptr);
-//            JSApi.JSh_DelPPointer(cls.pptr);
-//            rootedObject.Remove(obj.ToInt64());
-//        }
-//    }
-//    static void ClearRootedObject()
-//    {
-//        foreach (var sc in rootedObject)
-//        {
-//            JSApi.JSh_RemoveObjectRoot(JSMgr.cx, sc.Value.pptr);
-//            JSApi.JSh_DelPPointer(sc.Value.pptr);
-//        }
-//        rootedObject.Clear();
-//    }
-    static Dictionary<long, IntPtrClass> rootedObject = new Dictionary<long, IntPtrClass>();
+    //static Dictionary<long, IntPtrClass> rootedObject = new Dictionary<long, IntPtrClass>();
 
     /// <summary>
     /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -925,8 +631,6 @@ public static class JSMgr
         }
     }
 
-    // TODO delete
-    //public static IntPtr CSOBJ = IntPtr.Zero;
     public static JSVCall vCall = new JSVCall();
 
     [MonoPInvokeCallbackAttribute(typeof(JSApi.CSEntry))]
@@ -951,37 +655,6 @@ public static class JSMgr
 
         return 1;
     }
-    /*
-     * 'Call'
-     * This is the entry for calling cs from js
-     * 99% js calls comes here
-     */
-//     [MonoPInvokeCallbackAttribute(typeof(JSApi.JSNative))]
-//     static bool Call(IntPtr cx, uint argc, IntPtr vp)
-//     {
-//         //         if (useReflection)
-//         //             return vCall.CallReflection(cx, argc, vp);
-//         //         else
-// 
-//         if (JSMgr.isShutDown) return false;
-//         try
-//         {
-//             vCall.CallCallback(cx, argc, vp);
-//         }
-//         catch (System.Exception ex)
-//         {
-//             /* 
-//              * if exception occurs, catch it, pass the error to js, and return false
-//              * js then print the error string and js call stack
-//              * note: the error contains cs call stack, so now we have both cs and js call stack
-//              */
-//             JSApi.JSh_ReportError(cx, ex.ToString());
-//             return false;
-//         }
-//         
-//         return true;
-//     }
-
 
     public static bool evaluate(string jsScriptName)
     {
@@ -1024,105 +697,8 @@ public static class JSMgr
         bool ret = evaluate(jsScriptName);
         JSApi.setRvalBoolS(vp, ret);
         return true;
-
-// 
-//         if (argc != 1 && argc != 2)
-//             return true;
-//         var tag = JSApi.JSh_ArgvTag(cx, vp, 0);
-//         if (!jsval.isString(tag))
-//             return true;
-// 
-//         string jsScriptName = JSApi.JSh_ArgvStringS(cx, vp, 0);
-// 
-//         IntPtr obj = JSMgr.glob;
-//         if (argc == 2)
-//         {
-//             obj = JSApi.JSh_ArgvObject(cx, vp, 1);
-//             if (obj == IntPtr.Zero)
-//             {
-//                 // obj is not valid c# object
-//                 Debug.LogError("ERROR CS.require(" + jsScriptName + ", undefined)");
-//                 return true;
-//             }
-//         }
-//         IntPtr ptrScript = GetCompiledScript(jsScriptName);
-//         if (ptrScript == IntPtr.Zero)
-//         {
-//             // require must load js SYNC
-//             string fullName = JSMgr.getJSFullName(jsScriptName, false);
-//             byte[] bytes = jsLoader.LoadJSSync(fullName);
-//             ptrScript = JSMgr.CompileScriptContentByte(jsScriptName, bytes, obj, fullName);
-//             if (ptrScript == IntPtr.Zero)
-//             {
-//                 JSApi.JSh_SetRvalBool(cx, vp, false);
-//                 return true;
-//             }
-//         }
-// 
-//         bool b = JSMgr.ExecuteScriptGlobal(ptrScript, obj);
-//         JSApi.JSh_SetRvalBool(cx, vp, b);
-//         return b;
     }
 
-    // same as require
-//     public static bool ExecuteFile(string shortName)
-//     {
-//         IntPtr ptrScript = GetCompiledScript(shortName);
-//         if (ptrScript == IntPtr.Zero)
-//         {
-//             // require must load js SYNC
-//             string fullName = JSMgr.getJSFullName(shortName, false);
-//             byte[] bytes = jsLoader.LoadJSSync(fullName);
-//             ptrScript = JSMgr.CompileScriptContentByte(shortName, bytes, JSMgr.glob, fullName);
-//             if (ptrScript == IntPtr.Zero)
-//             {
-//                 return false;
-//             }
-//         }
-//         return JSMgr.ExecuteScriptGlobal(ptrScript, JSMgr.glob);
-       
-
-    /*
-     * Create the 'CS' global object
-     */
-//     public static void RegisterCS(IntPtr cx, IntPtr glob)
-//     {
-//         IntPtr jsClass = JSApi.JSh_NewClass("CS", 0, null);
-//         IntPtr obj = JSApi.JSh_InitClass(cx, glob, jsClass);
-// 
-//         JSApi.JSh_DefineFunction(cx, obj, "Call", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(Call)), 0/* narg */, 0);
-//         JSApi.JSh_DefineFunction(cx, obj, "require", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(require)), 0/* narg */, 0);
-//         JSApi.JSh_DefineFunction(cx, obj, "SetErrorReporter", Marshal.GetFunctionPointerForDelegate(new JSApi.JSNative(SetErrorReporter)), 0/* narg */, 0);
-//         
-//         CSOBJ = obj;
-//     }
-
-    /*
-     * record js/cs relation
-     */
-    // TODO delete
-    public class JS_CS_Relation
-    {
-        //
-        // JS  jsObj
-        //       -- __nativeObj
-        //
-        //  mDict1  __nativeObj -> csObj
-        //  mDict2  csObj -> jsObj
-        //
-        //
-        public IntPtr jsObj;   
-        public object csObj;
-        public string name;
-        public int hash;
-        public JS_CS_Relation(IntPtr _jsObj, object _csObj, int h)
-        {
-            jsObj = _jsObj;
-            csObj = _csObj;
-            name = csObj.GetType().Name;// csObj.ToString();
-            this.hash = h;
-        }
-    }
     // TODO check
     public class JS_CS_Rel
     {
@@ -1140,7 +716,7 @@ public static class JSMgr
 
     }
 
-    public static void AddJSCSRel(int jsObjID, object csObj)
+    public static void addJSCSRel(int jsObjID, object csObj)
     {
         int hash = csObj.GetHashCode();
         if (mDictionary1.ContainsKey(jsObjID))
@@ -1173,32 +749,7 @@ public static class JSMgr
         }
     }
 
-    // 
-//     public static void addJSCSRelation(IntPtr jsObj, IntPtr nativeObj, object csObj)
-//     {
-//         JS_CS_Relation Rel;
-//         if (mDict1.TryGetValue(nativeObj.ToInt64(), out Rel))
-//         {
-//             // Debug.LogWarning("mDict1 already contains key for: " + nativeObj.ToString());
-//             // !!!!!
-//             // when GC occurs . Same jsObj will get here before finalizer called
-//             mDict1.Remove(nativeObj.ToInt64());
-//             //if (Rel.csObj != null && Rel.csObj.GetType().IsClass)
-//             // 直接尝试删，没删到也没事
-//             mDict2.Remove(Rel.hash);
-//         }
-//         int hash = csObj.GetHashCode();
-//         mDict1.Add(nativeObj.ToInt64(), new JS_CS_Relation(nativeObj, csObj, hash));
-// 
-//         if (csObj.GetType().IsClass) 
-//         {
-//             if (!mDict2.ContainsKey(hash))
-//                 mDict2.Add(hash, new JS_CS_Relation(jsObj, csObj, hash));
-//             else
-//                 Debug.Log("");
-//         }
-//     }
-    public static object getCSObj2(int jsObjID)
+    public static object getCSObj(int jsObjID)
     {
         JS_CS_Rel obj;
         if (mDictionary1.TryGetValue(jsObjID, out obj))
@@ -1207,15 +758,7 @@ public static class JSMgr
         }
         return null;
     }
-    // TODO delete
-//     public static object getCSObj(IntPtr nativeObj)
-//     {
-//         JS_CS_Relation obj;
-//         if (mDict1.TryGetValue(nativeObj.ToInt64(), out obj))
-//             return obj.csObj;
-//         return null;
-//     }
-    public static int getJSObj2(object csObj)
+    public static int getJSObj(object csObj)
     {
         if (csObj.GetType().IsValueType)
             return 0;
@@ -1227,20 +770,7 @@ public static class JSMgr
         }
         return 0;
     }
-    // TODO delete
-//     public static IntPtr getJSObj(object csObj)
-//     {
-//         if (csObj.GetType().IsValueType)
-//             return IntPtr.Zero;
-// 
-//         JS_CS_Relation Rel;
-//         if (mDict2.TryGetValue(csObj.GetHashCode(), out Rel))
-//             return Rel.jsObj;
-//         return IntPtr.Zero;
-//     }
-    // TODO
-    // use it
-    public static void changeJSObj2(int jsObjID, object csObjNew)
+    public static void changeJSObj(int jsObjID, object csObjNew)
     {
         if (!csObjNew.GetType().IsValueType)
         {
@@ -1254,34 +784,7 @@ public static class JSMgr
             mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, csObjNew, csObjNew.GetHashCode()));
         }
     }
-    // TODO delete
-    public static void changeJSObj(IntPtr nativeObj, object csObjNew)
-    {
-        if (!csObjNew.GetType().IsValueType)
-        {
-            Debug.LogError("class can not call changeJSObj");
-            return;
-        }
-        var Key = nativeObj.ToInt64();
-        JS_CS_Relation obj;
-        if (mDict1.TryGetValue(Key, out obj))
-        {
-            mDict1.Remove(Key);
-            mDict1.Add(Key, new JS_CS_Relation(nativeObj, csObjNew, obj.GetHashCode()));
-        }
-//        addJSCSRelation(nativeObj, csObjNew);
-    }
-    //     public static void changeCSObj(object csObj, object csObjNew)
-    //     {
-    //         IntPtr jsObj = getJSObj(csObj);
-    //         if (jsObj == IntPtr.Zero)
-    //             return;
-    // 
-    //         mDict1.Remove(jsObj.ToInt64());
-    //         mDict2.Remove(csObj.GetHashCode());
-    //         addJSCSRelation(jsObj, csObjNew);
-    //     }
-    public static void ClearJSCSRelation2()
+    public static void ClearJSCSRel()
     {
         mDictionary1.Clear();
         mDictionary2.Clear();
@@ -1297,7 +800,7 @@ public static class JSMgr
 //         mDict2.Clear();
 //     }
     // JS's __nativeObj -> CS csObj
-    static Dictionary<long, JS_CS_Relation> mDict1 = new Dictionary<long, JS_CS_Relation>(); // key = jsObj.ToInt64()
+    //static Dictionary<long, JS_CS_Relation> mDict1 = new Dictionary<long, JS_CS_Relation>(); // key = jsObj.ToInt64()
     // CS csobj -> JS's jsObj
     // dict2 stores hashCode as key, may cause problems (2 object may share same hashCode)
     // but if use object as key, after calling 'UnityObject.Destroy(this)' in js, 
@@ -1308,7 +811,7 @@ public static class JSMgr
     // 但是如果使用 object 为 key，如果代码里调用了类似 Destroy(go) 的代码，导致 object 变为 null
     // 那么 mDict2 就无法再删除那个条目。(进入一种很奇怪的状态，托管不空，NATIVE为空的状况)
     // 
-    static Dictionary<int, JS_CS_Relation> mDict2 = new Dictionary<int, JS_CS_Relation>(); // key = object.hashCode()
+    //static Dictionary<int, JS_CS_Relation> mDict2 = new Dictionary<int, JS_CS_Relation>(); // key = object.hashCode()
 
     static Dictionary<int, JS_CS_Rel> mDictionary1 = new Dictionary<int, JS_CS_Rel>(); // key = OBJID
     static Dictionary<int, JS_CS_Rel> mDictionary2 = new Dictionary<int, JS_CS_Rel>(); // key = object.GetHashCode()
@@ -1319,56 +822,4 @@ public static class JSMgr
         countDict2 = mDictionary2.Count;
     }
     public static Dictionary<int, JS_CS_Rel> GetDict1() { return mDictionary1;  }
-
-    // TODO delete
-    [MonoPInvokeCallbackAttribute(typeof(JSApi.JSFinalizeOp))]
-    static void JSObjectFinalizer(IntPtr freeOp, IntPtr nativeObj)
-    {
-        JS_CS_Relation Rel;
-        if (mDict1.TryGetValue(nativeObj.ToInt64(), out Rel))
-        {
-            mDict1.Remove(nativeObj.ToInt64());
-            //Debug.Log("GC: " + nativeObj.ToInt64() + " removed from mDict1");
-
-            mDict2.Remove(Rel.hash);
-        }
-        else
-        {
-            //Debug.LogError("Finalizer: csObj not found: " + nativeObj.ToInt64().ToString());
-        }
-//         if (obj != null)
-//             Debug.Log("-jsObj " + (mDict1.Count).ToString() + " " + obj.name);
-
-        //if (mDict1.Count != mDict2.Count)
-        //    Debug.LogError("JSObjectFinalizer / mDict1.Count != mDict2.Count");
-    }
-
-    /*
-     * record registered types
-     */
-//    public class GlobalType
-//    {
-//        public IntPtr jsClass; // JSClass*
-//        public IntPtr proto;   // JSObject* returned by JS_InitClass
-//        public IntPtr parentProto; // JSObject* parent
-//    }
-//    public static void addGlobalType(Type type, IntPtr jsClass, IntPtr proto, IntPtr parentProto)
-//    {
-//        int hash = type.GetHashCode();
-//        GlobalType gt = new GlobalType();
-//        gt.jsClass = jsClass;
-//        gt.proto = proto;
-//        gt.parentProto = parentProto;
-//        mGlobalType.Add(hash, gt);
-//    }
-//    public static GlobalType getGlobalType(Type type)
-//    {
-//        GlobalType gt;
-//        if (mGlobalType.TryGetValue(type.GetHashCode(), out gt))
-//        {
-//            return gt;
-//        }
-//        return null;
-//    }
-//    static Dictionary<int, GlobalType> mGlobalType = new Dictionary<int, GlobalType>();
 }

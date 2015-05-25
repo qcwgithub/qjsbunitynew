@@ -333,7 +333,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                     sb.AppendFormat(" = {0};\n", newValue);
                     if (!bStatic && bStruct)
                     {
-                        sb.Append("        JSMgr.changeJSObj2(vc.jsObjID, _this);\n");
+                        sb.Append("        JSMgr.changeJSObj(vc.jsObjID, _this);\n");
                     }
                 }
             }

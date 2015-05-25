@@ -310,7 +310,7 @@ public static class CSGenerator2
                         {
                             sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSNameMgr.GetTypeFullName(type));
                             sb.AppendFormat("argThis{0} = {1};", sbActualParam, paramHandler.argName);
-                            sb.Append("        JSMgr.changeJSObj2(vc.jsObjID, argThis);\n");
+                            sb.Append("        JSMgr.changeJSObj(vc.jsObjID, argThis);\n");
                         }
                         else
                         {
@@ -328,7 +328,7 @@ public static class CSGenerator2
                         {
                             sb.AppendFormat("        {0} argThis = ({0})vc.csObj;\n", JSNameMgr.GetTypeFullName(type));
                             sb.AppendFormat("        argThis.{0} = {1};\n", property.Name, paramHandler.argName);
-                            sb.Append("        JSMgr.changeJSObj2(vc.jsObjID, argThis);\n");
+                            sb.Append("        JSMgr.changeJSObj(vc.jsObjID, argThis);\n");
                         }
                         else
                         {
@@ -725,7 +725,7 @@ public static class CSGenerator2
                 }
 
                 // string callAndReturn = JSDataExchangeEditor.Get_Return(type/*don't use returnType*/, sbCall.ToString());
-                string callAndReturn = new StringBuilder().AppendFormat("JSMgr.AddJSCSRel(_this, {0});\n", sbCall).ToString();
+                string callAndReturn = new StringBuilder().AppendFormat("JSMgr.addJSCSRel(_this, {0});\n", sbCall).ToString();
                 sb.AppendFormat(@"    {1}if (len == {0}) 
     [[
 {2}
@@ -793,7 +793,7 @@ public static class CSGenerator2
                  (j == minNeedParams) ? "" : "else ",  // [1] else
                  (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? sbStruct.ToString() : "",  // [2] if Struct, get argThis first
                  callAndReturn,  // [3] function call and return to js
-                 (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? "JSMgr.changeJSObj2(vc.jsObjID, argThis);" : "",  // [4] if Struct, update 'this' object
+                 (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? "JSMgr.changeJSObj(vc.jsObjID, argThis);" : "",  // [4] if Struct, update 'this' object
                  sbGetParam,        // [5] get param
                  sbUpdateRefParam); // [6] update ref/out param
 

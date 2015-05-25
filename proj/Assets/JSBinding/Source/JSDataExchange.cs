@@ -88,7 +88,7 @@ public class JSDataExchangeMgr
         }
 
         // TODO CSRepresentedObject2 怎么办
-        object csObj = JSMgr.getCSObj2(jsObjID);
+        object csObj = JSMgr.getCSObj(jsObjID);
         if (csObj == null)
         {
             csObj = new CSRepresentedObject2(jsObjID);
@@ -275,7 +275,7 @@ public class JSDataExchangeMgr
                     if (jsObjID == 0)
                         return null;
 
-                    object csObj = JSMgr.getCSObj2(jsObjID);
+                    object csObj = JSMgr.getCSObj(jsObjID);
                     return csObj;
 
 //                     IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
@@ -402,160 +402,6 @@ public class JSDataExchangeMgr
             setObject(e, obj);
         }
     }
-//     public void setVector2(eSetType e, Vector2 csObj)
-//     {
-//         switch (e)
-//         {
-//             case eSetType.Jsval:
-//             case eSetType.SetRval:
-//                 {
-//                     var typeName = "UnityEngine.Vector2";
-//                     // 如果不使用JS版本的Vector2，这里将导致死循环
-//                     IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
-//                     if (jsObj != IntPtr.Zero)
-//                     {
-//                         //setVector2(ref jsObj, csObj);
-//                         JSApi.SetVector2(jsObj, csObj.x, csObj.y, IntPtr.Zero);
-//                         JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
-//                     }
-//                     else
-//                     {
-//                         JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
-//                         Debug.LogError("Return a \"" + typeName + "\" to JS failed. ");
-//                     }
-// 
-//                     if (e == eSetType.Jsval)
-//                         vc.valTemp = vc.valReturn;
-//                     else if (e == eSetType.SetRval)
-//                         JSApi.JSh_SetRvalJSVAL(JSMgr.cx, vc.vp, ref vc.valReturn);
-//                 }
-//                 break;
-//             case eSetType.UpdateARGVRefOut:
-//                 {
-//                     jsval val = new jsval(); val.asBits = 0;
-//                     IntPtr argvJSObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex);
-//                     if (argvJSObj != IntPtr.Zero)
-//                     {
-//                         bool success = false;
-// 
-//                         var typeName = "UnityEngine.Vector2";
-//                         IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
-//                         if (jsObj != IntPtr.Zero)
-//                         {
-//                             //setVector2(ref jsObj, csObj);
-//                             JSApi.SetVector2(jsObj, csObj.x, csObj.y, argvJSObj);
-// 
-//                             // 3)
-//                             // argvObj.Value = jsObj
-//                             //
-//                             //JSApi.JSh_SetJsvalObject(ref val, jsObj);
-//                             //JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
-//                             success = true;
-//                         }
-//                         else
-//                         {
-//                             Debug.LogError("Return a \"" + typeName + "\" to JS failed.");
-//                         }
-// 
-//                         if (!success)
-//                         {
-//                             JSApi.JSh_SetJsvalUndefined(ref val);
-//                             JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
-//                         }
-//                     }
-//                 }
-//                 break;
-//             default:
-//                 Debug.LogError("Not Supported");
-//                 break;
-//         }
-//     }
-//    public void setVector3(ref IntPtr jsObj, Vector3 v)
-//    {
-//        if (jsObj == IntPtr.Zero)
-//            return;
-//
-//        jsval val = new jsval();
-//
-//
-//
-//        JSApi.JSh_SetJsvalDouble(ref val, v.x);
-//        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "x", -1, ref val);
-//
-//        JSApi.JSh_SetJsvalDouble(ref val, v.y);
-//        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "y", -1, ref val);
-//
-//        JSApi.JSh_SetJsvalDouble(ref val, v.z);
-//        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "z", -1, ref val);
-//    }
-//     public void setVector3(eSetType e, Vector3 csObj)
-//     {
-//         switch (e)
-//         {
-//             case eSetType.Jsval:
-//             case eSetType.SetRval:
-//                 {
-//                     var typeName = "UnityEngine.Vector3";
-//                     // 如果不使用JS版本的Vector3，这里将导致死循环
-//                     IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
-//                     if (jsObj != IntPtr.Zero)
-//                     {
-//                         // setVector3(ref jsObj, csObj);
-//                         JSApi.SetVector3(jsObj, csObj.x, csObj.y, csObj.z, IntPtr.Zero);
-//                         JSApi.JSh_SetJsvalObject(ref vc.valReturn, jsObj);
-//                     }
-//                     else
-//                     {
-//                         JSApi.JSh_SetJsvalUndefined(ref vc.valReturn);
-//                         Debug.LogError("Return a \"" + typeName + "\" to JS failed. ");
-//                     }
-// 
-//                     if (e == eSetType.Jsval)
-//                         vc.valTemp = vc.valReturn;
-//                     else if (e == eSetType.SetRval)
-//                         JSApi.JSh_SetRvalJSVAL(JSMgr.cx, vc.vp, ref vc.valReturn);
-//                 }
-//                 break;
-//             case eSetType.UpdateARGVRefOut:
-//                 {
-//                     jsval val = new jsval(); val.asBits = 0;
-//                     IntPtr argvJSObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex);
-//                     if (argvJSObj != IntPtr.Zero)
-//                     {
-//                         bool success = false;
-// 
-//                         var typeName = "UnityEngine.Vector3";
-//                         IntPtr jsObj = JSMgr.vCall.CallJSClassCtorByName(typeName);
-//                         if (jsObj != IntPtr.Zero)
-//                         {
-//                             //setVector3(ref jsObj, csObj);
-//                             JSApi.SetVector3(jsObj, csObj.x, csObj.y, csObj.z, argvJSObj);
-// 
-//                             // 3)
-//                             // argvObj.Value = jsObj
-//                             //
-//                             //JSApi.JSh_SetJsvalObject(ref val, jsObj);
-//                             //JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
-//                             success = true;
-//                         }
-//                         else
-//                         {
-//                             Debug.LogError("Return a \"" + typeName + "\" to JS failed.");
-//                         }
-// 
-//                         if (!success)
-//                         {
-//                             JSApi.JSh_SetJsvalUndefined(ref val);
-//                             JSApi.JSh_SetUCProperty(JSMgr.cx, argvJSObj, "Value", -1, ref val);
-//                         }
-//                     }
-//                 }
-//                 break;
-//             default:
-//                 Debug.LogError("Not Supported");
-//                 break;
-//         }
-//        // TODO
     // 如果是 UpdateRefARGV，之前要设置 currIndex
     // setObject 情况是：有CS对象
     // 操作：
@@ -569,7 +415,7 @@ public class JSDataExchangeMgr
             Type csType = csObj.GetType();
             if (csType.IsClass)
             {
-                jsObjID = JSMgr.getJSObj2(csObj);
+                jsObjID = JSMgr.getJSObj(csObj);
             }
             if (jsObjID == 0)
             {
@@ -582,7 +428,7 @@ public class JSDataExchangeMgr
                     string typeName = JSNameMgr.GetJSTypeFullName(csType);
                     jsObjID = JSApi.createJSClassObject(typeName);
                     if (jsObjID != 0)
-                        JSMgr.AddJSCSRel(jsObjID, csObj);
+                        JSMgr.addJSCSRel(jsObjID, csObj);
                     else
                         Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
                 }
@@ -750,44 +596,6 @@ public class JSDataExchangeMgr
         return t;
     }
 
-
-
-    // new obj, and assign prototype
-    // set __nativeObj
-    // and return
-//    public static IntPtr NewJSObject(string typeFullName)
-//    {
-//        jsval[] valParam = new jsval[1];
-//        JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam[0], typeFullName);
-//
-//        jsval valRet = new jsval();
-//        valRet.asBits = 0;
-//        JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_NewObject", 1, valParam, ref valRet);
-//        if (jsval.isNullOrUndefined(valRet.tag))
-//            return IntPtr.Zero;
-//
-//        IntPtr jsObj = JSApi.JSh_NewMyClass(JSMgr.cx, JSMgr.mjsFinalizer);
-//        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref valRet);
-//        return jsObj;
-//    }
-
-    // TODO what???
-//     public static IntPtr GetJSObjectByname(string name)
-//     {
-//         string[] arr = name.Split('.');
-//         IntPtr obj = JSMgr.glob;
-//         jsval val = new jsval();
-//         val.asBits = 0;
-//         for (int i = 0; i < arr.Length; i++)
-//         {
-//             JSApi.JSh_GetUCProperty(JSMgr.cx, obj, arr[i], -1, ref val);
-//             obj = JSApi.JSh_GetJsvalObject(ref val);
-//             if (obj == IntPtr.Zero)
-//                 return IntPtr.Zero;
-//             val.asBits = 0;
-//         }
-//         return obj;
-//     }
 
     /*
     // Runtime Only
@@ -1074,15 +882,6 @@ public class JSDataExchangeMgr
 
     public delegate T DGetV<T>();
     public static T GetJSArg<T>(DGetV<T> del) { return del(); }
-
-//     public bool IsArgvFunction()
-//     {
-//         var i = vc.currIndex;
-//         jsval val = new jsval(); val.asBits = 0;
-//         JSApi.JSh_ArgvFunctionValue(vc.cx, vc.vp, i, ref val);
-// 		if (val.asBits == 0) return false;
-//         return !jsval.isNullOrUndefined(val.tag);
-//     }
 }
 
 public class JSDataExchange_Arr
