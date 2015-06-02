@@ -99,11 +99,17 @@ public static class JSGenerator2
     }
     public static string SharpKitMethodName(string methodName, ParameterInfo[] paramS, bool overloaded, int TCounts = 0)
     {
+//         if (!overloaded && TCounts > 0)
+//         {
+//             Debug.Log("");
+//         }
+
         string name = methodName;
+        if (TCounts > 0)
+            name += "$" + TCounts.ToString();
+
         if (overloaded)
         {
-            if (TCounts > 0)
-                name += "$" + TCounts.ToString();
             for (int i = 0; i < paramS.Length; i++)
             {
                 Type type = paramS[i].ParameterType;

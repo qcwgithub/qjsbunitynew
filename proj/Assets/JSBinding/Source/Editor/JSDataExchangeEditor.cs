@@ -74,8 +74,10 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             return ph;
         }
 
+        bool bTOrContainsT = (type.IsGenericParameter || type.ContainsGenericParameters);
+
         string typeFullName;
-        if (type.IsGenericParameter || type.ContainsGenericParameters)
+        if (bTOrContainsT)
             typeFullName = "object";
         else
             typeFullName = JSNameMgr.GetTypeFullName(type);
@@ -103,7 +105,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             {
                 ph.getter = new StringBuilder()
                     .AppendFormat("int r_arg{0} = JSApi.incArgIndex();\n", paramIndex)
-                    .AppendFormat("{0} {1};", typeFullName, ph.argName)
+                    .AppendFormat("        {0} {1}{2};", typeFullName, ph.argName, bTOrContainsT ? " = null" : "")
                     .ToString();
             }
             else if (isRef)
@@ -122,9 +124,16 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
 
             if (isOut)
             {
-                ph.updater = new StringBuilder()
-                    .AppendFormat("JSApi.setArgIndex(r_arg{0});\n", paramIndex)
-                    .AppendFormat("{0}((int)JSApi.SetType.ArgRef, {1});", keyword.Replace("get", "set"), ph.argName)
+                var _sb = new StringBuilder();
+                if (bTOrContainsT)
+                {
+                    // TODO
+                    // sorry, 'arr_t' is written in CSGenerator2.cs
+                    _sb.AppendFormat("        {0} = arr_t[{1}];\n", ph.argName, paramIndex);
+                }
+
+                ph.updater = _sb.AppendFormat("        JSApi.setArgIndex(r_arg{0});\n", paramIndex)
+                    .AppendFormat("        {0}((int)JSApi.SetType.ArgRef, {1});\n", keyword.Replace("get", "set"), ph.argName)
                     .ToString();
             }
         }

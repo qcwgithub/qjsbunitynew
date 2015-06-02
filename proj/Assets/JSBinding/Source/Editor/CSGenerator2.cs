@@ -774,6 +774,8 @@ public static class CSGenerator2
             else
             {
                 StringBuilder sbCall = new StringBuilder();
+                StringBuilder sbActualParamT_arr = new StringBuilder();
+                StringBuilder sbUpdateRefT = new StringBuilder();
 
                 if (TCount == 0 && !type.IsGenericTypeDefinition)
                 {
@@ -786,21 +788,23 @@ public static class CSGenerator2
                 }
                 else
                 {
-                    var sbActualParamT = new StringBuilder();
-                    if (ps.Length > 0) sbActualParamT.AppendFormat("new object[][[{0}]]", sbActualParam);
-                    else sbActualParamT.Append("null");
-
-                    if (bStatic) {
-                        sbCall.AppendFormat("method.Invoke(null, {0})", sbActualParamT);
-                    }
-                    else if (!type.IsValueType)
+                    if (ps.Length > 0)
                     {
-                        sbCall.AppendFormat("method.Invoke(vc.csObj, {0})", sbActualParamT);
+                        sbActualParamT_arr.AppendFormat("object[] arr_t = new object[][[ {0} ]];", sbActualParam);
+                        // reflection call doesn't need out or ref modifier
+                        sbActualParamT_arr.Replace(" out ", " ").Replace(" ref ", " ");
                     }
                     else
                     {
-                        sbCall.AppendFormat("method.Invoke(vc.csObj, {0})", sbActualParamT);
+                        sbActualParamT_arr.Append("object[] arr_t = null;");
                     }
+
+                    if (bStatic)
+                        sbCall.AppendFormat("method.Invoke(null, arr_t)");
+                    else if (!type.IsValueType)
+                        sbCall.AppendFormat("method.Invoke(vc.csObj, arr_t)");
+                    else
+                        sbCall.AppendFormat("method.Invoke(vc.csObj, arr_t)");
                 }
 
                 string callAndReturn = JSDataExchangeEditor.Get_Return(returnType, sbCall.ToString());
@@ -812,22 +816,46 @@ public static class CSGenerator2
                     sbStruct.AppendFormat("{0} argThis = ({0})vc.csObj;", JSNameMgr.GetTypeFullName(type));
                 }
 
-                sb.AppendFormat(@"    {1}if (len == {0}) 
-    [[
-{5}
-        {2}
-        {3}
-        {4}
-{6}
-    ]]
-",
-                 j, // [0] param count
-                 (j == minNeedParams) ? "" : "else ",  // [1] else
-                 (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? sbStruct.ToString() : "",  // [2] if Struct, get argThis first
-                 callAndReturn,  // [3] function call and return to js
-                 (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? "JSMgr.changeJSObj(vc.jsObjID, argThis);" : "",  // [4] if Struct, update 'this' object
-                 sbGetParam,        // [5] get param
-                 sbUpdateRefParam); // [6] update ref/out param
+                sb.AppendFormat("    {0}if (len == {1}) \n", (j == minNeedParams) ? "" : "else ", j);
+                sb.Append("    [[\n");
+                sb.Append(sbGetParam);
+                if (sbActualParamT_arr.Length > 0)
+                {
+                    sb.Append("        ").Append(sbActualParamT_arr).Append("\n");
+                }
+
+                // if it is Struct, get argThis first
+                if (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition)
+                {
+                    sb.Append(sbStruct);
+                }
+
+                sb.Append("        ").Append(callAndReturn).Append("\n");
+
+                // if it is Struct, update 'this' object
+                if (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition)
+                {
+                    sb.Append("        JSMgr.changeJSObj(vc.jsObjID, argThis);\n");
+                }
+                sb.Append(sbUpdateRefParam);
+                sb.Append("    ]]\n");
+
+//                 sb.AppendFormat(@"    {0}if (len == {1}) 
+//     [[
+// {2}
+//         {3}
+//         {4}
+//         {5}
+// {6}
+//     ]]
+// ",
+//                  (j == minNeedParams) ? "" : "else ",  // [0] else
+//                  j, // [1] param count
+//                  sbGetParam,        // [2] get param
+//                  (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? sbStruct.ToString() : "",  // [3] if Struct, get argThis first
+//                  callAndReturn,  // [4] function call and return to js
+//                  (type.IsValueType && !bStatic && TCount == 0 && !type.IsGenericTypeDefinition) ? "JSMgr.changeJSObj(vc.jsObjID, argThis);" : "",  // [5] if Struct, update 'this' object
+//                  sbUpdateRefParam); // [6] update ref/out param
 
             }
         }
@@ -1710,6 +1738,12 @@ using UnityEngine;
 
     public static void Type2TypeFlag(Type type, cg.args argFlag)
     {
+        if (type.IsByRef)
+        {
+            argFlag.Add("TypeFlag.IsRef");
+            type = type.GetElementType();
+        }
+
         if (type.IsGenericParameter)
         {
             argFlag.Add("TypeFlag.IsT");
@@ -1721,9 +1755,6 @@ using UnityEngine;
 
         if (type.IsArray)
             argFlag.Add("TypeFlag.IsArray");
-
-        if (type.IsByRef)
-            argFlag.Add("TypeFlag.IsRef");
     }
     public static cg.args ParameterInfo2TypeFlag(ParameterInfo p)
     {

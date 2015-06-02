@@ -132,6 +132,11 @@ class GenericTypeCache
             if ((isOut && !pi[i].IsOut) || (!isOut && pi[i].IsOut))
                 return false;
 
+            if (byRef || isOut)
+            {
+                real_t = real_t.GetElementType();
+            }
+
             bool isArray = 0 != (flag & TypeFlag.IsArray);
             if (isArray)
             {
