@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Viewer : MonoBehaviour
@@ -50,6 +50,8 @@ public class Viewer : MonoBehaviour
         new stScene("Level", "2D Platformer"), 
         new stScene("ListTest"),   
         new stScene("ListTest_JS"),   
+        new stScene("DictionaryTest"),   
+        new stScene("DictionaryTest_JS"),   
         new stScene("PerformanceTest1"),   
         new stScene("PerformanceTest1_JS"),   
         new stScene("TestCoroutine"),   
