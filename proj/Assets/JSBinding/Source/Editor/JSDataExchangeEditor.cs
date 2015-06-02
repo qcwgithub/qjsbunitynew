@@ -207,11 +207,11 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         }
     }
 
-    public static string GetMethodArg_DelegateFuncionName(Type classType, string methodName, int methodIndex, int argIndex)
+    public static string GetMethodArg_DelegateFuncionName(Type classType, string methodName, int methodTag, int argIndex)
     {
         // 如果还有重复再加 method index
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("{0}_{1}_GetDelegate_member{2}_arg{3}", classType.Name, methodName, methodIndex, argIndex);
+        sb.AppendFormat("{0}_{1}_GetDelegate_member{2}_arg{3}", classType.Name, methodName, methodTag, argIndex);
         return JSNameMgr.HandleFunctionName(sb.ToString());
     }
     public static string Build_GetDelegate(string getDelegateFunctionName, Type delType)
@@ -225,12 +225,12 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             .Append("]])\n")
             .ToString();
     }
-    public static StringBuilder Build_DelegateFunction(Type classType, MemberInfo memberInfo, Type delType, int methodIndex, int argIndex)
+    public static StringBuilder Build_DelegateFunction(Type classType, MemberInfo memberInfo, Type delType, int methodTag, int argIndex)
     {
         // building a closure
         // a function having a up-value: jsFunction
 
-        string getDelFunctionName = GetMethodArg_DelegateFuncionName(classType, memberInfo.Name, methodIndex, argIndex);
+        string getDelFunctionName = GetMethodArg_DelegateFuncionName(classType, memberInfo.Name, methodTag, argIndex);
 
         var sb = new StringBuilder();
 		MethodInfo delInvoke = delType.GetMethod("Invoke");

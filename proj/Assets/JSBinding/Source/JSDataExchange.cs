@@ -91,7 +91,7 @@ public class JSDataExchangeMgr
         object csObj = JSMgr.getCSObj(jsObjID);
         if (csObj == null)
         {
-            csObj = new CSRepresentedObject2(jsObjID);
+            csObj = new CSRepresentedObject(jsObjID);
         }
         return csObj;
 
@@ -419,9 +419,9 @@ public class JSDataExchangeMgr
             }
             if (jsObjID == 0)
             {
-                if (csObj is CSRepresentedObject2)
+                if (csObj is CSRepresentedObject)
                 {
-                    jsObjID = ((CSRepresentedObject2)csObj).jsObjID;
+                    jsObjID = ((CSRepresentedObject)csObj).jsObjID;
                 }
                 else
                 {
@@ -662,87 +662,14 @@ public class JSDataExchangeMgr
         }
         return con;
     }*/
-    public static FieldInfo GetFidldInfoOfGenericClass(Type type, int index)
+    public static ConstructorInfo makeGenericConstructor(Type type, ConstructorID constructorID)
     {
-        if (index < 0) return null;
-        return type.GetFields(JSMgr.BindingFlagsField)[index];
-    }
-    public static PropertyInfo GetPropertyInfoOfGenericClass(Type type, int index)
-    {
-        if (index < 0) return null;
-        return type.GetProperties(JSMgr.BindingFlagsProperty)[index];
-    }
-    public static ConstructorInfo GetConstructorOfGenericClass(Type type, JSVCall vc, int index)
-    { 
-        if (index < 0) 
-            return null;
-
-        bool bGen = type.IsGenericType;
-        bool bGenD = type.IsGenericTypeDefinition;
-
-        if (type.IsGenericTypeDefinition)
+        int tCount = type.GetGenericArguments().Length;
+        Type[] genericTypes = new Type[tCount];
+        for (int i = 0; i < tCount; i++)
         {
-            int TCount = type.GetGenericArguments().Length;
-            // get T types
-            Type[] genericTypes = new Type[TCount];
-            for (int i = 0; i < TCount; i++)
-            {
-                // Get generic types from js.
-                System.Type t = JSDataExchangeMgr.GetTypeByName(JSApi.getStringS((int)JSApi.GetType.Arg), typeof(CSRepresentedObject));
-                genericTypes[i] = t;
-                if (t == null)
-                {
-                    return null;
-                }
-            }
-            var concreteType = type.MakeGenericType(genericTypes);
-            return concreteType.GetConstructors()[index];
-        }
-        else
-        {
-            return type.GetConstructors()[index];
-        }
-    }
-
-    public static MethodInfo GetMethodOfGenericClass(Type type, string methodName, int index)
-    {
-        if (index < 0) return null;
-
-        MethodInfo method = JSMgr.RuntimeGetMethodInfo(type, index);
-        if (method.Name != methodName)
-        {
-            Debug.LogError("GetMethodOfGenericClass Name different! " + methodName + "/" + method.Name);
-            return null;
-        }
-        return method;
-    }
-    // Runtime Only
-    // type: class type
-    // methodName: method name
-    // TCount: generic parameter count
-    // vc: JSVCall instance
-    public static MethodInfo MakeGenericFunction(Type type, string methodName, int methodArrIndex, int TCount, JSVCall vc)
-    {
-        // Get generic method by name and param count.
-//         MethodInfo methodT = JSDataExchangeMgr.GetGenericMethodInfo(type, methodName, TCount, paramCount);
-//         if (methodT == null)
-//         {
-//             return null;
-//         }
-
-        MethodInfo methodT = JSMgr.RuntimeGetMethodInfo(type, methodArrIndex);
-        if (methodT.Name != methodName)
-        {
-            Debug.LogError("MakeGenericFunction Name different! " + methodName + "/" + methodT.Name);
-            return null;
-        }
-
-        // get T types
-        Type[] genericTypes = new Type[TCount];
-        for (int i = 0; i < TCount; i++)
-        {
-            // Get generic types from js.
-            System.Type t = JSDataExchangeMgr.GetTypeByName(JSApi.getStringS((int)JSApi.GetType.Arg), typeof(CSRepresentedObject));
+            string typeName = JSApi.getStringS((int)JSApi.GetType.Arg);
+            System.Type t = JSDataExchangeMgr.GetTypeByName(typeName, typeof(CSRepresentedObject));
             genericTypes[i] = t;
             if (t == null)
             {
@@ -750,43 +677,39 @@ public class JSDataExchangeMgr
             }
         }
 
-        // Make generic method.
-        MethodInfo method = methodT.MakeGenericMethod(genericTypes);
-        return method;
+        var exactType = type.MakeGenericType(genericTypes);
+        var exactConstructor = GenericTypeCache.getConstructor(exactType, constructorID);
+        return exactConstructor;
     }
+
     // Runtime Only
-    // called by MakeGenericFunction
-    // get generic method by matching name,TCount,paramCount, if more than 1 match, return null.
-    static MethodInfo GetGenericMethodInfo(Type type, string name, int TCount, int paramCount)
+    // type: class type
+    // methodName: method name
+    // TCount: generic parameter count
+    // vc: JSVCall instance
+    // TODO
+    // delete
+    public static MethodInfo makeGenericMethod(Type type, MethodID methodID, int TCount)
     {
-        BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static/* | BindingFlags.DeclaredOnly */;
-        MethodInfo[] methods = type.GetMethods(flags);
-        if (methods == null || methods.Length == 0)
+        MethodInfo methodT = GenericTypeCache.getMethod(type, methodID);
+        if (methodT == null)
         {
             return null;
         }
 
-        MethodInfo method = null;
-        for (int i = 0; i < methods.Length; i++)
+        Type[] genericTypes = new Type[TCount];
+        for (int i = 0; i < TCount; i++)
         {
-            if (methods[i].Name == name && 
-                methods[i].IsGenericMethodDefinition &&
-                methods[i].GetGenericArguments().Length == TCount &&
-                methods[i].GetParameters().Length == paramCount)
+            string typeName = JSApi.getStringS((int)JSApi.GetType.Arg);
+            System.Type t = JSDataExchangeMgr.GetTypeByName(typeName, typeof(CSRepresentedObject));
+            genericTypes[i] = t;
+            if (t == null)
             {
-                if (method == null)
-                    method = methods[i];
-                else
-                {
-                    Debug.LogError("More than 1 Generic method found!!! " + JSNameMgr.GetTypeFullName(type) + "." + name);
-                    return null;
-                }
+                return null;
             }
         }
-        if (method == null)
-        {
-            Debug.LogError("No generic method found! " + JSNameMgr.GetTypeFullName(type) + "." + name);
-        }
+
+        MethodInfo method = methodT.MakeGenericMethod(genericTypes);
         return method;
     }
     //
@@ -979,21 +902,6 @@ public class JSDataExchange_Arr
 }
 
 /*
- * class defined in JS
- * use this class to represent that object
- * it can be transfered between js<->c#
- * but no member functions are available
- */
-// TODO 如何处理这个玩意
-public class CSRepresentedObject
-{
-    public CSRepresentedObject(IntPtr jsObj) {
-        this.jsObj = jsObj;
-    }
-    public IntPtr jsObj;
-}
-
-/*
  what's this?
  example:
  if we have a js object Message, like:
@@ -1009,9 +917,9 @@ public class CSRepresentedObject
  but in C# we can only get it, return it, no any other operation can be performed
  
  */
-public class CSRepresentedObject2
+public class CSRepresentedObject
 {
-    public CSRepresentedObject2(int jsObjID)
+    public CSRepresentedObject(int jsObjID)
     {
         this.jsObjID = jsObjID;
     }

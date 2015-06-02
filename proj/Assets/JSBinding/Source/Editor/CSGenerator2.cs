@@ -103,21 +103,23 @@ public static class CSGenerator2
             {
                 sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, field, field.FieldType, i, 0));
             }
+            bool bGenericT = type.IsGenericTypeDefinition;
+            if (bGenericT)
+            {
+                sb.AppendFormat("public static FieldID fieldID{0} = new FieldID(\"{1}\");\n", i, field.Name);
+            }
 
 
             JSDataExchangeEditor.MemberFeature features = 0;
             if (field.IsStatic) features |= JSDataExchangeEditor.MemberFeature.Static;
 
-            bool bGenericT = type.IsGenericTypeDefinition;
             StringBuilder sbt = null;
             if (bGenericT)
             {
                 sbt = new StringBuilder();
 
-                sbt.AppendFormat("    FieldInfo member = JSDataExchangeMgr.GetFidldInfoOfGenericClass(vc.csObj.GetType(), {0}); \n",
-                        fieldsIndex[i]);        // [0] methodArrIndex
-
-                sbt.AppendFormat("    if (member == null)\n        return;\n");
+                sbt.AppendFormat("    FieldInfo member = GenericTypeCache.getField(vc.csObj.GetType(), fieldID{0}); \n", i);
+                sbt.AppendFormat("    if (member == null) return;\n");
                 sbt.Append("\n");
             }
 
@@ -369,14 +371,49 @@ public static class CSGenerator2
                 sb.Append(JSDataExchangeEditor.Build_DelegateFunction(type, property, property.PropertyType, i, 0));
             }
 
+            // PropertyID
+            if (bGenericT)
+            {
+                cg.args arg = new cg.args();
+                arg.AddFormat("\"{0}\"", property.Name);
+
+                arg.AddFormat("\"{0}\"", property.PropertyType.Name);
+                if (property.PropertyType.IsGenericParameter)
+                {
+                    arg.Add("TypeFlag.IsT");
+                }
+                else
+                {
+                    arg.Add("TypeFlag.None");
+                }
+
+                cg.args arg1 = new cg.args();
+                cg.args arg2 = new cg.args();
+
+                foreach (ParameterInfo p in property.GetIndexParameters())
+                {
+                    cg.args argFlag = ParameterInfo2TypeFlag(p);
+
+                    arg1.AddFormat("\"{0}\"", p.ParameterType.Name);                    
+                    arg2.Add(argFlag.Format(cg.args.ArgsFormat.Flag));
+                }
+
+                if (arg1.Count > 0)
+                    arg.AddFormat("new string[]{0}", arg1.Format(cg.args.ArgsFormat.Brace));
+                else
+                    arg.Add("null");
+                if (arg2.Count > 0)
+                    arg.AddFormat("new TypeFlag[]{0}", arg2.Format(cg.args.ArgsFormat.Brace));
+                else
+                    arg.Add("null");
+                sb.AppendFormat("public static PropertyID propertyID{0} = new PropertyID({1});\n", i, arg.ToString());
+            }
+
             if (bGenericT)
             {
                 sbt = new StringBuilder();
-
-                sbt.AppendFormat("    PropertyInfo member = JSDataExchangeMgr.GetPropertyInfoOfGenericClass(vc.csObj.GetType(), {0}); \n",
-                        propertiesIndex[i]);        // [0] methodArrIndex
-
-                sbt.AppendFormat("    if (member == null)\n        return;\n");
+                sbt.AppendFormat("    PropertyInfo member = GenericTypeCache.getProperty(vc.csObj.GetType(), propertyID{0}); \n", i);
+                sbt.AppendFormat("    if (member == null) return;\n");
                 sbt.Append("\n");
             }
 
@@ -520,15 +557,13 @@ public static class CSGenerator2
         return sb;
     }
     public static StringBuilder BuildNormalFunctionCall(
-        int methodIndex, 
-        ParameterInfo[] ps, 
-        string className, 
+        int methodTag, 
+        ParameterInfo[] ps,
         string methodName, 
         bool bStatic, 
-        bool returnVoid, 
         Type returnType, 
         bool bConstructor,
-        int TCount = 0, int methodArrIndex = -1)
+        int TCount = 0)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -546,10 +581,12 @@ public static class CSGenerator2
                 // 不是 T 函数，但是类带T
                 StringBuilder sbt = new StringBuilder();
 
-                sbt.AppendFormat("    ConstructorInfo constructor = JSDataExchangeMgr.GetConstructorOfGenericClass(typeof({0}), vc, {1}); \n",
-                        JSNameMgr.GetTypeFullName(type), methodArrIndex);        // [0] methodArrIndex
+                sbt.AppendFormat("    ConstructorInfo constructor = JSDataExchangeMgr.makeGenericConstructor(typeof({0}), constructorID{1}); \n",
+                        JSNameMgr.GetTypeFullName(type), methodTag);
 
-                sbt.AppendFormat("    if (constructor == null)\n        return true;\n");
+                //sbMethodHitTest.AppendFormat("GenericTypeCache.getConstructor(typeof({0}), {2}.constructorID{1});\n", JSNameMgr.GetTypeFullName(type), methodTag, JSNameMgr.GetTypeFileName(type));
+
+                sbt.AppendFormat("    if (constructor == null) return true;\n");
                 sbt.Append("\n");
 
                 sb.Append(sbt);
@@ -563,20 +600,18 @@ public static class CSGenerator2
 
             if (!bStatic) // instance method
             {
-                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(vc.csObj.GetType(), \"{0}\", {1} /* method index */, {2} /* T Count */, vc); \n",
-                    methodName,            // [0] 函数名
-                    methodArrIndex,        // [1] methodArrIndex
-                    TCount);               // [2] TCount
+                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.makeGenericMethod(vc.csObj.GetType(), methodID{0}, {1}); \n",
+                    methodTag,
+                    TCount);
             }
             else // static method
             {
-                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.MakeGenericFunction(typeof({0}), \"{1}\", {2} /* method index */, {3} /* T Count */, vc); \n",
-                    JSNameMgr.GetTypeFullName(type), // [0] type
-                    methodName,            // [1] 函数名
-                    methodArrIndex,        // [2] methodArrIndex
-                    TCount);               // [3] TCount
+                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.makeGenericMethod(typeof({0}), methodID{1}, {2}); \n",
+                    JSNameMgr.GetTypeFullName(type),
+                    methodTag,
+                    TCount);
             }
-            sbt.AppendFormat("    if (method == null)\n        return true;\n");
+            sbt.AppendFormat("    if (method == null) return true;\n");
             sbt.Append("\n");
 
             sb.Append(sbt);
@@ -589,19 +624,16 @@ public static class CSGenerator2
 
             if (!bStatic) // instance method
             {
-                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.GetMethodOfGenericClass(vc.csObj.GetType(), \"{0}\", {1}); \n",
-                    methodName,            // [0] 函数名
-                    methodArrIndex);        // [1] methodArrIndex
+                sbt.AppendFormat("    MethodInfo method = GenericTypeCache.getMethod(vc.csObj.GetType(), methodID{0}); \n", methodTag);
             }
             else // static method
             {
                 // Debug.LogError("=================================ERROR");
-                sbt.AppendFormat("    MethodInfo method = JSDataExchangeMgr.GetMethodOfGenericClass(typeof({0}), \"{1}\", {2}); \n",
+                sbt.AppendFormat("    MethodInfo method = GenericTypeCache.getMethod(typeof({0}), methodID{1}); \n",
                     JSNameMgr.GetTypeFullName(type), // [0]
-                    methodName,            // [1] 函数名
-                    methodArrIndex);        // [2] methodArrIndex
+                    methodTag);
             }
-            sbt.AppendFormat("    if (method == null)\n        return true;\n");
+            sbt.AppendFormat("    if (method == null) return true;\n");
             sbt.Append("\n");
 
             sb.Append(sbt);
@@ -658,7 +690,7 @@ public static class CSGenerator2
                 if (JSDataExchangeEditor.IsDelegateDerived(p.ParameterType))
                 {
                     //string delegateGetName = JSDataExchangeEditor.GetFunctionArg_DelegateFuncionName(className, methodName, methodIndex, i);
-                    string delegateGetName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, methodName, methodIndex, i);
+                    string delegateGetName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, methodName, methodTag, i);
 
                     //if (p.ParameterType.IsGenericType)
                     if (p.ParameterType.ContainsGenericParameters)
@@ -834,11 +866,9 @@ static bool {0}(JSVCall vc, int argc)
 
         // 如果产生默认的构造函数，后续的索引都加1
         int deltaIndex = 0;
-
         if (JSBindingSettings.NeedGenDefaultConstructor(type))
         {
             deltaIndex = 1;
-
         }
 
         for (int i = 0; i < constructors.Length; i++)
@@ -848,38 +878,59 @@ static bool {0}(JSVCall vc, int argc)
             if (cons == null)
             {
                 // this is default constructor
-
                 bool returnVoid = false;
                 string functionName = type.Name + "_" + type.Name + "1";
 
                 sb.AppendFormat(fmt, functionName,
-                    BuildNormalFunctionCall(0, new ParameterInfo[0], type.Name, type.Name, false, returnVoid, null, true));
+                    BuildNormalFunctionCall(0, new ParameterInfo[0], type.Name, false, null, true));
 
                 ccbn.constructors.Add(functionName);
                 ccbn.constructorsCSParam.Add(GenListCSParam2(new ParameterInfo[0]).ToString());
             }
             else
             {
-
                 ParameterInfo[] paramS = cons.GetParameters();
-
                 int olIndex = i + 1; // for constuctors, they are always overloaded
-                bool returnVoid = false;
+                int methodTag = i + deltaIndex;
 
                 for (int j = 0; j < paramS.Length; j++)
                 {
-                    //if (typeof(System.Delegate).IsAssignableFrom(paramS[j].ParameterType))
                     if (JSDataExchangeEditor.IsDelegateDerived(paramS[j].ParameterType))
                     {
-                        StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, cons, paramS[j].ParameterType, i, j);
+                        StringBuilder sbD = JSDataExchangeEditor.Build_DelegateFunction(type, cons, paramS[j].ParameterType, methodTag, j);
                         sb.Append(sbD);
                     }
+                }
+
+                // ConstructorID
+                if (type.IsGenericTypeDefinition)
+                {
+                    cg.args arg = new cg.args();
+                    cg.args arg1 = new cg.args();
+                    cg.args arg2 = new cg.args();
+
+                    foreach (ParameterInfo p in cons.GetParameters())
+                    {
+                        cg.args argFlag = ParameterInfo2TypeFlag(p);
+                        arg1.AddFormat("\"{0}\"", p.ParameterType.Name);
+                        arg2.Add(argFlag.Format(cg.args.ArgsFormat.Flag));
+                    }
+
+                    if (arg1.Count > 0)
+                        arg.AddFormat("new string[]{0}", arg1.Format(cg.args.ArgsFormat.Brace));
+                    else
+                        arg.Add("null");
+                    if (arg2.Count > 0)
+                        arg.AddFormat("new TypeFlag[]{0}", arg2.Format(cg.args.ArgsFormat.Brace));
+                    else
+                        arg.Add("null");
+                    sb.AppendFormat("public static ConstructorID constructorID{0} = new ConstructorID({1});\n", i, arg.ToString());
                 }
 
                 string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : "") + (cons.IsStatic ? "_S" : ""));
 
                 sb.AppendFormat(fmt, functionName,
-                    BuildNormalFunctionCall(i + deltaIndex, paramS, type.Name, cons.Name, cons.IsStatic, returnVoid, null, true, 0, constructorsIndex[i]));
+                    BuildNormalFunctionCall(methodTag, paramS, cons.Name, cons.IsStatic, null, true, 0));
 
                 ccbn.constructors.Add(functionName);
                 ccbn.constructorsCSParam.Add(GenListCSParam2(paramS).ToString());
@@ -924,6 +975,45 @@ static bool {0}(JSVCall vc, int argc)
                 }
             }
 
+            // MethodID
+            if (type.IsGenericTypeDefinition || method.IsGenericMethodDefinition)
+            {
+                cg.args arg = new cg.args();
+                arg.AddFormat("\"{0}\"", method.Name);
+
+                arg.AddFormat("\"{0}\"", method.ReturnType.Name);
+                if (method.ReturnType.IsGenericParameter)
+                {
+                    arg.Add("TypeFlag.IsT");
+                }
+                else
+                {
+                    arg.Add("TypeFlag.None");
+                }
+
+                cg.args arg1 = new cg.args();
+                cg.args arg2 = new cg.args();
+
+                foreach (ParameterInfo p in method.GetParameters())
+                {
+                    // flag of a parameter
+                    cg.args argFlag = ParameterInfo2TypeFlag(p);
+
+                    arg1.AddFormat("\"{0}\"", p.ParameterType.Name);
+                    arg2.Add(argFlag.Format(cg.args.ArgsFormat.Flag));
+                }
+
+                if (arg1.Count > 0)
+                    arg.AddFormat("new string[]{0}", arg1.Format(cg.args.ArgsFormat.Brace));
+                else
+                    arg.Add("null");
+                if (arg2.Count > 0)
+                    arg.AddFormat("new TypeFlag[]{0}", arg2.Format(cg.args.ArgsFormat.Brace));
+                else
+                    arg.Add("null");
+                sb.AppendFormat("public static MethodID methodID{0} = new MethodID({1});\n", i, arg.ToString());
+            }
+
             int olIndex = olInfo[i];
             bool returnVoid = (method.ReturnType == typeof(void));
 
@@ -948,10 +1038,9 @@ static bool {0}(JSVCall vc, int argc)
                 sb.AppendFormat(fmt, functionName,
 
                     method.IsSpecialName ? BuildSpecialFunctionCall(paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType)
-                    : BuildNormalFunctionCall(i, paramS, type.Name, method.Name, method.IsStatic, returnVoid, method.ReturnType, 
+                    : BuildNormalFunctionCall(i, paramS, method.Name, method.IsStatic, method.ReturnType, 
                     false/* is constructor */, 
-                    TCount, 
-                    methodsIndex[i]));
+                    TCount));
             }
 
             ccbn.methods.Add(functionName);
@@ -1490,7 +1579,13 @@ using UnityEngine;
     public static void GenerateJSCSBindings()
 	{
 		if (!CheckClassBindings())
-			return;
+            return;
+
+//         if (genMethodHitTest)
+//         {
+//             sbMethodHitTest = new StringBuilder();
+//         }
+
         JSDataExchangeEditor.reset();
         UnityEngineManual.initManual();
         CSGenerator2.GenerateClassBindings();
@@ -1499,6 +1594,8 @@ using UnityEngine;
         AssetDatabase.Refresh();
     }
 
+//     static bool genMethodHitTest = false;
+//     static StringBuilder sbMethodHitTest;
     
     //[MenuItem("Assets/JSBinding/1Output All T Functions")]
     public static void OutputAllTFunctionsInUnityEngine()
@@ -1609,5 +1706,37 @@ using UnityEngine;
 
         Debug.Log("Output All Types in UnityEngine finish, file: " + tempFile);
         return;
+    }
+
+    public static void Type2TypeFlag(Type type, cg.args argFlag)
+    {
+        if (type.IsGenericParameter)
+        {
+            argFlag.Add("TypeFlag.IsT");
+        }
+        else if (type.IsGenericType)
+        {
+            argFlag.Add("TypeFlag.IsGenericType");
+        }
+
+        if (type.IsArray)
+            argFlag.Add("TypeFlag.IsArray");
+
+        if (type.IsByRef)
+            argFlag.Add("TypeFlag.IsRef");
+    }
+    public static cg.args ParameterInfo2TypeFlag(ParameterInfo p)
+    {
+        cg.args argFlag = new cg.args();
+
+        Type2TypeFlag(p.ParameterType, argFlag);
+
+        if (p.IsOut)
+            argFlag.Add("TypeFlag.IsOut");
+
+        if (argFlag.Count == 0)
+            argFlag.Add("TypeFlag.None");
+
+        return argFlag;
     }
 }

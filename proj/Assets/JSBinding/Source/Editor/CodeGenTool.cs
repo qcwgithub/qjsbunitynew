@@ -44,8 +44,10 @@ namespace cg
             OnlyList, // a, b, c
             Call, // (a, b, c)
             Indexer, // [a, b, c]
+            Brace, // {a, b, c}
             NewObjArr,// new object[] {a, b, c}
             GenericT, // <a, b, c>
+            Flag,// a | b | c
         }
         public string Format(ArgsFormat fmt)
         {
@@ -62,6 +64,9 @@ namespace cg
                 case ArgsFormat.NewObjArr:
                     sb.Append("new object[] {");
                     break;
+                case ArgsFormat.Brace:
+                    sb.Append("{");
+                    break;
                 case ArgsFormat.GenericT:
                     sb.Append("<");
                     break;
@@ -72,7 +77,7 @@ namespace cg
             {
                 sb.Append(lst[i]);
                 if (i != lst.Count - 1)
-                    sb.Append(", ");
+                    sb.Append((fmt == ArgsFormat.Flag) ? " | " : ", ");
             }
             switch (fmt)
             {
@@ -83,6 +88,9 @@ namespace cg
                     sb.Append("]");
                     break;
                 case ArgsFormat.NewObjArr:
+                    sb.Append("}");
+                    break;
+                case ArgsFormat.Brace:
                     sb.Append("}");
                     break;
                 case ArgsFormat.GenericT:

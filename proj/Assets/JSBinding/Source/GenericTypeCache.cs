@@ -5,32 +5,34 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Reflection;
 
-class MemberID
+public class MemberID
 {
-    // -2: initial 
-    // -1: failed
+    // -1: initial 
     // >=0: success
-    public int index = -2; 
+    public int index = -1;
 }
 
-enum TypeFlag
+public enum TypeFlag
 {
+    None = 0,
     IsRef = 1, // only for parameter
     IsOut = 2, // only for parameter
     IsT = 4, // for example: T Load<T>();  the return type is T
+    IsGenericType = 8,
+    IsArray = 16,
 }
-class ConstructorID : MemberID
+public class ConstructorID : MemberID
 {
-    public Type[] parameterTypes; // can be null
-    public TypeFlag[] parameterFlags; // can be null
+    public string[] paramTypeNames; // can be null
+    public TypeFlag[] paramFlags; // can be null
     // constructor
-    public ConstructorID(Type[] parameterTypes, TypeFlag[] parameterFlags)
+    public ConstructorID(string[] paramTypes, TypeFlag[] paramFlags)
     {
-        this.parameterTypes = parameterTypes;
-        this.parameterFlags = parameterFlags;
+        this.paramTypeNames = paramTypes;
+        this.paramFlags = paramFlags;
     }
 }
-class FieldID : MemberID
+public class FieldID : MemberID
 {
     public string name; //memberName
     // property method
@@ -39,24 +41,26 @@ class FieldID : MemberID
         this.name = name;
     }
 }
-class PropertyID : ConstructorID
+public class PropertyID : ConstructorID
 {
     public string name; //memberName
-    public Type returnType;
-    public TypeFlag returnTypeFlag;
 
-    public PropertyID(string name, Type returnType, TypeFlag returnTypeFlag, Type[] parameterTypes, TypeFlag[] typeFlags)
+    // 目前这2个没有使用
+    public string retTypeName;
+    public TypeFlag retTypeFlag;
+
+    public PropertyID(string name, string returnType, TypeFlag returnTypeFlag, string[] parameterTypes, TypeFlag[] typeFlags)
         : base(parameterTypes, typeFlags)
     {
         this.name = name;
-        this.returnType = returnType;
-        this.returnTypeFlag = returnTypeFlag;
+        this.retTypeName = returnType;
+        this.retTypeFlag = returnTypeFlag;
     }
 }
-class MethodID : PropertyID
+public class MethodID : PropertyID
 {
-    public MethodID(string name, Type returnType, TypeFlag returnTypeFlag, Type[] parameterTypes, TypeFlag[] typeFlags)
-        : base(name, returnType, returnTypeFlag, parameterTypes, typeFlags)
+    public MethodID(string name, string retTypeName, TypeFlag returnTypeFlag, string[] parameterTypes, TypeFlag[] typeFlags)
+        : base(name, retTypeName, returnTypeFlag, parameterTypes, typeFlags)
     {
     }
 }
@@ -70,7 +74,7 @@ class GenericTypeCache
         public PropertyInfo[] properties = null;
         public MethodInfo[] methods = null;
     }
-    static Dictionary<Type, TypeMembers> dict;
+    static Dictionary<Type, TypeMembers> dict = new Dictionary<Type, TypeMembers>();
     static TypeMembers getMembers(Type type)
     {
         TypeMembers tm;
@@ -87,140 +91,209 @@ class GenericTypeCache
         dict.Add(type, tm);
         return tm;
     }
-
-    static bool matchParameters(ParameterInfo[] pi, Type[] parameterTypes, TypeFlag[] typeFlags)
+    static bool matchReturnType(Type targetType, string typeName, TypeFlag flag)
     {
-        if (pi == null || pi.Length == 0)
+//         if (targetType.IsGenericParameter)
+//         {
+//             return 0 != (flag & TypeFlag.IsT);
+//         }
+// 
+//         return (targetType.Name == typeName);
+        return true;
+    }
+    static bool matchParameters(ParameterInfo[] pi, string[] paramTypeNames, TypeFlag[] typeFlags)
+    {
+        int paramLen = (paramTypeNames == null ? 0 : paramTypeNames.Length);
+        int flagLen = (typeFlags == null ? 0 : typeFlags.Length);
+
+        if (paramLen == 0)
         {
-            return (parameterTypes == null || parameterTypes.Length == 0);
+            if (!(pi == null || pi.Length == 0))
+            {
+                return false;
+            }
         }
 
-        if (parameterTypes == null || parameterTypes.Length != pi.Length)
+        if (pi.Length != paramLen)
         {
             return false;
         }
 
         for (var i = 0; i < pi.Length; i++)
         {
-            Type t = pi[i].ParameterType;
-            if (t != parameterTypes[i])
-            {
+            Type real_t = pi[i].ParameterType;
+            TypeFlag flag = (flagLen > i ? typeFlags[i] : TypeFlag.None);
+
+            bool byRef = 0 != (flag & TypeFlag.IsRef);
+            if ((byRef && !real_t.IsByRef) || (!byRef && real_t.IsByRef)) 
                 return false;
-            }
-            if (t.IsByRef)
+
+            bool isOut = 0 != (flag & TypeFlag.IsOut);
+            if ((isOut && !pi[i].IsOut) || (!isOut && pi[i].IsOut))
+                return false;
+
+            bool isArray = 0 != (flag & TypeFlag.IsArray);
+            if (isArray)
             {
-                if (typeFlags == null || typeFlags.Length <= i || 0 == (typeFlags[i] & TypeFlag.IsRef))
+                if (!pi[i].ParameterType.IsArray)
                     return false;
             }
-            if (pi[i].IsOut)
+            else
             {
-                if (typeFlags == null || typeFlags.Length <= i || 0 == (typeFlags[i] & TypeFlag.IsOut))
-                    return false;
+                bool isGT = 0 != (flag & TypeFlag.IsGenericType);
+                if (isGT)
+                {
+                    if (!real_t.IsGenericType)
+                        return false;
+                    if (real_t.GetGenericTypeDefinition().Name != paramTypeNames[i])
+                        return false;
+                }
+                else
+                {
+                    bool isT = 0 != (flag & TypeFlag.IsT);
+                    if (!isT)
+                    {
+                        if (real_t.Name != paramTypeNames[i])
+                            return false;
+                    }
+                }
             }
         }
         return true;
     }
 
-    static ConstructorInfo getConstructor(Type type, ConstructorID id)
+    public static ConstructorInfo getConstructor(Type type, ConstructorID id)
     {
-        if (id.index >= 0)
+        TypeMembers tmember = getMembers(type);
+        var arr = tmember.cons;
+        if (arr != null)
         {
-            return dict[type].cons[id.index];
-        }
-        if (id.index == -2)
-        {
-            TypeMembers tmember = getMembers(type);
-            if (tmember.cons != null)
+            for (var i = -1; i < arr.Length; i++)
             {
-                for (var i = 0; i < tmember.cons.Length; i++)
+                ConstructorInfo curr;
+                if (i == -1)
                 {
-                    if (matchParameters(tmember.cons[i].GetParameters(), id.parameterTypes, id.parameterFlags))
-                    {
+                    if (id.index >= 0 && arr.Length > id.index)
+                        curr = arr[id.index];
+                    else
+                        continue;
+                }
+                else
+                {
+                    curr = arr[i];
+                }
+                if (matchParameters(curr.GetParameters(), id.paramTypeNames, id.paramFlags))
+                {
+                    if (i != -1) 
                         id.index = i;
-                        return tmember.cons[i];
-                    }
+                    return curr;
                 }
             }
         }
-        id.index = -1;
+        Debug.LogError(new StringBuilder().AppendFormat("GenericTypeCache.getConstructor({0}) fail", type.Name));
         return null;
     }
-    static FieldInfo getField(Type type, FieldID id)
+    public static FieldInfo getField(Type type, FieldID id)
     {
-        if (id.index >= 0)
+        TypeMembers tmember = getMembers(type);
+        var arr = tmember.fields;
+        if (arr != null)
         {
-            return dict[type].fields[id.index];
-        }
-        if (id.index == -2)
-        {
-            TypeMembers tmember = getMembers(type);
-            if (tmember.fields != null)
+            for (var i = -1; i < arr.Length; i++)
             {
-                for (var i = 0; i < tmember.fields.Length; i++)
+                FieldInfo curr;
+                if (i == -1)
                 {
-                    if (tmember.fields[i].Name == id.name)
-                    {
+                    if (id.index >= 0 && arr.Length > id.index)
+                        curr = arr[id.index];
+                    else
+                        continue;
+                }
+                else
+                {
+                    curr = arr[i];
+                }
+
+                if (curr.Name == id.name)
+                {
+                    if (i != -1)
                         id.index = i;
-                        return tmember.fields[i];
-                    }
+                    return curr;
                 }
             }
         }
-        id.index = -1;
+        Debug.LogError(new StringBuilder().AppendFormat("GenericTypeCache.getField({0}, {1}) fail", type.Name, id.name));
         return null;
     }
-    static PropertyInfo getProperty(Type type, PropertyID id)
+    public static PropertyInfo getProperty(Type type, PropertyID id)
     {
-        if (id.index >= 0)
+        TypeMembers tmember = getMembers(type);
+        var arr = tmember.properties;
+        if (arr != null)
         {
-            return dict[type].properties[id.index];
-        }
-        if (id.index == -2)
-        {
-            TypeMembers tmember = getMembers(type);
-            if (tmember.properties != null)
+            for (var i = -1; i < arr.Length; i++)
             {
-                for (var i = 0; i < tmember.properties.Length; i++)
+                PropertyInfo curr;
+                if (i == -1)
                 {
-                    PropertyInfo pro = tmember.properties[i];
-                    if (pro.Name == id.name &&
-                        pro.PropertyType == id.returnType &&
-                        matchParameters(pro.GetIndexParameters(), id.parameterTypes, id.parameterFlags))
+                    if (id.index >= 0 && arr.Length > id.index)
+                        curr = arr[id.index];
+                    else
+                        continue;
+                }
+                else
+                {
+                    curr = arr[i];
+                }
+                if (curr.Name == id.name)
+                {
+                    if (matchReturnType(curr.PropertyType, id.retTypeName, id.retTypeFlag) &&
+                        matchParameters(curr.GetIndexParameters(), id.paramTypeNames, id.paramFlags))
                     {
-                        id.index = i;
-                        return pro;
+                        if (i != -1)
+                            id.index = i;
+                        return curr;
                     }
                 }
             }
         }
-        id.index = -1;
+        Debug.LogError(new StringBuilder().AppendFormat("GenericTypeCache.getProperty({0}, {1}) fail", type.Name, id.name));
         return null;
     }
-    static MethodInfo getMethod(Type type, MethodID id)
+    public static MethodInfo getMethod(Type type, MethodID id)
     {
-        if (id.index >= 0)
+        TypeMembers tmember = getMembers(type);
+        var arr = tmember.methods;
+        if (arr != null)
         {
-            return dict[type].methods[id.index];
-        }
-        if (id.index == -2)
-        {
-            TypeMembers tmember = getMembers(type);
-            if (tmember.methods != null)
+            for (var i = -1; i < arr.Length; i++)
             {
-                for (var i = 0; i < tmember.methods.Length; i++)
+                MethodInfo curr;
+                if (i == -1)
                 {
-                    MethodInfo method = tmember.methods[i];
-                    if (method.Name == id.name &&
-                        method.ReturnType == id.returnType &&
-                        matchParameters(method.GetParameters(), id.parameterTypes, id.parameterFlags))
+                    if (id.index >= 0 && arr.Length > id.index)
+                        curr = arr[id.index];
+                    else
+                        continue;
+                }
+                else
+                {
+                    curr = arr[i];
+                }
+
+                if (curr.Name == id.name) // method name
+                {
+                    if (matchReturnType(curr.ReturnType, id.retTypeName, id.retTypeFlag) &&
+                        matchParameters(curr.GetParameters(), id.paramTypeNames, id.paramFlags))
                     {
-                        id.index = i;
-                        return method;
+                        if (i != -1)
+                            id.index = i;
+                        return curr;
                     }
                 }
             }
         }
-        id.index = -1;
+        Debug.LogError(new StringBuilder().AppendFormat("GenericTypeCache.getMethod({0}, {1}) fail", type.Name, id.name));
         return null;
     }
 }
