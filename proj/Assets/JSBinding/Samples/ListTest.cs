@@ -25,6 +25,14 @@ public class ListTest : MonoBehaviour {
             }
             int vFind = lst.Find((val) => (val == 6));
             Debug.Log("vFind = " + vFind);
+
+            var lstS = lst.ConvertAll<string>((v) => "s: " + v);
+            foreach (var v in lstS)
+            {
+                Debug.Log(v);
+            }
+            Debug.Log(lstS[0]);
+            Debug.Log(lstS[1]);
         }
 	}
 }

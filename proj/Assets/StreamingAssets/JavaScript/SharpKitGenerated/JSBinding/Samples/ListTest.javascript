@@ -25,6 +25,16 @@ var ListTest = {
                     return (val == 6);
                 }));
                 UnityEngine.Debug.Log$$Object("vFind = " + vFind);
+                var lstS = lst.ConvertAll$1(System.String.ctor, $CreateAnonymousDelegate(this, function (v){
+                    return "s: " + v;
+                }));
+                var $it9 = lstS.GetEnumerator();
+                while ($it9.MoveNext()){
+                    var v = $it9.get_Current();
+                    UnityEngine.Debug.Log$$Object(v);
+                }
+                UnityEngine.Debug.Log$$Object(lstS.get_Item$$Int32(0));
+                UnityEngine.Debug.Log$$Object(lstS.get_Item$$Int32(1));
             }
         }
     }
