@@ -458,23 +458,25 @@ public static class CSGenerator2
 
             if (!bReadOnly)
             {
-                sb.Append("    if (vc.bGet) [[ \n");
+                sb.Append("    if (vc.bGet)\n");
+                sb.Append("    [[ \n");
             }
 
             //if (type.IsValueType && !field.IsStatic)
             //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
 
             sb.Append(sbCall);
-            sb.AppendFormat("        {0}", JSDataExchangeEditor.Get_Return(property.PropertyType, "result"));
+            sb.AppendFormat("        {0}\n", JSDataExchangeEditor.Get_Return(property.PropertyType, "result"));
             if (!bReadOnly)
             {
-                sb.Append("\n    ]]\n");
+                sb.Append("    ]]\n");
             }
 
             // set
             if (!bReadOnly)
             {
-                sb.Append("    else [[\n");
+                sb.Append("    else\n");
+                sb.Append("    [[ \n");
 
                 int ParamIndex = ps.Length;
 
@@ -757,19 +759,28 @@ public static class CSGenerator2
                 }
 
                 // string callAndReturn = JSDataExchangeEditor.Get_Return(type/*don't use returnType*/, sbCall.ToString());
-                string callAndReturn = new StringBuilder().AppendFormat("JSMgr.addJSCSRel(_this, {0});\n", sbCall).ToString();
-                sb.AppendFormat(@"    {1}if (len == {0}) 
-    [[
-{2}
-        {3}
-{4}
-    ]]
-",
-                 j,                  // [0] param length
-                 (j == minNeedParams) ? "" : "else ", // [1] else
-                 sbGetParam,         // [2] get param
-                 callAndReturn,      // [3] 
-                 sbUpdateRefParam);  // [4] update ref/out params
+                string callAndReturn = new StringBuilder().AppendFormat("        JSMgr.addJSCSRel(_this, {0});", sbCall).ToString();
+
+                sb.AppendFormat("    {0}if (len == {1})\n", (j == minNeedParams) ? "" : "else ", j);
+                sb.Append("    [[\n");
+                sb.Append(sbGetParam);
+                sb.Append(callAndReturn).Append("\n");
+                if (sbUpdateRefParam.Length > 0) 
+                    sb.Append(sbUpdateRefParam);
+                sb.Append("    ]]\n");
+
+//                 sb.AppendFormat(@"    {0}if (len == {1}) 
+//     [[
+// {2}
+//         {3}
+// {4}
+//     ]]
+// ",
+//                  (j == minNeedParams) ? "" : "else ", // [0] else
+//                  j,                  // [1] param length
+//                  sbGetParam,         // [2] get param
+//                  callAndReturn,      // [3] 
+//                  sbUpdateRefParam);  // [4] update ref/out params
             }
             else
             {
