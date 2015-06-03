@@ -15,7 +15,7 @@ public class JSEngine : MonoBehaviour
     public bool debug = true;
     public int port = 5086;
     bool mDebug = true;
-    public bool forceProtectJSFunction = false;
+    public bool forceProtectJSFunction = true;
 
     /*
      * Garbage Collection setting
@@ -183,7 +183,7 @@ public class JSEngine : MonoBehaviour
 
         JSMgr.GetDictCount(out countDict1, out countDict2);
 
-        GUI.TextArea(new Rect(0, 10, 400, 20), "C#<->JS Object Total: " + countDict1.ToString() + ", Class: " + countDict2.ToString());
+        GUI.TextArea(new Rect(0, 10, 500, 20), "C#<->JS Object Total: " + countDict1.ToString() + ", Class: " + countDict2.ToString() + ", Protected Fun Count: " + JSApi.protectedFunCount);
 
         int clsCount = 0;
         Dictionary<int, JSMgr.JS_CS_Rel> dict1 = JSMgr.GetDict1();

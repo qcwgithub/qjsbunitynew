@@ -225,12 +225,17 @@ public class JSApi
     // protect
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern int getFunction(int e);
+    public static int protectedFunCount = 0;
     public static int getFunctionS(int e)
     {
         int funID = JSApi.getFunction(e);
         if (JSEngine.inst != null && JSEngine.inst.forceProtectJSFunction)
         {
-            JSApi.setTraceS(funID, true);
+            if (!JSApi.isTracedS(funID))
+            {
+                protectedFunCount++;
+                JSApi.setTraceS(funID, true);
+            }
         }
         return funID;
     }
@@ -327,6 +332,13 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool callFunctionValue(int jsObjID, int funID, int argCount);
 
+
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int isTraced(int id);
+    public static bool isTracedS(int id)
+    {
+        return (isTraced(id) == 1) ? true : false;
+    }
     // setTrace is currently for JSComponent object and JSApi.getFunctionS
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern void setTrace(int id, int trace);
