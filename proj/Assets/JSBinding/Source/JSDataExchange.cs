@@ -832,7 +832,8 @@ public class JSDataExchange_Arr
             arrayFullName = JSNameMgr.GetTypeFullName(t);
             elementFullName = JSNameMgr.GetTypeFullName(elementType);
         }
-        sb.AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(() => [[\n", arrayFullName)
+        sb.AppendFormat("JSDataExchangeMgr.GetJSArg<{0}>(() =>\n", arrayFullName)
+            .Append("    [[\n")
         .AppendFormat("    int jsObjID = JSApi.getObject((int)JSApi.GetType.Arg);\n")
         .AppendFormat("    int length = JSApi.getArrayLength(jsObjID);\n")
         .AppendFormat("    var ret = new {0}[length];\n", elementFullName)
@@ -878,20 +879,22 @@ public class JSDataExchange_Arr
         if (elementType.ContainsGenericParameters)
         {
             sb.AppendFormat("    var arrRet = (Array){0};\n", expVar)
-            .AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n")
+            .AppendFormat("    for (int i = 0; i < arrRet.Length; i++)\n")
+            .Append("    [[\n")
             .AppendFormat("        {0}((int)JSApi.SetType.SaveAndTempTrace, arrRet.GetValue(i));\n", getValMethod)
             .AppendFormat("        JSApi.moveSaveID2Arr(i);\n")
             .AppendFormat("    ]]\n")
-            .AppendFormat("    JSApi.setArrayS((int)JSApi.SetType.Rval, arrRet.Length, true);"); // no ;
+            .AppendFormat("    JSApi.setArrayS((int)JSApi.SetType.Rval, arrRet.Length, true);");
         }
         else
         {
             sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar)
-            .AppendFormat("    for (int i = 0; i < arrRet.Length; i++) [[\n")
+            .AppendFormat("    for (int i = 0; i < arrRet.Length; i++)\n")
+            .Append("    [[\n")
             .AppendFormat("        {0}((int)JSApi.SetType.SaveAndTempTrace, arrRet[i]);\n", getValMethod)
             .AppendFormat("        JSApi.moveSaveID2Arr(i);\n")
             .AppendFormat("    ]]\n")
-            .AppendFormat("    JSApi.setArrayS((int)JSApi.SetType.Rval, arrRet.Length, true);"); // no ;
+            .AppendFormat("    JSApi.setArrayS((int)JSApi.SetType.Rval, arrRet.Length, true);");
         }
 
         sb.Replace("[[", "{");
