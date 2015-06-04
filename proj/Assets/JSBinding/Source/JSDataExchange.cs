@@ -925,6 +925,20 @@ public class CSRepresentedObject
     public CSRepresentedObject(int jsObjID)
     {
         this.jsObjID = jsObjID;
+        JSMgr.addJSCSRel(jsObjID, this, true);
+
+        // 通常是1，不会加的
+        int refCount = JSApi.incRefCount(jsObjID);
+        //Debug.Log(jsObjID + " " + refCount);
+    }
+    ~CSRepresentedObject()
+    {
+        int refCount = JSApi.decRefCount(jsObjID);
+        if (refCount <= 0)
+        {
+            JSMgr.removeJSCSRel(jsObjID);
+        }
+        //Debug.Log(jsObjID + " " + refCount);
     }
     public int jsObjID;
 }

@@ -332,6 +332,10 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern bool callFunctionValue(int jsObjID, int funID, int argCount);
 
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    public static extern int incRefCount(int id);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    public static extern int decRefCount(int id);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern int isTraced(int id);

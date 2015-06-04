@@ -715,23 +715,32 @@ public static class JSMgr
         }
 
     }
-
-    public static void addJSCSRel(int jsObjID, object csObj)
+    public static void addJSCSRel(int jsObjID, object csObj, bool weakReference = false)
     {
-        int hash = csObj.GetHashCode();
-        if (mDictionary1.ContainsKey(jsObjID))
+        if (weakReference)
         {
-            if (csObj.GetType().IsValueType)
-            {
-                mDictionary1.Remove(jsObjID);
-            }
+            int hash = csObj.GetHashCode();
+            WeakReference wrObj = new WeakReference(csObj);
+            mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, wrObj, hash));
+            mDictionary2.Add(hash, new JS_CS_Rel(jsObjID, wrObj, hash));
         }
-
-        mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, csObj, hash));
-
-        if (csObj.GetType().IsClass)
+        else
         {
-            mDictionary2.Add(hash, new JS_CS_Rel(jsObjID, csObj, hash));
+            int hash = csObj.GetHashCode();
+            if (mDictionary1.ContainsKey(jsObjID))
+            {
+                if (csObj.GetType().IsValueType)
+                {
+                    mDictionary1.Remove(jsObjID);
+                }
+            }
+
+            mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, csObj, hash));
+
+            if (csObj.GetType().IsClass)
+            {
+                mDictionary2.Add(hash, new JS_CS_Rel(jsObjID, csObj, hash));
+            }
         }
     }
 
@@ -754,17 +763,30 @@ public static class JSMgr
         JS_CS_Rel obj;
         if (mDictionary1.TryGetValue(jsObjID, out obj))
         {
-            return obj.csObj;
+            object ret = obj.csObj;
+            if (ret is WeakReference)
+            {
+                object tar = ((WeakReference)ret).Target;
+                if (tar == null)
+                {
+                    Debug.LogError("ERROR: JSMgr.getCSObj WeakReference.Target == null");
+                }
+                return tar;
+            }
+            return ret;
         }
         return null;
     }
     public static int getJSObj(object csObj)
     {
         if (csObj.GetType().IsValueType)
+        {
             return 0;
+        }
 
         JS_CS_Rel Rel;
-        if (mDictionary2.TryGetValue(csObj.GetHashCode(), out Rel))
+        int hash = (csObj is WeakReference) ? ((WeakReference)csObj).Target.GetHashCode() : csObj.GetHashCode();
+        if (mDictionary2.TryGetValue(hash, out Rel))
         {
             return Rel.jsObjID;
         }
