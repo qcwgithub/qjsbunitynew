@@ -173,6 +173,7 @@ public class JSEngine : MonoBehaviour
 
     // OUTPUT object mappings
 	public bool showStatistics = true;
+    public int guiX = 0;
     void OnGUI()
     {
         if (this != JSEngine.inst)
@@ -183,7 +184,7 @@ public class JSEngine : MonoBehaviour
 
         JSMgr.GetDictCount(out countDict1, out countDict2);
 
-        GUI.TextArea(new Rect(0, 10, 500, 20), "C#<->JS Object Total: " + countDict1.ToString() + ", Class: " + countDict2.ToString() + ", Protected Fun Count: " + JSApi.protectedFunCount);
+        GUI.TextArea(new Rect(guiX, 10, 500, 20), "C#<->JS Object Total: " + countDict1.ToString() + ", Class: " + countDict2.ToString() + ", CSRObj " + CSRepresentedObject.s_objCount + ", CSRFun " + CSRepresentedObject.s_funCount);
 
         int clsCount = 0;
         Dictionary<int, JSMgr.JS_CS_Rel> dict1 = JSMgr.GetDict1();
@@ -203,15 +204,15 @@ public class JSEngine : MonoBehaviour
         }
         float y = 40;
 
-        GUI.TextArea(new Rect(0, y, 400, 20), "class count: " + clsCount);
+        GUI.TextArea(new Rect(guiX, y, 400, 20), "class count: " + clsCount);
         y += 20;
 
-        GUI.TextArea(new Rect(0, y, 400, 20), "valueMapSize: " + JSApi.getValueMapSize());
+        GUI.TextArea(new Rect(guiX, y, 400, 20), "valueMapSize: " + JSApi.getValueMapSize());
         y += 20;
 
         foreach (var v in tj)
         {
-            GUI.TextArea(new Rect(0, y, 400, 20), v.Key + ": " + v.Value);
+            GUI.TextArea(new Rect(guiX, y, 400, 20), v.Key + ": " + v.Value);
             y += 20;
         }
     }

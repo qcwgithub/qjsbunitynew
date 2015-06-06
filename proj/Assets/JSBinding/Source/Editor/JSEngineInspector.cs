@@ -8,6 +8,7 @@ public class JSEngineInspector : Editor
     {
 		serializedObject.Update ();
 
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("guiX"));
         SerializedProperty propDebug = serializedObject.FindProperty("debug");
         EditorGUILayout.PropertyField(propDebug);
 
