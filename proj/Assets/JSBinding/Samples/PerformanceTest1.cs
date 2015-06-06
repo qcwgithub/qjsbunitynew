@@ -14,19 +14,21 @@ public class PerformanceTest1 : MonoBehaviour {
     {
         if (Input.GetMouseButton(0))
         {
+            var N = 10000000;
+
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
             var g = 0;
-            var f = 10;
-            for (var i = 0; i < 10000000; i++)
+            var f = 0;
+            for (var i = 0; i < N; i++)
             {
                 g += 1;
-                f += 10;
+                f += 1;
             }
             sw.Stop();
+            Debug.Log("loop count: " + N.ToString());
             Debug.Log("calc result: " + (f + g).ToString());
             Debug.Log("time: " + sw.ElapsedMilliseconds + " ms");
-
         }
 	}
 }

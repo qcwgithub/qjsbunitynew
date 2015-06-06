@@ -131,49 +131,9 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_RootGameObject: {fileID: 2052181092}
+  m_RootGameObject: {fileID: 1533346017}
   m_IsPrefabParent: 0
   m_IsExploded: 1
---- !u!1 &548195066
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 100002, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 451755936}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 548195068}
-  - 114: {fileID: 548195067}
-  m_Layer: 0
-  m_Name: _JSFileLoader
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &548195067
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: e06934f7bc4aaa444b6e96140e1b77e9,
-    type: 2}
-  m_PrefabInternal: {fileID: 451755936}
-  m_GameObject: {fileID: 548195066}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9a11c9655e6f424490536c7b7c63e38, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &548195068
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 400002, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 451755936}
-  m_GameObject: {fileID: 548195066}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2052181094}
-  m_RootOrder: 0
 --- !u!1 &689045839
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,15 +233,15 @@ MonoBehaviour:
   jsScriptName: PerformanceTest1
   arrString: []
   arrObject: []
---- !u!1 &2052181092
+--- !u!1 &1533346017
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
   m_PrefabInternal: {fileID: 451755936}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 2052181094}
-  - 114: {fileID: 2052181093}
+  - 4: {fileID: 1533346019}
+  - 114: {fileID: 1533346018}
   m_Layer: 0
   m_Name: _JSEngine
   m_TagString: Untagged
@@ -289,51 +249,79 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2052181093
+--- !u!114 &1533346018
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400000, guid: e06934f7bc4aaa444b6e96140e1b77e9,
     type: 2}
   m_PrefabInternal: {fileID: 451755936}
-  m_GameObject: {fileID: 2052181092}
+  m_GameObject: {fileID: 1533346017}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d134e75bc11fdf04fada25deba19d0b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
+  debug: 1
   port: 5086
-  forceProtectJSFunction: 0
-  GCInterval: 1e+06
-  jsLoader: {fileID: 548195067}
-  InitLoadScripts:
-  - includes
-  DirectoriesNotToExport:
-  - JSBinding/
-  - Stealth/
-  - DaikonForge Tween (Pro)/
-  DirectoriesToExport:
-  - JSBinding/Samples/
-  - DaikonForge Tween (Pro)/Examples/Scripts
-  DirectoriesNotToReplace:
-  - JSBinding/
-  - Plugins/
-  - Resources/
-  - Src/
-  - StreamingAssets/
-  - UnityVS/
-  - DaikonForge Tween (Pro)/
+  forceProtectJSFunction: 1
+  GCInterval: 3
+  jsLoader: {fileID: 0}
+  InitLoadScripts: []
+  DirectoriesNotToExport: []
+  DirectoriesToExport: []
+  DirectoriesNotToReplace: []
   showStatistics: 1
---- !u!4 &2052181094
+  guiX: 0
+--- !u!4 &1533346019
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
   m_PrefabInternal: {fileID: 451755936}
-  m_GameObject: {fileID: 2052181092}
+  m_GameObject: {fileID: 1533346017}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 548195068}
+  - {fileID: 1983711899}
   m_Father: {fileID: 0}
   m_RootOrder: 1
+--- !u!1 &1983711898
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 100002, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
+  m_PrefabInternal: {fileID: 451755936}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1983711899}
+  - 114: {fileID: 1983711900}
+  m_Layer: 0
+  m_Name: _JSFileLoader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1983711899
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 400002, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
+  m_PrefabInternal: {fileID: 451755936}
+  m_GameObject: {fileID: 1983711898}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1533346019}
+  m_RootOrder: 0
+--- !u!114 &1983711900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400002, guid: e06934f7bc4aaa444b6e96140e1b77e9,
+    type: 2}
+  m_PrefabInternal: {fileID: 451755936}
+  m_GameObject: {fileID: 1983711898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9a11c9655e6f424490536c7b7c63e38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

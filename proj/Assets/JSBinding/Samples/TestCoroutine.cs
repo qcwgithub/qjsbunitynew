@@ -14,19 +14,20 @@ public class TestCoroutine : MonoBehaviour {
 	void Update () {
 	
 	}
-    int value = 100;  
     IEnumerator CountDown()
     {
-        float increment = 0f;
-        while (true)
-        {
-            if (Input.GetKey(KeyCode.Q))
-                break;
-            increment += Time.deltaTime;
-            value -= 1;
-            Debug.Log(value);
-            //This coroutine returns a yield instruction  
-            yield return new WaitForSeconds(1f);
-        }
+        var V = 0;
+
+        yield return new WaitForSeconds(1f);
+        V++;
+        Debug.Log(V);
+
+        yield return new WaitForSeconds(1f);
+        V++;
+        Debug.Log(V);
+
+        yield return new WaitForSeconds(1f);
+        V++;
+        Debug.Log(V);
     }  
 }

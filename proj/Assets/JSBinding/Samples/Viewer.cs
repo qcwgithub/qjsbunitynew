@@ -1,6 +1,7 @@
+using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
-
+[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Viewer.javascript")]
 public class Viewer : MonoBehaviour
 {
     static Viewer inst = null;
@@ -33,7 +34,7 @@ public class Viewer : MonoBehaviour
     {
 
     }
-
+[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/stScene.javascript")]
     struct stScene
     {
         public string levelName;
