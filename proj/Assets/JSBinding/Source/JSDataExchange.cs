@@ -922,23 +922,43 @@ public class JSDataExchange_Arr
  */
 public class CSRepresentedObject
 {
-    public CSRepresentedObject(int jsObjID)
+    public static int s_objCount = 0;
+    public static int s_funCount = 0;
+
+    //不要直接创建这个对象，应该调用 JSDataExchangeMgr.getObject
+    public CSRepresentedObject(int jsObjID, bool bFunction = false)
     {
         this.jsObjID = jsObjID;
+        this.bFunction = bFunction;
         JSMgr.addJSCSRel(jsObjID, this, true);
+
+        if (bFunction) 
+            s_funCount++;
+        else 
+            s_objCount++;
 
         // 通常是1，不会加的
         int refCount = JSApi.incRefCount(jsObjID);
-        //Debug.Log(jsObjID + " " + refCount);
+        //Debug.Log(new StringBuilder().AppendFormat("+ CSRepresentedObject {0} Ref[{1}] Fun[{1}]", jsObjID, refCount, bFunction ? 1 : 0));
     }
     ~CSRepresentedObject()
     {
+        if (bFunction)
+            s_funCount--;
+        else 
+            s_objCount--;
+
         int refCount = JSApi.decRefCount(jsObjID);
         if (refCount <= 0)
         {
             JSMgr.removeJSCSRel(jsObjID);
         }
-        //Debug.Log(jsObjID + " " + refCount);
+        else
+        {
+            Debug.LogError(";;;//IIL.x&");
+        }
+        //Debug.Log(new StringBuilder().AppendFormat("- CSRepresentedObject {0} Ref[{1}] Fun[{1}]", jsObjID, refCount, bFunction ? 1 : 0));
     }
     public int jsObjID;
+    public bool bFunction;
 }

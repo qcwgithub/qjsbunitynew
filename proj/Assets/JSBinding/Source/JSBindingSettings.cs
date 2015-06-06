@@ -8,6 +8,13 @@ using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 
+class QiucwCup<T>
+{
+    public void Add(int a, int b) { }
+    public void Add(ref int a, ref int b) { }
+    public void Add(int a, out int b) { a = 0; b = 0; }
+}
+
 
 public class JSBindingSettings
 {
@@ -530,16 +537,16 @@ public class JSBindingSettings
 #if UNITY_IPHONE
                          
                                           
-        typeof(iPhoneInput),                             
-        typeof(UnityEngine.iPhoneSettings),                          
-                                  
-        typeof(UnityEngine.iPhoneUtils),                             
-        typeof(UnityEngine.LocalNotification),                       
-        typeof(UnityEngine.RemoteNotification),                      
-        typeof(UnityEngine.NotificationServices),
-        typeof(UnityEngine.Device),
-        typeof(UnityEngine.ADBannerView),
-        typeof(UnityEngine.ADInterstitialAd),
+//         typeof(iPhoneInput),                             
+//         typeof(UnityEngine.iPhoneSettings),                          
+//                                   
+//         typeof(UnityEngine.iPhoneUtils),                             
+//         typeof(UnityEngine.LocalNotification),                       
+//         typeof(UnityEngine.RemoteNotification),                      
+//         typeof(UnityEngine.NotificationServices),
+//         typeof(UnityEngine.Device),
+//         typeof(UnityEngine.ADBannerView),
+//         typeof(UnityEngine.ADInterstitialAd),
 #endif
 
         //////////////////////////////////////////////////////
@@ -743,8 +750,14 @@ public class JSBindingSettings
 #endif
 
         
-        //typeof(List<>), 
-        //typeof(List<>.Enumerator), 
+        // test
+        typeof(List<>), 
+        typeof(List<>.Enumerator), 
+        typeof(Dictionary<,>), 
+        typeof(Dictionary<,>.KeyCollection), 
+        typeof(Dictionary<,>.ValueCollection), 
+        typeof(Dictionary<,>.Enumerator), 
+        //typeof(QiucwCup<>),
 
         
         typeof(TweenReflectionExtensions),

@@ -187,7 +187,7 @@ public class JSApi
     public static string getStringS(int e)
     {
         IntPtr ptrS = JSApi.getString(e);
-        string s = Marshal.PtrToStringUni(ptrS);
+        string s = Marshal.PtrToStringAnsi(ptrS);
         return s;
     }
 
@@ -226,18 +226,27 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern int getFunction(int e);
     public static int protectedFunCount = 0;
-    public static int getFunctionS(int e)
+//     public static int getFunctionS(int e)
+//     {
+//         int funID = JSApi.getFunction(e);
+//         if (JSEngine.inst != null && JSEngine.inst.forceProtectJSFunction)
+//         {
+//             if (!JSApi.isTracedS(funID))
+//             {
+//                 protectedFunCount++;
+//                 JSApi.setTraceS(funID, true);
+//             }
+//         }
+//         return funID;
+//     }
+    // 其实这个函数跟 JSDataMgr.getObject 几乎一毛一样
+    public static CSRepresentedObject getFunctionS(int e)
     {
         int funID = JSApi.getFunction(e);
-        if (JSEngine.inst != null && JSEngine.inst.forceProtectJSFunction)
-        {
-            if (!JSApi.isTracedS(funID))
-            {
-                protectedFunCount++;
-                JSApi.setTraceS(funID, true);
-            }
-        }
-        return funID;
+        object obj = JSMgr.getCSObj(funID);
+        if (obj == null)
+            obj = new CSRepresentedObject(funID, true);
+        return (CSRepresentedObject)obj;
     }
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
@@ -386,7 +395,7 @@ public class JSApi
             Debug.LogError("getArgString return NULL.");
             return string.Empty;
         }
-        return Marshal.PtrToStringUni(pJSChar);
+        return Marshal.PtrToStringAnsi(pJSChar);
     }
     // only used by JSComponent
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
