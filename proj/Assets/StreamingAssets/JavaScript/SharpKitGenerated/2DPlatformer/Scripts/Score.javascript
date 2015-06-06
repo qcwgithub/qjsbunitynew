@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var Score = {
     fullname: "Score",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -16,7 +16,7 @@ var Score = {
             this.playerControl = UnityEngine.GameObject.FindGameObjectWithTag("Player").GetComponent$1(PlayerControl.ctor);
         },
         Update: function (){
-            this.get_guiText().set_text("Score: " + this.score);
+            this.GetComponent$1(UnityEngine.GUIText.ctor).set_text("Score: " + this.score);
             if (this.previousScore != this.score){
                 this.playerControl.PreTaunt();
             }

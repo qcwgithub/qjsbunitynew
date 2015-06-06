@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var SetParticleSortingLayer = {
     fullname: "SetParticleSortingLayer",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -11,7 +11,7 @@ var SetParticleSortingLayer = {
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
-            this.get_particleSystem().get_renderer().set_sortingLayerName(this.sortingLayerName);
+            this.GetComponent$1(UnityEngine.ParticleSystem.ctor).GetComponent$1(UnityEngine.Renderer.ctor).set_sortingLayerName(this.sortingLayerName);
         }
     }
 };

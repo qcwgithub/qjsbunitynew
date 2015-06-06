@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var TestSlinky = {
     fullname: "TestSlinky",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

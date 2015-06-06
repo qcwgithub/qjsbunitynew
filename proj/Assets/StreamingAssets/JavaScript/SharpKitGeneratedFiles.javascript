@@ -35,6 +35,8 @@ CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestHighC
 CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestShakeObject.javascript");
 CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestSlinky.javascript");
 CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestSplineTween.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/DelegateTest.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/DictionaryTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/ListTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/PerformanceTest1.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/Car.javascript");
@@ -44,3 +46,5 @@ CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/AppleInfo.javascri
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/Wheel.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/TestCoroutine.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/V3Test.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Viewer.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/stScene.javascript");

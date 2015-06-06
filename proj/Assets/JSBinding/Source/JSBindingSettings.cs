@@ -478,8 +478,12 @@ public class JSBindingSettings
         typeof(UnityEngine.NavMeshHit),                     
         typeof(UnityEngine.NavMeshTriangulation),           
         typeof(UnityEngine.WebCamDevice),                   
-        typeof(UnityEngine.Keyframe),                       
-        typeof(UnityEngine.AnimationInfo),                  
+        typeof(UnityEngine.Keyframe),   
+#if UNITY_5                    
+        typeof(AnimatorClipInfo),                  
+#else
+        typeof(UnityEngine.AnimationInfo),  
+#endif		
         typeof(UnityEngine.AnimatorStateInfo),              
         typeof(UnityEngine.AnimatorTransitionInfo),         
         typeof(UnityEngine.MatchTargetWeightMask),          

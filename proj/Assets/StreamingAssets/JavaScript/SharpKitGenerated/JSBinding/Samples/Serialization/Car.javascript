@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var Car = {
     fullname: "Car",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -12,12 +12,12 @@ var Car = {
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
-            for (var $i9 = 0,$t9 = this.wheels,$l9 = $t9.length,w = $t9[$i9]; $i9 < $l9; $i9++, w = $t9[$i9]){
+            for (var $i11 = 0,$t11 = this.wheels,$l11 = $t11.length,w = $t11[$i11]; $i11 < $l11; $i11++, w = $t11[$i11]){
                 if (UnityEngine.Object.op_Inequality(w, null)){
                     w.setSpeed(UnityEngine.Random.Range$$Single$$Single(1, 4));
                 }
             }
-            for (var $i10 = 0,$t10 = this.goWheels,$l10 = $t10.length,go = $t10[$i10]; $i10 < $l10; $i10++, go = $t10[$i10]){
+            for (var $i12 = 0,$t12 = this.goWheels,$l12 = $t12.length,go = $t12[$i12]; $i12 < $l12; $i12++, go = $t12[$i12]){
                 if (UnityEngine.Object.op_Inequality(go, null)){
                     var w = go.GetComponent$1(Wheel.ctor);
                     if (UnityEngine.Object.op_Inequality(w, null)){

@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var Bomb = {
     fullname: "Bomb",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -50,7 +50,7 @@ var Bomb = {
             this.pickupSpawner.Pre_DeliverPickup();
             var enemies = UnityEngine.Physics2D.OverlapCircleAll$$Vector2$$Single$$Int32(UnityEngine.Vector2.op_Implicit$$Vector3(this.get_transform().get_position()), this.bombRadius, 1 << UnityEngine.LayerMask.NameToLayer("Enemies"));
             for (var $i2 = 0,$l2 = enemies.length,en = enemies[$i2]; $i2 < $l2; $i2++, en = enemies[$i2]){
-                var rb = en.get_rigidbody2D();
+                var rb = en.GetComponent$1(UnityEngine.Rigidbody2D.ctor);
                 if (UnityEngine.Object.op_Inequality(rb, null) && rb.get_tag() == "Enemy"){
                     rb.get_gameObject().GetComponent$1(Enemy.ctor).HP = 0;
                     var deltaPos = UnityEngine.Vector3.op_Subtraction(rb.get_transform().get_position(), this.get_transform().get_position());

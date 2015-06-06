@@ -70,8 +70,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 1
   port: 5086
-  forceProtectJSFunction: 0
-  GCInterval: 1
+  forceProtectJSFunction: 1
+  GCInterval: 1e+06
   jsLoader: {fileID: 11400002}
   InitLoadScripts:
   - includes

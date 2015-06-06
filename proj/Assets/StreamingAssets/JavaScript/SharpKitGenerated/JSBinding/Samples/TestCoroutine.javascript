@@ -3,11 +3,10 @@ if (typeof(JsTypes) == "undefined")
 var TestCoroutine = {
     fullname: "TestCoroutine",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
-            this.value = 100;
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
@@ -17,15 +16,16 @@ var TestCoroutine = {
         },
         CountDown: function (){
             var $yield = [];
-            var increment = 0;
-            while (true){
-                if (UnityEngine.Input.GetKey$$KeyCode(113))
-                    break;
-                increment += UnityEngine.Time.get_deltaTime();
-                this.value -= 1;
-                UnityEngine.Debug.Log$$Object(this.value);
-                $yield.push(new UnityEngine.WaitForSeconds.ctor(1));
-            }
+            var V = 0;
+            $yield.push(new UnityEngine.WaitForSeconds.ctor(1));
+            V++;
+            UnityEngine.Debug.Log$$Object(V);
+            $yield.push(new UnityEngine.WaitForSeconds.ctor(1));
+            V++;
+            UnityEngine.Debug.Log$$Object(V);
+            $yield.push(new UnityEngine.WaitForSeconds.ctor(1));
+            V++;
+            UnityEngine.Debug.Log$$Object(V);
             return $yield;
         }
     }

@@ -24,7 +24,7 @@ var DebugMessages = {
             DebugMessages.messages.Add(message);
         }
     },
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

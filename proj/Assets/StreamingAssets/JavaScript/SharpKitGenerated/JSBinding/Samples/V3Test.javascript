@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var V3Test = {
     fullname: "V3Test",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

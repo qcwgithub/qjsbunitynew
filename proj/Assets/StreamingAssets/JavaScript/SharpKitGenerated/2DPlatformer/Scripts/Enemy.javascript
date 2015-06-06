@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var Enemy = {
     fullname: "Enemy",
     baseTypeName: "Enemy_Data",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -26,7 +26,7 @@ var Enemy = {
                     break;
                 }
             }
-            this.get_rigidbody2D().set_velocity(new UnityEngine.Vector2.ctor$$Single$$Single(this.get_transform().get_localScale().x * this.moveSpeed, this.get_rigidbody2D().get_velocity().y));
+            this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).set_velocity(new UnityEngine.Vector2.ctor$$Single$$Single(this.get_transform().get_localScale().x * this.moveSpeed, this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).get_velocity().y));
             if (this.HP == 1 && UnityEngine.Object.op_Inequality(this.damagedEnemy, null))
                 this.ren.set_sprite(this.damagedEnemy);
             if (this.HP <= 0 && !this.dead)
@@ -44,8 +44,8 @@ var Enemy = {
             this.ren.set_sprite(this.deadEnemy);
             this.score.score += 100;
             this.dead = true;
-            this.get_rigidbody2D().set_fixedAngle(false);
-            this.get_rigidbody2D().AddTorque$$Single(UnityEngine.Random.Range$$Single$$Single(this.deathSpinMin, this.deathSpinMax));
+            this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).set_fixedAngle(false);
+            this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).AddTorque$$Single(UnityEngine.Random.Range$$Single$$Single(this.deathSpinMin, this.deathSpinMax));
             var cols = this.GetComponents$1(UnityEngine.Collider2D.ctor);
             for (var $i5 = 0,$l5 = cols.length,c = cols[$i5]; $i5 < $l5; $i5++, c = cols[$i5]){
                 c.set_isTrigger(true);

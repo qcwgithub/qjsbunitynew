@@ -290,15 +290,15 @@ public static partial class TweenComponentExtensions
 		{
 			return TweenMaterialExtensions.TweenAlpha( ( (GUIText)component ).material );
 		}
-		else if( component.renderer is SpriteRenderer )
+		else if( component.GetComponent<Renderer>() is SpriteRenderer )
 		{
-			return TweenSpriteExtensions.TweenAlpha( (SpriteRenderer)component.renderer );
+			return TweenSpriteExtensions.TweenAlpha( (SpriteRenderer)component.GetComponent<Renderer>() );
 		}
 
-		if( component.renderer == null )
+		if( component.GetComponent<Renderer>() == null )
 			throw new NullReferenceException( "Component does not have a Renderer assigned" );
 
-		var material = component.renderer.material;
+		var material = component.GetComponent<Renderer>().material;
 		if( material == null )
 			throw new NullReferenceException( "Component does not have a Material assigned" );
 
@@ -324,15 +324,15 @@ public static partial class TweenComponentExtensions
 		{
 			return TweenMaterialExtensions.TweenColor( ( (GUIText)component ).material );
 		}
-		else if( component.renderer is SpriteRenderer )
+		else if( component.GetComponent<Renderer>() is SpriteRenderer )
 		{
-			return TweenSpriteExtensions.TweenColor( (SpriteRenderer)component.renderer );
+			return TweenSpriteExtensions.TweenColor( (SpriteRenderer)component.GetComponent<Renderer>() );
 		}
 
-		if( component.renderer == null )
+		if( component.GetComponent<Renderer>() == null )
 			throw new NullReferenceException( "Component does not have a Renderer assigned" );
 
-		var material = component.renderer.material;
+		var material = component.GetComponent<Renderer>().material;
 		if( material == null )
 			throw new NullReferenceException( "Component does not have a Material assigned" );
 

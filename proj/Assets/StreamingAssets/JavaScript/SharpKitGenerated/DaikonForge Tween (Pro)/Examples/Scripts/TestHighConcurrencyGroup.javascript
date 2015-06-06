@@ -8,7 +8,7 @@ var TestHighConcurrencyGroup = {
             TestHighConcurrencyGroup.SPRITE_COUNT = 1000;
         }
     },
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -32,7 +32,7 @@ var TestHighConcurrencyGroup = {
                 var endPosition = new UnityEngine.Vector3.ctor$$Single$$Single(UnityEngine.Mathf.Cos(angle) * radius, UnityEngine.Mathf.Sin(angle) * radius);
                 var sprite = Cast(UnityEngine.Object.Instantiate$$Object(this.spriteTemplate), UnityEngine.GameObject.ctor);
                 sprite.set_hideFlags(1);
-                var animateOpacity = TweenComponentExtensions.TweenAlpha(sprite.get_renderer()).SetDuration(duration).SetEasing(easingFunc).SetStartValue(0).SetEndValue(0.8);
+                var animateOpacity = TweenComponentExtensions.TweenAlpha(sprite.GetComponent$1(UnityEngine.Renderer.ctor)).SetDuration(duration).SetEasing(easingFunc).SetStartValue(0).SetEndValue(0.8);
                 var animateScale = TweenTransformExtensions.TweenScale(sprite.get_transform()).SetDuration(duration).SetEasing(easingFunc).SetStartValue(UnityEngine.Vector3.op_Multiply$$Vector3$$Single(UnityEngine.Vector3.get_one(), 0.25)).SetEndValue(UnityEngine.Vector3.get_one());
                 var animatePosition = TweenTransformExtensions.TweenPosition$$Transform(sprite.get_transform()).SetDuration(duration).SetEasing(easingFunc).SetStartValue(UnityEngine.Vector3.get_zero()).SetEndValue(endPosition);
                 var concurrentGroup = new DaikonForge.Tween.TweenGroup.ctor().SetMode(1).AppendTween(animateOpacity, animateScale, animatePosition);

@@ -8,7 +8,7 @@ var TestFPS = {
             TestFPS.UPDATE_INTERVAL = 0.2;
         }
     },
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

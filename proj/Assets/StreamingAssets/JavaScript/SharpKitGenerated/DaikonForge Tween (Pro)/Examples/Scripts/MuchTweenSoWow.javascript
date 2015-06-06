@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var MuchTweenSoWow = {
     fullname: "MuchTweenSoWow",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

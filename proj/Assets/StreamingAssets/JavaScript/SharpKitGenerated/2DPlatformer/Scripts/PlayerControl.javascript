@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var PlayerControl = {
     fullname: "PlayerControl",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -30,10 +30,10 @@ var PlayerControl = {
         FixedUpdate: function (){
             var h = UnityEngine.Input.GetAxis("Horizontal");
             this.anim.SetFloat$$String$$Single("Speed", UnityEngine.Mathf.Abs$$Single(h));
-            if (h * this.get_rigidbody2D().get_velocity().x < this.maxSpeed)
-                this.get_rigidbody2D().AddForce$$Vector2(UnityEngine.Vector2.op_Multiply$$Vector2$$Single(UnityEngine.Vector2.op_Multiply$$Vector2$$Single(UnityEngine.Vector2.get_right(), h), this.moveForce));
-            if (UnityEngine.Mathf.Abs$$Single(this.get_rigidbody2D().get_velocity().x) > this.maxSpeed)
-                this.get_rigidbody2D().set_velocity(new UnityEngine.Vector2.ctor$$Single$$Single(UnityEngine.Mathf.Sign(this.get_rigidbody2D().get_velocity().x) * this.maxSpeed, this.get_rigidbody2D().get_velocity().y));
+            if (h * this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).get_velocity().x < this.maxSpeed)
+                this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).AddForce$$Vector2(UnityEngine.Vector2.op_Multiply$$Vector2$$Single(UnityEngine.Vector2.op_Multiply$$Vector2$$Single(UnityEngine.Vector2.get_right(), h), this.moveForce));
+            if (UnityEngine.Mathf.Abs$$Single(this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).get_velocity().x) > this.maxSpeed)
+                this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).set_velocity(new UnityEngine.Vector2.ctor$$Single$$Single(UnityEngine.Mathf.Sign(this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).get_velocity().x) * this.maxSpeed, this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).get_velocity().y));
             if (h > 0 && !this.facingRight)
                 this.Flip();
             else if (h < 0 && this.facingRight)
@@ -42,7 +42,7 @@ var PlayerControl = {
                 this.anim.SetTrigger$$String("Jump");
                 var i = UnityEngine.Random.Range$$Int32$$Int32(0, this.jumpClips.length);
                 UnityEngine.AudioSource.PlayClipAtPoint$$AudioClip$$Vector3(this.jumpClips[i], this.get_transform().get_position());
-                this.get_rigidbody2D().AddForce$$Vector2(new UnityEngine.Vector2.ctor$$Single$$Single(0, this.jumpForce));
+                this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).AddForce$$Vector2(new UnityEngine.Vector2.ctor$$Single$$Single(0, this.jumpForce));
                 this.jump = false;
             }
         },
@@ -70,10 +70,10 @@ var PlayerControl = {
             }
         },
         Taunt: function (){
-            if (!this.get_audio().get_isPlaying()){
+            if (!this.GetComponent$1(UnityEngine.AudioSource.ctor).get_isPlaying()){
                 this.tauntIndex = this.TauntRandom();
-                this.get_audio().set_clip(this.taunts[this.tauntIndex]);
-                this.get_audio().Play();
+                this.GetComponent$1(UnityEngine.AudioSource.ctor).set_clip(this.taunts[this.tauntIndex]);
+                this.GetComponent$1(UnityEngine.AudioSource.ctor).Play();
             }
         },
         TauntRandom: function (){

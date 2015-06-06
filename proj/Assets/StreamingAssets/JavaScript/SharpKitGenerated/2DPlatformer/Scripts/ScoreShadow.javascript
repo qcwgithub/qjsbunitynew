@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var ScoreShadow = {
     fullname: "ScoreShadow",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -16,7 +16,7 @@ var ScoreShadow = {
             this.get_transform().set_position(behindPos);
         },
         Update: function (){
-            this.get_guiText().set_text(this.guiCopy.get_guiText().get_text());
+            this.GetComponent$1(UnityEngine.GUIText.ctor).set_text(this.guiCopy.GetComponent$1(UnityEngine.GUIText.ctor).get_text());
         }
     }
 };

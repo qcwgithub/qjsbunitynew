@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var Spawner = {
     fullname: "Spawner",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

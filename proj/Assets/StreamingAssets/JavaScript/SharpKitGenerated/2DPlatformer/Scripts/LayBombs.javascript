@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var LayBombs = {
     fullname: "LayBombs",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -15,7 +15,7 @@ var LayBombs = {
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Awake: function (){
-            this.bombHUD = UnityEngine.GameObject.Find("ui_bombHUD").get_guiTexture();
+            this.bombHUD = UnityEngine.GameObject.Find("ui_bombHUD").GetComponent$1(UnityEngine.GUITexture.ctor);
         },
         Update: function (){
             if (UnityEngine.Input.GetButtonDown("Fire2") && !this.bombLaid && this.bombCount > 0){

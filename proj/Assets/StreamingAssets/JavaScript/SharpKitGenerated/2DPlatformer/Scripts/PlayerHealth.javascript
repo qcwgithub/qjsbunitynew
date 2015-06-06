@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var PlayerHealth = {
     fullname: "PlayerHealth",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj1",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -51,7 +51,7 @@ var PlayerHealth = {
         TakeDamage: function (enemy){
             this.playerControl.jump = false;
             var hurtVector = UnityEngine.Vector3.op_Addition(UnityEngine.Vector3.op_Subtraction(this.get_transform().get_position(), enemy.get_position()), UnityEngine.Vector3.op_Multiply$$Vector3$$Single(UnityEngine.Vector3.get_up(), 5));
-            this.get_rigidbody2D().AddForce$$Vector2(UnityEngine.Vector2.op_Implicit$$Vector3(UnityEngine.Vector3.op_Multiply$$Vector3$$Single(hurtVector, this.hurtForce)));
+            this.GetComponent$1(UnityEngine.Rigidbody2D.ctor).AddForce$$Vector2(UnityEngine.Vector2.op_Implicit$$Vector3(UnityEngine.Vector3.op_Multiply$$Vector3$$Single(hurtVector, this.hurtForce)));
             this.health -= this.damageAmount;
             this.UpdateHealthBar();
             var i = UnityEngine.Random.Range$$Int32$$Int32(0, this.ouchClips.length);
