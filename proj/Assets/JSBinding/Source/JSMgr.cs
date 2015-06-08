@@ -27,7 +27,6 @@ public class MonoPInvokeCallbackAttribute : System.Attribute
 
 public static class JSMgr
 {
-    static IntPtr jsErrorReporter = IntPtr.Zero;
     [MonoPInvokeCallbackAttribute(typeof(JSApi.JSErrorReporter))]
     static int errorReporter(IntPtr cx, string message, IntPtr report)
     {
@@ -41,8 +40,6 @@ public static class JSMgr
     // load generated js files
     public delegate void OnInitJSEngine(bool bSuccess);
     public static OnInitJSEngine onInitJSEngine;
-    static int loadedGeneratedJS = 0;
-    static string[] jsGeneratedFileNames;
 
     static bool RefCallStaticMethod(string className, string methodName)
     {
@@ -117,6 +114,8 @@ public static class JSMgr
         if (!RefCallStaticMethod("CSharpGenerated", "RegisterAll"))
         {
             Debug.LogError("Call CSharpGenerated.RegisterAll() failed. Did you forget to click menu [JSB/Generate JS and CS Bindings]?");
+            onInitJSEngine(false);
+            return false;
         }
 
         JSMgr.jsLoader = jsLoader;
@@ -130,6 +129,7 @@ public static class JSMgr
     public static void ShutdownJSEngine()
     {
         ShutDown = true;
+        allCallbackInfo.Clear();
         JSMgr.ClearJSCSRel();
         evaluatedScript.Clear();
         JSApi.ShutdownJSEngine();
@@ -190,37 +190,6 @@ public static class JSMgr
         public MethodCallBackInfo[] methods;
     }
     public static List<CallbackInfo> allCallbackInfo = new List<CallbackInfo>();
-
-    ////////
-    ////////
-    ////////
-    // used for generic methods
-    public static Dictionary<Type, MethodInfo[]> dictTypeMI;
-    public static MethodInfo RuntimeGetMethodInfo(Type type, int i)
-    {
-        if (dictTypeMI == null)
-        {
-            dictTypeMI = new Dictionary<Type, MethodInfo[]>();
-        }
-        MethodInfo[] arrMI;
-        if (!dictTypeMI.TryGetValue(type, out arrMI))
-        {
-            // flags must be the same as AddATypeInfo
-            arrMI = type.GetMethods(JSMgr.BindingFlagsMethod);
-            dictTypeMI.Add(type, arrMI);
-        }
-        if (i < arrMI.Length)
-        {
-            return arrMI[i];
-        }
-        else
-        {
-            Debug.LogError("RuntimeGetMethodInfo ERROR: index = " + i.ToString() + " out of range");
-            return null;
-        }
-    }
-
-
 
     /// <summary>
     /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

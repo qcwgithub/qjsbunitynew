@@ -1201,11 +1201,15 @@ public static void __Register()
     }
     public static void GenerateRegisterAll()
     {
-        string fmt = @"
+        string fmt = @"using UnityEngine;
 public class CSharpGenerated
 [[
     public static void RegisterAll()
     [[
+        if (JSMgr.allCallbackInfo.Count != 0)
+        [[
+            Debug.LogError(999777454);
+        ]]
 {0}
     ]]
 ]]
