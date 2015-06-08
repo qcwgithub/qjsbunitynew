@@ -1618,7 +1618,7 @@ using UnityEngine;
     {
         AssetDatabase.FindAssets("backgrounds", new string[]{"Assets/Prefabs/Environment"});
     }
-    [MenuItem("JSB/Generate JS and CS Bindings")]
+    [MenuItem("JSB/Generate JS and CS Bindings", false, 1)]
     public static void GenerateJSCSBindings()
 	{
 		if (!CheckClassBindings())
@@ -1666,7 +1666,7 @@ using UnityEngine;
         Debug.Log("Output All T Functions finish, file: " + tempFile);
     }
 
-    [MenuItem("JSB/Output All Types in UnityEngine.dll")]
+    //[MenuItem("JSB/Tool/Output All Types in UnityEngine.dll")]
     public static void OutputAllTypesInUnityEngine()
     {
         var asm = typeof(GameObject).Assembly;
@@ -1674,7 +1674,7 @@ using UnityEngine;
     }
 
 
-    [MenuItem("JSB/Output All Types in UnityEngine.UI.dll")]
+    //[MenuItem("JSB/Tool/Output All Types in UnityEngine.UI.dll")]
     public static void OutputAllTypesInUnityEngineUI()
     {
         //var asm = typeof(UnityEngine.EventSystems.UIBehaviour).Assembly;

@@ -168,7 +168,7 @@ public static class JSAnalyzer
         sbHierachy.Remove(0, sbHierachy.Length);
     }
 
-    [MenuItem("JSB/Tool/Gen JsType file list")]
+    [MenuItem("JSB/Generate SharpKit JsType file CS.require list", false, 53)]
     public static void OutputAllTypesWithJsTypeAttribute()
     {
         var sb = new StringBuilder();
@@ -252,7 +252,7 @@ public static class JSAnalyzer
     // delegate return true: not to replace
     public delegate bool DelFilterReplaceFile(string fullpath);
 
-    [MenuItem("JSB/Replace all monos for all prefabs and scenes")]
+    [MenuItem("JSB/Replace All Monos for all Prefabs and Scenes", false, 110)]
     public static void ReplaceAllMonos()
     {
         JSEngine jsEngine = FindJSEngine();
@@ -421,7 +421,7 @@ public static class JSAnalyzer
         Debug.Log(sbHierachy);
     }
     // Alt + Shift + Q
-    [MenuItem("JSB/Copy GameObjects MonoBehaviours &#q")]
+    [MenuItem("JSB/Copy Selected GameObjects MonoBehaviours &#q", false, 108)]
     public static void CopyGameObjectMonoBehaviours()
     {
         Debug.Log("CopyGameObjectMonoBehaviours");
@@ -429,7 +429,7 @@ public static class JSAnalyzer
             JSSerializerEditor.CopyGameObject<JSComponent>(go);
     }
     // Alt + Shift + W
-    [MenuItem("JSB/Remove GameObjects Other MonoBehaviours &#w")]
+    [MenuItem("JSB/Remove Selected GameObjects Other MonoBehaviours &#w", false, 109)]
     public static void RemoveOtherMonoBehaviours()
     {
         Debug.Log("RemoveOtherMonoBehaviours");
@@ -475,13 +475,13 @@ public static class JSAnalyzer
     static bool matched = false;
     static bool addjstype = true;
 
-    [MenuItem("JSB/Tool/Delete JsType Attribute for all structs and classes")]
+    [MenuItem("JSB/Delete SharpKit JsType Attribute for all Structs and Classes", false, 52)]
     public static void DelJsTypeAttributeInSrc()
     {
         addjstype = false;
         MakeJsTypeAttributeInSrc();
     }
-    [MenuItem("JSB/Tool/Add JsType Attribute for all structs and classes")]
+    [MenuItem("JSB/Add SharpKit JsType Attribute for all Structs and Classes", false, 51)]
     public static void AddJsTypeAttributeInSrc()
     {
         addjstype = true;
@@ -586,5 +586,11 @@ fields before this action.",
         }
         Debug.Log("Make JsType Attribute OK.");
         AssetDatabase.Refresh();
+    }
+
+    [MenuItem("JSB/Online Documents", false, 151)]
+    public static void OpenHelp()
+    {
+        Application.OpenURL("http://www.cnblogs.com/answerwinner/p/4469021.html");
     }
 }
