@@ -481,14 +481,27 @@ public static class CSGenerator2
                 sb.Append("    else\n");
                 sb.Append("    [[ \n");
 
-                int ParamIndex = ps.Length;
+                if (!isDelegate)
+                {
+                    int ParamIndex = ps.Length;
 
-                var paramHandler = JSDataExchangeEditor.Get_ParamHandler(property.PropertyType, ParamIndex, false, false);
-                sb.Append("        " + paramHandler.getter + "\n");
+                    var paramHandler = JSDataExchangeEditor.Get_ParamHandler(property.PropertyType, ParamIndex, false, false);
+                    sb.Append("        " + paramHandler.getter + "\n");
 
-                sb.Append(JSDataExchangeEditor.BuildCallString(type, property, argActual.Format(cg.args.ArgsFormat.OnlyList),
-                                features | JSDataExchangeEditor.MemberFeature.Set, paramHandler.argName));
+                    sb.Append(JSDataExchangeEditor.BuildCallString(type, property, argActual.Format(cg.args.ArgsFormat.OnlyList),
+                                    features | JSDataExchangeEditor.MemberFeature.Set, paramHandler.argName));
+                }
+                else
+                {
+                    var getDelegateFuncitonName = JSDataExchangeEditor.GetMethodArg_DelegateFuncionName(type, property.Name, i, 0);
 
+                    //                     sb.Append(JSDataExchangeEditor.BuildCallString(type, field, "" /* argList */,
+                    //                                 features | JSDataExchangeEditor.MemberFeature.Set, getDelegateFuncitonName + "(vc.getJSFunctionValue())"));
+
+                    string getDelegate = JSDataExchangeEditor.Build_GetDelegate(getDelegateFuncitonName, property.PropertyType);
+                    sb.Append(JSDataExchangeEditor.BuildCallString(type, property, "" /* argList */,
+                                features | JSDataExchangeEditor.MemberFeature.Set, getDelegate));
+                }
                 sb.Append("    ]]\n");
             }
 
