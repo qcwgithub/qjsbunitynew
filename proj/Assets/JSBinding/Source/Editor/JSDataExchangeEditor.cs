@@ -266,14 +266,14 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
 
         // this function name is used in BuildFields, don't change
         sb.AppendFormat("public static {0} {1}{2}(CSRepresentedObject objFunction)\n[[\n",
-            JSNameMgr.GetTypeFullName(delType),  // [0]
+            JSNameMgr.GetTypeFullName(delType, true),  // [0]
             getDelFunctionName, // [2]
             stringTOfMethod  // [1]
             );
         sb.Append("    if (objFunction == null || objFunction.jsObjID == 0)\n");
         sb.Append("    [[\n        return null;\n    ]]\n");
 
-        sb.AppendFormat("    {0} action = ({1}) => \n", JSNameMgr.GetTypeFullName(delType), argsParam.Format(cg.args.ArgsFormat.OnlyList));
+        sb.AppendFormat("    {0} action = ({1}) => \n", JSNameMgr.GetTypeFullName(delType, true), argsParam.Format(cg.args.ArgsFormat.OnlyList));
         sb.AppendFormat("    [[\n");
         sb.AppendFormat("        JSMgr.vCall.CallJSFunctionValue(0, objFunction.jsObjID{0}{1});\n", (argsParam.Count > 0) ? ", " : "", argsParam);
 

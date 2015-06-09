@@ -25,7 +25,7 @@ public static class JSNameMgr
     public static string[] GenTSuffixReplaceCS = new string[] { "<>", "<,>", "<,,>", "<,,,>", "<,,,,>" };
     public static string[] GenTSuffixReplaceJS = new string[] { "$1", "$2", "$3", "$4", "$5" };
 
-    public static string GetTypeFullName(Type type)
+    public static string GetTypeFullName(Type type, bool withT = false)
     {
         if (type == null) return "";
 
@@ -50,9 +50,32 @@ public static class JSNameMgr
         {
             var t = type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition();
             string ret = t.FullName;
-            for (var i = 0; i < GenTSuffix.Length; i++)
-                ret = ret.Replace(GenTSuffix[i], GenTSuffixReplaceCS[i]);
-            return ret.Replace('+', '.');
+            if (!withT)
+            {
+                for (var i = 0; i < GenTSuffix.Length; i++)
+                    ret = ret.Replace(GenTSuffix[i], GenTSuffixReplaceCS[i]);
+                return ret.Replace('+', '.');
+            }
+            else
+            {
+                int length = ret.Length;
+                if (length > 2 && ret[length - 2] == '`')
+                {
+                    ret = ret.Substring(0, length - 2);
+                    Type[] ts = type.GetGenericArguments();
+                    ret += "<";
+                    for (int i = 0; i < ts.Length; i++)
+                    {
+                        ret += GetTypeFullName(ts[i]); // 这里是T
+                        if (i != ts.Length - 1)
+                        {
+                            ret += ", ";
+                        }
+                    }
+                    ret += ">";
+                }
+                return ret.Replace('+', '.');
+            }
 
             // 后面是 `1 或 `2 之类的
             //            string rt = type.FullName;
@@ -71,19 +94,30 @@ public static class JSNameMgr
         }
         else
         {
-            // 通常不会进这里
-            string fatherName = type.Name.Substring(0, type.Name.Length - 2);
-            Type[] ts = type.GetGenericArguments();
-            fatherName += "<";
-            for (int i = 0; i < ts.Length; i++)
+            string parentName = string.Empty;
+            if (type.IsNested && type.DeclaringType != null)
             {
-                fatherName += GetTypeFullName(ts[i]); // 这里是T
-                if (i != ts.Length - 1)
-                    fatherName += ", ";
+                parentName = GetTypeFullName(type.DeclaringType, withT) + ".";
             }
-            fatherName += ">";
-            fatherName.Replace('+', '.');
-            return fatherName;
+
+            string Name = type.Name;
+            int length = Name.Length;
+            if (length > 2 && Name[length - 2] == '`')
+            {
+                Name = Name.Substring(0, length - 2);
+                Type[] ts = type.GetGenericArguments();
+                Name += "<";
+                for (int i = 0; i < ts.Length; i++)
+                {
+                    Name += GetTypeFullName(ts[i]); // 这里是T
+                    if (i != ts.Length - 1)
+                    {
+                        Name += ", ";
+                    }
+                }
+                Name += ">";
+            }
+            return (parentName + Name).Replace('+', '.');
         }
     }
     public static string GetJSTypeFullName(Type type)
