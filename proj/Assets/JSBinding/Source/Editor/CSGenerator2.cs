@@ -465,8 +465,11 @@ public static class CSGenerator2
             //if (type.IsValueType && !field.IsStatic)
             //    sb.AppendFormat("{0} argThis = ({0})vc.csObj;", type.Name);
 
-            sb.Append(sbCall);
-            sb.AppendFormat("        {0}\n", JSDataExchangeEditor.Get_Return(property.PropertyType, "result"));
+            if (property.CanRead)
+            {
+                sb.Append(sbCall);
+                sb.AppendFormat("        {0}\n", JSDataExchangeEditor.Get_Return(property.PropertyType, "result"));
+            }
             if (!bReadOnly)
             {
                 sb.Append("    ]]\n");
