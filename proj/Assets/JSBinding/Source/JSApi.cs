@@ -289,6 +289,10 @@ public class JSApi
     }
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern void setString(int e, string value);
+    public static void setStringS(int e, object value)
+    {
+        setString(e, (string)value);
+    }
     public static void setStringS(int e, string value)
     {
         setString(e, value);
