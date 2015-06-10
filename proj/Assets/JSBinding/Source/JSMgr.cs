@@ -93,6 +93,12 @@ public static class JSMgr
         Debug.Log(s);
     }
 
+    /*
+     * when shut down js engine
+     * jsEngineRound++
+     * starts from 1
+     */
+    public static int jsEngineRound = 1;
     static JSFileLoader jsLoader;
     public static bool InitJSEngine(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
     {
@@ -133,6 +139,7 @@ public static class JSMgr
         JSMgr.ClearJSCSRel();
         evaluatedScript.Clear();
         JSApi.ShutdownJSEngine();
+        jsEngineRound++;
     }
     
 
@@ -713,17 +720,26 @@ public static class JSMgr
         }
     }
 
-    public static void removeJSCSRel(int id)
+    public static void removeJSCSRel(int id, int round = 0)
     {
-        JS_CS_Rel Rel;
-        if (mDictionary1.TryGetValue(id, out Rel))
+        // don't remove an ID belonging to previous round
+        if (round == 0 || round == JSMgr.jsEngineRound)
         {
-            mDictionary1.Remove(id);
-            mDictionary2.Remove(Rel.hash);
+            JS_CS_Rel Rel;
+            if (mDictionary1.TryGetValue(id, out Rel))
+            {
+                mDictionary1.Remove(id);
+                mDictionary2.Remove(Rel.hash);
+            }
+            else if (!JSMgr.isShutDown)
+            {
+                Debug.LogError("JSMgr.removeJSCSRel: " + id + " not found.");
+            }
         }
-        else if (!JSMgr.isShutDown)
+        else if (round > 0)
         {
-            Debug.LogError("JSMgr.removeJSCSRel: " + id + " not found.");
+            // 
+            // Debug.Log(new StringBuilder().AppendFormat("didn't remove id {0} because it belongs to old round {1}", id, round));
         }
     }
 

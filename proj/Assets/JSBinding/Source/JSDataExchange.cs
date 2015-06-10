@@ -928,6 +928,7 @@ public class CSRepresentedObject
     //不要直接创建这个对象，应该调用 JSDataExchangeMgr.getObject
     public CSRepresentedObject(int jsObjID, bool bFunction = false)
     {
+        this.jsEngineRound = JSMgr.jsEngineRound;
         this.jsObjID = jsObjID;
         this.bFunction = bFunction;
         JSMgr.addJSCSRel(jsObjID, this, true);
@@ -951,7 +952,7 @@ public class CSRepresentedObject
         int refCount = JSApi.decRefCount(jsObjID);
         if (refCount <= 0)
         {
-            JSMgr.removeJSCSRel(jsObjID);
+            JSMgr.removeJSCSRel(jsObjID, this.jsEngineRound);
         }
         else
         {
@@ -961,4 +962,5 @@ public class CSRepresentedObject
     }
     public int jsObjID;
     public bool bFunction;
+    int jsEngineRound;
 }
