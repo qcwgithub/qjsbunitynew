@@ -210,6 +210,9 @@ public class JSEngine : MonoBehaviour
         GUI.TextArea(new Rect(guiX, y, 400, 20), "valueMapSize: " + JSApi.getValueMapSize());
         y += 20;
 
+        GUI.TextArea(new Rect(guiX, y, 400, 20), "valueMapIndex: " + JSApi.getValueMapIndex());
+        y += 20;
+
         foreach (var v in tj)
         {
             GUI.TextArea(new Rect(guiX, y, 400, 20), v.Key + ": " + v.Value);
