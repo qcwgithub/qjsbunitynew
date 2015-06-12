@@ -425,18 +425,26 @@ public class JSDataExchangeMgr
                 }
                 else
                 {
-                    string typeName = string.Empty;
-                    // create a JSRepresentedObject object in JS to represent a C# delegate object
-                    if (typeof(System.Delegate).IsAssignableFrom(csType))
-                        typeName = "JSRepresentedObject";
-                    else
-                        typeName = JSNameMgr.GetJSTypeFullName(csType);
+                    bool bDelegate = typeof(System.Delegate).IsAssignableFrom(csType);
+                    if (bDelegate)
+                    {
+                        jsObjID = JSMgr.getFunIDByDelegate((Delegate)csObj);
+                    }
+                    if (jsObjID == 0)
+                    {
+                        string typeName = string.Empty;
+                        // create a JSRepresentedObject object in JS to represent a C# delegate object
+                        if (bDelegate)
+                            typeName = "JSRepresentedObject";
+                        else
+                            typeName = JSNameMgr.GetJSTypeFullName(csType);
 
-                    jsObjID = JSApi.createJSClassObject(typeName);
-                    if (jsObjID != 0)
-                        JSMgr.addJSCSRel(jsObjID, csObj);
-                    else
-                        Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
+                        jsObjID = JSApi.createJSClassObject(typeName);
+                        if (jsObjID != 0)
+                            JSMgr.addJSCSRel(jsObjID, csObj);
+                        else
+                            Debug.LogError("Return a \"" + typeName + "\" to JS failed. Did you forget to export that class?");
+                    }
                 }
             }
         }
@@ -959,6 +967,10 @@ public class CSRepresentedObject
         if (refCount <= 0)
         {
             JSMgr.removeJSCSRel(jsObjID, this.jsEngineRound);
+            if (bFunction)
+            {
+                JSMgr.removeJSFunCSDelegateRel(jsObjID);
+            }
         }
         else
         {

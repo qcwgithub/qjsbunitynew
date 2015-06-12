@@ -281,6 +281,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             sb.Append("        return (" + JSNameMgr.GetTypeFullName(returnType) + ")" + JSDataExchangeEditor.Get_GetJSReturn(returnType) + ";\n");
 
         sb.AppendFormat("    ]];\n");
+        sb.Append("    JSMgr.addJSFunCSDelegateRel(objFunction.jsObjID, action);\n");
         sb.Append("    return action;\n");
         sb.AppendFormat("]]\n");
 

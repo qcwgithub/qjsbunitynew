@@ -829,4 +829,59 @@ public static class JSMgr
         countDict2 = mDictionary2.Count;
     }
     public static Dictionary<int, JS_CS_Rel> GetDict1() { return mDictionary1;  }
+
+    #region JS<->CS fun<->Delegate relationship
+
+    class JS_CS_FunRel
+    {
+        public WeakReference wr;
+        public int hashCode;
+    }
+    static Dictionary<int, JS_CS_FunRel> mDictJSFun1 = new Dictionary<int, JS_CS_FunRel>(); // key = FUNCTION ID, Value = JS_CS_FunRel(Delegate, Delegate.GetHashCode())
+    static Dictionary<int, int> mDictJSFun2 = new Dictionary<int,int>(); // key = Delegate.GetHashCode(), Value = FUNCTIONID
+    public static void addJSFunCSDelegateRel(int funID, Delegate del)
+    {
+        if (!mDictJSFun1.ContainsKey(funID))
+        {
+            JS_CS_FunRel rel = new JS_CS_FunRel();
+            {
+                rel.wr = new WeakReference(del);
+                rel.hashCode = del.GetHashCode();
+            }
+
+            mDictJSFun1.Add(funID, rel);
+            mDictJSFun2.Add(rel.hashCode, funID);
+        }
+    }
+    public static void removeJSFunCSDelegateRel(int funID)
+    {
+        JS_CS_FunRel rel;
+        if (mDictJSFun1.TryGetValue(funID, out rel))
+        {
+            mDictJSFun1.Remove(funID);
+            mDictJSFun2.Remove(rel.hashCode);
+        }
+    }
+    public static int getFunIDByDelegate(Delegate del)
+    {
+        int hash = del.GetHashCode();
+
+        int funID;
+        if (mDictJSFun2.TryGetValue(hash, out funID))
+        {
+            return funID;
+        }
+        return 0;
+    }
+    public static string getJSFunCSDelegateCount()
+    {
+        var c1 = mDictJSFun1.Count;
+        var c2 = mDictJSFun2.Count;
+        if (c1 == c2)
+        {
+            return c1.ToString();
+        }
+        return "" + c1 + "/" + c2;
+    } 
+    #endregion
 }
