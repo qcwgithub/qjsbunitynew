@@ -1448,6 +1448,12 @@ using UnityEngine;
         // 检查类型有没有重复
         foreach (var type in JSBindingSettings.classes)
         {
+            if (typeof(System.Delegate).IsAssignableFrom(type))
+            {
+                sb.AppendFormat("\"{0}\" Delegate can not be exported.\n",
+                    JSNameMgr.GetTypeFullName(type));
+                ret = false;
+            }
             if (JSSerializerEditor.WillTypeBeTranslatedToJavaScript(type))
             {
                 sb.AppendFormat("\"{0}\" has JsType attribute, it can not be in JSBindingSettings.classes at the same time.\n", 

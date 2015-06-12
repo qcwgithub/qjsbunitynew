@@ -1,3 +1,24 @@
+/*
+*
+* JSRepresentedObject
+* to represent C# object whose type is unknown to JS
+* currently, it is only used to represent C# delegate objects, which only exists in C#, and are only available in C#
+*
+*/
+
+if (typeof(JsTypes) == "undefined")
+    var JsTypes = [];
+
+JsTypes.push({
+    definition: {},
+    staticDefinition: {},
+    fields: {},
+    staticFields: {},
+    assemblyName: "",
+    Kind: "Class",
+    fullname: "JSRepresentedObject"
+});
+
 
 /*
 * Before Compile:

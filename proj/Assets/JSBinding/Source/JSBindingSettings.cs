@@ -193,8 +193,8 @@ public class JSBindingSettings
 //         typeof(DaikonForge.Tween.Interpolation.Interpolator<>),
 //         typeof(DaikonForge.Tween.TweenEasingFunctions),
 //         typeof(DaikonForge.Tween.TweenTimeline),
-        typeof(System.Delegate),
-        typeof(System.MulticastDelegate),
+        //typeof(System.Delegate),
+        //typeof(System.MulticastDelegate),
         //typeof(DaikonForge.Tween.TweenEasingCallback),
     };
     public static Type[] classes = new Type[]
@@ -776,7 +776,7 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.Interpolation.EulerInterpolator),
         typeof(DaikonForge.Tween.TweenEasingFunctions),
         typeof(DaikonForge.Tween.TweenTimeline),
-        typeof(DaikonForge.Tween.TweenEasingCallback),
+//        typeof(DaikonForge.Tween.TweenEasingCallback),
         typeof(DaikonForge.Tween.Spline),
         typeof(DaikonForge.Tween.SplineObject),
         typeof(DaikonForge.Tween.SplineNode),
@@ -785,8 +785,8 @@ public class JSBindingSettings
         typeof(DaikonForge.Tween.TweenManager),
         
 
-        typeof(System.Delegate),
-        typeof(System.MulticastDelegate),
+//        typeof(System.Delegate),
+//        typeof(System.MulticastDelegate),
         //typeof(SerializeStruct.AppleInfo),
         typeof(StringBuilder),
     };

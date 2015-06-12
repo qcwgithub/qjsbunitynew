@@ -425,7 +425,13 @@ public class JSDataExchangeMgr
                 }
                 else
                 {
-                    string typeName = JSNameMgr.GetJSTypeFullName(csType);
+                    string typeName = string.Empty;
+                    // create a JSRepresentedObject object in JS to represent a C# delegate object
+                    if (typeof(System.Delegate).IsAssignableFrom(csType))
+                        typeName = "JSRepresentedObject";
+                    else
+                        typeName = JSNameMgr.GetJSTypeFullName(csType);
+
                     jsObjID = JSApi.createJSClassObject(typeName);
                     if (jsObjID != 0)
                         JSMgr.addJSCSRel(jsObjID, csObj);
