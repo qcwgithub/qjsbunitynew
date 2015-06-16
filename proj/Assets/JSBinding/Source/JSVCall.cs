@@ -116,6 +116,16 @@ public class JSVCall
     }
 
 
+    public bool CallJSFunctionName(int jsObjID, string funName, params object[] args)
+    {
+        if (JSMgr.isShutDown) return false;
+        int funID = JSApi.getObjFunction(jsObjID, funName);
+        if (funID <= 0)
+            return false;
+
+        return CallJSFunctionValue(jsObjID, funID, args);
+    }
+
     public enum Oper
     {
         GET_FIELD = 0,
