@@ -671,6 +671,15 @@ fields before this action.",
             var path = f.Replace('\\', '/');
             var subPath = path.Substring(srcFolder.Length + 1);
             bool export = true;
+
+            // ignore Editor scripts!
+            if (subPath.IndexOf("Editor/") == 0 ||
+                subPath.IndexOf("/Editor/") > 0)
+            {
+                export = false;
+                continue;
+            }
+
             foreach (string dir in JSBindingSettings.PathsNotToJavaScript)
             {
                 if (subPath.IndexOf(dir) == 0)
