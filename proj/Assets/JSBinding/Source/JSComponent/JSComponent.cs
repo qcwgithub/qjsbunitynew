@@ -113,7 +113,7 @@ public class JSComponent : JSSerializer
     {
         if (initFail || initSuccess) return;
 
-        if (string.IsNullOrEmpty(jsScriptName))
+        if (string.IsNullOrEmpty(jsClassName))
         {
             initFail = true;
             return;
@@ -123,11 +123,11 @@ public class JSComponent : JSSerializer
         // cannot use createJSClassObject here
         // because we have to call ctor, to run initialization code
         // this object will not have finalizeOp
-        jsObjID = JSApi.newJSClassObject(this.jsScriptName);
+        jsObjID = JSApi.newJSClassObject(this.jsClassName);
         JSApi.setTraceS(jsObjID, true);
         if (jsObjID == 0)
         {
-            Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");
+            Debug.LogError("New MonoBehaviour \"" + this.jsClassName + "\" failed. Did you forget to export that class?");
             initFail = true;
             return;
         } 

@@ -394,27 +394,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 1
   port: 5086
-  forceProtectJSFunction: 0
-  GCInterval: 1
+  GCInterval: 10000
   jsLoader: {fileID: 145837458}
   InitLoadScripts:
   - includes
-  DirectoriesNotToExport:
-  - JSBinding/
-  - Stealth/
-  - DaikonForge Tween (Pro)/
-  DirectoriesToExport:
-  - JSBinding/Samples/
-  - DaikonForge Tween (Pro)/Examples/Scripts
-  DirectoriesNotToReplace:
-  - JSBinding/
-  - Plugins/
-  - Resources/
-  - Src/
-  - StreamingAssets/
-  - UnityVS/
-  - DaikonForge Tween (Pro)/
   showStatistics: 1
+  guiX: 0
 --- !u!4 &540263188
 Transform:
   m_ObjectHideFlags: 0
@@ -1136,7 +1121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: TestFPS
+  jsClassName: TestFPS
   arrString:
   - 1/editorOnly/True
   arrObject: []
@@ -1151,7 +1136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: TestSlinky
+  jsClassName: TestSlinky
   arrString: []
   arrObject: []
 --- !u!1 &2128495391

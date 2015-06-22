@@ -221,7 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: TestFPS
+  jsClassName: TestFPS
   arrString:
   - 1/editorOnly/False
   arrObject: []
@@ -236,7 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: TestHighConcurrencyGroup
+  jsClassName: TestHighConcurrencyGroup
   arrString:
   - 15/pivot/0
   - 15/spriteTemplate/1
@@ -410,25 +410,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 1
   port: 5086
-  forceProtectJSFunction: 1
   GCInterval: 2
   jsLoader: {fileID: 1390024578}
   InitLoadScripts:
   - includes
-  DirectoriesNotToExport:
-  - JSBinding/
-  - Stealth/
-  - DaikonForge Tween (Pro)/
-  DirectoriesToExport:
-  - JSBinding/Samples/
-  - DaikonForge Tween (Pro)/Examples/Scripts
-  DirectoriesNotToReplace:
-  - JSBinding/
-  - Plugins/
-  - Resources/
-  - Src/
-  - StreamingAssets/
-  - UnityVS/
-  - DaikonForge Tween (Pro)/
   showStatistics: 0
   guiX: 0

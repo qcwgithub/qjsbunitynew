@@ -14,11 +14,7 @@ using SharpKit.JavaScript;
 /// </summary>
 public class JSSerializer : MonoBehaviour
 {
-    /*
-     * AutoDelete: if true  will be automatically deleted when needed (when press Alt + Shift + Q)
-     * DON'T change this manually
-     */
-    public string jsScriptName = string.Empty;
+    public string jsClassName = string.Empty;
     public string[] arrString = null;
     public UnityEngine.Object[] arrObject = null;
 
@@ -146,7 +142,7 @@ public class JSSerializer : MonoBehaviour
         foreach (var com in jsComs)
         {
             // NOTE£ºCan not bind a script to a GameObject twice!
-            if (com.jsScriptName == scriptName)
+            if (com.jsClassName == scriptName)
             {
                 return com.GetJSObjID();
             }

@@ -117,26 +117,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 1
   port: 5086
-  forceProtectJSFunction: 1
-  GCInterval: 1e+06
+  GCInterval: 10000
   jsLoader: {fileID: 1808697168}
   InitLoadScripts:
   - includes
-  DirectoriesNotToExport:
-  - JSBinding/
-  - Stealth/
-  - DaikonForge Tween (Pro)/
-  DirectoriesToExport:
-  - JSBinding/Samples/
-  - DaikonForge Tween (Pro)/Examples/Scripts
-  DirectoriesNotToReplace:
-  - JSBinding/
-  - Plugins/
-  - Resources/
-  - Src/
-  - StreamingAssets/
-  - UnityVS/
-  - DaikonForge Tween (Pro)/
   showStatistics: 1
   guiX: 0
 --- !u!1001 &1768677707
@@ -319,6 +303,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: V3Test
+  jsClassName: V3Test
   arrString: []
   arrObject: []

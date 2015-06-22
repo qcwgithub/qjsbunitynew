@@ -369,7 +369,7 @@ public static class JSSerializerEditor
         {
             lstAnalyze[i].Alloc(serizlizer);
         }
-        serizlizer.jsScriptName = JSNameMgr.GetTypeFullName(behaviour.GetType());
+        serizlizer.jsClassName = JSNameMgr.GetTypeFullName(behaviour.GetType());
         serizlizer.arrString = lstString.ToArray();
         serizlizer.arrObject = lstObjs.ToArray();
     }
