@@ -7,23 +7,22 @@ using System.Collections.Generic;
 using System.Text;
 using System.Security;
 
-
 using jsval = JSApi.jsval;
 
-/*
- * JSComponent
- * A class simply transfer callbacks to js
- * 
- * This usage might cost much cpu times. Especially when there are a lot of GameObjects in the scene
- * One likely solution is call Awake, Start, Update only once per frame
- * 
- */
+/// <summary>
+/// JSComponent
+/// A class redirect event functions (Awake, Start, Update, etc.) to JavaScript
+/// Support serializations
+/// </summary>
 public class JSComponent : JSSerializer
 {
     [HideInInspector]
     [NonSerialized]
     public int jsObjID = 0;
 
+    /// <summary>
+    /// Initializes the member function.
+    /// </summary>
     void initMemberFunction()
     {
         idAwake = JSApi.getObjFunction(jsObjID, "Awake");
@@ -42,6 +41,10 @@ public class JSComponent : JSSerializer
         idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "DisableChildGameObject");
         idDestroyGameObject = JSApi.getObjFunction(jsObjID, "DestroyGameObject");
     }
+    /// <summary>
+    /// Removes if exist.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
     void removeIfExist(int id)
     {
         if (id != 0) JSApi.removeByID(id);

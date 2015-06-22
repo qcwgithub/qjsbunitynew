@@ -6,6 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using SharpKit.JavaScript;
 
+/// <summary>
+/// JSSerializer
+/// Serialize variables to JavaScript
+/// Support: Primitive Type, string, enum, [], etc.
+/// List<> is not supported now.
+/// </summary>
 public class JSSerializer : MonoBehaviour
 {
     /*
@@ -59,13 +65,11 @@ public class JSSerializer : MonoBehaviour
         ListObj,
         ListEnd,
     }
-    // TODO 修改注释
-    // and check
     /// <summary>
-    /// 根据 eType 将 strValue 转换为 jsval
+    /// Save a value in JavaScript and return ID
     /// </summary>
-    /// <param name="eType"></param>
-    /// <param name="strValue"></param>
+    /// <param name="eType">Data Type</param>
+    /// <param name="strValue">Value of the variable in string format</param>
     /// <returns></returns>
     int toID(UnitType eType, string strValue)
     {
@@ -121,8 +125,6 @@ public class JSSerializer : MonoBehaviour
                 break;
             case UnitType.ST_String:
                 {
-                    // TODO check
-                    // JSMgr.vCall.datax.setString(JSDataExchangeMgr.eSetType.Jsval, strValue);
                     JSApi.setStringS((int)JSApi.SetType.SaveAndTempTrace, strValue);
                     return JSApi.getSaveID();
                 }
@@ -132,12 +134,18 @@ public class JSSerializer : MonoBehaviour
         }
         return 0;
     }
+    /// <summary>
+    /// Get JSComponent ID of a GameObject by scriptName.
+    /// </summary>
+    /// <param name="go">The gameobject.</param>
+    /// <param name="scriptName">Name of the script.</param>
+    /// <returns></returns>
     public int GetGameObjectMonoBehaviourJSObj(GameObject go, string scriptName)
     {
         JSComponent[] jsComs = go.GetComponents<JSComponent>();
         foreach (var com in jsComs)
         {
-            // 注意：同一个GameObject不能绑相同名字的脚本2次以上
+            // NOTE：Can not bind a script to a GameObject twice!
             if (com.jsScriptName == scriptName)
             {
                 return com.GetJSObjID();
@@ -235,8 +243,6 @@ public class JSSerializer : MonoBehaviour
                         if (jsObjID == 0)
                         {
                             Debug.LogError("Serialize error: call \"" + this.typeName + "\".ctor return null, , did you forget to export that class?");
-                            //JSApi.JSh_SetJsvalUndefined(ref this.val);
-                            //this.id = 0;
                         }
                         else
                         {
@@ -248,49 +254,7 @@ public class JSSerializer : MonoBehaviour
                                 //JSApi.JSh_SetUCProperty(JSMgr.cx, jsObjID, child.name, -1, ref mVal);
                                 JSApi.setProperty(jsObjID, child.name, id);
                             }
-                            //JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
-//                             JSApi.setObject((int)JSApi.SetType.Save, jsObjID);
-//                             this.id = JSApi.getSaveID();
                         }
-                        
-                        /*
-                        IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(this.typeName);
-                        if (jstypeObj == IntPtr.Zero)
-                        {
-                            Debug.LogError("JSSerialize fail. New object \"" + this.typeName + "\" fail, did you forget to export that class?");
-                            this.val.asBits = 0;
-                        }
-                        else
-                        {
-                            JSApi.jsval valFun; valFun.asBits = 0;
-                            JSApi.GetProperty(JSMgr.cx, jstypeObj, "ctor", -1, ref valFun);
-                            if (valFun.asBits == 0 || JSApi.JSh_JsvalIsNullOrUndefined(ref valFun))
-                            {
-                                Debug.LogError("Serialize error: " + this.typeName + ".ctor is not a function");
-                                JSApi.JSh_SetJsvalUndefined(ref this.val);
-                            }
-                            else
-                            {
-                                JSMgr.vCall.CallJSFunctionValue(jstypeObj, ref valFun);
-                                IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
-                                if (jsObj == IntPtr.Zero)
-                                {
-                                    Debug.LogError("Serialize error: call " + this.typeName + ".ctor return null");
-                                    JSApi.JSh_SetJsvalUndefined(ref this.val);
-                                }
-                                else
-                                {
-                                    //IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null);// JSMgr.mjsFinalizer);
-                                    for (var i = 0; i < lstChildren.Count; i++)
-                                    {
-                                        var child = lstChildren[i];
-                                        JSApi.jsval mVal = child.CalcJSVal();
-                                        JSApi.JSh_SetUCProperty(JSMgr.cx, jsObj, child.name, -1, ref mVal);
-                                    }
-                                    JSApi.JSh_SetJsvalObject(ref this.val, jsObj);
-                                }
-                            }
-                        }*/
                     }
                     break;
                 case SType.List:
@@ -305,15 +269,10 @@ public class JSSerializer : MonoBehaviour
         }
     }
     /// <summary>
-    /// 遍历 arrString 逐级处理序列化数据
-    /// index: arrString 索引
-    /// st: 当前父结点
+    /// Traverses the serialization.
     /// </summary>
-    /// <param name="cx"></param>
-    /// <param name="jsObj"></param>
-    /// <param name="index"></param>
-    /// <param name="st"></param>
-    /// <returns></returns>
+    /// <param name="jsObjID">The js object identifier.</param>
+    /// <param name="st">The parent struct.</param>
     public void TraverseSerialize(int jsObjID, SerializeStruct st)
     {
         while (true)
@@ -421,10 +380,9 @@ public class JSSerializer : MonoBehaviour
         return null;
     }
     /// <summary>
-    /// 在脚本的 Awake 时会调用这个函数来初始化序列化数据给JS。
+    /// Initializes the serialized data.
     /// </summary>
-    /// <param name="cx"></param>
-    /// <param name="jsObj"></param>
+    /// <param name="jsObjID">The js object identifier.</param>
     public void initSerializedData(int jsObjID)
     {
         if (arrString == null || arrString.Length == 0)
