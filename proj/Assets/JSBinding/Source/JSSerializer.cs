@@ -321,7 +321,7 @@ public class JSSerializer : MonoBehaviour
                             string s2 = s.Substring(y + 1, s.Length - y - 1);
                             var valName = s1;
                             var objIndex = int.Parse(s2);
-                            JSMgr.vCall.datax.setObject((int)JSApi.SetType.SaveAndTempTrace, this.arrObject[objIndex]);
+                            JSMgr.datax.setObject((int)JSApi.SetType.SaveAndTempTrace, this.arrObject[objIndex]);
 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
                             child.id = JSApi.getSaveID();

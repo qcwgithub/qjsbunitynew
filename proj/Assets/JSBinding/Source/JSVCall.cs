@@ -22,41 +22,6 @@ using jsval = JSApi.jsval;
 
 public class JSVCall
 {
-    public JSDataExchangeMgr datax;
-    public JSVCall()
-    {
-        datax = new JSDataExchangeMgr(this);
-    }
-
-    public class JSParam
-    {
-        public int index; // param index
-        public object csObj; // coresponding cs object, for primitive, string, enum, it's null
-        //public bool isWrap { get { return csObj != null && csObj is JSValueWrap.Wrap; } }
-        //public object wrappedObj { get { return ((JSValueWrap.Wrap)csObj).obj; } set { ((JSValueWrap.Wrap)csObj).obj = value; } }
-        public bool isArray;
-        public bool isNull;
-        public jsval valRO; // if valRO.asBits > 0, means this JS param is {Value: XXX}
-    }
-    // cs function information
-    public class CSParam
-    {
-        public bool isRef;
-        public bool isOptional;
-        public bool isArray;
-        public Type type;
-        public object defaultValue;
-        public CSParam() { }
-        public CSParam(bool r, bool o, bool i, Type t, object d)
-        {
-            isRef = r;
-            isOptional = o;
-            isArray = i;
-            type = t;
-            defaultValue = d;
-        }
-    }
-
     public bool CallJSFunctionValue(int jsObjID, int funID, params object[] args)
     {
         if (JSMgr.isShutDown) return false;
@@ -70,7 +35,7 @@ public class JSVCall
         for (int i = 0; i < argsLen; i++)
         {
             // TODO memory leak
-            this.datax.setWhatever((int)JSApi.SetType.SaveAndTempTrace, args[i]);
+            JSMgr.datax.setWhatever((int)JSApi.SetType.SaveAndTempTrace, args[i]);
             JSApi.moveSaveID2Arr(i);
         }
 

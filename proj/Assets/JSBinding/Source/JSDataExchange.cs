@@ -11,12 +11,6 @@ public class JSDataExchangeMgr
 {
     const int VALUE_LEN = -1;
 
-    JSVCall vc;
-    public JSDataExchangeMgr(JSVCall vc)
-    {
-        this.vc = vc;
-    }
-
     public enum eGetType
     {
         GetARGV,
@@ -520,7 +514,7 @@ public class JSDataExchangeMgr
         for (int i = 0; i < TCount; i++)
         {
             // Get generic types from js.
-            System.Type t = JSDataExchangeMgr.GetTypeByName(vc.datax.getString(JSDataExchangeMgr.eGetType.GetARGV));
+            System.Type t = JSDataExchangeMgr.GetTypeByName(JSMgr.datax.getString(JSDataExchangeMgr.eGetType.GetARGV));
             genericTypes[i] = t;
             if (t == null)
             {
@@ -696,13 +690,13 @@ public class JSDataExchangeMgr
                 Debug.LogError("444 Unknown primitive type");
         }
         else if (type == typeof(System.Object) || type.IsGenericParameter)
-            ret = "JSMgr.vCall.datax.getWhatever";
+            ret = "JSMgr.datax.getWhatever";
         else if (type == typeof(Vector3))
             ret = "JSApi.getVector3S";
         else if (type == typeof(Vector2))
             ret = "JSApi.getVector2S";
         else
-            ret = "JSMgr.vCall.datax.getObject";
+            ret = "JSMgr.datax.getObject";
 
         return ret;
     }

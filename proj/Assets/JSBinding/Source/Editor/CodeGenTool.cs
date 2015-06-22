@@ -131,9 +131,6 @@ namespace cg
 
         }
 
-        // needCount: 最少需要几个
-        // allCount: 最多几个，也就是一共几个
-        // 将自动生成 if (count == 5) {} else if (count == 6) {}
         public void setFunctionParamsCount(int needCount, int allCount) {
             functionBodies = new FunctionBodyProcess[allCount - needCount + 1];
             this.needParamCount = needCount;
@@ -145,14 +142,8 @@ namespace cg
     }
     public class FunctionBodyProcess
     {
-        // for generic function definition
-        // and generic type definition
-        // 格式：全格式
-        // 
         public StringBuilder sbPrepareMethod = new StringBuilder();
 
-        // 给定格式： a,b,c
-        // 会根据 memberType 自动处理一下
         public StringBuilder sbCallParams = new StringBuilder();
     }
 }

@@ -21,7 +21,7 @@ public static class JSGenerator2
 
     public static void OnBegin()
     {
-        JSMgr.ClearTypeInfo();
+        GeneratorHelp.ClearTypeInfo();
 
         if (Directory.Exists(JSBindingSettings.jsGeneratedDir))
         {
@@ -440,8 +440,8 @@ _jstype.staticDefinition.{1} = function({2}) [[
             return;
         }*/
 
-        JSMgr.ATypeInfo ti;
-        int slot = JSMgr.AddTypeInfo(type, out ti);
+        GeneratorHelp.ATypeInfo ti;
+        int slot = GeneratorHelp.AddTypeInfo(type, out ti);
         var sbHeader = BuildHeader(type);
         var sbCons = sbHeader.Append(BuildConstructors(type, ti.constructors, slot, ti.howmanyConstructors));
         var sbFields = BuildFields(type, ti.fields, slot);
