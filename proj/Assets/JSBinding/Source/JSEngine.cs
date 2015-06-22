@@ -9,6 +9,10 @@ using jsval = JSApi.jsval;
 /// Represents a JavaScript Engine object
 /// In order to run JavaScript, there must be one and only one JSEngine object in the scene
 /// You can find JSEngine prefab at path 'JSBinding/Prefabs/_JSEngine.prefab'
+/// 
+/// JSEngine must have a lower execution order than JSComponent.
+/// You can set script execution order by click menu Edit | Project Settings | Script Execution Order
+/// for example, set JSEngine to 400, set JSComponent to 500
 /// </summary>
 public class JSEngine : MonoBehaviour
 {

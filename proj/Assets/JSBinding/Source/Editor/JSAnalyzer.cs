@@ -232,7 +232,6 @@ public static class JSAnalyzer
     static bool FileNameBeginsWithUnderscore(string path)
     {
         string shortName = path.Substring(Math.Max(path.LastIndexOf('/'), path.LastIndexOf('\\')) + 1);
-        // 忽略以_开头的prefab
         return (shortName[0] == '_');
     }
 
@@ -240,6 +239,10 @@ public static class JSAnalyzer
     /// Iterates all scenes and all prefabs in the project.
     /// Checks all MonoBehaviours who has JsType attribute.
     /// Save current scene before this action.
+    /// 3 things will be checked:
+    /// 1) Did you bind a MonoBehaviour(with JsType attribute) to a GameObject twice or more? (Support only one)
+    /// 2) Did your MonoBehaviour(with JsType attribute) refer to other MonoBehaviour that is not available in JavaScript?
+    /// 3) Did your MonoBehaviour(with JsType attribute) have not-supported public fields? (List, for example)
     /// </summary>
     [MenuItem("JSB/Check All Monos for all Prefabs and Scenes", false, 112)]
     public static void CheckAllMonos()
@@ -606,9 +609,8 @@ public static class JSAnalyzer
         return sb.ToString();
     }
 
-    // 包含/
+    // including '/'
     // e.g. E:/code/qjsbunitynew/proj/Assets/Src/Tween_Scripts/TestHighConcurrencyGroup.cs -> Tween_Scripts/
-    // 获得相对于 Src 的目录
     static string nextPath = string.Empty;
     static bool matched = false;
     static bool addJsType = true; // next operation, add or remove?
@@ -695,9 +697,10 @@ fields before this action.",
             }
         }
 
-        File.WriteAllText(Application.dataPath + "/Temp/FilesToAddJsType.txt", sb.ToString());
+        string fileName = GetTempFileNameFullPath("FilesToAddJsType.txt");
+        File.WriteAllText(fileName, sb.ToString());
         bContinue = EditorUtility.DisplayDialog("TIP",
-             "Files list are in " + Application.dataPath + "/Temp/FilesToAddJsType.txt. please verify.",
+             "Files list are in " + fileName + ". please verify.",
              "OK",
              "Cancel");
 

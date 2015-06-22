@@ -28,10 +28,6 @@ public class JSVCall
         datax = new JSDataExchangeMgr(this);
     }
 
-    public enum Consts
-    {
-        MaxParams = 16,
-    }
     public class JSParam
     {
         public int index; // param index
@@ -60,40 +56,6 @@ public class JSVCall
             defaultValue = d;
         }
     }
-
-    public JSParam[] arrJSParam = null;
-    public int arrJSParamsLength = 0;
-
-    public CSParam[] arrCSParam = null;
-    public int arrCSParamsLength = 0;
-
-    public object[] callParams = null;
-    public int callParamsLength = 0;
-
-    public MethodBase m_Method;
-    public ParameterInfo[] m_ParamInfo;
-
-    public void Reset()
-    {
-        if (arrJSParam == null)
-        {
-            arrJSParam = new JSParam[(int)Consts.MaxParams];
-            arrCSParam = new CSParam[(int)Consts.MaxParams];
-            for (int i = 0; (int)Consts.MaxParams > i; i++)
-            {
-                arrJSParam[i] = new JSParam();
-                arrCSParam[i] = new CSParam();
-            }
-            callParams = new object[(int)Consts.MaxParams];
-        }
-        arrJSParamsLength = 0;
-        arrCSParamsLength = 0;
-        callParamsLength = 0;
-
-        m_Method = null;
-        m_ParamInfo = null;
-    }
-
 
     public bool CallJSFunctionValue(int jsObjID, int funID, params object[] args)
     {
@@ -136,19 +98,12 @@ public class JSVCall
         CONSTRUCTOR = 5,
     }
 
-    public bool bGet = false, bStatic = false;
+    public bool bGet = false; // for property
     public int jsObjID = 0;
     public object csObj;
-    // TODO delete
-    public Oper op;
     
-    //
-    // argc 还有几个参数
-    //
-    //
     public bool CallCallback(int iOP, int slot, int index, int isStatic, int argc)
     {
-        this.Reset();
         this.jsObjID = 0;
         this.csObj = null;
 
@@ -169,7 +124,7 @@ public class JSVCall
                 return false;
             }
 
-            // for manual js code, this.csObj will be null
+            // for manual javascript code, this.csObj will be null
             this.csObj = JSMgr.getCSObj(jsObjID);
             //if (this.csObj == null) {
             //	throw(new Exception("Invalid this csObj"));

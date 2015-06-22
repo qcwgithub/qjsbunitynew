@@ -148,13 +148,12 @@ public class JSComponent : JSSerializer
         }
     }
     /// <summary>
-    /// 获取 jsObj
-    /// 可能本脚本的 Awake 还未执行就由其他脚本调用了这个函数
-    /// 因为其他脚本需要引用到这个脚本的 jsObj
+    /// get javascript object id of this JSComponent.
+    /// jsObjID may == 0 when this function is called, because other scripts refer to this JSComponent.
+    /// in this case, we call initJS() for this JSComponent immediately.
     /// </summary>
     /// <returns></returns>
     /// 
-    // TODO
     public int GetJSObjID()
     {
         if (jsObjID == 0)

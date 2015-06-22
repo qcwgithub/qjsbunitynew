@@ -271,7 +271,7 @@ public static class JSMgr
         ti.constructors = type.GetConstructors();
         if (JSBindingSettings.NeedGenDefaultConstructor(type))
         {
-            // 表示默认构造函数！
+            // null means it's default constructor
             var l = new List<ConstructorInfo>();
             l.Add(null);
             l.AddRange(ti.constructors);
@@ -659,13 +659,14 @@ public static class JSMgr
         return ret;
     }
 
-    /*
-     * 'require'
-     * Execute a js script in js code
-     * can't require a script for different obj
-     */
-    // TODO modify
-    // TODO getJSFullName true/false 会不会有问题呢
+    /// <summary>
+    /// execute a JavaScript script
+    /// can only require a script once.
+    /// </summary>
+    /// <param name="cx">The cx.</param>
+    /// <param name="argc">The argc.</param>
+    /// <param name="vp">The vp.</param>
+    /// <returns></returns>
     [MonoPInvokeCallbackAttribute(typeof(JSApi.JSNative))]
     static bool require(IntPtr cx, uint argc, IntPtr vp)
     {
@@ -802,25 +803,13 @@ public static class JSMgr
     {
         removeJSCSRel(id);
     }
-//     public static void ClearJSCSRelation() {
-//         mDict1.Clear();
-//         mDict2.Clear();
-//     }
-    // JS's __nativeObj -> CS csObj
-    //static Dictionary<long, JS_CS_Relation> mDict1 = new Dictionary<long, JS_CS_Relation>(); // key = jsObj.ToInt64()
-    // CS csobj -> JS's jsObj
-    // dict2 stores hashCode as key, may cause problems (2 object may share same hashCode)
-    // but if use object as key, after calling 'UnityObject.Destroy(this)' in js, 
-    // can't remove element from mDict2 due to csObj is null (JSObjectFinalizer)
-    //
-    // mDict2 存储 object.GetHashCode() -> jsObj
-    // 这样有可能有问题，因为2个不同的对象可能会有相同的 hashCode
-    // 但是如果使用 object 为 key，如果代码里调用了类似 Destroy(go) 的代码，导致 object 变为 null
-    // 那么 mDict2 就无法再删除那个条目。(进入一种很奇怪的状态，托管不空，NATIVE为空的状况)
-    // 
-    //static Dictionary<int, JS_CS_Relation> mDict2 = new Dictionary<int, JS_CS_Relation>(); // key = object.hashCode()
-
     static Dictionary<int, JS_CS_Rel> mDictionary1 = new Dictionary<int, JS_CS_Rel>(); // key = OBJID
+    /// <summary>
+    /// NOTICE
+    /// two C# object may have same hash code?
+    /// if Destroy(go) was called, obj becomes null, ... 
+    /// TODO
+    /// </summary>
     static Dictionary<int, JS_CS_Rel> mDictionary2 = new Dictionary<int, JS_CS_Rel>(); // key = object.GetHashCode()
 
     public static void GetDictCount(out int countDict1, out int countDict2)

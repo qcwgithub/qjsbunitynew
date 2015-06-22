@@ -34,50 +34,6 @@ public class JSDataExchangeMgr
 
     #region Get Operation
 
-//     public void getJSValueOfParam(ref jsval val, int pIndex)
-//     {
-//         IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, pIndex);
-//         if (jsObj != IntPtr.Zero) 
-//         {
-//             JSApi.GetProperty(JSMgr.cx, jsObj, "Value", VALUE_LEN, ref val);
-//         }
-//         else
-//         {
-//             Debug.LogError("ref/out param must be js object");
-//         }
-//     }
-
-//     public jsval getFunction(eGetType e)
-//     {
-//         jsval val = new jsval();
-//         val.asBits = 0;
-//         switch (e)
-//         {
-//             case eGetType.GetARGV:
-//                 JSApi.JSh_ArgvFunctionValue(JSMgr.cx, vc.vp, vc.currIndex++, ref val);
-//                 break;
-//             case eGetType.GetARGVRefOut:
-//                 {
-//                     Debug.LogError("getFunction not support eGetType.GetARGVRefOut");
-//                 }
-//                 break;
-//             case eGetType.GetJSFUNRET:
-//                 {
-//                     Debug.LogError("getFunction not support eGetType.GetJSFUNRET");
-//                 }
-//                 break;
-//             case eGetType.Jsval:
-//                 {
-//                     // 通过 vc.valTemp 传递值
-//                     // !!! return JSApi.jsh_getjsv(ref vc.valTemp);
-//                 }
-//                 break;
-//             default:
-//                 Debug.LogError("Not Supported");
-//                 break;
-//         }
-//         return val;
-//     }
     public object getObject(int e)
     {
         int jsObjID = JSApi.getObject(e);
@@ -87,97 +43,24 @@ public class JSDataExchangeMgr
             return null;
         }
 
-        // TODO CSRepresentedObject2 怎么办
         object csObj = JSMgr.getCSObj(jsObjID);
         if (csObj == null)
         {
             csObj = new CSRepresentedObject(jsObjID);
         }
         return csObj;
-
-//         switch (e)
-//         {
-//             case JSApi.GetType.Arg:
-//                 {
-//                     IntPtr jsObj = JSApi.JSh_ArgvObject(JSMgr.cx, vc.vp, vc.currIndex++);
-//                     if (jsObj == IntPtr.Zero)
-//                         return null;
-// 
-//                     jsval val = new jsval();
-//                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-//                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
-//                     if (__nativeObj != IntPtr.Zero)
-//                     {
-//                         object csObj = JSMgr.getCSObj(__nativeObj);
-//                         return csObj;
-//                     }
-//                     else
-//                     {
-//                         return new CSRepresentedObject(jsObj);
-//                     }
-//                 }
-//                 break;
-//             case eGetType.GetARGVRefOut:
-//                 {
-//                     jsval val = new jsval();
-//                     JSApi.JSh_SetJsvalUndefined(ref val);
-//                     getJSValueOfParam(ref val, vc.currIndex++);
-// 
-//                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref val);
-//                     if (jsObj == IntPtr.Zero)
-//                         return null;
-// 
-//                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-//                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
-//                     if (__nativeObj != IntPtr.Zero)
-//                     {
-//                         object csObj = JSMgr.getCSObj(__nativeObj);
-//                         return csObj;
-//                     }
-//                     else
-//                     {
-//                         return new CSRepresentedObject(jsObj);
-//                     }
-//                 }
-//                 break;
-//             case eGetType.Jsval:
-//                 {
-//                     // 通过 vc.valTemp 传递值
-//                     jsval val = new jsval();
-//                     JSApi.JSh_SetJsvalUndefined(ref val);
-// 
-//                     IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref vc.valTemp);
-//                     if (jsObj == IntPtr.Zero)
-//                         return null;
-// 
-//                     JSApi.JSh_GetUCProperty(JSMgr.cx, jsObj, "__nativeObj", -1, ref val);
-//                     IntPtr __nativeObj = JSApi.JSh_GetJsvalObject(ref val);
-//                     if (__nativeObj != IntPtr.Zero)
-//                     {
-//                         object csObj = JSMgr.getCSObj(__nativeObj);
-//                         return csObj;
-//                     }
-//                     else
-//                     {
-//                         return new CSRepresentedObject(jsObj);
-//                     }
-//                 }
-//                 break;
-//             default:
-//                 Debug.LogError("Not Supported");
-//                 break;
-//         }
-//         return null;
     }
 
-     /*
-     * for concrete type e.g. setInt32 setString
-     * they know type 
-     * 
-     * but for T parameters   type is known until run-time
-     * so this method need a 'Type' argument
-     * it is passed through mTempObj
-     */
+    /// <summary>
+    /// Gets object by type.
+    /// for concrete type e.g. setInt32 setString, they know how to return object
+    /// 
+    /// but for T parameters, type is unknown until runtime
+    /// so this function needs a 'Type' argument
+    /// which is passed through mTempObj
+    /// </summary>
+    /// <param name="eType">Type of the e.</param>
+    /// <returns></returns>
     public object getByType(JSApi.GetType eType)
     {
         int e = (int)eType;
@@ -270,7 +153,7 @@ public class JSDataExchangeMgr
         {
             case eGetType.GetARGV:
                 {
-                    // TODO 检查 index要++
+                    // TODO check: index must ++
                     int jsObjID = JSApi.getObject((int)JSApi.GetType.Arg);
                     if (jsObjID == 0)
                         return null;
@@ -402,11 +285,17 @@ public class JSDataExchangeMgr
             setObject(e, obj);
         }
     }
-    // 如果是 UpdateRefARGV，之前要设置 currIndex
-    // setObject 情况是：有CS对象
-    // 操作：
-    // JS对象已存在：返回那个JS对象
-    // JS对象不存在：新建一个 JS 对象，并与现有CS对象关联起来
+    /// <summary>
+    /// Sets the object.
+    /// if e == UpdateRefARGV, currIndex must be set before this function
+    /// 
+    /// operation of this function:
+    /// 1) if JavaScript already exists, return that JavaScript object.
+    /// 2) else, create a new JavaScript object and return it.
+    /// </summary>
+    /// <param name="e">The e.</param>
+    /// <param name="csObj">The cs object.</param>
+    /// <returns></returns>
     public int setObject(/* JSApi.SetType */int e, object csObj)
     {
         int jsObjID = 0;
@@ -696,13 +585,14 @@ public class JSDataExchangeMgr
         return exactConstructor;
     }
 
-    // Runtime Only
-    // type: class type
-    // methodName: method name
-    // TCount: generic parameter count
-    // vc: JSVCall instance
-    // TODO
-    // delete
+    /// <summary>
+    /// Makes the generic method.
+    /// not run in Editor mode, only runtime.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <param name="methodID">The method identifier.</param>
+    /// <param name="TCount">The t count.</param>
+    /// <returns></returns>
     public static MethodInfo makeGenericMethod(Type type, MethodID methodID, int TCount)
     {
         MethodInfo methodT = GenericTypeCache.getMethod(type, methodID);
@@ -918,28 +808,23 @@ public class JSDataExchange_Arr
     }
 }
 
-/*
- what's this?
- example:
- if we have a js object Message, like:
- var Message = 
- {
-    id: 4,
-    str: "hello, world"
- }
- 
- when it comes to C# (e.g. store in a C# version List<>), there is no C# type matching it
- so we make a CSRepresentedObject2 to wrap it
- 
- but in C# we can only get it, return it, no any other operation can be performed
- 
- */
+/// <summary>
+/// CSRepresentedObject
+/// if we have a JavaScript Message, like this:
+/// var Message = 
+/// {
+///     id: 4,
+///     str: "hello, world"
+/// }
+/// when it comes to C#, (e.g. store in a C# version List<>), there is no C# type matching it
+/// so we make a CSRepresentedObject to wrap it
+/// </summary>
 public class CSRepresentedObject
 {
     public static int s_objCount = 0;
     public static int s_funCount = 0;
 
-    //不要直接创建这个对象，应该调用 JSDataExchangeMgr.getObject
+    // don't create this object directly, should use JSDataExchangeMgr.getObject
     public CSRepresentedObject(int jsObjID, bool bFunction = false)
     {
         this.jsEngineRound = JSMgr.jsEngineRound;
@@ -952,7 +837,7 @@ public class CSRepresentedObject
         else 
             s_objCount++;
 
-        // 通常是1，不会加的
+        // refCount show always be 1
         int refCount = JSApi.incRefCount(jsObjID);
         //Debug.Log(new StringBuilder().AppendFormat("+ CSRepresentedObject {0} Ref[{1}] Fun[{1}]", jsObjID, refCount, bFunction ? 1 : 0));
     }

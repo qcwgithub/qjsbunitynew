@@ -211,7 +211,7 @@ public class JSSerializer : MonoBehaviour
             switch (this.type)
             {
                 case SType.Unit:
-                    // 在 TraverseSerialize() 的时候就已经计算好了
+                    // already calucated when TraverseSerialize()
                     break;
                 case SType.Array:
                     {
@@ -227,17 +227,13 @@ public class JSSerializer : MonoBehaviour
                     break;
                 case SType.Struct:
                     {
-                        /*
-                         * 这里的过程比较复杂，可以同时支持在 CS 里的类和 JS 里的类
-                         * 以 Vector3 为例，会先调用 UnityEngine.Vector3.ctor 创建对象，他是C#的类，所以实际会走到C#去生成对象
-                         * 后面调用 SetUCProperty 时，也会触发 JS 的 property，实际也是调用到C#去了
-                         * 
-                         * 如果不是 C# 的类，那么新建类对象和SetUCProperty都不会走到C#来，在JS中完成
-                         */
-                        //JSApi.jsval valParam = new JSApi.jsval(); valParam.asBits = 0;
-                        //JSApi.JSh_SetJsvalString(JSMgr.cx, ref valParam, this.typeName);
-                        //JSApi.JSh_CallFunctionName(JSMgr.cx, JSMgr.glob, "jsb_CallObjectCtor", 1, new JSApi.jsval[]{valParam}, ref JSMgr.vCall.rvalCallJS);
-                        //IntPtr jsObj = JSApi.JSh_GetJsvalObject(ref JSMgr.vCall.rvalCallJS);
+                        //
+                        // the process here is a little complex
+                        // for C# class like RaycastHit, UnityEngine.RaycastHit.ctor will be called to create object, because it's C# class, ctor actually goes to C#
+                        // subsequent call to setProperty actually also goes to C#
+                        //
+                        // for pure JavaScript class, ctor and setProperty are done in JavaScript
+                        //
                         int jsObjID = JSApi.newJSClassObject(this.typeName);
                         this.id = jsObjID;
                         if (jsObjID == 0)
@@ -259,9 +255,8 @@ public class JSSerializer : MonoBehaviour
                     break;
                 case SType.List:
                     {
-                        // 这里要处理成 List 是 C# 的还是 JS 的？
-                        // 如果是 C# 的要 使用 先创建一个 List 对象 然后JSDataExchangeMgr.setObject 
-                        // 如果是 JS 的 会比较简单一点  参考上面的
+                        // List is not supported now.
+                        // please use [] instead.
                     }
                     break;
             }
@@ -295,7 +290,7 @@ public class JSSerializer : MonoBehaviour
                         TraverseSerialize(jsObjID, ss);
                     }
                     break;
-                // 这2个还带有类型
+                // StructBegin and ListBegin also contains type
                 case "StructBegin":
                 case "ListBegin":
                     {

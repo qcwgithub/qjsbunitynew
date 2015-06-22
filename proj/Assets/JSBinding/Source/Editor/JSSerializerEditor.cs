@@ -16,10 +16,10 @@ public static class JSSerializerEditor
     public struct AnalyzeStructInfo
     {
         public JSSerializer.AnalyzeType analyzeType;
-        public string Name; // 字段名字。当 analyzeType == xxObj xxEnd 时 或者数组元素时这个没鸟用
-        public Type type; // 类型 有时候 value == null
+        public string Name; // field name, it's useless when analyzeType == xxObj xxEnd or when it's element of array
+        public Type type; // type. sometimes value == null
         public object value;
-        public JSSerializer.UnitType unitType;// 单元类型。当 analyzeType == xxBegin xxObj xxEnd 时 这个没鸟用
+        public JSSerializer.UnitType unitType;// Unit type, it's useless when analyzeType == xxBegin xxObj xxEnd
 
         public AnalyzeStructInfo(JSSerializer.AnalyzeType at,
             string name, Type type, object v = null, 
@@ -114,7 +114,7 @@ public static class JSSerializerEditor
         return lstObjs.Count - 1; 
 	}
     /// <summary>
-    /// lstString lstObjs 存储序列化要用的字符串和对象列表。
+    /// lstString lstObjs store serialized string and object list
     /// </summary>
     static List<string> lstString = new List<string>();
     static List<UnityEngine.Object> lstObjs = new List<UnityEngine.Object>();
@@ -245,7 +245,7 @@ public static class JSSerializerEditor
     }
     /// <summary>
     /// Gets the mono behaviour serialized fields.
-    /// Returns all PUBLIC fields who has no NonSerialized attrubite.
+    /// Returns all PUBLIC fields who has no NonSerialized attribute.
     /// </summary>
     /// <param name="behaviour">The behaviour.</param>
     /// <returns></returns>
