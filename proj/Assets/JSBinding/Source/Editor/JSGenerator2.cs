@@ -66,13 +66,32 @@ public static class JSGenerator2
             }
             name += "Array";
         }
+        else if (type.IsGenericTypeDefinition)
+        {
+            // never come here
+            name = type.Name;
+        }
         else if (type.IsGenericType)
         {
             name = type.Name;
             Type[] ts = type.GetGenericArguments();
+
+            bool hasGenericParameter = false;
             for (int i = 0; i < ts.Length; i++)
             {
-                name += "$" + SharpKitTypeName(ts[i]);
+                if (ts[i].IsGenericParameter)
+                {
+                    hasGenericParameter = true;
+                    break;
+                }
+            }
+
+            if (!hasGenericParameter)
+            {
+                for (int i = 0; i < ts.Length; i++)
+                {
+                    name += "$" + SharpKitTypeName(ts[i]);
+                }
             }
         }
         else
