@@ -16,14 +16,16 @@ public partial class UnityEngineManual
     }
     static void help_searchAndRetCom(JSVCall vc, JSComponent[] jsComs, string typeString)
     {
+        int id = 0;
         foreach (var jsCom in jsComs)
         {
             if (jsCom.jsClassName == typeString)
             {
-                JSApi.setObject((int)JSApi.SetType.Rval, jsCom.jsObjID);
+                id = jsCom.jsObjID;
                 break;
             }
         }
+        JSApi.setObject((int)JSApi.SetType.Rval, id);
     }
     static void help_searchAndRetComs(JSVCall vc, JSComponent[] com, string typeString)
     {
