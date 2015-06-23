@@ -41,7 +41,7 @@ public class JSSerializer : MonoBehaviour
 
         ST_Enum = 14,
         ST_UnityEngineObject = 15,
-        ST_MonoBehaviour = 16,
+        ST_JavaScriptMonoBehaviour = 16,
 
         ST_MAX = 100,
     }
@@ -239,7 +239,7 @@ public class JSSerializer : MonoBehaviour
                         else
                         {
                             //IntPtr jsObj = JSApi.JSh_NewObjectAsClass(JSMgr.cx, jstypeObj, "ctor", null /*JSMgr.mjsFinalizer*/);
-                            for (var i = 0; i < lstChildren.Count; i++)
+                            for (var i = 0; lstChildren != null && i < lstChildren.Count; i++)
                             {
                                 var child = lstChildren[i];
                                 int id = child.calcID();
@@ -323,7 +323,7 @@ public class JSSerializer : MonoBehaviour
                             child.id = JSApi.getSaveID();
                             st.AddChild(child);
                         }
-                        else if (eUnitType == UnitType.ST_MonoBehaviour)
+                        else if (eUnitType == UnitType.ST_JavaScriptMonoBehaviour)
                         {
                             var valName = s1;
                             string s2 = s.Substring(y + 1, s.Length - y - 1);

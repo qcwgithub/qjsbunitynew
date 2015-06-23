@@ -64,28 +64,29 @@ public static class JSSerializerEditor
 
                         // this.value could be null
                         Type objectType = this.type; // this.value.GetType();
-                        if (typeof(UnityEngine.Object).IsAssignableFrom(objectType))
+                        if (this.unitType == JSSerializer.UnitType.ST_JavaScriptMonoBehaviour ||
+                            this.unitType == JSSerializer.UnitType.ST_UnityEngineObject)
                         {
                             eSerialize = SerializeType.Object;
 
-                            if (typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(objectType))
+                            if (this.unitType == JSSerializer.UnitType.ST_JavaScriptMonoBehaviour)
                             {
-                                // if a monobehaviour is refer
+                                if (!typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(objectType) ||
+                                    !WillTypeBeTranslatedToJavaScript(objectType))
+                                {
+                                    Debug.LogError("unitType is ST_JavaScriptMonoBehaviour, but objectType is not MonoBehaviour or not having JsType attribute.");
+                                }
+
+                                // if a monobehaviour is referenced
                                 // and this monobehaviour will be translated to js later
                                 //  ST_MonoBehaviour
-                                if (WillTypeBeTranslatedToJavaScript(objectType))
-                                {
-                                    // add game object
-                                    var index = AllocObject(((MonoBehaviour)this.value).gameObject);
+                                
+                                // add game object
+                                var index = AllocObject(((MonoBehaviour)this.value).gameObject);
 
-                                    // UnitType / Name / object Index / MonoBehaviour Name
-                                    sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSNameMgr.GetTypeFullName(objectType));
-                                    AllocString(sb.ToString());
-                                }
-                                else
-                                {
-                                    // not supported
-                                }
+                                // UnitType / Name / object Index / MonoBehaviour Name
+                                sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSNameMgr.GetTypeFullName(objectType));
+                                AllocString(sb.ToString());
                             }
                             else
                             {
@@ -190,9 +191,10 @@ public static class JSSerializerEditor
             return JSSerializer.UnitType.ST_Enum;
         }
 
-        if ((typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type)))
+        if ((typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type)) &&
+            WillTypeBeTranslatedToJavaScript(type))
         {
-            return JSSerializer.UnitType.ST_MonoBehaviour;
+            return JSSerializer.UnitType.ST_JavaScriptMonoBehaviour;
         }
         if ((typeof(UnityEngine.Object).IsAssignableFrom(type)))
         {
