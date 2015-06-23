@@ -132,7 +132,7 @@ _jstype.definition.Normalize = function() {
     }
 }
 /* Void */
-_jstype.definition.Scale = function(a0/*Vector2*/) { 
+_jstype.definition.Scale$$Vector2 = function(a0/*Vector2*/) { 
     this.x *= a0.x;
     this.y *= a0.y;
 }
@@ -165,7 +165,7 @@ _jstype.staticDefinition.Angle = function(a0/*Vector2*/, a1/*Vector2*/) {
 _jstype.staticDefinition.ClampMagnitude = function(a0/*Vector2*/, a1/*Single*/) { 
     if (a0.get_sqrMagnitude() > a1 * a1) {
         a0.Normalize();
-        a0.Scale(a1);
+        a0.Scale$$Vector2(a1);
     }
 }
 /* static Single  */
@@ -238,13 +238,13 @@ _jstype.staticDefinition.op_UnaryNegation = function(a0/*Vector2*/) {
     return UnityEngine.Vector2.New(-a0.x, -a0.y);
 }
 /* static Vector2  */
-_jstype.staticDefinition.Scale = function(a0/*Vector2*/, a1/*Vector2*/) { 
+_jstype.staticDefinition.Scale$$Vector2$$Vector2 = function(a0/*Vector2*/, a1/*Vector2*/) { 
     return UnityEngine.Vector2.New(
         a0.x * a1.x,
         a0.y * a1.y
     );
 }
 /* static Single  */
-_jstype.staticDefinition.SqrMagnitude = function(a0/*Vector2*/) { 
+_jstype.staticDefinition.SqrMagnitude$$Vector2 = function(a0/*Vector2*/) { 
     return a0.get_sqrMagnitude();
 }

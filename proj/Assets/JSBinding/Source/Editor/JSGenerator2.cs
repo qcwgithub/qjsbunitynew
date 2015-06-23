@@ -336,6 +336,15 @@ _jstype.staticDefinition.{1} = function({2}) [[
             bool bOverloaded = ((i > 0 && method.Name == methods[i - 1].Name) ||
                 (i < methods.Length - 1 && method.Name == methods[i + 1].Name));
 
+            if (!bOverloaded)
+            {
+                if (GeneratorHelp.MethodIsOverloaded(type, method.Name))
+                {
+                    bOverloaded = true;
+                    //Debug.Log("$$$ " + type.Name + "." + method.Name + (method.IsStatic ? " true" : " false"));
+                }
+            }
+
             StringBuilder sbFormalParam = new StringBuilder();
             StringBuilder sbActualParam = new StringBuilder();
             ParameterInfo[] paramS = method.GetParameters();

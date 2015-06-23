@@ -164,6 +164,14 @@ public static class JSMgr
         | BindingFlags.Static 
         | BindingFlags.DeclaredOnly;
 
+    // used to judge it's overloaded function or not
+    // used in JSGenerator
+    public static BindingFlags BindingFlagsMethod2 =
+        BindingFlags.Public
+        | BindingFlags.NonPublic
+        | BindingFlags.Instance
+        | BindingFlags.Static;
+
     public static BindingFlags BindingFlagsProperty = 
         BindingFlags.Public 
         | BindingFlags.GetProperty 

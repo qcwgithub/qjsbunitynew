@@ -4,18 +4,16 @@ using System.Collections;
 using System.Reflection;
 using System.Collections.Generic;
 
+/// <summary>
+/// 
+/// </summary>
 public static class GeneratorHelp
 {
-
     /// <summary>
-    /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// type info list
+    /// usage
+    /// 1 used for generating javascript code
+    /// 2 used for generating c# code
     /// </summary>
-
-    // usage
-    // 1 used for generating js code
-    // 2 used for generating cs code
-    // 3 used for calling cs from js, by reflection
     public class ATypeInfo
     {
         public FieldInfo[] fields;
@@ -395,4 +393,28 @@ public static class GeneratorHelp
         }
     }
 
+    /// <summary>
+    /// Method is overloaded or not?
+    /// Used in JSGenerator2
+    /// No matter it's static or not
+    /// including NonPublic methods
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <param name="methodName">Name of the method.</param>
+    /// <returns></returns>
+    public static bool MethodIsOverloaded(Type type, string methodName)
+    {
+        MethodInfo[] methods = type.GetMethods(JSMgr.BindingFlagsMethod2);
+        int N = 0;
+        foreach (var m in methods)
+        {
+            if (m.Name == methodName)
+            {
+                N++;
+                if (N >= 2)
+                    return true;
+            }
+        }
+        return false;
+    }
 }
