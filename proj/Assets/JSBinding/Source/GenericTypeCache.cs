@@ -74,6 +74,33 @@ class GenericTypeCache
         public PropertyInfo[] properties = null;
         public MethodInfo[] methods = null;
     }
+	
+	//
+	//  can not use DeclaredOnly !!!
+	//  Generic Class may be object's base class
+	//
+    static BindingFlags BindingFlagsMethod =
+        BindingFlags.Public
+        | BindingFlags.Instance
+        | BindingFlags.Static
+        /*| BindingFlags.DeclaredOnly*/;
+
+    static BindingFlags BindingFlagsProperty =
+        BindingFlags.Public
+        | BindingFlags.GetProperty
+        | BindingFlags.SetProperty
+        | BindingFlags.Instance
+        | BindingFlags.Static
+        /*| BindingFlags.DeclaredOnly*/;
+
+    static BindingFlags BindingFlagsField =
+        BindingFlags.Public
+        | BindingFlags.GetField
+        | BindingFlags.SetField
+        | BindingFlags.Instance
+        | BindingFlags.Static
+        /*| BindingFlags.DeclaredOnly*/;
+
     static Dictionary<Type, TypeMembers> dict = new Dictionary<Type, TypeMembers>();
     static TypeMembers getMembers(Type type)
     {
@@ -84,9 +111,9 @@ class GenericTypeCache
         }
         tm = new TypeMembers();
         tm.cons = type.GetConstructors();
-        tm.fields = type.GetFields(JSMgr.BindingFlagsField);
-        tm.properties = type.GetProperties(JSMgr.BindingFlagsProperty);
-        tm.methods = type.GetMethods(JSMgr.BindingFlagsMethod);
+        tm.fields = type.GetFields(GenericTypeCache.BindingFlagsField);
+        tm.properties = type.GetProperties(GenericTypeCache.BindingFlagsProperty);
+        tm.methods = type.GetMethods(GenericTypeCache.BindingFlagsMethod);
 
         dict.Add(type, tm);
         return tm;
