@@ -818,6 +818,36 @@ public class CSRepresentedObject
     public static int s_objCount = 0;
     public static int s_funCount = 0;
 
+//     public static bool operator !=(CSRepresentedObject x, CSRepresentedObject y)
+//     {
+//         return !(x == y);
+//     }
+//     public static bool operator ==(CSRepresentedObject x, CSRepresentedObject y)
+//     {
+//         // If both are null, or both are same instance, return true.
+//         if (System.Object.ReferenceEquals(x, y))
+//         {
+//             return true;
+//         }
+//         return x.jsObjID == y.jsObjID;
+//     }
+//     public override bool Equals(object obj)
+//     {
+//         // If parameter is null return false.
+//         if (obj == null)
+//         {
+//             return false;
+//         }
+// 
+//         // If parameter cannot be cast to Point return false.
+//         CSRepresentedObject p = obj as CSRepresentedObject;
+//         if ((System.Object)p == null)
+//         {
+//             return false;
+//         }
+//         return this.jsObjID == p.jsObjID;
+//     }
+
     // don't create this object directly, should use JSDataExchangeMgr.getObject
     public CSRepresentedObject(int jsObjID, bool bFunction = false)
     {

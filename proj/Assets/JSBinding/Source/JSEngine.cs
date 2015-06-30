@@ -65,8 +65,8 @@ public class JSEngine : MonoBehaviour
             Debug.Log("JS: Init JSEngine OK");
             if (mDebug)
             {
-                //Debug.Log("JS: Enable Debugger");
-                //JSApi.enableDebugger(new string[2] { JSBindingSettings.jsDir, JSBindingSettings.jsGeneratedDir }, 2, port);
+                Debug.Log("JS: Enable Debugger");
+                JSApi.enableDebugger(new string[2] { JSBindingSettings.jsDir, JSBindingSettings.jsGeneratedDir }, 2, port);
             }
         }
         else
@@ -167,7 +167,10 @@ public class JSEngine : MonoBehaviour
             {
                 tj[jscs.name] = 1;
             }
-            if (jscs.csObj != null && jscs.csObj.GetType().IsClass) clsCount++;
+            if (jscs.csObj != null && jscs.csObj.GetType().IsClass)
+            {
+                clsCount++;
+            }
         }
         float y = 40;
 

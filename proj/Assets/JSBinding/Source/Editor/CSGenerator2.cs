@@ -1079,6 +1079,8 @@ static bool {0}(JSVCall vc, int argc)
                 TCount = method.GetGenericArguments().Length;
             }
 
+            // if you change functionName
+            // also have to change code in 'Manual/' folder
             functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + SharpKitMethodName(method.Name, paramS, true, TCount));
             if (method.IsSpecialName && method.Name == "op_Implicit" && paramS.Length > 0)
             {
