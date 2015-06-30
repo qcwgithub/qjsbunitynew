@@ -90,7 +90,8 @@ public partial class UnityEngineManual
         else
         {
             JSComponent jsComp = go.AddComponent<JSComponent>();
-            jsComp.jsScriptName = typeString;
+            jsComp.jsClassName = typeString;
+            jsComp.initFail = false;
             jsComp.Awake();
 
             //JSApi.JSh_SetRvalObject(vc.cx, vc.vp, jsComp.jsObj);

@@ -96,7 +96,7 @@ public class JSComponent : JSSerializer
 
     int initState = 0;
     bool initSuccess { get { return initState == 1; } set { if (value) initState = 1; } }
-    bool initFail { get { return initState == 2; } set { if (value) initState = 2; } }
+    public bool initFail { get { return initState == 2; } set { if (value) initState = 2; else initState = 0; } }
 
     void callIfExist(int funID, params object[] args)
     {
