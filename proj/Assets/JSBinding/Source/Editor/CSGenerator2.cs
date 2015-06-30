@@ -21,7 +21,7 @@ public static class CSGenerator2
 
     public static void OnBegin()
     {
-        JSMgr.ClearTypeInfo();
+        GeneratorHelp.ClearTypeInfo();
 
         if (Directory.Exists(JSBindingSettings.csGeneratedDir))
         {
@@ -673,7 +673,7 @@ public static class CSGenerator2
                     paramHandlers[i] = JSDataExchangeEditor.Get_ParamHandler(ps[i], i);
 //                if (ps[i].ParameterType.IsGenericParameter)
 //                {
-//                    paramHandlers[i].getter = "    vc.datax.setTemp(method.GetParameters()[" + i.ToString() + "].ParameterType);\n" + paramHandlers[i].getter;
+                //                    paramHandlers[i].getter = "    JSMgr.datax.setTemp(method.GetParameters()[" + i.ToString() + "].ParameterType);\n" + paramHandlers[i].getter;
 //                }
             }
         }
@@ -724,7 +724,7 @@ public static class CSGenerator2
                         sbGetParam.AppendFormat("        return getDelegateFun{0}.Invoke(null, new object[][[{1}]]);\n", i, "JSApi.getFunctionS((int)JSApi.GetType.Arg)");
                         sbGetParam.Append("    ]]\n");
                         sbGetParam.Append("    else\n");
-                        sbGetParam.AppendFormat("        return vc.datax.getObject((int)JSApi.GetType.Arg);\n");
+                        sbGetParam.AppendFormat("        return JSMgr.datax.getObject((int)JSApi.GetType.Arg);\n");
                         sbGetParam.Append("]]);\n");
 
 
@@ -1148,7 +1148,7 @@ static bool {0}(JSVCall vc, int argc)
         public List<string> methodsCSParam;
     }
     public static List<ClassCallbackNames> allClassCallbackNames;
-    static StringBuilder BuildRegisterFunction(ClassCallbackNames ccbn, JSMgr.ATypeInfo ti)
+    static StringBuilder BuildRegisterFunction(ClassCallbackNames ccbn, GeneratorHelp.ATypeInfo ti)
     {
         string fmt = @"
 public static void __Register()
@@ -1188,27 +1188,20 @@ public static void __Register()
         for (int i = 0; i < ccbn.constructors.Count; i++)
         {
             if (ccbn.constructors.Count == 1 && ti.constructors.Length == 0) // no constructors   add a default  so ...
-                sbCons.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{2}', {1}),\n", ccbn.constructors[i],
-                    //ccbn.constructorsCSParam[i], 
-                    "null", 
+                sbCons.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{1}'),\n", 
+                    ccbn.constructors[i],
                     type.Name);
             else
-                sbCons.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{2}', {1}),\n", ccbn.constructors[i],
-                    //ccbn.constructorsCSParam[i], 
-                    "null", 
+                sbCons.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{1}'),\n", 
+                    ccbn.constructors[i],
                     ti.constructors[i] == null ? ".ctor" : ti.constructors[i].Name);
         }
         for (int i = 0; i < ccbn.methods.Count; i++)
         {
             // if method is not overloaded
             // don's save the cs param array
-            sbMethod.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{2}', {1}),\n", ccbn.methods[i], 
-                (ti.methodsOLInfo[i] > 0 ? 
-                
-                // ccbn.methodsCSParam[i] : 
-                "null" : // !!!!!!!!!!!!!!!!!!!!!!!!!!!
-                
-                "null"), 
+            sbMethod.AppendFormat("        new JSMgr.MethodCallBackInfo({0}, '{1}'),\n", 
+                ccbn.methods[i], 
                 ti.methods[i].Name);
         }
 
@@ -1308,8 +1301,9 @@ public class JSGeneratedFileNames
             return;
         }*/
 
-        JSMgr.ATypeInfo ti;
-        /*int slot = */JSMgr.AddTypeInfo(type, out ti);
+        GeneratorHelp.ATypeInfo ti;
+        /*int slot = */
+        GeneratorHelp.AddTypeInfo(type, out ti);
 //         var sbCons = BuildConstructors(type, ti.constructors, slot);
 //         var sbFields = BuildFields(type, ti.fields, slot);
 //         var sbProperties = BuildProperties(type, ti.properties, slot);

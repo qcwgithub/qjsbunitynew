@@ -4,6 +4,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using jsval = JSApi.jsval;
+/// <summary>
+/// JSEngine
+/// Represents a JavaScript Engine object
+/// In order to run JavaScript, there must be one and only one JSEngine object in the scene
+/// You can find JSEngine prefab at path 'JSBinding/Prefabs/_JSEngine.prefab'
+/// 
+/// JSEngine must have a lower execution order than JSComponent.
+/// You can set script execution order by click menu Edit | Project Settings | Script Execution Order
+/// for example, set JSEngine to 400, set JSComponent to 500
+/// </summary>
 public class JSEngine : MonoBehaviour
 {
     public static JSEngine inst;
@@ -15,29 +25,19 @@ public class JSEngine : MonoBehaviour
     public bool debug = true;
     public int port = 5086;
     bool mDebug = true;
-    public bool forceProtectJSFunction = true;
 
     /*
      * Garbage Collection setting
+     * if GCInterval < 0, will not call GC (default value, SpiderMonkey will automatically call GC)
+     * if GCInterval >= 0, will call GC every GCInterval seconds
      */
-    public float GCInterval = 3f;
+    public float GCInterval = -1f;
     public JSFileLoader jsLoader;
 
     /*
      * 
      */
     public string[] InitLoadScripts = new string[0];
-
-    /*
-     * Formular:
-     * All files - DirectoriesNotExport + DirectoriesExport = Files to export to js
-     * see JSAnalyzer.MakeJsTypeAttributeInSrc for more information
-     */
-    public List<string> DirectoriesNotToExport;
-    public List<string> DirectoriesToExport;
-
-
-    public List<string> DirectoriesNotToReplace;
 
     public void OnInitJSEngine(bool bSuccess)
     {
@@ -56,51 +56,22 @@ public class JSEngine : MonoBehaviour
                 }
             }
 
-            //
-            // Check to see ErrorHandler exists?
-            //
-            // TODO
-            // ¼Ó»ØÀ´
-//             jsval valJSFunEntry = new jsval();
-//             valJSFunEntry.asBits = 0;
-//             if (JSApi.JSh_GetFunctionValue(JSMgr.cx, JSMgr.CSOBJ, "jsFunctionEntry", ref valJSFunEntry) && valJSFunEntry.asBits > 0)
-//             {
-//                 Debug.Log("JS: Enable printing calling stack on error.");
-//                 OutputFullCallingStackOnError = true;
-//             }
-//             else
-
-            if (JSApi.initErrorHandler() == 1)
-            {
+            if (JSApi.initErrorHandler() == 1) 
                 Debug.Log("JS: print error stack: YES");
-            }
-            else
-            {
+            else 
                 Debug.Log("JS: print error stack: NO");
-            }
 
             inited = true;
-            string[] path = new string[2];
-            path[0] = JSBindingSettings.jsDir;
-            path[1] = JSBindingSettings.jsGeneratedDir;
-            Debug.Log("----------Init JSEngine OK ---");
+            Debug.Log("JS: Init JSEngine OK");
             if (mDebug)
             {
-                Debug.Log("JS: Enable Debugger");
-                JSApi.enableDebugger(path, 2, port);
+                //Debug.Log("JS: Enable Debugger");
+                //JSApi.enableDebugger(new string[2] { JSBindingSettings.jsDir, JSBindingSettings.jsGeneratedDir }, 2, port);
             }
         }
         else
-            Debug.Log("----------Init JSEngine FAIL ---");
+            Debug.Log("JS: Init JSEngine FAIL");
 
-    }
-
-    public class Apple<T>
-    {
-        public void Print(T t)
-        {
-            Debug.Log(t.ToString());
-        }
     }
 
     void Awake()
@@ -111,14 +82,6 @@ public class JSEngine : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-// 		string tname = typeof(List<string>).GetGenericTypeDefinition().FullName;
-// 		Type type = typeof(List<string>).Assembly.GetType (tname);
-        //T//ype type = typeof(List<T>);
-        //Apple<int> a = new Apple<int>();
-        //MethodInfo method = typeof(Apple<string>).GetGenericTypeDefinition().GetMethod("Print");
-        //Debug.Log("haha"+method.ContainsGenericParameters);
-        //method.MakeGenericMethod(typeof(int)).Invoke(a, new object[] { 6677 });
-        //method.Invoke(a, new object[]{6677});
 
         /*
          * Don't destroy this GameObject on load
@@ -145,7 +108,8 @@ public class JSEngine : MonoBehaviour
     {
         if (this != JSEngine.inst)
             return;
-        if (inited)
+
+        if (inited && GCInterval >= 0f)
         {
             accum += Time.deltaTime;
             if (accum > GCInterval)
@@ -167,13 +131,16 @@ public class JSEngine : MonoBehaviour
                 JSApi.cleanupDebugger();
             JSEngine.inst = null;
             JSEngine.inited = false;
-            Debug.Log("----------JSEngine Destroy ---");
+            Debug.Log("JS: JSEngine Destroy");
         }
     }
 
-    // OUTPUT object mappings
 	public bool showStatistics = true;
     public int guiX = 0;
+
+    /// <summary>
+    /// OnGUI: Output some statistics
+    /// </summary>
     void OnGUI()
     {
         if (this != JSEngine.inst)

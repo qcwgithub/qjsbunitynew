@@ -7,23 +7,22 @@ using System.Collections.Generic;
 using System.Text;
 using System.Security;
 
-
 using jsval = JSApi.jsval;
 
-/*
- * JSComponent
- * A class simply transfer callbacks to js
- * 
- * This usage might cost much cpu times. Especially when there are a lot of GameObjects in the scene
- * One likely solution is call Awake, Start, Update only once per frame
- * 
- */
+/// <summary>
+/// JSComponent
+/// A class redirect event functions (Awake, Start, Update, etc.) to JavaScript
+/// Support serializations
+/// </summary>
 public class JSComponent : JSSerializer
 {
     [HideInInspector]
     [NonSerialized]
     public int jsObjID = 0;
 
+    /// <summary>
+    /// Initializes the member function.
+    /// </summary>
     void initMemberFunction()
     {
         idAwake = JSApi.getObjFunction(jsObjID, "Awake");
@@ -42,6 +41,10 @@ public class JSComponent : JSSerializer
         idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "DisableChildGameObject");
         idDestroyGameObject = JSApi.getObjFunction(jsObjID, "DestroyGameObject");
     }
+    /// <summary>
+    /// Removes if exist.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
     void removeIfExist(int id)
     {
         if (id != 0) JSApi.removeByID(id);
@@ -110,7 +113,7 @@ public class JSComponent : JSSerializer
     {
         if (initFail || initSuccess) return;
 
-        if (string.IsNullOrEmpty(jsScriptName))
+        if (string.IsNullOrEmpty(jsClassName))
         {
             initFail = true;
             return;
@@ -120,11 +123,11 @@ public class JSComponent : JSSerializer
         // cannot use createJSClassObject here
         // because we have to call ctor, to run initialization code
         // this object will not have finalizeOp
-        jsObjID = JSApi.newJSClassObject(this.jsScriptName);
+        jsObjID = JSApi.newJSClassObject(this.jsClassName);
         JSApi.setTraceS(jsObjID, true);
         if (jsObjID == 0)
         {
-            Debug.LogError("New MonoBehaviour \"" + this.jsScriptName + "\" failed. Did you forget to export that class?");
+            Debug.LogError("New MonoBehaviour \"" + this.jsClassName + "\" failed. Did you forget to export that class?");
             initFail = true;
             return;
         } 
@@ -145,13 +148,12 @@ public class JSComponent : JSSerializer
         }
     }
     /// <summary>
-    /// 获取 jsObj
-    /// 可能本脚本的 Awake 还未执行就由其他脚本调用了这个函数
-    /// 因为其他脚本需要引用到这个脚本的 jsObj
+    /// get javascript object id of this JSComponent.
+    /// jsObjID may == 0 when this function is called, because other scripts refer to this JSComponent.
+    /// in this case, we call initJS() for this JSComponent immediately.
     /// </summary>
     /// <returns></returns>
     /// 
-    // TODO
     public int GetJSObjID()
     {
         if (jsObjID == 0)

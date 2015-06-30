@@ -922,8 +922,48 @@ public class JSBindingSettings
     // 
     public static string csDir = Application.dataPath + "/JSBinding/CSharp";
     public static string csGeneratedDir = Application.dataPath + "/JSBinding/Generated";
-    // extension including "."
+    // extension (including ".")
     public static string jsExtension = ".javascript";
     public static string sharpkitGeneratedFiles = JSBindingSettings.jsDir + "/SharpKitGeneratedFiles.javascript";
     public static string sharpKitGenFileDir = "StreamingAssets/JavaScript/SharpKitGenerated/";
+
+
+    /*
+     * Formula:
+     * All C# scripts - PathsNotToJavaScript + PathsToJavaScript = C# scripts to export to javascript
+     * see JSAnalyzer.MakeJsTypeAttributeInSrc for more information
+     */
+    public static string[] PathsNotToJavaScript = new string[]
+    {
+        "JSBinding/",
+        "Stealth/",
+        "DaikonForge Tween (Pro)/",
+        "NGUI/",
+    };
+    public static string[] PathsToJavaScript = new string[]
+    {
+        "JSBinding/Samples/",
+        "DaikonForge Tween (Pro)/Examples/Scripts",
+    };
+    /// <summary>
+    /// By default, menu
+    /// 
+    /// JSB | Check All Monos for all Prefabs and Scenes
+    /// JSB | Replace All Monos for all Prefabs and Scenes
+    /// 
+    /// handles all Prefabs and Scenes in whole project
+    /// add paths(directory or file name) to this array if you want to skip them
+    /// </summary>
+    public static string[] PathsNotToCheckOrReplace = new string[]
+    {
+        "JSBinding/",
+        "JSBinding/Prefabs/_JSEngine.prefab",
+        "Plugins/",
+        "Resources/",
+        "Src/",
+        "StreamingAssets/",
+        "UnityVS/",
+        "DaikonForge Tween (Pro)/",
+        "NGUI/",
+    };
 }

@@ -531,7 +531,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: Score
+  jsClassName: Score
   arrString:
   - 7/score/0
   arrObject: []
@@ -1738,7 +1738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: SetParticleSortingLayer
+  jsClassName: SetParticleSortingLayer
   arrString:
   - 13/sortingLayerName/UI
   arrObject: []
@@ -2023,7 +2023,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: ScoreShadow
+  jsClassName: ScoreShadow
   arrString:
   - 15/guiCopy/0
   arrObject:
@@ -2132,7 +2132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: Pauser
+  jsClassName: Pauser
   arrString: []
   arrObject: []
 --- !u!1 &669626877
@@ -3690,7 +3690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: SetParticleSortingLayer
+  jsClassName: SetParticleSortingLayer
   arrString:
   - 13/sortingLayerName/UI
   arrObject: []
@@ -3871,7 +3871,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: Spawner
+  jsClassName: Spawner
   arrString:
   - 11/spawnTime/3
   - 11/spawnDelay/2
@@ -3934,7 +3934,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: Remover
+  jsClassName: Remover
   arrString:
   - 15/splash/0
   arrObject:
@@ -4088,7 +4088,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: Spawner
+  jsClassName: Spawner
   arrString:
   - 11/spawnTime/4
   - 11/spawnDelay/2
@@ -5541,7 +5541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: SetParticleSortingLayer
+  jsClassName: SetParticleSortingLayer
   arrString:
   - 13/sortingLayerName/Foreground
   arrObject: []
@@ -5728,7 +5728,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: FollowPlayer
+  jsClassName: FollowPlayer
   arrString:
   - StructBegin/offset/UnityEngine.Vector3
   - 11/x/0
@@ -7030,7 +7030,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: SetParticleSortingLayer
+  jsClassName: SetParticleSortingLayer
   arrString:
   - 13/sortingLayerName/UI
   arrObject: []
@@ -7133,7 +7133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: Gun
+  jsClassName: Gun
   arrString:
   - 15/rocketGO/0
   - 11/speed/25
@@ -7244,7 +7244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: Spawner
+  jsClassName: Spawner
   arrString:
   - 11/spawnTime/4
   - 11/spawnDelay/2
@@ -7451,7 +7451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: PickupSpawner
+  jsClassName: PickupSpawner
   arrString:
   - ArrayBegin/pickups/
   - 15/[0]/0
@@ -7715,7 +7715,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: CameraFollow
+  jsClassName: CameraFollow
   arrString:
   - 11/xMargin/2
   - 11/yMargin/2
@@ -7977,7 +7977,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: LayBombs
+  jsClassName: LayBombs
   arrString:
   - 1/bombLaid/False
   - 7/bombCount/0
@@ -7997,7 +7997,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: PlayerHealth
+  jsClassName: PlayerHealth
   arrString:
   - 11/health/100
   - 11/repeatDamagePeriod/0.35
@@ -8025,7 +8025,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: PlayerControl
+  jsClassName: PlayerControl
   arrString:
   - 1/facingRight/True
   - 1/jump/False
@@ -8393,7 +8393,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: BackgroundParallax
+  jsClassName: BackgroundParallax
   arrString:
   - ArrayBegin/backgrounds/
   - 15/[0]/0

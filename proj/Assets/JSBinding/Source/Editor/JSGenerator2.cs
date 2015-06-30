@@ -21,7 +21,7 @@ public static class JSGenerator2
 
     public static void OnBegin()
     {
-        JSMgr.ClearTypeInfo();
+        GeneratorHelp.ClearTypeInfo();
 
         if (Directory.Exists(JSBindingSettings.jsGeneratedDir))
         {
@@ -66,13 +66,32 @@ public static class JSGenerator2
             }
             name += "Array";
         }
+        else if (type.IsGenericTypeDefinition)
+        {
+            // never come here
+            name = type.Name;
+        }
         else if (type.IsGenericType)
         {
             name = type.Name;
             Type[] ts = type.GetGenericArguments();
+
+            bool hasGenericParameter = false;
             for (int i = 0; i < ts.Length; i++)
             {
-                name += "$" + SharpKitTypeName(ts[i]);
+                if (ts[i].IsGenericParameter)
+                {
+                    hasGenericParameter = true;
+                    break;
+                }
+            }
+
+            if (!hasGenericParameter)
+            {
+                for (int i = 0; i < ts.Length; i++)
+                {
+                    name += "$" + SharpKitTypeName(ts[i]);
+                }
             }
         }
         else
@@ -336,6 +355,15 @@ _jstype.staticDefinition.{1} = function({2}) [[
             bool bOverloaded = ((i > 0 && method.Name == methods[i - 1].Name) ||
                 (i < methods.Length - 1 && method.Name == methods[i + 1].Name));
 
+            if (!bOverloaded)
+            {
+                if (GeneratorHelp.MethodIsOverloaded(type, method.Name))
+                {
+                    bOverloaded = true;
+                    //Debug.Log("$$$ " + type.Name + "." + method.Name + (method.IsStatic ? " true" : " false"));
+                }
+            }
+
             StringBuilder sbFormalParam = new StringBuilder();
             StringBuilder sbActualParam = new StringBuilder();
             ParameterInfo[] paramS = method.GetParameters();
@@ -440,8 +468,8 @@ _jstype.staticDefinition.{1} = function({2}) [[
             return;
         }*/
 
-        JSMgr.ATypeInfo ti;
-        int slot = JSMgr.AddTypeInfo(type, out ti);
+        GeneratorHelp.ATypeInfo ti;
+        int slot = GeneratorHelp.AddTypeInfo(type, out ti);
         var sbHeader = BuildHeader(type);
         var sbCons = sbHeader.Append(BuildConstructors(type, ti.constructors, slot, ti.howmanyConstructors));
         var sbFields = BuildFields(type, ti.fields, slot);

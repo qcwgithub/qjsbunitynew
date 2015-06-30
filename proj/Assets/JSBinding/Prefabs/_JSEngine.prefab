@@ -71,7 +71,7 @@ MonoBehaviour:
   debug: 1
   port: 5086
   forceProtectJSFunction: 1
-  GCInterval: 1e+06
+  GCInterval: 10000
   jsLoader: {fileID: 11400002}
   InitLoadScripts:
   - includes
@@ -79,6 +79,7 @@ MonoBehaviour:
   - JSBinding/
   - Stealth/
   - DaikonForge Tween (Pro)/
+  - NGUI/
   DirectoriesToExport:
   - JSBinding/Samples/
   - DaikonForge Tween (Pro)/Examples/Scripts
@@ -90,7 +91,9 @@ MonoBehaviour:
   - StreamingAssets/
   - UnityVS/
   - DaikonForge Tween (Pro)/
+  - NGUI/
   showStatistics: 1
+  guiX: 0
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1

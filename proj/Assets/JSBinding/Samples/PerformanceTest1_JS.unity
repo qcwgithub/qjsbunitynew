@@ -230,7 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: PerformanceTest1
+  jsClassName: PerformanceTest1
   arrString: []
   arrObject: []
 --- !u!1 &1533346017
@@ -261,15 +261,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d134e75bc11fdf04fada25deba19d0b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 1
+  debug: 0
   port: 5086
-  forceProtectJSFunction: 1
-  GCInterval: 3
-  jsLoader: {fileID: 0}
-  InitLoadScripts: []
-  DirectoriesNotToExport: []
-  DirectoriesToExport: []
-  DirectoriesNotToReplace: []
+  GCInterval: 1e+06
+  jsLoader: {fileID: 1983711900}
+  InitLoadScripts:
+  - includes
   showStatistics: 1
   guiX: 0
 --- !u!4 &1533346019

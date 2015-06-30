@@ -66,7 +66,7 @@ public static class JSNameMgr
                     ret += "<";
                     for (int i = 0; i < ts.Length; i++)
                     {
-                        ret += GetTypeFullName(ts[i]); // 这里是T
+                        ret += GetTypeFullName(ts[i]); // it's T
                         if (i != ts.Length - 1)
                         {
                             ret += ", ";
@@ -77,7 +77,7 @@ public static class JSNameMgr
                 return ret.Replace('+', '.');
             }
 
-            // 后面是 `1 或 `2 之类的
+            // `1 or `2, `3, ...
             //            string rt = type.FullName;
 
             //            rt = rt.Substring(0, rt.Length - 2);
@@ -85,7 +85,7 @@ public static class JSNameMgr
             //            int TCount = type.GetGenericArguments().Length;
             //            for (int i = 0; i < TCount - 1; i++)
             //            {
-            //                //这里不要加空格了
+            //                //no space
             //                rt += ",";
             //            }
             //            rt += ">";
@@ -109,7 +109,7 @@ public static class JSNameMgr
                 Name += "<";
                 for (int i = 0; i < ts.Length; i++)
                 {
-                    Name += GetTypeFullName(ts[i]); // 这里是T
+                    Name += GetTypeFullName(ts[i]); // it's T
                     if (i != ts.Length - 1)
                     {
                         Name += ", ";
@@ -143,11 +143,11 @@ public static class JSNameMgr
         }
         else if (type.IsGenericTypeDefinition || type.IsGenericType)
         {
-            // 注意：
-            // typeof(List<>).FullName    是 System.Collections.Generic.List`1
-            // typeof(List<int>).FullName 是 Systcem.Collections.Generic.List`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
+            // ATTENSION
+            // typeof(List<>).FullName    == System.Collections.Generic.List`1
+            // typeof(List<int>).FullName == Systcem.Collections.Generic.List`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
 
-            // 后面是 `1 或 `2 之类的
+            // `1 or `2, `3, ...
             //            string rt = string.Empty;
             //            if (type.IsGenericTypeDefinition)
             //                rt = type.FullName;
@@ -163,7 +163,6 @@ public static class JSNameMgr
         }
         else
         {
-            // 通常不会进这里
             string fatherName = type.Name.Substring(0, type.Name.Length - 2);
             Type[] ts = type.GetGenericArguments();
             fatherName += "<";

@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: ListTest
+  jsClassName: ListTest
   arrString: []
   arrObject: []
 --- !u!1 &1551882853
@@ -203,27 +203,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 1
   port: 5086
-  forceProtectJSFunction: 0
-  GCInterval: 1
+  GCInterval: 10000
   jsLoader: {fileID: 1962775661}
   InitLoadScripts:
   - includes
-  DirectoriesNotToExport:
-  - JSBinding/
-  - Stealth/
-  - DaikonForge Tween (Pro)/
-  DirectoriesToExport:
-  - JSBinding/Samples/
-  - DaikonForge Tween (Pro)/Examples/Scripts
-  DirectoriesNotToReplace:
-  - JSBinding/
-  - Plugins/
-  - Resources/
-  - Src/
-  - StreamingAssets/
-  - UnityVS/
-  - DaikonForge Tween (Pro)/
   showStatistics: 1
+  guiX: 0
 --- !u!4 &1551882855
 Transform:
   m_ObjectHideFlags: 0

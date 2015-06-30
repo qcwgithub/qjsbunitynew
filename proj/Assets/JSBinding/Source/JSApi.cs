@@ -239,7 +239,13 @@ public class JSApi
 //         }
 //         return funID;
 //     }
-    // 其实这个函数跟 JSDataMgr.getObject 几乎一毛一样
+    /// <summary>
+    /// Gets the JavaScript function.
+    /// it's wrapped with CSRepresentedObject.
+    /// This function is almost the same as JSDataMgr.getObject
+    /// </summary>
+    /// <param name="e">The e.</param>
+    /// <returns></returns>
     public static CSRepresentedObject getFunctionS(int e)
     {
         int funID = JSApi.getFunction(e);
@@ -309,8 +315,13 @@ public class JSApi
     {
         setVector3(e, v.x, v.y, v.z);
     }
-    // TODO
-    // 这个函数应该只有 JSDataExchangeMgr.setObject 调用？
+    /// <summary>
+    /// Sets the object.
+    /// TODO
+    /// Shoult it only be called from JSDataExchangeMgr.setObject?
+    /// </summary>
+    /// <param name="e">The e.</param>
+    /// <param name="id">The identifier.</param>
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern void setObject(int e, int id);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]

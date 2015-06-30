@@ -158,7 +158,7 @@ _jstype.definition.Normalize = function() {
     }
 }
 /* Void */
-_jstype.definition.Scale = function(a0/*Vector3*/) {
+_jstype.definition.Scale$$Vector3 = function(a0/*Vector3*/) {
     this.x *= a0.x;
     this.y *= a0.y;
     this.z *= a0.z;
@@ -189,7 +189,7 @@ _jstype.staticDefinition.Angle = function(a0/*Vector3*/, a1/*Vector3*/) {
 _jstype.staticDefinition.ClampMagnitude = function(a0/*Vector3*/, a1/*Single*/) {
     if (a0.get_sqrMagnitude() > a1 * a1) {
         a0.Normalize();
-        a0.Scale(a1);
+        a0.Scale$$Vector3(a1);
     }
 }
 /* static Vector3  */
@@ -234,7 +234,7 @@ _jstype.staticDefinition.Min = function(a0/*Vector3*/, a1/*Vector3*/) {
 //    return CS.Call(4, 242, 16, true, false, a0, a1, a2);
 //}
 /* static Vector3  */
-_jstype.staticDefinition.Normalize = function(a0/*Vector3*/) {
+_jstype.staticDefinition.Normalize$$Vector3 = function(a0/*Vector3*/) {
     return a0.get_normalized();
 }
 /* static Vector3  */
@@ -300,7 +300,7 @@ _jstype.staticDefinition.op_UnaryNegation = function(a0/*Vector3*/) {
 //    return CS.Call(4, 242, 31, true, false, a0, a1, a2, a3);
 //}
 /* static Vector3  */
-_jstype.staticDefinition.Scale = function(a0/*Vector3*/, a1/*Vector3*/) { 
+_jstype.staticDefinition.Scale$$Vector3$$Vector3 = function(a0/*Vector3*/, a1/*Vector3*/) { 
     return UnityEngine.Vector3.New(
         a0.x * a1.x,
         a0.y * a1.y,

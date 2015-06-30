@@ -9,28 +9,30 @@ public partial class UnityEngineManual
         int Count = arrRet.Length;
         for (int i = 0; i < arrRet.Length; i++)
         {
-            vc.datax.setObject((int)JSApi.SetType.SaveAndTempTrace, arrRet[i]);
+            JSMgr.datax.setObject((int)JSApi.SetType.SaveAndTempTrace, arrRet[i]);
             JSApi.moveSaveID2Arr(i);
         }
         JSApi.setArrayS((int)JSApi.SetType.Rval, Count, true);
     }
     static void help_searchAndRetCom(JSVCall vc, JSComponent[] jsComs, string typeString)
     {
+        int id = 0;
         foreach (var jsCom in jsComs)
         {
-            if (jsCom.jsScriptName == typeString)
+            if (jsCom.jsClassName == typeString)
             {
-                JSApi.setObject((int)JSApi.SetType.Rval, jsCom.jsObjID);
+                id = jsCom.jsObjID;
                 break;
             }
         }
+        JSApi.setObject((int)JSApi.SetType.Rval, id);
     }
     static void help_searchAndRetComs(JSVCall vc, JSComponent[] com, string typeString)
     {
         List<JSComponent> lst = new List<JSComponent>();
         foreach (var c in com)
         {
-            if (c.jsScriptName == typeString)
+            if (c.jsClassName == typeString)
             {
                 lst.Add(c);
             }
@@ -47,7 +49,7 @@ public partial class UnityEngineManual
 //         {
 //             JSApi.JSh_SetJsvalObject(ref arrVal[i], lst[i].jsObj);
 //         }
-//         vc.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal);
+//         JSMgr.datax.setArray(JSDataExchangeMgr.eSetType.SetRval, arrVal);
     }
 
 
@@ -85,7 +87,7 @@ public partial class UnityEngineManual
         if (isCSMonoBehaviour(type))
         {
             Component com = go.AddComponent(type);
-            vc.datax.setObject((int)JSApi.SetType.Rval, com);
+            JSMgr.datax.setObject((int)JSApi.SetType.Rval, com);
         }
         else
         {
@@ -116,7 +118,7 @@ public partial class UnityEngineManual
         if (isCSMonoBehaviour(type))
         {
             Component com = go.GetComponent(type);
-            vc.datax.setObject((int)JSApi.SetType.Rval, com);
+            JSMgr.datax.setObject((int)JSApi.SetType.Rval, com);
         }
         else
         {
@@ -168,7 +170,7 @@ public partial class UnityEngineManual
         if (isCSMonoBehaviour(type))
         {
             Component com = go.GetComponentInChildren(type);
-            vc.datax.setObject((int)JSApi.SetType.Rval, com);
+            JSMgr.datax.setObject((int)JSApi.SetType.Rval, com);
         }
         else
         {
@@ -217,7 +219,7 @@ public partial class UnityEngineManual
     {
         help_getGoAndType(vc);
         // TODO check
-//        bool includeInactive = vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
+        //        bool includeInactive = JSMgr.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
         bool includeInactive = JSApi.getBooleanS((int)JSApi.GetType.Arg);
 
         if (isCSMonoBehaviour(type))
@@ -249,7 +251,7 @@ public partial class UnityEngineManual
         if (isCSMonoBehaviour(type))
         {
             Component com = go.GetComponentInParent(type);
-            vc.datax.setObject((int)JSApi.SetType.Rval, com);
+            JSMgr.datax.setObject((int)JSApi.SetType.Rval, com);
         }
         else
         {
@@ -298,7 +300,7 @@ public partial class UnityEngineManual
     {
         help_getGoAndType(vc);
         // TODO check
-//        bool includeInactive = vc.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
+        //        bool includeInactive = JSMgr.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
         bool includeInactive = JSApi.getBooleanS((int)JSApi.GetType.Arg);
 
         if (isCSMonoBehaviour(type))

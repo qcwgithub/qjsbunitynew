@@ -10,8 +10,6 @@ using jsval = JSApi.jsval;
 
 public class JSDataExchangeEditor : JSDataExchangeMgr
 {
-    JSDataExchangeEditor(JSVCall vc):base(vc) {  }
-
     //static Dictionary<Type, JSDataExchange> dict;
     static JSDataExchange_Arr arrayExchange;
 
@@ -230,7 +228,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             .AppendFormat("    if (JSApi.isFunctionS((int)JSApi.GetType.Arg))\n")
             .AppendFormat("        return {0}(JSApi.getFunctionS((int)JSApi.GetType.Arg));\n", getDelegateFunctionName)
             .Append("    else\n")
-            .AppendFormat("        return ({0})vc.datax.getObject((int)JSApi.GetType.Arg);\n", JSNameMgr.GetTypeFullName(delType))
+            .AppendFormat("        return ({0})JSMgr.datax.getObject((int)JSApi.GetType.Arg);\n", JSNameMgr.GetTypeFullName(delType))
             .Append("]])\n")
             .ToString();
     }

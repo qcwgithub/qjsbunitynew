@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: BackgroundPropSpawner
+  jsClassName: BackgroundPropSpawner
   arrString:
   - 15/backgroundProp/0
   - 11/leftSpawnPosX/-24
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: BackgroundPropSpawner
+  jsClassName: BackgroundPropSpawner
   arrString:
   - 15/backgroundProp/0
   - 11/leftSpawnPosX/-24
@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsScriptName: BackgroundPropSpawner
+  jsClassName: BackgroundPropSpawner
   arrString:
   - 15/backgroundProp/0
   - 11/leftSpawnPosX/-24

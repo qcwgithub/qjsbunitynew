@@ -16,10 +16,10 @@ public static class JSSerializerEditor
     public struct AnalyzeStructInfo
     {
         public JSSerializer.AnalyzeType analyzeType;
-        public string Name; // 字段名字。当 analyzeType == xxObj xxEnd 时 或者数组元素时这个没鸟用
-        public Type type; // 类型 有时候 value == null
+        public string Name; // field name, it's useless when analyzeType == xxObj xxEnd or when it's element of array
+        public Type type; // type. sometimes value == null
         public object value;
-        public JSSerializer.UnitType unitType;// 单元类型。当 analyzeType == xxBegin xxObj xxEnd 时 这个没鸟用
+        public JSSerializer.UnitType unitType;// Unit type, it's useless when analyzeType == xxBegin xxObj xxEnd
 
         public AnalyzeStructInfo(JSSerializer.AnalyzeType at,
             string name, Type type, object v = null, 
@@ -64,28 +64,29 @@ public static class JSSerializerEditor
 
                         // this.value could be null
                         Type objectType = this.type; // this.value.GetType();
-                        if (typeof(UnityEngine.Object).IsAssignableFrom(objectType))
+                        if (this.unitType == JSSerializer.UnitType.ST_JavaScriptMonoBehaviour ||
+                            this.unitType == JSSerializer.UnitType.ST_UnityEngineObject)
                         {
                             eSerialize = SerializeType.Object;
 
-                            if (typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(objectType))
+                            if (this.unitType == JSSerializer.UnitType.ST_JavaScriptMonoBehaviour)
                             {
-                                // if a monobehaviour is refer
+                                if (!typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(objectType) ||
+                                    !WillTypeBeTranslatedToJavaScript(objectType))
+                                {
+                                    Debug.LogError("unitType is ST_JavaScriptMonoBehaviour, but objectType is not MonoBehaviour or not having JsType attribute.");
+                                }
+
+                                // if a monobehaviour is referenced
                                 // and this monobehaviour will be translated to js later
                                 //  ST_MonoBehaviour
-                                if (WillTypeBeTranslatedToJavaScript(objectType))
-                                {
-                                    // add game object
-                                    var index = AllocObject(((MonoBehaviour)this.value).gameObject);
+                                
+                                // add game object
+                                var index = AllocObject(((MonoBehaviour)this.value).gameObject);
 
-                                    // UnitType / Name / object Index / MonoBehaviour Name
-                                    sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSNameMgr.GetTypeFullName(objectType));
-                                    AllocString(sb.ToString());
-                                }
-                                else
-                                {
-                                    // not supported
-                                }
+                                // UnitType / Name / object Index / MonoBehaviour Name
+                                sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSNameMgr.GetTypeFullName(objectType));
+                                AllocString(sb.ToString());
                             }
                             else
                             {
@@ -114,7 +115,7 @@ public static class JSSerializerEditor
         return lstObjs.Count - 1; 
 	}
     /// <summary>
-    /// lstString lstObjs 存储序列化要用的字符串和对象列表。
+    /// lstString lstObjs store serialized string and object list
     /// </summary>
     static List<string> lstString = new List<string>();
     static List<UnityEngine.Object> lstObjs = new List<UnityEngine.Object>();
@@ -156,9 +157,8 @@ public static class JSSerializerEditor
         return 0;
     }
 
-
     /// <summary>
-    /// sDict 存储类型和枚举JSSerializer的对应关系
+    /// type to UnitType
     /// </summary>
     static Dictionary<Type, JSSerializer.UnitType> sDict;
     static JSSerializer.UnitType GetUnitType(Type type)
@@ -191,9 +191,10 @@ public static class JSSerializerEditor
             return JSSerializer.UnitType.ST_Enum;
         }
 
-        if ((typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type)))
+        if ((typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type)) &&
+            WillTypeBeTranslatedToJavaScript(type))
         {
-            return JSSerializer.UnitType.ST_MonoBehaviour;
+            return JSSerializer.UnitType.ST_JavaScriptMonoBehaviour;
         }
         if ((typeof(UnityEngine.Object).IsAssignableFrom(type)))
         {
@@ -209,10 +210,10 @@ public static class JSSerializerEditor
         return ret;
     }
     /// <summary>
-    /// 将值转换为字符串表示
+    /// C# values to string format.
     /// </summary>
-    /// <param name="value"></param>
-    /// <param name="type"></param>
+    /// <param name="value">The value.</param>
+    /// <param name="type">The type.</param>
     /// <returns></returns>
     static string ValueToString(object value, Type type)
     {
@@ -244,22 +245,39 @@ public static class JSSerializerEditor
         }
         return sb.ToString();
     }
-
     /// <summary>
-    /// 取出一个脚本中需要序列化的字段。目前是取出所有 public 变量。可能有误
+    /// Gets the mono behaviour serialized fields.
+    /// Returns all PUBLIC fields who has no NonSerialized attribute.
     /// </summary>
-    /// <param name="behaviour"></param>
+    /// <param name="behaviour">The behaviour.</param>
     /// <returns></returns>
     public static FieldInfo[] GetMonoBehaviourSerializedFields(MonoBehaviour behaviour)
     {
         Type type = behaviour.GetType();
-        var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
-        return fields;
+        return GetTypeSerializedFields(type);
     }
     public static FieldInfo[] GetTypeSerializedFields(Type type)
     {
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance /* | BindingFlags.Static */ );
-        return fields;
+        List<FieldInfo> lst = new List<FieldInfo>();
+        for (var i = 0; i < fields.Length; i++)
+        {
+            bool bNonSerialized = false;
+            object[] attrs = fields[i].GetCustomAttributes(false);
+            for (var j = 0; j < attrs.Length; j++)
+            {
+                if (attrs[j].GetType() == typeof(NonSerializedAttribute))
+                {
+                    bNonSerialized = true;
+                    break;
+                }
+            }
+            if (!bNonSerialized)
+            {
+                lst.Add(fields[i]);
+            }
+        }
+        return lst.ToArray();
     }
     static void TraverseAnalyze()
     {
@@ -353,20 +371,35 @@ public static class JSSerializerEditor
         {
             lstAnalyze[i].Alloc(serizlizer);
         }
-        serizlizer.jsScriptName = JSNameMgr.GetTypeFullName(behaviour.GetType());
+        serizlizer.jsClassName = JSNameMgr.GetTypeFullName(behaviour.GetType());
         serizlizer.arrString = lstString.ToArray();
         serizlizer.arrObject = lstObjs.ToArray();
     }
+    /// <summary>
+    /// Wills the type be available in javascript.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <returns></returns>
     public static bool WillTypeBeAvailableInJavaScript(Type type)
     {
         return WillTypeBeTranslatedToJavaScript(type) || WillTypeBeExportedToJavaScript(type);
     }
+    /// <summary>
+    /// Wills the type be translated to javascript.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <returns></returns>
     public static bool WillTypeBeTranslatedToJavaScript(Type type)
     {
         System.Object[] attrs = type.GetCustomAttributes(typeof(JsTypeAttribute), false);
         bool bToJS = attrs.Length > 0;
         return bToJS;
     }
+    /// <summary>
+    /// Wills the type be exported to java script.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <returns></returns>
     public static bool WillTypeBeExportedToJavaScript(Type type)
     {
         foreach (var t in JSBindingSettings.classes)
@@ -376,23 +409,21 @@ public static class JSSerializerEditor
         }
         return false;
     }
-    public static void CopyGameObject<T>(GameObject go) where T : JSSerializer
+    /// <summary>
+    /// Replace MonoBehaviour with JSComponent, only when this MonoBehaviour has JsType attribute
+    /// Will copy serialized data if needed
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="go">GameObject to replace MonoBehaviours.</param>
+    /// <returns>return true if any MonoBehaviour of go has been replaced.</returns>
+    public static bool CopyGameObject<T>(GameObject go) where T : JSSerializer
     {
-        // delete original JSSerializer(s)
-        //         foreach (var eh in go.GetComponents<JSSerializer>()) 
-        //         {
-        //             if (eh.AutoDelete)
-        //             {
-        //                 // only delete when Auto is true
-        //                 DestroyImmediate(eh, true);
-        //             }
-        //         }
-
+        bool bReplaced = false;
         var behaviours = go.GetComponents<MonoBehaviour>();
         for (var i = 0; i < behaviours.Length; i++)
         {
             var behav = behaviours[i];
-            // ignore ExtraHandler here
+            // ignore JSSerializer here
             if (behav is JSSerializer)
             {
                 continue;
@@ -410,17 +441,26 @@ public static class JSSerializerEditor
                 // copy the serialized data if needed
                 JSSerializer helper = (JSSerializer)go.AddComponent<T>();
                 CopyBehaviour(behav, helper);
+                bReplaced = true;
             }
         }
+        return bReplaced;
     }
+    /// <summary>
+    /// Remove MonoBehaviour with JSComponent, only when this MonoBehaviour has JsType attribute
+    /// </summary>
+    /// <param name="go">GameObject to remove MonoBehaviours.</param>
     public static void RemoveOtherMonoBehaviours(GameObject go)
     {
         var coms = go.GetComponents<MonoBehaviour>();
         for (var i = 0; i < coms.Length; i++)
         {
             var com = coms[i];
-            // must ignore ExtraHandler here
+            // ignore JSSerializer here
             if (com is JSSerializer)
+                continue;
+
+            if (!WillTypeBeTranslatedToJavaScript(com.GetType()))
                 continue;
 
             UnityEngine.Object.DestroyImmediate(com, true);
