@@ -92,10 +92,15 @@ public class JSEngine : MonoBehaviour
         JSMgr.InitJSEngine(jsLoader, OnInitJSEngine);
     }
 
+    int jsCallCountPerFrame = 0;
     void Update()
     {
         if (this != JSEngine.inst)
             return;
+
+        jsCallCountPerFrame = JSMgr.vCall.jsCallCount;
+        JSMgr.vCall.jsCallCount = 0;
+
         if (inited)
         {
             if (mDebug)
@@ -151,7 +156,7 @@ public class JSEngine : MonoBehaviour
 
         JSMgr.GetDictCount(out countDict1, out countDict2);
 
-        GUI.TextArea(new Rect(guiX, 10, 500, 20), "Round " + JSMgr.jsEngineRound + " Objs(Total " + countDict1.ToString() + ", Class " + countDict2.ToString() + ") CSR(Obj " + CSRepresentedObject.s_objCount + " Fun " + CSRepresentedObject.s_funCount + ") Del " + JSMgr.getJSFunCSDelegateCount());
+        GUI.TextArea(new Rect(guiX, 10, 500, 20), "JS->CS Count " + this.jsCallCountPerFrame + " Round " + JSMgr.jsEngineRound + " Objs(Total " + countDict1.ToString() + ", Class " + countDict2.ToString() + ") CSR(Obj " + CSRepresentedObject.s_objCount + " Fun " + CSRepresentedObject.s_funCount + ") Del " + JSMgr.getJSFunCSDelegateCount());
 
         int clsCount = 0;
         Dictionary<int, JSMgr.JS_CS_Rel> dict1 = JSMgr.GetDict1();

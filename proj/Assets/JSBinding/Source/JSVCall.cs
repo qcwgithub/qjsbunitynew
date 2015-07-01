@@ -66,9 +66,11 @@ public class JSVCall
     public bool bGet = false; // for property
     public int jsObjID = 0;
     public object csObj;
-    
+
+    public int jsCallCount = 0;
     public bool CallCallback(int iOP, int slot, int index, int isStatic, int argc)
     {
+        jsCallCount++;
         this.jsObjID = 0;
         this.csObj = null;
 
