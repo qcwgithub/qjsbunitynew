@@ -761,6 +761,7 @@ public class JSBindingSettings
         typeof(Dictionary<,>.KeyCollection), 
         typeof(Dictionary<,>.ValueCollection), 
         typeof(Dictionary<,>.Enumerator), 
+        typeof(KeyValuePair<,>), 
         //typeof(QiucwCup<>),
 
         
@@ -943,6 +944,7 @@ public class JSBindingSettings
     public static string[] PathsToJavaScript = new string[]
     {
         "JSBinding/Samples/",
+        "JSBinding/JSImp/", // !!
         "DaikonForge Tween (Pro)/Examples/Scripts",
     };
     /// <summary>
