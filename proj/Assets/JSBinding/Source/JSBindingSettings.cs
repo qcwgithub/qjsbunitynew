@@ -789,6 +789,21 @@ public class JSBindingSettings
 //        typeof(System.MulticastDelegate),
         //typeof(SerializeStruct.AppleInfo),
         typeof(StringBuilder),
+
+#if UNITY_4_6
+        typeof(UnityEngine.EventSystems.UIBehaviour),
+        typeof(UnityEngine.UI.Selectable),
+        typeof(UnityEngine.UI.Slider),
+        typeof(UnityEngine.UI.Graphic),
+        typeof(UnityEngine.UI.MaskableGraphic),
+        typeof(UnityEngine.UI.Image),
+        typeof(UnityEngine.UI.Text),
+        typeof(UnityEngine.Events.UnityEventBase),
+        typeof(UnityEngine.Events.UnityEvent<>),
+        typeof(UnityEngine.UI.Slider.SliderEvent),
+
+        typeof(UnityEngine.Canvas),
+#endif
     };
 
     
