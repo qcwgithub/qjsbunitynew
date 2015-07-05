@@ -932,9 +932,13 @@ static bool {0}(JSVCall vc, int argc)
 
             if (cons == null)
             {
+                sb.AppendFormat("public static ConstructorID constructorID{0} = new ConstructorID({1});\n", i, "null, null");
+
                 // this is default constructor
                 bool returnVoid = false;
-                string functionName = type.Name + "_" + type.Name + "1";
+                //string functionName = type.Name + "_" + type.Name + "1";
+                int olIndex = i + 1; // for constuctors, they are always overloaded
+                string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : ""));
 
                 sb.AppendFormat(fmt, functionName,
                     BuildNormalFunctionCall(0, new ParameterInfo[0], type.Name, false, null, true));
@@ -946,7 +950,7 @@ static bool {0}(JSVCall vc, int argc)
             {
                 ParameterInfo[] paramS = cons.GetParameters();
                 int olIndex = i + 1; // for constuctors, they are always overloaded
-                int methodTag = i + deltaIndex;
+                int methodTag = i/* + deltaIndex*/;
 
                 for (int j = 0; j < paramS.Length; j++)
                 {
