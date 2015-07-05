@@ -4,9 +4,9 @@ var jsimp$Reflection = {
     fullname: "jsimp.Reflection",
     baseTypeName: "System.Object",
     staticDefinition: {
-        // Õâ2¸öº¯Êı£¬Èç¹ûTÊÇC#ÀàĞÍ£¬±ÈÈçËµ GameObject£¬ÊÇ·ñÈÔÈ»ÓĞĞ§£¿
-        // ´ğ°¸ÊÇ£ºÓĞµãÉñÆæ£¬ÎÒÈÏÎªÊÇÓĞĞ§µÄ£¡
-        // µÃ²âÊÔÒ»ÏÂ
+        // è¿™2ä¸ªå‡½æ•°ï¼Œå¦‚æœTæ˜¯C#ç±»å‹ï¼Œæ¯”å¦‚è¯´ GameObjectï¼Œæ˜¯å¦ä»ç„¶æœ‰æ•ˆï¼Ÿ
+        // ç­”æ¡ˆæ˜¯ï¼šæœ‰ç‚¹ç¥å¥‡ï¼Œæˆ‘è®¤ä¸ºæ˜¯æœ‰æ•ˆçš„ï¼
+        // å¾—æµ‹è¯•ä¸€ä¸‹
         CreateInstance$1: function (T){
             //return jsb_CallObjectCtor(T.getNativeType());
             return new T();
