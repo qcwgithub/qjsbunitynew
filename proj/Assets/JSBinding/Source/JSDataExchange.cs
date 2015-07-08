@@ -279,6 +279,17 @@ public class JSDataExchangeMgr
             setObject(e, obj);
         }
     }
+
+    /// <summary>
+    /// Should return base type object?
+    /// </summary>
+    /// <param name="typeName">Name of the type.</param>
+    /// <returns></returns>
+//     public bool shouldReturnBaseTypeObject(string typeName)
+//     {
+// 
+//     }
+
     /// <summary>
     /// Sets the object.
     /// if e == UpdateRefARGV, currIndex must be set before this function
@@ -318,11 +329,29 @@ public class JSDataExchangeMgr
                         string typeName = string.Empty;
                         // create a JSRepresentedObject object in JS to represent a C# delegate object
                         if (bDelegate)
+                        {
                             typeName = "JSRepresentedObject";
+                            jsObjID = JSApi.createJSClassObject(typeName);
+                        }
                         else
+                        {
                             typeName = JSNameMgr.GetJSTypeFullName(csType);
+                            jsObjID = JSApi.createJSClassObject(typeName);
+                            if (jsObjID == 0)
+                            {
+                                Type baseType = csType.BaseType;
+                                if (baseType != null)
+                                {
+                                    var baseTypeName = JSNameMgr.GetJSTypeFullName(baseType);
+                                    jsObjID = JSApi.createJSClassObject(baseTypeName);
+                                    if (jsObjID != 0)
+                                    {
+                                        Debug.LogWarning("WARNING: Return a \"" + typeName + "\" to JS failed. Return base type\"" + baseTypeName + "\" instead.");
+                                    }
+                                }
+                            }
+                        }
 
-                        jsObjID = JSApi.createJSClassObject(typeName);
                         if (jsObjID != 0)
                             JSMgr.addJSCSRel(jsObjID, csObj);
                         else
