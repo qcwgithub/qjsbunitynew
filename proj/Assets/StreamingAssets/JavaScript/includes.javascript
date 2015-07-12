@@ -38,6 +38,8 @@ CS.require("GeneratedFiles");
 //--------------------------------------------------
 CS.require("Manual/UnityEngine_Vector3");
 CS.require("Manual/UnityEngine_Vector2");
+CS.require("Manual/UnityEngine_MonoBehaviour");
+CS.require("Manual/UnityEngine_WaitForSeconds");
 //
 // may be more..
 //
@@ -51,6 +53,8 @@ CS.require("SharpKitGeneratedFiles");
 // will overwrite some classes in step 1)
 //--------------------------------------------------
 CS.require("JSImp/Reflection");
+CS.require("JSImp/Coroutine");
+
 //
 // may be more..
 //
