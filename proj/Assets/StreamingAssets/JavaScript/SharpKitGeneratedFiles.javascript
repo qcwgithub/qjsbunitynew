@@ -35,9 +35,12 @@ CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestHighC
 CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestShakeObject.javascript");
 CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestSlinky.javascript");
 CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestSplineTween.javascript");
+CS.require("SharpKitGenerated/JSBinding/JSImp/Coroutine.javascript");
 CS.require("SharpKitGenerated/JSBinding/JSImp/Reflection.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Coroutine/TestCoroutine.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/DelegateTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/DictionaryTest.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/EncodingTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/JSImpTest/JSImpTest1.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/JSImpTest/Person.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/JSImpTest/XmlParser.javascript");
@@ -48,7 +51,6 @@ CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/SerializeSimple.ja
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/SerializeStruct.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/AppleInfo.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/Wheel.javascript");
-CS.require("SharpKitGenerated/JSBinding/Samples/TestCoroutine.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/V3Test.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Viewer.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/stScene.javascript");

@@ -29,6 +29,7 @@ public class JSComponent : JSSerializer
         idStart = JSApi.getObjFunction(jsObjID, "Start");
         idFixedUpdate = JSApi.getObjFunction(jsObjID, "FixedUpdate");
         idUpdate = JSApi.getObjFunction(jsObjID, "Update");
+        idLateUpdate = JSApi.getObjFunction(jsObjID, "LateUpdate");
         idOnDestroy = JSApi.getObjFunction(jsObjID, "OnDestroy");
         idOnGUI = JSApi.getObjFunction(jsObjID, "OnGUI");
         idOnEnable = JSApi.getObjFunction(jsObjID, "OnEnable");
@@ -85,6 +86,7 @@ public class JSComponent : JSSerializer
     int idStart = 0;
     int idFixedUpdate = 0;
     int idUpdate = 0;
+    int idLateUpdate = 0;
     int idOnDestroy = 0;
     int idOnGUI = 0;
     int idOnEnable = 0;
@@ -182,6 +184,10 @@ public class JSComponent : JSSerializer
     void Update()
     {
         callIfExist(idUpdate);
+    }
+    void LateUpdate()
+    {
+        callIfExist(idLateUpdate);
     }
 
     void OnDestroy()
