@@ -277,6 +277,9 @@ public static class GeneratorHelp
             if (IsMemberObsolete(method))
                 continue;
 
+            ParameterInfo[] ps;
+            bool bDiscard = false;
+
             //
             // ignore static method who contains T coming from class type
             // because there is no way to call it
@@ -285,9 +288,7 @@ public static class GeneratorHelp
             if (method.IsGenericMethodDefinition /* || method.IsGenericMethod*/
                 && method.IsStatic)
             {
-                bool bDiscard = false;
-
-                var ps = method.GetParameters();
+                ps = method.GetParameters();
                 for (int k = 0; k < ps.Length; k++)
                 {
                     if (ps[k].ParameterType.ContainsGenericParameters)
@@ -310,6 +311,34 @@ public static class GeneratorHelp
                     Debug.LogWarning("Ignore static method " + type.Name + "." + method.Name);
                     continue;
                 }
+            }
+
+            // does it have unsafe parameter?
+            bDiscard = false;
+            ps = method.GetParameters();
+            for (var k = 0; k < ps.Length; k++)
+            {
+                Type pt = ps[k].ParameterType;
+                while (true)
+                {
+                    if (pt.IsPointer)
+                    {
+                        bDiscard = true;
+                        break;
+                    }
+                    else if (pt.HasElementType)
+                        pt = pt.GetElementType();
+                    else
+                        break;
+                }
+
+                if (bDiscard)
+                    break;
+            }
+            if (bDiscard)
+            {
+                Debug.Log(type.Name + "." + method.Name + " was discard because it has unsafe parameter.");
+                continue;
             }
 
 

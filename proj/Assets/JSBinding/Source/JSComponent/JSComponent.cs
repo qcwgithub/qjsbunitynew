@@ -23,12 +23,13 @@ public class JSComponent : JSSerializer
     /// <summary>
     /// Initializes the member function.
     /// </summary>
-    void initMemberFunction()
+    protected virtual void initMemberFunction()
     {
         idAwake = JSApi.getObjFunction(jsObjID, "Awake");
         idStart = JSApi.getObjFunction(jsObjID, "Start");
         idFixedUpdate = JSApi.getObjFunction(jsObjID, "FixedUpdate");
         idUpdate = JSApi.getObjFunction(jsObjID, "Update");
+        idLateUpdate = JSApi.getObjFunction(jsObjID, "LateUpdate");
         idOnDestroy = JSApi.getObjFunction(jsObjID, "OnDestroy");
         idOnGUI = JSApi.getObjFunction(jsObjID, "OnGUI");
         idOnEnable = JSApi.getObjFunction(jsObjID, "OnEnable");
@@ -85,6 +86,7 @@ public class JSComponent : JSSerializer
     int idStart = 0;
     int idFixedUpdate = 0;
     int idUpdate = 0;
+    int idLateUpdate = 0;
     int idOnDestroy = 0;
     int idOnGUI = 0;
     int idOnEnable = 0;
@@ -101,7 +103,7 @@ public class JSComponent : JSSerializer
     bool initSuccess { get { return initState == 1; } set { if (value) initState = 1; } }
     public bool initFail { get { return initState == 2; } set { if (value) initState = 2; else initState = 0; } }
 
-    void callIfExist(int funID, params object[] args)
+    protected void callIfExist(int funID, params object[] args)
     {
         if (funID > 0)
         {
@@ -182,6 +184,10 @@ public class JSComponent : JSSerializer
     void Update()
     {
         callIfExist(idUpdate);
+    }
+    void LateUpdate()
+    {
+        callIfExist(idLateUpdate);
     }
 
     void OnDestroy()
