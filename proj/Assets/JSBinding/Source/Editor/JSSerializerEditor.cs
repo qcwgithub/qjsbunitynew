@@ -453,17 +453,58 @@ public static class JSSerializerEditor
     public static void RemoveOtherMonoBehaviours(GameObject go)
     {
         var coms = go.GetComponents<MonoBehaviour>();
+//         var dict = new Dictionary<Type, int>(); // type -> Count
+//         foreach (var com in coms)
+//         {
+//             object[] attrs = com.GetType().GetCustomAttributes(true);
+//             foreach (var attr in attrs)
+//             {
+//                 if (attr is RequireComponent)
+//                 {
+//                     var rc = (RequireComponent)attr;
+//                     var ts = new Type[] { rc.m_Type0, rc.m_Type1, rc.m_Type2 };
+//                     foreach (var t in ts)
+//                     {
+//                         if (dict.ContainsKey(t)) dict[t]++;
+//                         else dict[t] = 1;
+//                     }
+//                 }
+//             }
+//         }
+
+        List<MonoBehaviour> lst = new List<MonoBehaviour>();
         for (var i = 0; i < coms.Length; i++)
         {
             var com = coms[i];
-            // ignore JSSerializer here
-            if (com is JSSerializer)
-                continue;
+            if (com != null)
+            {
+                // ignore JSSerializer here
+                if (com is JSSerializer)
+                    continue;
 
-            if (!WillTypeBeTranslatedToJavaScript(com.GetType()))
-                continue;
+                if (!WillTypeBeTranslatedToJavaScript(com.GetType()))
+                    continue;
 
-            UnityEngine.Object.DestroyImmediate(com, true);
+                bool requireOther = false;
+                object[] attrs = com.GetType().GetCustomAttributes(true);
+                foreach (var attr in attrs)
+                {
+                    if (attr is RequireComponent) { requireOther = true; break; }
+                }
+                if (requireOther)
+                {
+                    // delete components with [RequireComponent()] first
+                    UnityEngine.Object.DestroyImmediate(com, true);
+                }
+                else
+                {
+                    lst.Add(com);
+                }
+            }
+        }
+        for (var i = 0; i < lst.Count; i++)
+        {
+            UnityEngine.Object.DestroyImmediate(lst[i], true);
         }
     }
 }
