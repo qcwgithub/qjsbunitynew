@@ -743,7 +743,83 @@ fields before this action.",
         Debug.Log("Make JsType Attribute OK.");
         AssetDatabase.Refresh();
     }
+    [MenuItem("JSB/Correct JavaScript Yield code", false, 131)]
+    public static void CorrectJavaScriptYieldCode()
+    {
+        string YIELD_DEF = "var $yield = [];"; // to delete
+        string YIELD_PUSH = "$yield.push"; // to replace with "yield "
+        string YIELD_RET = "return $yield;"; // to delete
+        string FUN_DEC = "function (){"; // to replace with "function* (){"
 
+        string[] files = Directory.GetFiles(JSBindingSettings.jsDir, "*.javascript", SearchOption.AllDirectories);
+        List<string> lstFiles = new List<string>();
+        StringBuilder sb = new StringBuilder();
+        foreach (var f in files)
+        {
+            string str = File.ReadAllText(f);
+            if (str.IndexOf(YIELD_DEF) != -1)
+            {
+                lstFiles.Add(f);
+                sb.AppendFormat("{0}", f);
+                sb.AppendLine();
+            }
+        }
+        string fileName = GetTempFileNameFullPath("FilesToCorrectYield.txt");
+        File.WriteAllText(fileName, sb.ToString());
+        bool bContinue = EditorUtility.DisplayDialog("TIP",
+             "Files to correct yield are in " + fileName + ". please verify.",
+             "OK",
+             "Cancel");
+
+        if (!bContinue)
+        {
+            Debug.Log("Operation canceled.");
+            return;
+        }
+
+        StringBuilder sbFail = new StringBuilder();
+        // path in lstFiles has full path
+        foreach (string f in lstFiles)
+        {
+            sb.Remove(0, sb.Length);
+
+            bool suc = true;
+            string str = File.ReadAllText(f);
+            int lastIndex = 0, yildDefIndex, funStart = 0;
+            while (true)
+            {
+                yildDefIndex = str.IndexOf(YIELD_DEF, lastIndex);
+                if (yildDefIndex < 0) { break; }
+
+                funStart = str.LastIndexOf(FUN_DEC, yildDefIndex);
+                if (funStart < 0) { suc = false; break; }
+
+                sb.Append(str.Substring(lastIndex, funStart - lastIndex));
+                sb.Append("function* (){");
+
+                funStart += FUN_DEC.Length;
+                lastIndex = str.IndexOf(YIELD_RET, yildDefIndex);
+                if (lastIndex < 0) { suc = false; break; }
+                lastIndex += YIELD_RET.Length;
+
+                sb.Append(str.Substring(funStart, lastIndex - funStart).Replace(YIELD_DEF, "").Replace(YIELD_PUSH, "yield ").Replace(YIELD_RET, ""));
+            }
+            if (suc)
+            {
+                sb.Append(str.Substring(lastIndex));
+                File.WriteAllText(f, sb.ToString());
+            }
+            else
+            {
+                sbFail.AppendLine();
+                sbFail.Append(f);
+            }
+        }
+        if (sbFail.Length == 0)
+            Debug.Log("Correct JavaScript Yield code OK.");
+        else
+            Debug.LogError("Correct JavaScript Yield code failed. Error files: " + sbFail.ToString());
+    }
     [MenuItem("JSB/Online Documents", false, 151)]
     public static void OpenHelp()
     {
