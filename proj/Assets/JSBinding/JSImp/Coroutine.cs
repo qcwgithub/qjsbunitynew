@@ -13,5 +13,20 @@ namespace jsimp
         {
             // NOTHING TO DO
         }
+[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/JSImp/Iterator.javascript")]
+        public class Iterator
+        {
+            IEnumerator ie;
+            public Iterator(IEnumerator ie)
+            {
+                this.ie = ie;
+            }
+            public object MoveNext()
+            {
+                if (ie.MoveNext())
+                    return ie.Current;
+                return null;
+            }
+        }
     }
 }
