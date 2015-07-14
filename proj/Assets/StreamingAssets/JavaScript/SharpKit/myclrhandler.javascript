@@ -29,8 +29,29 @@ JsTypes.push({
 /*
 * Compile Now !!
 */
-Compile();
 
+var printError = (function () {
+    for (var i = 0; i < JsTypes.length; i++) {
+        if (JsTypes[i].fullname == "UnityEngine.Debug") {
+            return JsTypes[i].staticDefinition.LogError$$Object;
+            break;
+        }
+    }
+    return (function (){});
+}());
+
+
+try
+{
+    Compile();
+}
+catch (ex) 
+{
+    //if (ex.message)
+    //    printError("JS Error! Error: " + ex.message + "\n\nStack: \n" + ex.stack);
+    //else
+        printError("JS Error! Error: " + ex + "\n\nStack: \n" + ex.stack);
+}
 
 // print = UnityEngine.Debug.Log$$Object;
 
