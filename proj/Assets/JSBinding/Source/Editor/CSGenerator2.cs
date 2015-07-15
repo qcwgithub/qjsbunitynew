@@ -452,7 +452,7 @@ public static class CSGenerator2
                 sb.Append("        " + paramHandlers[j].getter + "\n");
             }
 
-            bool bReadOnly = !property.CanWrite;
+            bool bReadOnly = (!property.CanWrite || property.GetSetMethod() == null);
             sbCall.Append(JSDataExchangeEditor.BuildCallString(type, property, argActual.Format(cg.args.ArgsFormat.OnlyList), 
                                 features | JSDataExchangeEditor.MemberFeature.Get));
 

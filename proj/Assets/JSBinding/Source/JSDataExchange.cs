@@ -818,7 +818,7 @@ public class JSDataExchange_Arr
             sb.AppendFormat("    var arrRet = ({0}[]){1};\n", JSNameMgr.GetTypeFullName(elementType), expVar)
             .AppendFormat("    for (int i = 0; i < arrRet.Length; i++)\n")
             .Append("    [[\n")
-            .AppendFormat("        {0}((int)JSApi.SetType.SaveAndTempTrace, arrRet[i]);\n", getValMethod)
+            .AppendFormat("        {0}((int)JSApi.SetType.SaveAndTempTrace, {1}arrRet[i]);\n", getValMethod, elementType.IsEnum ? "(int)" : "")
             .AppendFormat("        JSApi.moveSaveID2Arr(i);\n")
             .AppendFormat("    ]]\n")
             .AppendFormat("    JSApi.setArrayS((int)JSApi.SetType.Rval, arrRet.Length, true);");

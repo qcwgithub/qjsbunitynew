@@ -54,6 +54,7 @@ CS.require("SharpKitGeneratedFiles");
 //--------------------------------------------------
 CS.require("JSImp/Reflection");
 CS.require("JSImp/Coroutine");
+CS.require("JSImp/Iterator");
 
 //
 // may be more..

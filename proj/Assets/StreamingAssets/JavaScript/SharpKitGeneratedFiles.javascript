@@ -36,8 +36,12 @@ CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestShake
 CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestSlinky.javascript");
 CS.require("SharpKitGenerated/DaikonForge Tween (Pro)/Examples/Scripts/TestSplineTween.javascript");
 CS.require("SharpKitGenerated/JSBinding/JSImp/Coroutine.javascript");
+CS.require("SharpKitGenerated/JSBinding/JSImp/Iterator.javascript");
 CS.require("SharpKitGenerated/JSBinding/JSImp/Reflection.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Coroutine/TestCoroutine.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Coroutine/YieldYest.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Coroutine/YieldItem.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Coroutine/TestCoroutine2.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/DelegateTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/DictionaryTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/EncodingTest.javascript");
