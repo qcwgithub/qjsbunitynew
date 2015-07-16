@@ -58,3 +58,15 @@ CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/Wheel.javascript")
 CS.require("SharpKitGenerated/JSBinding/Samples/V3Test.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Viewer.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/stScene.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/XmlTest.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/ShopItemData.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/LimitDayNum.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/LimitVIPLevel.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/LimitBuyNumPrices.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/LimitVipDayNum.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/LimeTimeNum.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/IShopLime.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/ItemCell.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/IFuckable.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/LiuYan.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Xml/XmlUtils.javascript");
