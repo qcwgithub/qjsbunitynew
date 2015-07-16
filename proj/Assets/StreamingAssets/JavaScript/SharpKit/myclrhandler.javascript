@@ -30,14 +30,16 @@ JsTypes.push({
 * Compile Now !!
 */
 
-var printError = (function () {
+var printError = function () {};
+var print = function () {};
+(function () {
     for (var i = 0; i < JsTypes.length; i++) {
         if (JsTypes[i].fullname == "UnityEngine.Debug") {
-            return JsTypes[i].staticDefinition.LogError$$Object;
+            printError = JsTypes[i].staticDefinition.LogError$$Object;
+            print = JsTypes[i].staticDefinition.Log$$Object;
             break;
         }
     }
-    return (function (){});
 }());
 
 

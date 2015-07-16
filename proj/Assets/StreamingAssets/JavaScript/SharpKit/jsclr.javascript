@@ -553,7 +553,9 @@ JsCompiler.Compile_Phase2 = function (){
         if (ce.cctor != null)
             ce.cctor();
     }
-    JsCompiler.LinkInterfaceMethods();
+    // qiucw comment
+    // LinkInterfaceMethods doesn't do anything we want
+    // JsCompiler.LinkInterfaceMethods();
     JsTypes =  [];
 };
 JsCompiler.Compile_Phase2_TmpType = function (tmpType){
@@ -582,6 +584,21 @@ JsCompiler.LinkInterfaceMethods = function (){
                     }
                 }
             }
+        }
+    }
+};
+//
+// add by qiucw
+// copy interface methods to JsType
+// this is done before copying baseType's methods into it
+//
+JsCompiler._CopyInterfaceMethods = function (jsType) {
+    for (var i = 0; i < jsType.interfaces.length; i++) {
+        var iface = jsType.interfaces[i];
+        for (var methodName in iface.definition) {
+            jsType.commonPrototype[methodName] = iface.commonPrototype[methodName];
+
+            print("******** "+jsType.fullname+"["+methodName+"] = " + iface.commonPrototype[methodName].toString());
         }
     }
 };
@@ -739,8 +756,11 @@ JsCompiler.CompileType = function (type){
                 ctor._type = currentType;
         }
         if (baseTypeResolved){
+            JsCompiler._CopyInterfaceMethods(currentType);
+            // 1)
             JsCompiler._CopyObject(currentType.baseType.commonPrototype, currentType.commonPrototype);
             // copy fields and staticFields(then are {get:xx, set:xx})
+            // 2)
             JsCompiler._CopyFields(currentType.baseType, currentType);
         }
         for (var p in type.definition){

@@ -8,6 +8,8 @@ using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 
+
+
 class QiucwCup<T>
 {
     public void Add(int a, int b) { }
@@ -196,9 +198,17 @@ public class JSBindingSettings
         //typeof(System.Delegate),
         //typeof(System.MulticastDelegate),
         //typeof(DaikonForge.Tween.TweenEasingCallback),
+        
+        //typeof(QiucwCup<>),
+        typeof(System.Xml.XmlNode),
+        typeof(System.Xml.XmlDocument),
     };
     public static Type[] classes = new Type[]
     {
+#region
+        typeof(System.Collections.IEnumerator),
+#endregion
+
         /*
          * Classes to export for demo
          * Add classes here to export
@@ -224,6 +234,16 @@ public class JSBindingSettings
  //       typeof(UnityEngine.SocialPlatforms.Impl.Score),
  //       typeof(UnityEngine.SocialPlatforms.Impl.Leaderboard),
  //       typeof(UnityEngine.SocialPlatforms.Local),
+
+ 
+        typeof(System.Xml.XmlNode),
+        typeof(System.Xml.XmlDocument),
+        typeof(System.Xml.XmlNodeList),
+        typeof(System.Xml.XmlElement),
+        typeof(System.Xml.XmlLinkedNode),
+        typeof(System.Xml.XmlAttributeCollection),
+        typeof(System.Xml.XmlNamedNodeMap),
+        typeof(System.Xml.XmlAttribute),
 
         typeof(UnityEngine.Security),
 
@@ -859,6 +879,9 @@ public class JSBindingSettings
     public static bool NeedGenDefaultConstructor(Type type)
     {
         if (typeof(Delegate).IsAssignableFrom(type))
+            return false;
+
+        if (type.IsInterface)
             return false;
 
         // 如果有定义非Public的构造函数存在，就不要生成默认的构造函数

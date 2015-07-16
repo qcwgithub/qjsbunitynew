@@ -1,4 +1,4 @@
-﻿using SharpKit.JavaScript;
+using SharpKit.JavaScript;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,16 +21,12 @@ namespace Lavie
     /// 
     /// 
     ///
-    [JsType(JsMode.Clr, "../StreamingAssets/JavaScript/SharpKitGenerated/test/XmlUtils.javascript")]
+
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/XmlUtils.javascript")]
     public static class XmlUtils
     {
         ///
-
-
         /// 翻译一个类 赋值为对应的一个xml的节点属性的值
-        /// 
-        /// 
-        /// 
         /// 
         public static object ConvertType(this XmlNode mNode, Type target)
         {
@@ -304,18 +300,20 @@ namespace Lavie
         /// <returns></returns>
         public static T NodeValue<T>(this XmlNode node, string nodeName)
         {
-            if (node.Attributes.Count == 0)
+            XmlAttributeCollection col = node.Attributes;
+
+            if (col.Count == 0)
             {
                 // throw  new Exception(String.Format("node {0} have no atrributes {1}",node.Name,nodeName));
                 return default(T);
             }
 
 
-            if (node.Attributes.GetNamedItem(nodeName) == null)
+            if (col.GetNamedItem(nodeName) == null)
             {
                 return default(T);
             }
-            object value = node.Attributes.GetNamedItem(nodeName).Value;
+            object value = col.GetNamedItem(nodeName).Value;
 
 
             if (typeof(T) == typeof(int))
@@ -356,77 +354,6 @@ namespace Lavie
 
             return (T)value;
         }
-
-        /*
-    public static T convert(Type t, object value)
-    {
-
-            if (typeof(T) == typeof(int))
-            {
-                int n = int.Parse(value.ToString());
-
-
-                return (T)((object)n);
-            }
-            if (typeof(T) == typeof(float))
-            {
-                float m = float.Parse(value.ToString());
-
-
-                return (T)((object)m);
-            }
-
-            if (typeof(T) == typeof(bool))
-            {
-
-                return (T)((object)(value == "1"));
-            }
-
-
-            if (typeof(T) == typeof(Enum))
-            {
-                int mInt;
-                if (int.TryParse(value.ToString(), out mInt))
-                {
-
-                    return (T)((object)(int.Parse(value.ToString())));
-                }
-                else
-                {
-                    var tt = typeof(T);
-                    return (T)((object)(Enum.Parse(tt, value.ToString())));
-                }
-            }
-
-
-
-            return (T)value;
-
-
-
-        }*/
-
-
-        /*     /// <summary>
-        /// 
-        /// 通过给来的属性值查找对应的xmlnode
-        /// </summary>
-        /// <param name="xmlNodeList"></param>
-        /// <param name="nodeName"></param>
-        /// <param name="value"></param>
-        /// <param name="attribute"></param>
-        /// <returns></returns>
-        public static XmlNode Select<T>(this XmlNodeList xmlNodeList, string nodeName, string value)
-        {
-            foreach (XmlNode node in xmlNodeList)
-            {
-                if (node.NodeValue<T>(nodeName).ToString() == value)
-                {
-                    return node;
-                }
-            }
-            return null;
-        }*/
 
         /// <summary>
         /// 通过属性的值来查找另外一个属性的值。

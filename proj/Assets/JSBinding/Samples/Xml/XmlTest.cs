@@ -1,8 +1,12 @@
-﻿using UnityEngine;
+using SharpKit.JavaScript;
+using UnityEngine;
 using System.Collections;
 using System.Xml;
+using System;
+using System.Reflection;
 using Lavie;
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/XmlTest.javascript")]
 public class XmlTest : MonoBehaviour
 {
     private void Start()
@@ -21,33 +25,33 @@ public class XmlTest : MonoBehaviour
         XmlDocument xml = new XmlDocument();
 
         xml.LoadXml(textAssets.text);
-
         Debug.Log("xmlload");
 
-        var xmlPackets = xml.SelectNodes("root/Packets/Packet");
+        XmlNodeList xmlPackets = xml.SelectNodes("root/Packets/Packet");
+        //IEnumerator ie = xmlPackets.GetEnumerator();
+        //Debug.Log(ie.ToString());
 
 
         XmlNode pp = xmlPackets.Select<string>("ID", "1");
+        Debug.Log("pp=" + pp.ToString());
 
 
-        Debug.Log("pp=" + pp);
-
-
-        XmlNodeList daoJunodeList = pp.ChildNodes;
-        Debug.Log("daojulist=" + daoJunodeList);
-
-
-        BetterList<ShopItemData> daoJumdata = daoJunodeList.ConvertType<ShopItemData>("SubType");
-
-        Debug.Log("daojudata" + daoJumdata);
-
-        foreach (ShopItemData shopItemData in daoJumdata)
-        {
-            Debug.Log(shopItemData.ID);
-        }
+//         XmlNodeList daoJunodeList = pp.ChildNodes;
+//         Debug.Log("daojulist=" + daoJunodeList);
+// 
+// 
+//         BetterList<ShopItemData> daoJumdata = daoJunodeList.ConvertType<ShopItemData>("SubType");
+// 
+//         Debug.Log("daojudata" + daoJumdata);
+// 
+//         foreach (ShopItemData shopItemData in daoJumdata)
+//         {
+//             Debug.Log(shopItemData.ID);
+//         }
     }
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ShopItemData.javascript")]
 public class ShopItemData
 {
     public string ID;
@@ -90,32 +94,38 @@ public class ShopItemData
     }
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitDayNum.javascript")]
 public class LimitDayNum : IShopLime
 {
     public int Count;
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitVIPLevel.javascript")]
 public class LimitVIPLevel
 {
     public int Level;
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitBuyNumPrices.javascript")]
 public class LimitBuyNumPrices : IShopLime
 {
     public int[] Prices;
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitVipDayNum.javascript")]
 public class LimitVipDayNum : IShopLime
 {
     public int[] Count;
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimeTimeNum.javascript")]
 public class LimeTimeNum : IShopLime
 {
     public int Interval;
     public int Count;
 }
 
+[JsType(JsMode.Clr, "../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/IShopLime.javascript")]
 public interface IShopLime
 {
 }
@@ -134,6 +144,7 @@ public enum ItemType
     Stone = 10,
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ItemCell.javascript")]
 public class ItemCell
 {
     public int ID = -1;
@@ -178,4 +189,22 @@ public enum enumMoneyType
     iBuddHistrelics,
     iContribution,
     iPrestige
+}
+[JsType(JsMode.Clr, "../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/IFuckable.javascript")]
+public interface IFuckable
+{
+    void Fuck();
+    void Love();
+}
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LiuYan.javascript")]
+public class LiuYan : IFuckable
+{
+    public void Fuck()
+    {
+        Debug.Log("oh fuck");
+    }
+    public void Love()
+    {
+        Debug.Log("oh love");
+    }
 }
