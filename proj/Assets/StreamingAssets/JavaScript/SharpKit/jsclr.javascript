@@ -597,8 +597,6 @@ JsCompiler._CopyInterfaceMethods = function (jsType) {
         var iface = jsType.interfaces[i];
         for (var methodName in iface.definition) {
             jsType.commonPrototype[methodName] = iface.commonPrototype[methodName];
-
-            print("******** "+jsType.fullname+"["+methodName+"] = " + iface.commonPrototype[methodName].toString());
         }
     }
 };

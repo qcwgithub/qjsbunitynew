@@ -28,26 +28,22 @@ public class XmlTest : MonoBehaviour
         Debug.Log("xmlload");
 
         XmlNodeList xmlPackets = xml.SelectNodes("root/Packets/Packet");
-        //IEnumerator ie = xmlPackets.GetEnumerator();
-        //Debug.Log(ie.ToString());
-
 
         XmlNode pp = xmlPackets.Select<string>("ID", "1");
         Debug.Log("pp=" + pp.ToString());
 
 
-//         XmlNodeList daoJunodeList = pp.ChildNodes;
-//         Debug.Log("daojulist=" + daoJunodeList);
-// 
-// 
-//         BetterList<ShopItemData> daoJumdata = daoJunodeList.ConvertType<ShopItemData>("SubType");
-// 
-//         Debug.Log("daojudata" + daoJumdata);
-// 
-//         foreach (ShopItemData shopItemData in daoJumdata)
-//         {
-//             Debug.Log(shopItemData.ID);
-//         }
+        XmlNodeList daoJunodeList = pp.ChildNodes;
+        Debug.Log("daojulist Count = " + daoJunodeList.Count);
+ 
+ 
+        BetterList<ShopItemData> daoJumdata = daoJunodeList.ConvertType<ShopItemData>("SubType"); 
+        Debug.Log("daojudata Count = " + daoJumdata.size);
+
+        foreach (ShopItemData shopItemData in daoJumdata)
+        {
+            Debug.Log(shopItemData.ID);
+        }
     }
 }
 
@@ -123,6 +119,7 @@ public class LimeTimeNum : IShopLime
 {
     public int Interval;
     public int Count;
+    public int Fuck { get; set; }
 }
 
 [JsType(JsMode.Clr, "../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/IShopLime.javascript")]

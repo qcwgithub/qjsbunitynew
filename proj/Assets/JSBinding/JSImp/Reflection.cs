@@ -1,21 +1,21 @@
-using SharpKit.JavaScript;
+ï»¿using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
 using System;
 using System.Reflection;
 
 /// <summary>
-/// ËùÓĞÔÚ jsimp ÃüÃû¿Õ¼äÀïµÄÀà£¬¶¼½«ÔÚ CS ºÍ JS ·Ö±ğÊµÏÖ
-/// µ±´úÂëÔËĞĞÔÚ CS Ê±£¬¾ÍÅÜ CS µÄÀà£»µ±ÔËĞĞ JS Ê±£¬¾ÍÅÜ JS µÄÀà¡£
-/// ×¢Òâ£¬ReflectionÀà±¾À´Ó¦¸ÃÃ»ÓĞ JsType ±êÇ©£¬ÒòÎªËûÊÇÔÚJSÊÖ¶¯ÊµÏÖµÄ
-/// ¼ÓÁËÒ²Ã»ÓĞ¹ØÏµ£¬ SharpKit ±àÒëºó»á²úÉú StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/JSImp/Reflection.javascript (A)
-/// ÊÖ¶¯ÊµÏÖµÄJSÔÚ StreamingAssets/JavaScript/JSImp/Reflection.javascript (B)
-/// includes.javascript Àï½«»áÍ¬Ê± require A ºÍ B Á½¸öÎÄ¼ş¡£µ«ÊÇ B ÅÅÔÚ A ºóÃæ£¬²¢ÇÒÔÚBÀïĞ´ÁË jsb_ReplaceOrPushJsType º¯Êı£¬ËùÒÔ B ½«»á¸²¸Çµô A
-/// ÄÇÃ´²úÉúAÓĞÊ²Ã´ºÃ´¦Âğ£¿ÓĞ¡£ÒòÎªÊÖĞ´JS±ØĞëÒª·ûºÏ SharpKit ¹æÔòµÄ£¬ËùÒÔ£¬ÒªĞ´B£¬¾ÍÏÈ¸´ÖÆÒ»·İA£¬ÔÙ°ÑÀïÃæµÄº¯ÊıÊµÏÖ¸ø¸ÄÁË¡£
+/// æ‰€æœ‰åœ¨ jsimp å‘½åç©ºé—´é‡Œçš„ç±»ï¼Œéƒ½å°†åœ¨ CS å’Œ JS åˆ†åˆ«å®ç°
+/// å½“ä»£ç è¿è¡Œåœ¨ CS æ—¶ï¼Œå°±è·‘ CS çš„ç±»ï¼›å½“è¿è¡Œ JS æ—¶ï¼Œå°±è·‘ JS çš„ç±»ã€‚
+/// æ³¨æ„ï¼ŒReflectionç±»æœ¬æ¥åº”è¯¥æ²¡æœ‰ JsType æ ‡ç­¾ï¼Œå› ä¸ºä»–æ˜¯åœ¨JSæ‰‹åŠ¨å®ç°çš„
+/// åŠ äº†ä¹Ÿæ²¡æœ‰å…³ç³»ï¼Œ SharpKit ç¼–è¯‘åä¼šäº§ç”Ÿ StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/JSImp/Reflection.javascript (A)
+/// æ‰‹åŠ¨å®ç°çš„JSåœ¨ StreamingAssets/JavaScript/JSImp/Reflection.javascript (B)
+/// includes.javascript é‡Œå°†ä¼šåŒæ—¶ require A å’Œ B ä¸¤ä¸ªæ–‡ä»¶ã€‚ä½†æ˜¯ B æ’åœ¨ A åé¢ï¼Œå¹¶ä¸”åœ¨Bé‡Œå†™äº† jsb_ReplaceOrPushJsType å‡½æ•°ï¼Œæ‰€ä»¥ B å°†ä¼šè¦†ç›–æ‰ A
+/// é‚£ä¹ˆäº§ç”ŸAæœ‰ä»€ä¹ˆå¥½å¤„å—ï¼Ÿæœ‰ã€‚å› ä¸ºæ‰‹å†™JSå¿…é¡»è¦ç¬¦åˆ SharpKit è§„åˆ™çš„ï¼Œæ‰€ä»¥ï¼Œè¦å†™Bï¼Œå°±å…ˆå¤åˆ¶ä¸€ä»½Aï¼Œå†æŠŠé‡Œé¢çš„å‡½æ•°å®ç°ç»™æ”¹äº†ã€‚
 /// </summary>
 namespace jsimp
 {
-[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/JSImp/Reflection.javascript")]
+    [JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/JSImp/Reflection.javascript")]
     public class Reflection
     {
         public static T CreateInstance<T>()
@@ -35,6 +35,13 @@ namespace jsimp
                 }
             }
             return false;
+        }
+        // in JavaScript, it will be simply
+        // return (a == b);
+        // call this function only when it's OK for JavaScript to do (a == b)
+        public static bool SimpleTEquals<T>(T a, T b)
+        {
+            return a.Equals(b);
         }
     }
 

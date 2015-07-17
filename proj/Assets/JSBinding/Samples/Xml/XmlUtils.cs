@@ -171,22 +171,18 @@ namespace Lavie
                 foreach (XmlAttribute xmlAttribute in mNode.Attributes)
                 {
                     var fieldName = xmlAttribute.Name;
-
-
-                    string value = mNode.Attributes.GetNamedItem(fieldName).Value.ToString();
+                    string value = xmlAttribute.Value.ToString();
 
                     object lastValue = value;
 
-                    if (t.GetField(fieldName) == null)
+                    FieldInfo fieldInfo = t.GetField(fieldName);
+                    if (fieldInfo == null)
                     {
-                        throw new Exception(String.Format("{0} have no filed {1}", t.Name, fieldName));
+                        throw new Exception(String.Format("{0} have no field {1}", t.Name, fieldName));
                     }
-                    Type fType = t.GetField(fieldName).FieldType;
+                    Type fieldType = fieldInfo.FieldType;
 
-
-                    lastValue = Convert(fType, value, lastValue);
-
-
+                    lastValue = Convert(fieldType, value, lastValue);
                     t.GetField(fieldName).SetValue(mData, lastValue);
                 }
 
@@ -237,24 +233,17 @@ namespace Lavie
             if (fType == typeof(int))
             {
                 int n = int.Parse(value.ToString());
-
-
                 lastValue = n;
             }
             else if (fType == typeof(float))
             {
                 float m = float.Parse(value.ToString());
-
-
                 lastValue = m;
             }
-
             else if (fType == typeof(bool))
             {
                 lastValue = (value == "1");
             }
-
-
             else if (fType.IsEnum)
             {
                 int mInt;
@@ -267,7 +256,6 @@ namespace Lavie
                     lastValue = (Enum.Parse(fType, value.ToString()));
                 }
             }
-
             else if (fType == typeof(string))
             {
                 lastValue = lastValue.ToString();
@@ -300,44 +288,36 @@ namespace Lavie
         /// <returns></returns>
         public static T NodeValue<T>(this XmlNode node, string nodeName)
         {
-            XmlAttributeCollection col = node.Attributes;
+            XmlAttributeCollection collection = node.Attributes;
 
-            if (col.Count == 0)
+            if (collection.Count == 0)
             {
                 // throw  new Exception(String.Format("node {0} have no atrributes {1}",node.Name,nodeName));
                 return default(T);
             }
 
-
-            if (col.GetNamedItem(nodeName) == null)
+            XmlNode namedItem = collection.GetNamedItem(nodeName);
+            if (namedItem == null)
             {
                 return default(T);
             }
-            object value = col.GetNamedItem(nodeName).Value;
 
-
+            object value = namedItem.Value;
             if (typeof(T) == typeof(int))
             {
                 int n = int.Parse(value.ToString());
-
-
                 return (T)((object)n);
             }
-            if (typeof(T) == typeof(float))
+            else if (typeof(T) == typeof(float))
             {
                 float m = float.Parse(value.ToString());
-
-
                 return (T)((object)m);
             }
-
-            if (typeof(T) == typeof(bool))
+            else if (typeof(T) == typeof(bool))
             {
                 return (T)((object)(value == "1"));
             }
-
-
-            if (typeof(T) == typeof(Enum))
+            else if (typeof(T) == typeof(Enum))
             {
                 int mInt;
                 if (int.TryParse(value.ToString(), out mInt))
@@ -350,8 +330,6 @@ namespace Lavie
                     return (T)((object)(Enum.Parse(tt, value.ToString())));
                 }
             }
-
-
             return (T)value;
         }
 
@@ -387,7 +365,8 @@ namespace Lavie
         {
             foreach (XmlNode node in xmlNodeList)
             {
-                if (node.NodeValue<T>(nodeName).Equals(value))
+                T nodeValue = node.NodeValue<T>(nodeName);
+                if (jsimp.Reflection.SimpleTEquals(nodeValue, value))
                 {
                     return node;
                 }

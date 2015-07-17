@@ -17,9 +17,12 @@ var jsimp$Reflection = {
                 }
             }
             return false;
+        },
+        SimpleTEquals$1: function (T, a, b){
+            return a.Equals$$Object(b);
         }
     },
-    assemblyName: "SharpKitProj",
+    assemblyName: "SharpKitProj2010",
     Kind: "Class",
     definition: {
         ctor: function (){

@@ -7,7 +7,7 @@ var jsimp$Coroutine = {
         UpdateMonoBehaviourCoroutine: function (mb){
         }
     },
-    assemblyName: "SharpKitProj",
+    assemblyName: "SharpKitProj2010",
     Kind: "Class",
     definition: {
         ctor: function (){

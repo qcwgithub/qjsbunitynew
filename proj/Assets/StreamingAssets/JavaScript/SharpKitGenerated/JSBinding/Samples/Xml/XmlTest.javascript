@@ -23,6 +23,15 @@ var XmlTest = {
             var xmlPackets = xml.SelectNodes$$String("root/Packets/Packet");
             var pp = Lavie.XmlUtils.Select$1$$XmlNodeList$$String$$T(System.String.ctor, xmlPackets, "ID", "1");
             UnityEngine.Debug.Log$$Object("pp=" + pp.toString());
+            var daoJunodeList = pp.get_ChildNodes();
+            UnityEngine.Debug.Log$$Object("daojulist Count = " + daoJunodeList.get_Count());
+            var daoJumdata = Lavie.XmlUtils.ConvertType$1$$XmlNodeList$$String(ShopItemData.ctor, daoJunodeList, "SubType");
+            UnityEngine.Debug.Log$$Object("daojudata Count = " + daoJumdata.size);
+            var $it14 = daoJumdata.GetEnumerator();
+            while ($it14.MoveNext()){
+                var shopItemData = $it14.get_Current();
+                UnityEngine.Debug.Log$$Object(shopItemData.ID);
+            }
         }
     }
 };
