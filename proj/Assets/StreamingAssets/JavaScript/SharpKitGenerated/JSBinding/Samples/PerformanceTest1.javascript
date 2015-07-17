@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var PerformanceTest1 = {
     fullname: "PerformanceTest1",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
@@ -75,14 +75,14 @@ var PerformanceTest1 = {
         Test6: function (){
             var sw = new System.Diagnostics.Stopwatch.ctor();
             sw.Start();
-            for (var i = 0; i < 500000; i++){
+            for (var i = 0; i < 50000; i++){
                 var go = new UnityEngine.GameObject.ctor$$String("init");
                 UnityEngine.Object.DestroyImmediate$$Object(go);
             }
             UnityEngine.Debug.Log$$Object("test6 time: " + sw.get_ElapsedMilliseconds() + " ms");
         },
         Update: function (){
-            if (UnityEngine.Input.GetMouseButton(0)){
+            if (UnityEngine.Input.GetMouseButtonUp(0)){
                 this.Test0();
                 this.Test1();
                 this.Test2();
