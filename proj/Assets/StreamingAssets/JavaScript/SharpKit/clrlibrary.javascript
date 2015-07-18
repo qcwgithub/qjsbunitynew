@@ -675,124 +675,124 @@ var System$ComponentModel$PropertyChangedEventArgs = {
     }
 };
 JsTypes.push(System$ComponentModel$PropertyChangedEventArgs);
-var System$DateTime = {
-    fullname: "System.DateTime",
-    baseTypeName: "Date",
-    staticDefinition: {
-        cctor: function (){
-            System.DateTime.MinValue = null;
-            System.DateTime.MaxValue = null;
-            System.DateTime.MinValue = new Date(0);
-            System.DateTime.MinValue.setUTCFullYear(1, 0, 1);
-            System.DateTime.MaxValue = new Date(0);
-            System.DateTime.MaxValue.setUTCFullYear(9999, 11, 31);
-        },
-        Parse$$String: function (str){
-            return new Date(Date.parse(str));
-        },
-        DaysInMonth: function (year, month){
-            return 32 - new Date(year, month - 1, 32).getDate();
-        },
-        Compare: function (t1, t2){
-            return t1.valueOf() - t2.valueOf();
-        },
-        op_Equality: function (t1, t2){
-            return System.DateTime.Compare(t1, t2) == 0;
-        },
-        op_Inequality: function (t1, t2){
-            return System.DateTime.Compare(t1, t2) != 0;
-        },
-        op_GreaterThan$$DateTime$$DateTime: function (t1, t2){
-            return System.DateTime.Compare(t1, t2) > 0;
-        },
-        op_LessThan$$DateTime$$DateTime: function (t1, t2){
-            return System.DateTime.Compare(t1, t2) < 0;
-        },
-        op_LessThanOrEqual$$DateTime$$DateTime: function (t1, t2){
-            return System.DateTime.Compare(t1, t2) <= 0;
-        },
-        op_GreaterThanOrEqual$$DateTime$$DateTime: function (t1, t2){
-            return System.DateTime.Compare(t1, t2) >= 0;
-        },
-        op_Subtraction$$DateTime$$DateTime: function (t1, t2){
-            return System.TimeSpan.FromMilliseconds(t1.getTime() - t2.getTime());
-        },
-        op_Subtraction$$DateTime$$TimeSpan: function (t1, t2){
-            return new Date(t1.getDate() - Cast(t2.get_TotalMilliseconds(), System.Int64.ctor));
-        },
-        op_Addition$$DateTime$$DateTime: function (t1, t2){
-            return System.TimeSpan.FromMilliseconds(t1.getTime() + t2.getTime());
-        },
-        op_Addition$$DateTime$$TimeSpan: function (t1, t2){
-            return new Date(t1.getDate() + Cast(t2.get_TotalMilliseconds(), System.Int64.ctor));
-        },
-        CompareJsDates: function (d1, d2){
-            if (d1 == d2)
-                return 0;
-            if (d1 == null)
-                return 1;
-            if (d2 == null)
-                return -1;
-            return d1.valueOf() - d2.valueOf();
-        },
-        Now$$: "SharpKit.JavaScript.Private.JsImplDateTime",
-        get_Now: function (){
-            return new Date();
-        },
-        UtcNow$$: "SharpKit.JavaScript.Private.JsImplDateTime",
-        get_UtcNow: function (){
-            return System.DateTime.get_Now();
-        }
-    },
-    assemblyName: "SharpKit.JsClr",
-    Kind: "Class",
-    definition: {
-        ctor: function (){
-            var x = System.DateTime.MinValue;
-            return x;
-        },
-        ctor$$Int64: function (ticks){
-            throw $CreateException(new System.NotSupportedException.ctor$$String("Ticks are not available due to JavaScript number limitation"), new Error());
-        },
-        ctor$$Int32$$Int32$$Int32: function (year, month, day){
-            var x = new Date();
-            x.set_Year(year);
-            x.set_Month(month);
-            x.set_Day(day);
-            return x;
-        },
-        ctor$$Int32$$Int32$$Int32$$Int32$$Int32$$Int32: function (year, month, day, hour, minute, second){
-            var x = new Date();
-            x.set_Year(year);
-            x.set_Month(month);
-            x.set_Day(day);
-            x.set_Hour(hour);
-            x.set_Minute(minute);
-            x.set_Second(second);
-            return x;
-        },
-        ctor$$Int32$$Int32$$Int32$$Int32$$Int32$$Int32$$DateTimeKind: function (year, month, day, hour, minute, second, kind){
-            var x = new Date();
-            x._Kind = kind;
-            x.set_Year(year);
-            x.set_Month(month);
-            x.set_Day(day);
-            x.set_Hour(hour);
-            x.set_Minute(minute);
-            x.set_Second(second);
-            return x;
-        },
-        Equals$$Object: function (obj){
-            if (obj == null)
-                return false;
-            return obj.valueOf() == this.valueOf();
-        },
-        GetHashCode: function (){
-            return this.valueOf();
-        }
-    }
-};
-JsTypes.push(System$DateTime);
+//var System$DateTime = {
+//    fullname: "System.DateTime",
+//    baseTypeName: "Date",
+//    staticDefinition: {
+//        cctor: function (){
+//            System.DateTime.MinValue = null;
+//            System.DateTime.MaxValue = null;
+//            System.DateTime.MinValue = new Date(0);
+//            System.DateTime.MinValue.setUTCFullYear(1, 0, 1);
+//            System.DateTime.MaxValue = new Date(0);
+//            System.DateTime.MaxValue.setUTCFullYear(9999, 11, 31);
+//        },
+//        Parse$$String: function (str){
+//            return new Date(Date.parse(str));
+//        },
+//        DaysInMonth: function (year, month){
+//            return 32 - new Date(year, month - 1, 32).getDate();
+//        },
+//        Compare: function (t1, t2){
+//            return t1.valueOf() - t2.valueOf();
+//        },
+//        op_Equality: function (t1, t2){
+//            return System.DateTime.Compare(t1, t2) == 0;
+//        },
+//        op_Inequality: function (t1, t2){
+//            return System.DateTime.Compare(t1, t2) != 0;
+//        },
+//        op_GreaterThan$$DateTime$$DateTime: function (t1, t2){
+//            return System.DateTime.Compare(t1, t2) > 0;
+//        },
+//        op_LessThan$$DateTime$$DateTime: function (t1, t2){
+//            return System.DateTime.Compare(t1, t2) < 0;
+//        },
+//        op_LessThanOrEqual$$DateTime$$DateTime: function (t1, t2){
+//            return System.DateTime.Compare(t1, t2) <= 0;
+//        },
+//        op_GreaterThanOrEqual$$DateTime$$DateTime: function (t1, t2){
+//            return System.DateTime.Compare(t1, t2) >= 0;
+//        },
+//        op_Subtraction$$DateTime$$DateTime: function (t1, t2){
+//            return System.TimeSpan.FromMilliseconds(t1.getTime() - t2.getTime());
+//        },
+//        op_Subtraction$$DateTime$$TimeSpan: function (t1, t2){
+//            return new Date(t1.getDate() - Cast(t2.get_TotalMilliseconds(), System.Int64.ctor));
+//        },
+//        op_Addition$$DateTime$$DateTime: function (t1, t2){
+//            return System.TimeSpan.FromMilliseconds(t1.getTime() + t2.getTime());
+//        },
+//        op_Addition$$DateTime$$TimeSpan: function (t1, t2){
+//            return new Date(t1.getDate() + Cast(t2.get_TotalMilliseconds(), System.Int64.ctor));
+//        },
+//        CompareJsDates: function (d1, d2){
+//            if (d1 == d2)
+//                return 0;
+//            if (d1 == null)
+//                return 1;
+//            if (d2 == null)
+//                return -1;
+//            return d1.valueOf() - d2.valueOf();
+//        },
+//        Now$$: "SharpKit.JavaScript.Private.JsImplDateTime",
+//        get_Now: function (){
+//            return new Date();
+//        },
+//        UtcNow$$: "SharpKit.JavaScript.Private.JsImplDateTime",
+//        get_UtcNow: function (){
+//            return System.DateTime.get_Now();
+//        }
+//    },
+//    assemblyName: "SharpKit.JsClr",
+//    Kind: "Class",
+//    definition: {
+//        ctor: function (){
+//            var x = System.DateTime.MinValue;
+//            return x;
+//        },
+//        ctor$$Int64: function (ticks){
+//            throw $CreateException(new System.NotSupportedException.ctor$$String("Ticks are not available due to JavaScript number limitation"), new Error());
+//        },
+//        ctor$$Int32$$Int32$$Int32: function (year, month, day){
+//            var x = new Date();
+//            x.set_Year(year);
+//            x.set_Month(month);
+//            x.set_Day(day);
+//            return x;
+//        },
+//        ctor$$Int32$$Int32$$Int32$$Int32$$Int32$$Int32: function (year, month, day, hour, minute, second){
+//            var x = new Date();
+//            x.set_Year(year);
+//            x.set_Month(month);
+//            x.set_Day(day);
+//            x.set_Hour(hour);
+//            x.set_Minute(minute);
+//            x.set_Second(second);
+//            return x;
+//        },
+//        ctor$$Int32$$Int32$$Int32$$Int32$$Int32$$Int32$$DateTimeKind: function (year, month, day, hour, minute, second, kind){
+//            var x = new Date();
+//            x._Kind = kind;
+//            x.set_Year(year);
+//            x.set_Month(month);
+//            x.set_Day(day);
+//            x.set_Hour(hour);
+//            x.set_Minute(minute);
+//            x.set_Second(second);
+//            return x;
+//        },
+//        Equals$$Object: function (obj){
+//            if (obj == null)
+//                return false;
+//            return obj.valueOf() == this.valueOf();
+//        },
+//        GetHashCode: function (){
+//            return this.valueOf();
+//        }
+//    }
+//};
+//JsTypes.push(System$DateTime);
 var System$DateTimeKind = {
     fullname: "System.DateTimeKind",
     staticDefinition: {
@@ -2848,177 +2848,177 @@ JsTypes.push(
     }
     });
 
-JsTypes.push({ fullname: "Object" });
-JsTypes.push({ fullname: "Int8Array" });
-JsTypes.push({ fullname: "Uint8Array"});
-JsTypes.push({ fullname: "Int16Array"});
-JsTypes.push({ fullname: "Uint16Array"});
-JsTypes.push({ fullname: "Int32Array"});
-JsTypes.push({ fullname: "Uint32Array"});
-JsTypes.push({ fullname: "Float32Array"});
-JsTypes.push({ fullname: "Float64Array"});
+//JsTypes.push({ fullname: "Object" });
+//JsTypes.push({ fullname: "Int8Array" });
+//JsTypes.push({ fullname: "Uint8Array"});
+//JsTypes.push({ fullname: "Int16Array"});
+//JsTypes.push({ fullname: "Uint16Array"});
+//JsTypes.push({ fullname: "Int32Array"});
+//JsTypes.push({ fullname: "Uint32Array"});
+//JsTypes.push({ fullname: "Float32Array"});
+//JsTypes.push({ fullname: "Float64Array"});
 
-JsTypes.push({ fullname: "Array", baseTypeName: "Object", definition:
-{
-    GetEnumerator: function () {
-        return new ArrayEnumerator.ctor(this);
-    },
-    getItem: function (index) {
-        return this[index];
-    },
-    getCount: function () {
-        return this.length;
-    },
-    get_Count: function () {
-        return this.length;
-    },
-    ///
-    /// returns an array that contains the values of the specified
-    /// property name from each item
-    ///
-    selectSingle: function (propName) {
-        var result = [];
-        for (var i = 0; i < this.length; i++) {
-            var item = this[i];
-            var value = item[propName]; //TODO: support getValue
-            if (value === undefined) //array cannot contain undefined.
-                value = null;
-            result.push(value);
-        }
-        return result;
-    },
-    Clone: function () {
-        return this.concat();
-    },
-    toArray: function () {
-        return this;
-    },
-    Add: function (item) {
-        this.push(item);
-    },
-    AddRange: function (items) {
-        var length = items.length;
-        var thisLength = this.length;
-        for (var i = 0; i < length; i++) {
-            this[thisLength] = items[i]; //Keep order
-            thisLength++;
-        }
-    },
-    Clear: function () {
-        if (this.length > 0) {
-            this.splice(0, this.length);
-        }
-    },
-    clone: function () {
-        return this.slice(0);
-    },
-    contains: function (item) {
-        var index = this.indexOf(item);
-        return (index >= 0);
-    },
-    Contains$$Object: function (item) {
-        return Contains(item);
-    },
-    Contains: function (item) {
-        var index = this.indexOf(item);
-        return (index >= 0);
-    },
-    dequeue: function () {
-        return this.shift();
-    },
-    indexOf: function (item, startFrom) {
-        if (startFrom == null)
-            startFrom = 0;
-        var length = this.length;
-        if (length != 0) {
-            for (var index = startFrom; index < length; index++) {
-                if (this[index] == item) {
-                    return index;
-                }
-            }
-        }
-        return -1;
-    },
-    insert: function (index, item) {
-        this.splice(index, 0, item);
-    },
-    addAt: function (index, item) {
-        this.splice(index, 0, item);
-    },
-    queue: function (item) {
-        this.push(item);
-    },
-    Remove$$Object: function (item) {
-        return this.Remove(item);
-    },
-    Remove: function (item) {
-        var index = this.indexOf(item);
-        if (index >= 0) {
-            this.splice(index, 1);
-        }
-        return index;
-    },
-    RemoveAt: function (index) {
-        this.splice(index, 1);
-    },
-    copyTo: function (target, startIndex) {
-        for (var i = startIndex; i < this.length; i++) {
-            target.push(this[i]);
-        }
-    },
-    filter: function (pred) {
-        var item, i = 0;
-        for (var i = 0, j = this.length; i < j; i++) {
-            item = this[i];
-            if (!pred(item)) {
-                this.splice(i, 1);
-                i--; //prevent increase
-                j--; //length is decreased
-            }
-        }
-        return this;
-    },
-    filterOut: function (pred) {
-        return this.filter(function (item) { return !pred(item); });
-    },
-    apply: function (modifier) {
-        for (var i = 0, j = this.length; i < j; i++) {
-            this[i] = modifier(this[i]);
-        }
-        return this;
-    },
-    findFirst: function (pred) {
-        var item;
-        for (var i = 0, j = this.length; i < j; i++) {
-            item = this[i];
-            if (pred(item))
-                return item;
-        }
-        return null;
-    },
-    ToArray: function () {
-        return this;
-    },
-    peek: function () {
-        return this[this.length - 1];
-    },
-    getLast: function () {
-        return this[this.length - 1];
-    },
-    getIterator: function () {
-        return new ArrayIterator(this);
-    },
-    get_Length: function () {
-        return this.length;
-    },
-    get_Item: function (index) {
-        return this[index];
-    },
-    get_Item$$Int32: function (index) {
-        return this[index];
-    }
-}
-});
+//JsTypes.push({ fullname: "Array", baseTypeName: "Object", definition:
+//{
+//    GetEnumerator: function () {
+//        return new ArrayEnumerator.ctor(this);
+//    },
+//    getItem: function (index) {
+//        return this[index];
+//    },
+//    getCount: function () {
+//        return this.length;
+//    },
+//    get_Count: function () {
+//        return this.length;
+//    },
+//    ///
+//    /// returns an array that contains the values of the specified
+//    /// property name from each item
+//    ///
+//    selectSingle: function (propName) {
+//        var result = [];
+//        for (var i = 0; i < this.length; i++) {
+//            var item = this[i];
+//            var value = item[propName]; //TODO: support getValue
+//            if (value === undefined) //array cannot contain undefined.
+//                value = null;
+//            result.push(value);
+//        }
+//        return result;
+//    },
+//    Clone: function () {
+//        return this.concat();
+//    },
+//    toArray: function () {
+//        return this;
+//    },
+//    Add: function (item) {
+//        this.push(item);
+//    },
+//    AddRange: function (items) {
+//        var length = items.length;
+//        var thisLength = this.length;
+//        for (var i = 0; i < length; i++) {
+//            this[thisLength] = items[i]; //Keep order
+//            thisLength++;
+//        }
+//    },
+//    Clear: function () {
+//        if (this.length > 0) {
+//            this.splice(0, this.length);
+//        }
+//    },
+//    clone: function () {
+//        return this.slice(0);
+//    },
+//    contains: function (item) {
+//        var index = this.indexOf(item);
+//        return (index >= 0);
+//    },
+//    Contains$$Object: function (item) {
+//        return Contains(item);
+//    },
+//    Contains: function (item) {
+//        var index = this.indexOf(item);
+//        return (index >= 0);
+//    },
+//    dequeue: function () {
+//        return this.shift();
+//    },
+//    indexOf: function (item, startFrom) {
+//        if (startFrom == null)
+//            startFrom = 0;
+//        var length = this.length;
+//        if (length != 0) {
+//            for (var index = startFrom; index < length; index++) {
+//                if (this[index] == item) {
+//                    return index;
+//                }
+//            }
+//        }
+//        return -1;
+//    },
+//    insert: function (index, item) {
+//        this.splice(index, 0, item);
+//    },
+//    addAt: function (index, item) {
+//        this.splice(index, 0, item);
+//    },
+//    queue: function (item) {
+//        this.push(item);
+//    },
+//    Remove$$Object: function (item) {
+//        return this.Remove(item);
+//    },
+//    Remove: function (item) {
+//        var index = this.indexOf(item);
+//        if (index >= 0) {
+//            this.splice(index, 1);
+//        }
+//        return index;
+//    },
+//    RemoveAt: function (index) {
+//        this.splice(index, 1);
+//    },
+//    copyTo: function (target, startIndex) {
+//        for (var i = startIndex; i < this.length; i++) {
+//            target.push(this[i]);
+//        }
+//    },
+//    filter: function (pred) {
+//        var item, i = 0;
+//        for (var i = 0, j = this.length; i < j; i++) {
+//            item = this[i];
+//            if (!pred(item)) {
+//                this.splice(i, 1);
+//                i--; //prevent increase
+//                j--; //length is decreased
+//            }
+//        }
+//        return this;
+//    },
+//    filterOut: function (pred) {
+//        return this.filter(function (item) { return !pred(item); });
+//    },
+//    apply: function (modifier) {
+//        for (var i = 0, j = this.length; i < j; i++) {
+//            this[i] = modifier(this[i]);
+//        }
+//        return this;
+//    },
+//    findFirst: function (pred) {
+//        var item;
+//        for (var i = 0, j = this.length; i < j; i++) {
+//            item = this[i];
+//            if (pred(item))
+//                return item;
+//        }
+//        return null;
+//    },
+//    ToArray: function () {
+//        return this;
+//    },
+//    peek: function () {
+//        return this[this.length - 1];
+//    },
+//    getLast: function () {
+//        return this[this.length - 1];
+//    },
+//    getIterator: function () {
+//        return new ArrayIterator(this);
+//    },
+//    get_Length: function () {
+//        return this.length;
+//    },
+//    get_Item: function (index) {
+//        return this[index];
+//    },
+//    get_Item$$Int32: function (index) {
+//        return this[index];
+//    }
+//}
+//});
 JsTypes.push({ fullname: "ArrayEnumerator", baseTypeName: "System.Object", definition: //TODO: implement IEnumerator
 {
     ctor: function (array) {
@@ -3388,37 +3388,37 @@ Arguments.Contains = function (args, object) {
     }
     return false;
 }
-JsTypes.push({ fullname: "Date", definition:
-{
-    removeTime: function () {
-        return new Date(this.getFullYear(), this.getMonth(), this.getDate());
-    },
-    getStartMonthDayOfWeek: function () {
-        return new Date(this.getFullYear(), this.getMonth(), 1).getDay();
-    },
-    getShortDayOfWeek: function () {
-        return Date.shortDays[this.getDay()];
-    },
-    addMonths: function (months) {
-        return new Date(this.getFullYear(), this.getMonth() + months, this.getDate(), this.getHours(), this.getMinutes(), this.getSeconds(), this.getMilliseconds());
-    },
-    addDays: function (days) {
-        return new Date(this.getFullYear(), this.getMonth(), this.getDate() + days, this.getHours(), this.getMinutes(), this.getSeconds(), this.getMilliseconds());
-    },
-    isInMonth: function (date) {
-        return this.getFullYear() == date.getFullYear() && this.getMonth() == date.getMonth();
-    }
-}, staticDefinition:
-{
-    shortDays: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
-    getNow: function () {
-        return new Date();
-    },
-    getToday: function () {
-        return new Date().removeTime();
-    }
-}
-});
+//JsTypes.push({ fullname: "Date", definition:
+//{
+//    removeTime: function () {
+//        return new Date(this.getFullYear(), this.getMonth(), this.getDate());
+//    },
+//    getStartMonthDayOfWeek: function () {
+//        return new Date(this.getFullYear(), this.getMonth(), 1).getDay();
+//    },
+//    getShortDayOfWeek: function () {
+//        return Date.shortDays[this.getDay()];
+//    },
+//    addMonths: function (months) {
+//        return new Date(this.getFullYear(), this.getMonth() + months, this.getDate(), this.getHours(), this.getMinutes(), this.getSeconds(), this.getMilliseconds());
+//    },
+//    addDays: function (days) {
+//        return new Date(this.getFullYear(), this.getMonth(), this.getDate() + days, this.getHours(), this.getMinutes(), this.getSeconds(), this.getMilliseconds());
+//    },
+//    isInMonth: function (date) {
+//        return this.getFullYear() == date.getFullYear() && this.getMonth() == date.getMonth();
+//    }
+//}, staticDefinition:
+//{
+//    shortDays: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+//    getNow: function () {
+//        return new Date();
+//    },
+//    getToday: function () {
+//        return new Date().removeTime();
+//    }
+//}
+//});
 //THIS file is for backward compatability and should be deprecated
 JsTypes.push({ fullname: "VM", definition:
 {
@@ -3488,96 +3488,96 @@ JsTypes.push({ fullname: "SharpKit.DataModel.NotifyCollectionChangedEventArgs", 
 }
 });
 
-JsTypes.push({
-    fullname: "Uint8Array",
-    definition:
-    {
-        GetEnumerator: function () {
-            return new ArrayEnumerator.ctor(this);
-        },
-        Clone: function() {
-            return new Uint8Array(this);
-        }
-    }
-});
-
-JsTypes.push({
-    fullname: "Int16Array",
-    definition:
-    {
-        GetEnumerator: function () {
-            return new ArrayEnumerator.ctor(this);
-        },
-        Clone: function() {
-            return new Int16Array(this);
-        }
-    }
-});
-
-JsTypes.push({
-    fullname: "Uint16Array",
-    definition:
-    {
-        GetEnumerator: function () {
-            return new ArrayEnumerator.ctor(this);
-        },
-        Clone: function() {
-            return new Uint16Array(this);
-        }
-    }
-});
-
-JsTypes.push({
-    fullname: "Int32Array",
-    definition:
-    {
-        GetEnumerator: function() {
-            return new ArrayEnumerator.ctor(this);
-        },
-        Clone: function() {
-            return new Int32Array(this);
-        }
-    }
-});
-
-JsTypes.push({
-    fullname: "Uint32Array",
-    definition:
-    {
-        GetEnumerator: function () {
-            return new ArrayEnumerator.ctor(this);
-        },
-        Clone: function() {
-            return new Uint32Array(this);
-        }
-    }
-});
-
-JsTypes.push({
-    fullname: "Float32Array",
-    definition:
-    {
-        GetEnumerator: function () {
-            return new ArrayEnumerator.ctor(this);
-        },
-        Clone: function() {
-            return new Float32Array(this);
-        }
-    }
-});
-
-JsTypes.push({
-    fullname: "Float64Array",
-    definition:
-    {
-        GetEnumerator: function () {
-            return new ArrayEnumerator.ctor(this);
-        },
-        Clone: function() {
-            return new Float64Array(this);
-        }
-    }
-});
+//JsTypes.push({
+//    fullname: "Uint8Array",
+//    definition:
+//    {
+//        GetEnumerator: function () {
+//            return new ArrayEnumerator.ctor(this);
+//        },
+//        Clone: function() {
+//            return new Uint8Array(this);
+//        }
+//    }
+//});
+//
+//JsTypes.push({
+//    fullname: "Int16Array",
+//    definition:
+//    {
+//        GetEnumerator: function () {
+//            return new ArrayEnumerator.ctor(this);
+//        },
+//        Clone: function() {
+//            return new Int16Array(this);
+//        }
+//    }
+//});
+//
+//JsTypes.push({
+//    fullname: "Uint16Array",
+//    definition:
+//    {
+//        GetEnumerator: function () {
+//            return new ArrayEnumerator.ctor(this);
+//        },
+//        Clone: function() {
+//            return new Uint16Array(this);
+//        }
+//    }
+//});
+//
+//JsTypes.push({
+//    fullname: "Int32Array",
+//    definition:
+//    {
+//        GetEnumerator: function() {
+//            return new ArrayEnumerator.ctor(this);
+//        },
+//        Clone: function() {
+//            return new Int32Array(this);
+//        }
+//    }
+//});
+//
+//JsTypes.push({
+//    fullname: "Uint32Array",
+//    definition:
+//    {
+//        GetEnumerator: function () {
+//            return new ArrayEnumerator.ctor(this);
+//        },
+//        Clone: function() {
+//            return new Uint32Array(this);
+//        }
+//    }
+//});
+//
+//JsTypes.push({
+//    fullname: "Float32Array",
+//    definition:
+//    {
+//        GetEnumerator: function () {
+//            return new ArrayEnumerator.ctor(this);
+//        },
+//        Clone: function() {
+//            return new Float32Array(this);
+//        }
+//    }
+//});
+//
+//JsTypes.push({
+//    fullname: "Float64Array",
+//    definition:
+//    {
+//        GetEnumerator: function () {
+//            return new ArrayEnumerator.ctor(this);
+//        },
+//        Clone: function() {
+//            return new Float64Array(this);
+//        }
+//    }
+//});
 
 AfterCompilation(function()
 {

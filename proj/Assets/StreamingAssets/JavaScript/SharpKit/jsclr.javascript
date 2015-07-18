@@ -561,8 +561,12 @@ JsCompiler.Compile_Phase2 = function (){
 JsCompiler.Compile_Phase2_TmpType = function (tmpType){
     var p = tmpType.fullname;
     var type = JsCompiler.CompileType(tmpType);
-    if (type != null)
-        JsCompiler.CopyMemberIfNotDefined(type, type.fullname, window);
+
+
+    if (type != null) {
+        JsCompiler.CopyToGlobal(type, type.fullname, window);
+    }
+
     if (type.ns != null){
         var ns = JsCompiler.ResolveNamespace(type.ns);
         if (type != null)
@@ -607,8 +611,27 @@ JsCompiler.Compile_Phase3 = function (){
         action();
     IsCompiled = true;
 };
-JsCompiler.CopyMemberIfNotDefined = function (source, name, target){
-    if(target[name]===undefined) target[name] = source;
+/*
+* 拷贝到全局空间
+* 例子，类A，子类A.B
+* 如果JsType数组中B排在前面，在CompileType(B)时，进入 ResolveNamespace()后，A对象就已经存在
+* A.B 也跟着存在
+* 过一会 CompileType(A) 时，发现A已经存在，就会进入到这个函数来
+* 这里要做的事情是先把A原来的字段，也就是A.B 拷贝到source上，再将 window[name] = source
+*
+* 这里的 target == window，也就是global
+* */
+JsCompiler.CopyToGlobal = function (source, name, target){
+    var old = target[name];
+    if (old !== source) {
+        if (old != undefined) {
+            for (var k in old) {
+                source[k] = old[k];
+                //print("in CopyToGlobal function: " + source.fullname + "." + k + " " + source[k].toString() + " -> " + old[k].toString())
+            }
+        }
+        target[name] = source;
+    }
 };
 JsCompiler._CopyObject = function (source, target){
     for(var p in source)
