@@ -467,8 +467,15 @@ public static class CSGenerator2
 
             if (property.CanRead)
             {
-                sb.Append(sbCall);
-                sb.AppendFormat("        {0}\n", JSDataExchangeEditor.Get_Return(property.PropertyType, "result"));
+                if (property.GetGetMethod() != null)
+                {
+                    sb.Append(sbCall);
+                    sb.AppendFormat("        {0}\n", JSDataExchangeEditor.Get_Return(property.PropertyType, "result"));
+                }
+                else
+                {
+                    Debug.Log(type.Name + "." + property.Name + " 'get' is ignored because it's not public.");
+                }
             }
             if (!bReadOnly)
             {
