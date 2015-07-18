@@ -8,6 +8,19 @@ using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 
+public class PerTest
+{
+    public class RefObject
+    {
+        public string String =
+            "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
+        public int x = 1;
+        public int y = 2;
+    }
+
+    public static RefObject StaticObject = new RefObject();
+}
 
 
 class QiucwCup<T>
@@ -205,6 +218,11 @@ public class JSBindingSettings
     };
     public static Type[] classes = new Type[]
     {
+        // ONLY for test
+        typeof(PerTest.RefObject),
+        typeof(PerTest),
+        typeof(BetterList<>),
+
 #region
         typeof(System.Collections.IEnumerator),
 #endregion

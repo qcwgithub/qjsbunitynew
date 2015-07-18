@@ -19,6 +19,9 @@ var jsimp$Reflection = {
                 }
             }
             return false;
+        },
+        SimpleTEquals$1: function (T, a, b){
+            return (a == b);
         }
     },
     assemblyName: "SharpKitProj",

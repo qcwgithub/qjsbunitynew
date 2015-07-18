@@ -40,8 +40,7 @@ CS.require("Manual/UnityEngine_Vector3");
 CS.require("Manual/UnityEngine_Vector2");
 CS.require("Manual/UnityEngine_MonoBehaviour");
 CS.require("Manual/UnityEngine_WaitForSeconds");
-CS.require("Manual/System_Xml_XmlIteratorNodeList");
-CS.require("Manual/System_Xml_XmlIteratorNodeList_XPathNodeIteratorNodeListIterator");
+CS.require("Manual/MissingClasses");
 //
 // may be more..
 //
