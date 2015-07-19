@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var LimitBuyNumPrices = {
     fullname: "LimitBuyNumPrices",
     baseTypeName: "System.Object",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     interfaceNames: ["IShopLime"],
     Kind: "Class",
     definition: {

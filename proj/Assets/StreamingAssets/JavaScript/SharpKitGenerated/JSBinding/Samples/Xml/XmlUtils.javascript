@@ -8,7 +8,7 @@ var Lavie$XmlUtils = {
             var mData = System.Activator.CreateInstance$$Type(target);
             var t = mData.GetType();
             var fields = t.GetFields();
-            for (var $i16 = 0,$l16 = fields.length,fieldInfo = fields[$i16]; $i16 < $l16; $i16++, fieldInfo = fields[$i16]){
+            for (var $i14 = 0,$l14 = fields.length,fieldInfo = fields[$i14]; $i14 < $l14; $i14++, fieldInfo = fields[$i14]){
                 var fieldName = fieldInfo.get_Name();
                 var value = mNode.get_Attributes().GetNamedItem$$String(fieldName).get_Value().toString();
                 var lastValue = value;
@@ -21,9 +21,9 @@ var Lavie$XmlUtils = {
         ConvertType$1$$XmlNode: function (T, mNode){
             var mData = System.Activator.CreateInstance$1(T);
             var t = mData.GetType();
-            var $it16 = mNode.get_Attributes().GetEnumerator();
-            while ($it16.MoveNext()){
-                var xmlAttribute = $it16.get_Current();
+            var $it14 = mNode.get_Attributes().GetEnumerator();
+            while ($it14.MoveNext()){
+                var xmlAttribute = $it14.get_Current();
                 var fieldName = xmlAttribute.get_Name();
                 var value = mNode.get_Attributes().GetNamedItem$$String(fieldName).get_Value().toString();
                 var lastValue = value;
@@ -39,13 +39,13 @@ var Lavie$XmlUtils = {
         ConvertType$1$$XmlNodeList: function (T, nodeList){
             var list = new BetterList$1.ctor(T);
             var t = Typeof(T);
-            var $it17 = nodeList.GetEnumerator();
-            while ($it17.MoveNext()){
-                var mNode = $it17.get_Current();
+            var $it15 = nodeList.GetEnumerator();
+            while ($it15.MoveNext()){
+                var mNode = $it15.get_Current();
                 var mData = System.Activator.CreateInstance$1(T);
-                var $it18 = mNode.get_Attributes().GetEnumerator();
-                while ($it18.MoveNext()){
-                    var xmlAttribute = $it18.get_Current();
+                var $it16 = mNode.get_Attributes().GetEnumerator();
+                while ($it16.MoveNext()){
+                    var xmlAttribute = $it16.get_Current();
                     var fieldName = xmlAttribute.get_Name();
                     var value = mNode.get_Attributes().GetNamedItem$$String(fieldName).get_Value().toString();
                     var lastValue = value;
@@ -63,13 +63,13 @@ var Lavie$XmlUtils = {
         ConvertType$1$$XmlNodeList$$String: function (T, nodeList, subType){
             var list = new BetterList$1.ctor(T);
             var t = Typeof(T);
-            var $it19 = nodeList.GetEnumerator();
-            while ($it19.MoveNext()){
-                var mNode = $it19.get_Current();
+            var $it17 = nodeList.GetEnumerator();
+            while ($it17.MoveNext()){
+                var mNode = $it17.get_Current();
                 var mData = System.Activator.CreateInstance$1(T);
-                var $it20 = mNode.get_Attributes().GetEnumerator();
-                while ($it20.MoveNext()){
-                    var xmlAttribute = $it20.get_Current();
+                var $it18 = mNode.get_Attributes().GetEnumerator();
+                while ($it18.MoveNext()){
+                    var xmlAttribute = $it18.get_Current();
                     var fieldName = xmlAttribute.get_Name();
                     var value = xmlAttribute.get_Value().toString();
                     var lastValue = value;
@@ -82,9 +82,9 @@ var Lavie$XmlUtils = {
                     t.GetField$$String(fieldName).SetValue$$Object$$Object(mData, lastValue);
                 }
                 if (mNode.get_HasChildNodes()){
-                    var $it21 = mNode.get_ChildNodes().GetEnumerator();
-                    while ($it21.MoveNext()){
-                        var childNode = $it21.get_Current();
+                    var $it19 = mNode.get_ChildNodes().GetEnumerator();
+                    while ($it19.MoveNext()){
+                        var childNode = $it19.get_Current();
                         var tSubType = Lavie.XmlUtils.NodeValue$1(System.String.ctor, childNode, subType);
                         if (tSubType == null || System.Reflection.FieldInfo.op_Equality$$FieldInfo$$FieldInfo(t.GetField$$String(tSubType), null)){
                         }
@@ -152,19 +152,20 @@ var Lavie$XmlUtils = {
             if (namedItem == null){
                 return Default(T);
             }
+            var typeT = Typeof(T);
             var value = namedItem.get_Value();
-            if (Typeof(T) == Typeof(System.Int32.ctor)){
+            if (typeT == Typeof(System.Int32.ctor)){
                 var n = System.Int32.Parse$$String(value.toString());
                 return Cast((n), T);
             }
-            else if (Typeof(T) == Typeof(System.Single.ctor)){
+            else if (typeT == Typeof(System.Single.ctor)){
                 var m = System.Single.Parse$$String(value.toString());
                 return Cast((m), T);
             }
-            else if (Typeof(T) == Typeof(System.Boolean.ctor)){
+            else if (typeT == Typeof(System.Boolean.ctor)){
                 return Cast((value == "1"), T);
             }
-            else if (Typeof(T) == Typeof(System.Enum.ctor)){
+            else if (jsimp.Reflection.TypeIsEnum(typeT)){
                 var mInt;
                 if ((function (){
                     var $1 = {
@@ -184,9 +185,9 @@ var Lavie$XmlUtils = {
             return Cast(value, T);
         },
         Select$1$$XmlNodeList$$String$$String$$String: function (T, xmlNodeList, nodeName, value, attribute){
-            var $it22 = xmlNodeList.GetEnumerator();
-            while ($it22.MoveNext()){
-                var node = $it22.get_Current();
+            var $it20 = xmlNodeList.GetEnumerator();
+            while ($it20.MoveNext()){
+                var node = $it20.get_Current();
                 if (Lavie.XmlUtils.NodeValue$1(T, node, nodeName).toString() == value){
                     return Lavie.XmlUtils.NodeValue$1(T, node, attribute);
                 }
@@ -194,9 +195,9 @@ var Lavie$XmlUtils = {
             return Default(T);
         },
         Select$1$$XmlNodeList$$String$$T: function (T, xmlNodeList, nodeName, value){
-            var $it23 = xmlNodeList.GetEnumerator();
-            while ($it23.MoveNext()){
-                var node = $it23.get_Current();
+            var $it21 = xmlNodeList.GetEnumerator();
+            while ($it21.MoveNext()){
+                var node = $it21.get_Current();
                 var nodeValue = Lavie.XmlUtils.NodeValue$1(T, node, nodeName);
                 if (jsimp.Reflection.SimpleTEquals$1(T, nodeValue, value)){
                     return node;
@@ -205,7 +206,7 @@ var Lavie$XmlUtils = {
             return null;
         }
     },
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

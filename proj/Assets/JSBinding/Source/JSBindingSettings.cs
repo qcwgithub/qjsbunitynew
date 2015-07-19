@@ -221,7 +221,7 @@ public class JSBindingSettings
         // ONLY for test
         typeof(PerTest.RefObject),
         typeof(PerTest),
-        typeof(BetterList<>),
+        //typeof(BetterList<>),
 
 #region
         typeof(System.Collections.IEnumerator),

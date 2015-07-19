@@ -3,14 +3,14 @@ if (typeof(JsTypes) == "undefined")
 var ShopItemData = {
     fullname: "ShopItemData",
     baseTypeName: "System.Object",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
             this.ID = null;
-            this.ItemType = 1;
+            this.ItemType = ItemType.Normal;
             this.ItemId = null;
-            this.Currency = 0;
+            this.Currency = enumMoneyType.None;
             this.OldPrice = 0;
             this.CurPrice = 0;
             this.Recommend = false;

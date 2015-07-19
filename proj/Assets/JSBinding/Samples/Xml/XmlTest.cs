@@ -6,11 +6,19 @@ using System;
 using System.Reflection;
 using Lavie;
 
+public class MindActUpMide<T>
+{
+    public T Value;
+}
+
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/XmlTest.javascript")]
 public class XmlTest : MonoBehaviour
 {
     private void Start()
     {
+        enumMoneyType ABC = enumMoneyType.Gold;
+        Debug.Log(ABC.ToString());
+
         TextAsset textAssets = (TextAsset)Resources.Load("ShopConfig");
 
         if (textAssets != null)
@@ -23,7 +31,6 @@ public class XmlTest : MonoBehaviour
         }
 
         XmlDocument xml = new XmlDocument();
-
         xml.LoadXml(textAssets.text);
         Debug.Log("xmlload");
 
@@ -32,18 +39,21 @@ public class XmlTest : MonoBehaviour
         XmlNode pp = xmlPackets.Select<string>("ID", "1");
         Debug.Log("pp=" + pp.ToString());
 
+        ItemType v1 = pp.NodeValue<ItemType>("ID");
+        Debug.Log("ID == " + v1.ToString());
 
-        XmlNodeList daoJunodeList = pp.ChildNodes;
-        Debug.Log("daojulist Count = " + daoJunodeList.Count);
- 
- 
-        BetterList<ShopItemData> daoJumdata = daoJunodeList.ConvertType<ShopItemData>("SubType"); 
-        Debug.Log("daojudata Count = " + daoJumdata.size);
 
-        foreach (ShopItemData shopItemData in daoJumdata)
-        {
-            Debug.Log(shopItemData.ID);
-        }
+//         XmlNodeList daoJunodeList = pp.ChildNodes;
+//         Debug.Log("daojulist Count = " + daoJunodeList.Count);
+//  
+//  
+//         BetterList<ShopItemData> daoJumdata = daoJunodeList.ConvertType<ShopItemData>("SubType"); 
+//         Debug.Log("daojudata Count = " + daoJumdata.size);
+// 
+//         foreach (ShopItemData shopItemData in daoJumdata)
+//         {
+//             Debug.Log(shopItemData.ID);
+//         }
     }
 }
 
@@ -127,6 +137,7 @@ public interface IShopLime
 {
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ItemType.javascript")]
 public enum ItemType
 {
     Normal = 1,
@@ -162,6 +173,7 @@ public class ItemCell
     public int expSupply = 0;
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ColorSign.javascript")]
 public enum ColorSign
 {
     White = 1,
@@ -173,6 +185,7 @@ public enum ColorSign
     Black
 }
 
+[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/enumMoneyType.javascript")]
 public enum enumMoneyType
 {
     None = 0,
@@ -186,22 +199,4 @@ public enum enumMoneyType
     iBuddHistrelics,
     iContribution,
     iPrestige
-}
-[JsType(JsMode.Clr, "../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/IFuckable.javascript")]
-public interface IFuckable
-{
-    void Fuck();
-    void Love();
-}
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LiuYan.javascript")]
-public class LiuYan : IFuckable
-{
-    public void Fuck()
-    {
-        Debug.Log("oh fuck");
-    }
-    public void Love()
-    {
-        Debug.Log("oh love");
-    }
 }

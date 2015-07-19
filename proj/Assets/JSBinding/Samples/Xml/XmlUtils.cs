@@ -100,55 +100,55 @@ namespace Lavie
         /// <param name="t"></param>
         /// <param name="nodeList"></param>
         /// <returns></returns>
-        public static BetterList<T> ConvertType<T>(this XmlNodeList nodeList)
-        {
-            var list = new BetterList<T>();
-
-            var t = typeof(T);
-            foreach (XmlNode mNode in nodeList)
-            {
-                var mData = Activator.CreateInstance<T>();
-
-                #region 分析<item Id="3"..>
-
-                foreach (XmlAttribute xmlAttribute in mNode.Attributes)
-                {
-                    var fieldName = xmlAttribute.Name;
-
-
-                    string value = mNode.Attributes.GetNamedItem(fieldName).Value.ToString();
-
-                    object lastValue = value;
-
-                    if (t.GetField(fieldName) == null)
-                    {
-                        throw new Exception(String.Format("{0} have no filed {1}", t.Name, fieldName));
-                    }
-                    Type fType = t.GetField(fieldName).FieldType;
-
-
-                    lastValue = Convert(fType, value, lastValue);
-
-
-                    t.GetField(fieldName).SetValue(mData, lastValue);
-                }
-
-                #endregion
-
-                /*      if (mNode.HasChildNodes)
-            {
-                foreach (XmlNode childNode in mNode.ChildNodes)
-                {
-
-
-                }
-            }*/
-                list.Add(mData);
-            }
-
-
-            return list;
-        }
+//         public static BetterList<T> ConvertType<T>(this XmlNodeList nodeList)
+//         {
+//             var list = new BetterList<T>();
+// 
+//             var t = typeof(T);
+//             foreach (XmlNode mNode in nodeList)
+//             {
+//                 var mData = Activator.CreateInstance<T>();
+// 
+//                 #region 分析<item Id="3"..>
+// 
+//                 foreach (XmlAttribute xmlAttribute in mNode.Attributes)
+//                 {
+//                     var fieldName = xmlAttribute.Name;
+// 
+// 
+//                     string value = mNode.Attributes.GetNamedItem(fieldName).Value.ToString();
+// 
+//                     object lastValue = value;
+// 
+//                     if (t.GetField(fieldName) == null)
+//                     {
+//                         throw new Exception(String.Format("{0} have no filed {1}", t.Name, fieldName));
+//                     }
+//                     Type fType = t.GetField(fieldName).FieldType;
+// 
+// 
+//                     lastValue = Convert(fType, value, lastValue);
+// 
+// 
+//                     t.GetField(fieldName).SetValue(mData, lastValue);
+//                 }
+// 
+//                 #endregion
+// 
+//                 /*      if (mNode.HasChildNodes)
+//             {
+//                 foreach (XmlNode childNode in mNode.ChildNodes)
+//                 {
+// 
+// 
+//                 }
+//             }*/
+//                 list.Add(mData);
+//             }
+// 
+// 
+//             return list;
+//         }
 
 
         /// <summary>
@@ -157,68 +157,68 @@ namespace Lavie
         /// <param name="t"></param>
         /// <param name="subType"> 子节点下这里包括类</param>
         /// <returns></returns>
-        public static BetterList<T> ConvertType<T>(this XmlNodeList nodeList, string subType)
-        {
-            var list = new BetterList<T>();
-
-            var t = typeof(T);
-            foreach (XmlNode mNode in nodeList)
-            {
-                var mData = Activator.CreateInstance<T>();
-
-                #region 分析<item Id="3"..>
-
-                foreach (XmlAttribute xmlAttribute in mNode.Attributes)
-                {
-                    var fieldName = xmlAttribute.Name;
-                    string value = xmlAttribute.Value.ToString();
-
-                    object lastValue = value;
-
-                    FieldInfo fieldInfo = t.GetField(fieldName);
-                    if (fieldInfo == null)
-                    {
-                        throw new Exception(String.Format("{0} have no field {1}", t.Name, fieldName));
-                    }
-                    Type fieldType = fieldInfo.FieldType;
-
-                    lastValue = Convert(fieldType, value, lastValue);
-                    t.GetField(fieldName).SetValue(mData, lastValue);
-                }
-
-                #endregion
-
-                #region <item Id="3"..> 分析这里面的内容 <limit> </limit>  </item>
-
-                if (mNode.HasChildNodes)
-                {
-                    foreach (XmlNode childNode in mNode.ChildNodes)
-                    {
-                        string tSubType = childNode.NodeValue<string>(subType);
-                        if (tSubType == null || t.GetField(tSubType) == null)
-                        {
-                            //没有这个节点
-                        }
-                        else
-                        {
-                            //找出对应的属性类，转化赋值给这个属性，最后赋值给类
-                            Type fType = t.GetField(tSubType).FieldType;
-                            var fieldValue = childNode.ConvertType(fType);
-
-
-                            t.GetField(tSubType).SetValue(mData, fieldValue);
-                        }
-                    }
-                }
-
-                #endregion
-
-                list.Add(mData);
-            }
-
-
-            return list;
-        }
+//         public static BetterList<T> ConvertType<T>(this XmlNodeList nodeList, string subType)
+//         {
+//             var list = new BetterList<T>();
+// 
+//             var t = typeof(T);
+//             foreach (XmlNode mNode in nodeList)
+//             {
+//                 var mData = Activator.CreateInstance<T>();
+// 
+//                 #region 分析<item Id="3"..>
+// 
+//                 foreach (XmlAttribute xmlAttribute in mNode.Attributes)
+//                 {
+//                     var fieldName = xmlAttribute.Name;
+//                     string value = xmlAttribute.Value.ToString();
+// 
+//                     object lastValue = value;
+// 
+//                     FieldInfo fieldInfo = t.GetField(fieldName);
+//                     if (fieldInfo == null)
+//                     {
+//                         throw new Exception(String.Format("{0} have no field {1}", t.Name, fieldName));
+//                     }
+//                     Type fieldType = fieldInfo.FieldType;
+// 
+//                     lastValue = Convert(fieldType, value, lastValue);
+//                     t.GetField(fieldName).SetValue(mData, lastValue);
+//                 }
+// 
+//                 #endregion
+// 
+//                 #region <item Id="3"..> 分析这里面的内容 <limit> </limit>  </item>
+// 
+//                 if (mNode.HasChildNodes)
+//                 {
+//                     foreach (XmlNode childNode in mNode.ChildNodes)
+//                     {
+//                         string tSubType = childNode.NodeValue<string>(subType);
+//                         if (tSubType == null || t.GetField(tSubType) == null)
+//                         {
+//                             //没有这个节点
+//                         }
+//                         else
+//                         {
+//                             //找出对应的属性类，转化赋值给这个属性，最后赋值给类
+//                             Type fType = t.GetField(tSubType).FieldType;
+//                             var fieldValue = childNode.ConvertType(fType);
+// 
+// 
+//                             t.GetField(tSubType).SetValue(mData, fieldValue);
+//                         }
+//                     }
+//                 }
+// 
+//                 #endregion
+// 
+//                 list.Add(mData);
+//             }
+// 
+// 
+//             return list;
+//         }
 
 
         /// <summary>
@@ -302,22 +302,24 @@ namespace Lavie
                 return default(T);
             }
 
+            Type typeT = typeof(T);
+
             object value = namedItem.Value;
-            if (typeof(T) == typeof(int))
+            if (typeT == typeof(int))
             {
                 int n = int.Parse(value.ToString());
                 return (T)((object)n);
             }
-            else if (typeof(T) == typeof(float))
+            else if (typeT == typeof(float))
             {
                 float m = float.Parse(value.ToString());
                 return (T)((object)m);
             }
-            else if (typeof(T) == typeof(bool))
+            else if (typeT == typeof(bool))
             {
                 return (T)((object)(value == "1"));
             }
-            else if (typeof(T) == typeof(Enum))
+            else if (jsimp.Reflection.TypeIsEnum(typeT))
             {
                 int mInt;
                 if (int.TryParse(value.ToString(), out mInt))

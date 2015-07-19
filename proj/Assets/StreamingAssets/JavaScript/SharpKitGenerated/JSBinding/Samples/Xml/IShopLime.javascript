@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var IShopLime = {
     fullname: "IShopLime",
     baseTypeName: "System.Object",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     Kind: "Interface"
 };
 JsTypes.push(IShopLime);

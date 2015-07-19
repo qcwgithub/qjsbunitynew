@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var LimitDayNum = {
     fullname: "LimitDayNum",
     baseTypeName: "System.Object",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     interfaceNames: ["IShopLime"],
     Kind: "Class",
     definition: {
