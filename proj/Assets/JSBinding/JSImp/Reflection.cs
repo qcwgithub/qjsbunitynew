@@ -1,4 +1,4 @@
-﻿using SharpKit.JavaScript;
+using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
 using System;
@@ -15,7 +15,8 @@ using System.Reflection;
 /// </summary>
 namespace jsimp
 {
-    [JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/JSImp/Reflection.javascript")]
+
+[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/JSImp/Reflection.javascript")]
     public class Reflection
     {
         public static T CreateInstance<T>()
@@ -43,7 +44,11 @@ namespace jsimp
         {
             return a.Equals(b);
         }
-    }
 
+        public static bool TypeIsEnum(Type type)
+        {
+            return type.IsSubclassOf(typeof(Enum));
+        }
+    }
 }
 

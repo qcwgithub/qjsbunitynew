@@ -970,17 +970,19 @@ public class JSBindingSettings
 //return true;
     }
 
+    // extension (including ".")
+    public static string jsExtension = ".javascript";
     // directory to save js files
     public static string jsDir = Application.streamingAssetsPath + "/JavaScript";
+
+
     // directory to save generated js files (gen by JSGenerateor2)
-    public static string jsGeneratedDir = jsDir + "/Generated";
+    public static string jsGeneratedDir{ get { return jsDir + "/Generated"; } }
     // a file to save generated js file names
-    public static string jsGeneratedFiles = JSBindingSettings.jsDir + "/GeneratedFiles.javascript";
+    public static string jsGeneratedFiles { get { return jsDir + "/GeneratedFiles" + jsExtension; } }
     // 
     public static string csDir = Application.dataPath + "/JSBinding/CSharp";
     public static string csGeneratedDir = Application.dataPath + "/JSBinding/Generated";
-    // extension (including ".")
-    public static string jsExtension = ".javascript";
     public static string sharpkitGeneratedFiles = JSBindingSettings.jsDir + "/SharpKitGeneratedFiles.javascript";
     public static string sharpKitGenFileDir = "StreamingAssets/JavaScript/SharpKitGenerated/";
 

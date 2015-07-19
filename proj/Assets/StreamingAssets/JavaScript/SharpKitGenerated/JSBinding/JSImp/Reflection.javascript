@@ -20,9 +20,12 @@ var jsimp$Reflection = {
         },
         SimpleTEquals$1: function (T, a, b){
             return a.Equals$$Object(b);
+        },
+        TypeIsEnum: function (type){
+            return type.IsSubclassOf(Typeof(System.Enum.ctor));
         }
     },
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

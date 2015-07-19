@@ -1653,21 +1653,38 @@ using UnityEngine;
 		if (!CheckClassBindings())
             return;
 
-//         if (genMethodHitTest)
-//         {
-//             sbMethodHitTest = new StringBuilder();
-//         }
+
+        bool bContinue;
+        bContinue = EditorUtility.DisplayDialog("TIP",
+             "Files in these directories will all be deleted and re-created: \n" + 
+              JSBindingSettings.jsGeneratedDir + "\n" + 
+              JSBindingSettings.csGeneratedDir + "\n",
+             "OK",
+             "Cancel");
+        if (!bContinue)
+        {
+            Debug.Log("Operation cancelled"); ;
+            return;
+        }
 
         JSDataExchangeEditor.reset();
         UnityEngineManual.initManual();
         CSGenerator2.GenerateClassBindings();
         JSGenerator2.GenerateClassBindings();
         UnityEngineManual.afterUse();
+
+        // 放这里不合适
+//         bContinue = EditorUtility.DisplayDialog("TIP",
+//              "Also correct JavaScript yield code?\n(Choose 'Yes' if you have coroutine code)",
+//              "Yes",
+//              "No");
+//         if (bContinue)
+//         {
+//             JSAnalyzer.CorrectJavaScriptYieldCode();
+//         }
+
         AssetDatabase.Refresh();
     }
-
-//     static bool genMethodHitTest = false;
-//     static StringBuilder sbMethodHitTest;
     
     //[MenuItem("Assets/JSBinding/1Output All T Functions")]
     public static void OutputAllTFunctionsInUnityEngine()

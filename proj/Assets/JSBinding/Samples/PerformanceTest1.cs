@@ -103,9 +103,35 @@ public class PerformanceTest1 : MonoBehaviour {
         Debug.Log("test6 time: " + sw.ElapsedMilliseconds + " ms");
     }
 
+    
+    public static PerTest.RefObject Run(PerTest.RefObject refObject)
+    {
+        PerTest.StaticObject.x += refObject.x;
+        PerTest.StaticObject.y += refObject.y;
+        return PerTest.StaticObject;
+    }
+
+    public void Test7()
+    {
+        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+        sw.Start();
+        var obj = PerTest.StaticObject;
+        for (int i = 0; i < 50000; i++)
+        {
+            obj = Run(obj);
+        }
+        sw.Stop();
+
+        Debug.Log("test7 time: " + sw.ElapsedMilliseconds + " ms");
+    }
+    public void OnChangeEvent()
+    {
+
+    }
+
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonUp(0))
         {
             Test0();
             Test1();
@@ -114,6 +140,7 @@ public class PerformanceTest1 : MonoBehaviour {
             Test4();
             Test5();
             Test6();
+            Test7();
         }
 	}
 }

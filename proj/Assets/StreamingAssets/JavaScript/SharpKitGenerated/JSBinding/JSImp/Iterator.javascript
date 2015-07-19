@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var jsimp$Coroutine$Iterator = {
     fullname: "jsimp.Coroutine.Iterator",
     baseTypeName: "System.Object",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (ie){

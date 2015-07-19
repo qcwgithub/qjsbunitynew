@@ -3,6 +3,13 @@ if (typeof(JsTypes) == "undefined")
 var PerformanceTest1 = {
     fullname: "PerformanceTest1",
     baseTypeName: "UnityEngine.MonoBehaviour",
+    staticDefinition: {
+        Run: function (refObject){
+            PerTest.StaticObject.x += refObject.x;
+            PerTest.StaticObject.y += refObject.y;
+            return PerTest.StaticObject;
+        }
+    },
     assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
@@ -81,6 +88,18 @@ var PerformanceTest1 = {
             }
             UnityEngine.Debug.Log$$Object("test6 time: " + sw.get_ElapsedMilliseconds() + " ms");
         },
+        Test7: function (){
+            var sw = new System.Diagnostics.Stopwatch.ctor();
+            sw.Start();
+            var obj = PerTest.StaticObject;
+            for (var i = 0; i < 50000; i++){
+                obj = PerformanceTest1.Run(obj);
+            }
+            sw.Stop();
+            UnityEngine.Debug.Log$$Object("test7 time: " + sw.get_ElapsedMilliseconds() + " ms");
+        },
+        OnChangeEvent: function (){
+        },
         Update: function (){
             if (UnityEngine.Input.GetMouseButtonUp(0)){
                 this.Test0();
@@ -90,6 +109,7 @@ var PerformanceTest1 = {
                 this.Test4();
                 this.Test5();
                 this.Test6();
+                this.Test7();
             }
         }
     }

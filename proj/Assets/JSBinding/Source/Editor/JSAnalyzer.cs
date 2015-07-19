@@ -622,7 +622,12 @@ public static class JSAnalyzer
     public static void DelJsTypeAttributeInSrc()
     {
         addJsType = false;
-        MakeJsTypeAttributeInSrc();
+        if (MakeJsTypeAttributeInSrc())
+        {
+            EditorUtility.DisplayDialog("Tip",
+            "You have to execute this menu later: \nJSB | Generate SharpKit JsType file CS.require list",
+                        "OK");
+        }
     }
     /// <summary>
     /// See 'MakeJsTypeAttributeInSrc' for detail.
@@ -631,7 +636,12 @@ public static class JSAnalyzer
     public static void AddJsTypeAttributeInSrc()
     {
         addJsType = true;
-        MakeJsTypeAttributeInSrc();
+        if (MakeJsTypeAttributeInSrc())
+        {
+            EditorUtility.DisplayDialog("Tip",
+            "You have to execute this menu later: \nJSB | Generate SharpKit JsType file CS.require list",
+                        "OK");
+        }
     }
     /// <summary>
     /// MakeJsTypeAttributeInSrc
@@ -639,7 +649,7 @@ public static class JSAnalyzer
     /// .cs files in 'JSBindingSettings.DirectoriesNotToExport' directories 
     /// but not in 'JSBindingSettings.DirectoriesToExport' directories will be ignored
     /// </summary>
-    public static void MakeJsTypeAttributeInSrc()
+    public static bool MakeJsTypeAttributeInSrc()
     {
         bool bContinue = EditorUtility.DisplayDialog("Tip",
 @"Make sure you have made proper settings to 
@@ -654,7 +664,7 @@ fields before this action.",
         if (!bContinue)
         {
             Debug.Log("Operation canceled.");
-            return;
+            return false;
         }
 
         var sb = new StringBuilder();
@@ -716,7 +726,7 @@ fields before this action.",
         if (!bContinue)
         {
             Debug.Log("Operation canceled.");
-            return;
+            return false;
         }
 
         // path in lstFiles has full path
@@ -742,6 +752,7 @@ fields before this action.",
         }
         Debug.Log("Make JsType Attribute OK.");
         AssetDatabase.Refresh();
+        return true;
     }
     [MenuItem("JSB/Correct JavaScript Yield code", false, 131)]
     public static void CorrectJavaScriptYieldCode()
@@ -773,7 +784,7 @@ fields before this action.",
 
         if (!bContinue)
         {
-            Debug.Log("Operation canceled.");
+            Debug.Log("Correct JavaScript Yield code canceled.");
             return;
         }
 
