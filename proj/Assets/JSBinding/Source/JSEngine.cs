@@ -127,6 +127,10 @@ public class JSEngine : MonoBehaviour
         }
     }
 
+//     void OnApplicationQuit()
+//     {
+//         Debug.Log("OnApplicationQuit");
+//     }
     void OnDestroy()
     {
         if (this == JSEngine.inst)

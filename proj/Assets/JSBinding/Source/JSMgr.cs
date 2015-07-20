@@ -98,11 +98,20 @@ public static class JSMgr
     public static bool isShutDown { get { return ShutDown; } }
     public static void ShutdownJSEngine()
     {
+        //
+        // There is a JS_GC called inside
+        //
+        JSApi.ShutdownJSEngine(0);
+
+        // Here:
+        // mDictionary1 and mDictionary2 should only left JSComponent object
+        // because their 'OnDestroy' may not be called yet
+        // It's OK not to call 'JSMgr.ClearJSCSRel()' here
+        //
         ShutDown = true;
         allCallbackInfo.Clear();
         JSMgr.ClearJSCSRel();
         evaluatedScript.Clear();
-        JSApi.ShutdownJSEngine();
         jsEngineRound++;
     }
     

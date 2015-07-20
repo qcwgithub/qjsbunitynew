@@ -102,7 +102,7 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int /* bool */ initErrorHandler();
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern void ShutdownJSEngine();
+    public static extern void ShutdownJSEngine(int bCleanup);
 
     /*
      * ****************** Error handle ****************** 

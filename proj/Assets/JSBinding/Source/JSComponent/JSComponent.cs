@@ -192,6 +192,11 @@ public class JSComponent : JSSerializer
 
     void OnDestroy()
     {
+        if (initSuccess)
+        {
+            JSMgr.removeJSCSRel(jsObjID);
+        }
+
         if (JSMgr.isShutDown)
         {
             return;
@@ -203,7 +208,8 @@ public class JSComponent : JSSerializer
         {
             // JSMgr.RemoveRootedObject(jsObj);
             JSApi.setTraceS(jsObjID, false);
-            JSMgr.removeJSCSRel(jsObjID);
+            // JSMgr.removeJSCSRel(jsObjID); // Move upwards
+
             //
             // jsObj doesn't have finalize
             // we must remove it here
