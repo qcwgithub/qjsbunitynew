@@ -507,7 +507,16 @@ public class JSDataExchangeMgr
             {
                 t = a.GetType(typeName);
                 if (t != null)
+                {
+                    // !!!
+                    // if a type is marked with JsTypeAttribute
+                    // we don't return it
+                    if (t.GetCustomAttributes(typeof(SharpKit.JavaScript.JsTypeAttribute), false).Length > 0)
+                    {
+                        t = null;
+                    }
                     break;
+                }
             }
             typeCache[typeName] = t; // perhaps null
             //if (t == null)

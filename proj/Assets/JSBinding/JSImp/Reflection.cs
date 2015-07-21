@@ -23,7 +23,11 @@ namespace jsimp
         {
             return Activator.CreateInstance<T>();
         }
-        public static bool SetField(object obj, string fieldName, object value)
+        public static object CreateInstance(Type type)
+        {
+            return Activator.CreateInstance(type);
+        }
+        public static bool SetFieldValue(object obj, string fieldName, object value)
         {
             if (obj != null)
             {
@@ -37,6 +41,18 @@ namespace jsimp
             }
             return false;
         }
+        public static Type GetFieldType(Type type, string fieldName)
+        {
+            if (type != null)
+            {
+                FieldInfo field = type.GetField(fieldName);
+                if (field != null)
+                {
+                    return field.FieldType;
+                }
+            }
+            return null;
+        }
         // in JavaScript, it will be simply
         // return (a == b);
         // call this function only when it's OK for JavaScript to do (a == b)
@@ -44,10 +60,13 @@ namespace jsimp
         {
             return a.Equals(b);
         }
-
         public static bool TypeIsEnum(Type type)
         {
             return type.IsSubclassOf(typeof(Enum));
+        }
+        public static bool TypeIsIntArray(Type type)
+        {
+            return type == typeof(int[]);
         }
     }
 }

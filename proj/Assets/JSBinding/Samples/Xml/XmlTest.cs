@@ -1,6 +1,7 @@
 using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using System;
 using System.Reflection;
@@ -43,52 +44,52 @@ public class XmlTest : MonoBehaviour
         Debug.Log("ID == " + v1.ToString());
 
 
-//         XmlNodeList daoJunodeList = pp.ChildNodes;
-//         Debug.Log("daojulist Count = " + daoJunodeList.Count);
-//  
-//  
-//         BetterList<ShopItemData> daoJumdata = daoJunodeList.ConvertType<ShopItemData>("SubType"); 
-//         Debug.Log("daojudata Count = " + daoJumdata.size);
-// 
-//         foreach (ShopItemData shopItemData in daoJumdata)
-//         {
-//             Debug.Log(shopItemData.ID);
-//         }
+        XmlNodeList daoJunodeList = pp.ChildNodes;
+        Debug.Log("daojulist Count = " + daoJunodeList.Count);
+
+
+        List<ShopItemData> daoJumdata = daoJunodeList.CreateObjectFromXml<ShopItemData>("SubType"); 
+        Debug.Log("daojudata Count = " + daoJumdata.Count);
+
+        foreach (ShopItemData shopItemData in daoJumdata)
+        {
+            Debug.Log(shopItemData.ID);
+        }
     }
 }
 
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ShopItemData.javascript")]
 public class ShopItemData
 {
-    public string ID;
+    public string ID { get; set; }
     public ItemType ItemType;
-    public string ItemId;
+    public string ItemId { get; set; }
 
 
-    public enumMoneyType Currency;
+    public enumMoneyType Currency { get; set; }
 
-    public int OldPrice;
-    public int CurPrice;
-    public bool Recommend;
-
-
-    public float RefreshRate;
-    public int Globe;
-    public bool IsPack;
-    public int ItemNum;
-
-    public ItemCell item;
-    public LimeTimeNum TimeNum;
-    public LimitVipDayNum VipDayNum;
-    public LimitBuyNumPrices BuyNumPrice;
+    public int OldPrice { get; set; }
+    public int CurPrice { get; set; }
+    public bool Recommend { get; set; }
 
 
-    public LimitVIPLevel VIPLevel;
-    public LimitDayNum DayNum;
+    public float RefreshRate { get; set; }
+    public int Globe { get; set; }
+    public bool IsPack { get; set; }
+    public int ItemNum { get; set; }
 
-    public int hadBuyNum = 0;
-    public int maxBuyNum = -1;
-    public int ShopCategory;
+    public ItemCell item { get; set; }
+    public LimeTimeNum TimeNum { get; set; }
+    public LimitVipDayNum VipDayNum { get; set; }
+    public LimitBuyNumPrices BuyNumPrice { get; set; }
+
+
+    public LimitVIPLevel VIPLevel { get; set; }
+    public LimitDayNum DayNum { get; set; }
+
+    public int hadBuyNum { get; set; }
+    public int maxBuyNum { get; set; }
+    public int ShopCategory { get; set; }
 
 
     public void Clear()
@@ -103,33 +104,32 @@ public class ShopItemData
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitDayNum.javascript")]
 public class LimitDayNum : IShopLime
 {
-    public int Count;
+    public int Count { get; set; }
 }
 
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitVIPLevel.javascript")]
 public class LimitVIPLevel
 {
-    public int Level;
+    public int Level { get; set; }
 }
 
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitBuyNumPrices.javascript")]
 public class LimitBuyNumPrices : IShopLime
 {
-    public int[] Prices;
+    public int[] Prices{get;set;}
 }
 
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitVipDayNum.javascript")]
 public class LimitVipDayNum : IShopLime
 {
-    public int[] Count;
+    public int[] Count { get; set; }
 }
 
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimeTimeNum.javascript")]
 public class LimeTimeNum : IShopLime
 {
-    public int Interval;
-    public int Count;
-    public int Fuck { get; set; }
+    public int Interval { get; set; }
+    public int Count { get; set; }
 }
 
 [JsType(JsMode.Clr, "../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/IShopLime.javascript")]
@@ -155,22 +155,22 @@ public enum ItemType
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ItemCell.javascript")]
 public class ItemCell
 {
-    public int ID = -1;
-    public string icon = "";
-    public string iconAtlas = "";
-    public string name = "";
-    public int number = 0;
-    public int phases = 0;
-    public string description = "";
-    public int type = -1;
-    public int value = 0;
-    public int maxStack = -1;
-    public int timeLimit = 0;
-    public bool bSold = false;
-    public bool bDestoryed = false;
-    public string sArtNamePath = "";
-    public ColorSign color = 0;
-    public int expSupply = 0;
+    public int ID { get; set; }
+    public string icon  { get; set; }
+    public string iconAtlas  { get; set; }
+    public string name  { get; set; }
+    public int number { get; set; }
+    public int phases  { get; set; }
+    public string description  { get; set; }
+    public int type  { get; set; }
+    public int value  { get; set; }
+    public int maxStack  { get; set; }
+    public int timeLimit  { get; set; }
+    public bool bSold  { get; set; }
+    public bool bDestoryed  { get; set; }
+    public string sArtNamePath { get; set; }
+    public ColorSign color { get; set; }
+    public int expSupply { get; set; }
 }
 
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ColorSign.javascript")]

@@ -3074,6 +3074,10 @@ JsTypes.push({ fullname: "System.Int32", baseTypeName: "System.ValueType", defin
     },
     Parse$$String: function (s) {
         return parseInt(s);
+    },
+    TryParse$$String$$Int32: function (s, out) {
+        out.Value = parseInt(s);
+        return true;
     }
 }
 });

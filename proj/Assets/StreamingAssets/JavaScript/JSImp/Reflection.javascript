@@ -9,19 +9,47 @@ var jsimp$Reflection = {
         // 得测试一下
         CreateInstance$1: function (T){
             //return jsb_CallObjectCtor(T.getNativeType());
-            return new T();
+            //print("77777777 " + T._type.fullname);
+            var ret = new T();
+            return ret;
         },
-        SetField: function (obj, fieldName, value){
+        CreateInstance$$Type: function (type){
+            return new type.ctor();
+        },
+        SetFieldValue: function (obj, fieldName, value){
             if (obj != null) {
-                if (obj.hasOwnProperty(fieldName)) {
+                //if (obj.hasOwnProperty(fieldName))
+                {
                     obj[fieldName] = value;
                     return true;
                 }
             }
             return false;
         },
+        GetFieldType: function (type, fieldName){
+            if (type != null) {
+                var typeStr = type.ctor.prototype[fieldName + "$$"];
+                //print(type.fullname + "." + fieldName + " = " + typeStr);
+                if (typeStr != undefined) {
+                    if (typeStr == "System.Int32[]") {
+                        return Int32Array;
+                    } else {
+                        var fieldType = JsTypeHelper.GetType(typeStr);
+                        //print(fieldType.fullname);
+                        return fieldType;
+                    }
+                }
+            }
+            return null;
+        },
         SimpleTEquals$1: function (T, a, b){
             return (a == b);
+        },
+        TypeIsEnum: function (type){
+            return type.Kind == "Enum";
+        },
+        TypeIsIntArray: function (type){
+            return type == Int32Array;
         }
     },
     assemblyName: "SharpKitProj",
