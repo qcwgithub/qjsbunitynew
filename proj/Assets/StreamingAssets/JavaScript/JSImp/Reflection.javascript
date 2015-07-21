@@ -14,7 +14,7 @@ var jsimp$Reflection = {
             return ret;
         },
         CreateInstance$$Type: function (type){
-            return new type.ctor();
+            return new type._JsType.ctor();
         },
         SetFieldValue: function (obj, fieldName, value){
             if (obj != null) {
@@ -28,13 +28,17 @@ var jsimp$Reflection = {
         },
         GetFieldType: function (type, fieldName){
             if (type != null) {
-                var typeStr = type.ctor.prototype[fieldName + "$$"];
+                var typeStr = type._JsType.ctor.prototype[fieldName + "$$"];
                 //print(type.fullname + "." + fieldName + " = " + typeStr);
                 if (typeStr != undefined) {
                     if (typeStr == "System.Int32[]") {
-                        return Int32Array;
+                        //return Int32Array;
+                        var fieldType = Typeof(Int32Array);
+                        //print(fieldType.fullname);
+                        print("[] " + fieldType)
+                        return fieldType;
                     } else {
-                        var fieldType = JsTypeHelper.GetType(typeStr);
+                        var fieldType = Typeof(typeStr);
                         //print(fieldType.fullname);
                         return fieldType;
                     }
@@ -42,14 +46,24 @@ var jsimp$Reflection = {
             }
             return null;
         },
+        SetPropertyValue: function (obj, propertyName, value){
+            return this.SetFieldValue(obj, "_" + propertyName, value);
+        },
+        GetPropertyType: function (type, propertyName){
+            return this.GetFieldType(type, propertyName);
+        },
+        PropertyTypeIsIntArray: function (type, propertyName){
+            if (type != null) {
+                var typeStr = type._JsType.ctor.prototype[propertyName + "$$"];
+                return typeStr == "System.Int32[]";
+            }
+            return false;
+        },
         SimpleTEquals$1: function (T, a, b){
             return (a == b);
         },
-        TypeIsEnum: function (type){
-            return type.Kind == "Enum";
-        },
         TypeIsIntArray: function (type){
-            return type == Int32Array;
+            return type._JsType == Int32Array;
         }
     },
     assemblyName: "SharpKitProj",

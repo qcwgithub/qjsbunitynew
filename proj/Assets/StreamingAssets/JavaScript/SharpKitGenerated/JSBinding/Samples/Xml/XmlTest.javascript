@@ -27,6 +27,17 @@ var XmlTest = {
             UnityEngine.Debug.Log$$Object("pp=" + pp.toString());
             var v1 = Lavie.XmlUtils.NodeValue$1(ItemType.ctor, pp, "ID");
             UnityEngine.Debug.Log$$Object("ID == " + v1.toString());
+            var daoJunodeList = pp.get_ChildNodes();
+            UnityEngine.Debug.Log$$Object("daojulist Count = " + daoJunodeList.get_Count());
+            var daoJumdata = Lavie.XmlUtils.CreateObjectFromXml$1$$XmlNodeList$$String(ShopItemData.ctor, daoJunodeList, "SubType");
+            UnityEngine.Debug.Log$$Object("daojudata Count = " + daoJumdata.get_Count());
+            var $it14 = daoJumdata.GetEnumerator();
+            var s = "";
+            while ($it14.MoveNext()){
+                var shopItemData = $it14.get_Current();
+                s += (JSON.stringify(shopItemData)) + "\n\n";
+            }
+            print(s);
         }
     }
 };

@@ -4,144 +4,87 @@ var Lavie$XmlUtils = {
     fullname: "Lavie.XmlUtils",
     baseTypeName: "System.Object",
     staticDefinition: {
-        ConvertType$$XmlNode$$Type: function (mNode, target){
-            var mData = System.Activator.CreateInstance$$Type(target);
-            var t = mData.GetType();
-            var fields = t.GetFields();
-            for (var $i14 = 0,$l14 = fields.length,fieldInfo = fields[$i14]; $i14 < $l14; $i14++, fieldInfo = fields[$i14]){
-                var fieldName = fieldInfo.get_Name();
-                var value = mNode.get_Attributes().GetNamedItem$$String(fieldName).get_Value().toString();
-                var lastValue = value;
-                var fType = t.GetField$$String(fieldName).get_FieldType();
-                lastValue = Lavie.XmlUtils.Convert(fType, value, lastValue);
-                t.GetField$$String(fieldName).SetValue$$Object$$Object(mData, lastValue);
-            }
-            return mData;
-        },
-        ConvertType$1$$XmlNode: function (T, mNode){
-            var mData = System.Activator.CreateInstance$1(T);
-            var t = mData.GetType();
-            var $it14 = mNode.get_Attributes().GetEnumerator();
-            while ($it14.MoveNext()){
-                var xmlAttribute = $it14.get_Current();
+        AssignObjectValueFromXml: function (mNode, mData, mDataType){
+            var $it15 = mNode.get_Attributes().GetEnumerator();
+            while ($it15.MoveNext()){
+                var xmlAttribute = $it15.get_Current();
                 var fieldName = xmlAttribute.get_Name();
                 var value = mNode.get_Attributes().GetNamedItem$$String(fieldName).get_Value().toString();
-                var lastValue = value;
-                if (System.Reflection.FieldInfo.op_Equality$$FieldInfo$$FieldInfo(t.GetField$$String(fieldName), null)){
-                    continue;
-                }
-                var fType = t.GetField$$String(fieldName).get_FieldType();
-                lastValue = Lavie.XmlUtils.Convert(fType, value, lastValue);
-                t.GetField$$String(fieldName).SetValue$$Object$$Object(mData, lastValue);
-            }
-            return mData;
-        },
-        ConvertType$1$$XmlNodeList: function (T, nodeList){
-            var list = new BetterList$1.ctor(T);
-            var t = Typeof(T);
-            var $it15 = nodeList.GetEnumerator();
-            while ($it15.MoveNext()){
-                var mNode = $it15.get_Current();
-                var mData = System.Activator.CreateInstance$1(T);
-                var $it16 = mNode.get_Attributes().GetEnumerator();
-                while ($it16.MoveNext()){
-                    var xmlAttribute = $it16.get_Current();
-                    var fieldName = xmlAttribute.get_Name();
-                    var value = mNode.get_Attributes().GetNamedItem$$String(fieldName).get_Value().toString();
-                    var lastValue = value;
-                    if (System.Reflection.FieldInfo.op_Equality$$FieldInfo$$FieldInfo(t.GetField$$String(fieldName), null)){
-                        throw $CreateException(new System.Exception.ctor$$String(System.String.Format$$String$$Object$$Object("{0} have no filed {1}", t.get_Name(), fieldName)), new Error());
-                    }
-                    var fType = t.GetField$$String(fieldName).get_FieldType();
-                    lastValue = Lavie.XmlUtils.Convert(fType, value, lastValue);
-                    t.GetField$$String(fieldName).SetValue$$Object$$Object(mData, lastValue);
-                }
-                list.Add(mData);
-            }
-            return list;
-        },
-        ConvertType$1$$XmlNodeList$$String: function (T, nodeList, subType){
-            var list = new BetterList$1.ctor(T);
-            var t = Typeof(T);
-            var $it17 = nodeList.GetEnumerator();
-            while ($it17.MoveNext()){
-                var mNode = $it17.get_Current();
-                var mData = System.Activator.CreateInstance$1(T);
-                var $it18 = mNode.get_Attributes().GetEnumerator();
-                while ($it18.MoveNext()){
-                    var xmlAttribute = $it18.get_Current();
-                    var fieldName = xmlAttribute.get_Name();
-                    var value = xmlAttribute.get_Value().toString();
-                    var lastValue = value;
-                    var fieldInfo = t.GetField$$String(fieldName);
-                    if (System.Reflection.FieldInfo.op_Equality$$FieldInfo$$FieldInfo(fieldInfo, null)){
-                        throw $CreateException(new System.Exception.ctor$$String(System.String.Format$$String$$Object$$Object("{0} have no field {1}", t.get_Name(), fieldName)), new Error());
-                    }
-                    var fieldType = fieldInfo.get_FieldType();
-                    lastValue = Lavie.XmlUtils.Convert(fieldType, value, lastValue);
-                    t.GetField$$String(fieldName).SetValue$$Object$$Object(mData, lastValue);
-                }
-                if (mNode.get_HasChildNodes()){
-                    var $it19 = mNode.get_ChildNodes().GetEnumerator();
-                    while ($it19.MoveNext()){
-                        var childNode = $it19.get_Current();
-                        var tSubType = Lavie.XmlUtils.NodeValue$1(System.String.ctor, childNode, subType);
-                        if (tSubType == null || System.Reflection.FieldInfo.op_Equality$$FieldInfo$$FieldInfo(t.GetField$$String(tSubType), null)){
-                        }
-                        else {
-                            var fType = t.GetField$$String(tSubType).get_FieldType();
-                            var fieldValue = Lavie.XmlUtils.ConvertType$$XmlNode$$Type(childNode, fType);
-                            t.GetField$$String(tSubType).SetValue$$Object$$Object(mData, fieldValue);
-                        }
-                    }
-                }
-                list.Add(mData);
-            }
-            return list;
-        },
-        Convert: function (fType, value, lastValue){
-            if (fType == Typeof(System.Int32.ctor)){
-                var n = System.Int32.Parse$$String(value.toString());
-                lastValue = n;
-            }
-            else if (fType == Typeof(System.Single.ctor)){
-                var m = System.Single.Parse$$String(value.toString());
-                lastValue = m;
-            }
-            else if (fType == Typeof(System.Boolean.ctor)){
-                lastValue = (value == "1");
-            }
-            else if (fType.get_IsEnum()){
-                var mInt;
-                if ((function (){
-                    var $1 = {
-                        Value: mInt
-                    };
-                    var $res = System.Int32.TryParse$$String$$Int32(value.toString(), $1);
-                    mInt = $1.Value;
-                    return $res;
-                })()){
-                    lastValue = (System.Int32.Parse$$String(value.toString()));
+                var fieldValue = null;
+                if (jsimp.Reflection.PropertyTypeIsIntArray(mDataType, fieldName)){
+                    fieldValue = Lavie.XmlUtils.ConvertString2IntArray(value);
                 }
                 else {
-                    lastValue = (System.Enum.Parse$$Type$$String(fType, value.toString()));
+                    var fieldType = jsimp.Reflection.GetPropertyType(mDataType, fieldName);
+                    if (fieldType == null){
+                        continue;
+                    }
+                    fieldValue = Lavie.XmlUtils.ConvertString2ActualType(fieldType, value);
                 }
+                jsimp.Reflection.SetPropertyValue(mData, fieldName, fieldValue);
             }
-            else if (fType == Typeof(System.String.ctor)){
-                lastValue = lastValue.toString();
-            }
-            else if (fType == Typeof(Int32Array)){
-                var value2 = (lastValue.toString().Split$$Char$Array(","));
-                var value1 = new Int32Array(value2.length);
-                for (var i = 0; i < value2.length; i++){
-                    value1[i] = System.Int32.Parse$$String(value2[i]);
+        },
+        CreateObjectFromXml$$XmlNode$$Type: function (mNode, type){
+            var mData = jsimp.Reflection.CreateInstance$$Type(type);
+            Lavie.XmlUtils.AssignObjectValueFromXml(mNode, mData, type);
+            return mData;
+        },
+        CreateObjectFromXml$1$$XmlNode: function (T, mNode){
+            var mData = jsimp.Reflection.CreateInstance$1(T);
+            Lavie.XmlUtils.AssignObjectValueFromXml(mNode, mData, Typeof(T));
+            return mData;
+        },
+        CreateObjectFromXml$1$$XmlNodeList$$String: function (T, nodeList, subType){
+            var list = new System.Collections.Generic.List$1.ctor(T);
+            var $it16 = nodeList.GetEnumerator();
+            while ($it16.MoveNext()){
+                var mNode = $it16.get_Current();
+                var mData = jsimp.Reflection.CreateInstance$1(T);
+                Lavie.XmlUtils.AssignObjectValueFromXml(mNode, mData, Typeof(T));
+                if (subType.length > 0 && mNode.get_HasChildNodes()){
+                    var $it17 = mNode.get_ChildNodes().GetEnumerator();
+                    while ($it17.MoveNext()){
+                        var childNode = $it17.get_Current();
+                        var fieldName = Lavie.XmlUtils.NodeValue$1(System.String.ctor, childNode, subType);
+                        var fieldType = jsimp.Reflection.GetPropertyType(Typeof(T), fieldName);
+                        if (fieldType != null){
+                            var fieldValue = Lavie.XmlUtils.CreateObjectFromXml$$XmlNode$$Type(childNode, fieldType);
+                            jsimp.Reflection.SetPropertyValue(mData, fieldName, fieldValue);
+                        }
+                    }
                 }
-                lastValue = value1;
+                list.Add(mData);
+            }
+            return list;
+        },
+        ConvertString2IntArray: function (value){
+            var arr = (value.Split$$Char$Array(","));
+            var ret = new Int32Array(arr.length);
+            for (var i = 0; i < arr.length; i++){
+                ret[i] = System.Int32.Parse$$String(arr[i]);
+            }
+            return ret;
+        },
+        ConvertString2ActualType: function (type, value){
+            var ret = null;
+            if (type == Typeof(System.Int32.ctor)){
+                ret = System.Int32.Parse$$String(value);
+            }
+            else if (type == Typeof(System.Single.ctor)){
+                ret = System.Single.Parse$$String(value);
+            }
+            else if (type == Typeof(System.Boolean.ctor)){
+                ret = (value == "1");
+            }
+            else if (type.get_IsEnum()){
+                ret = System.Int32.Parse$$String(value);
+            }
+            else if (type == Typeof(System.String.ctor)){
+                ret = value;
             }
             else {
-                throw $CreateException(new System.Exception.ctor$$String(System.String.Format$$String$$Object("value{0} is not defined!", lastValue)), new Error());
             }
-            return lastValue;
+            return ret;
         },
         NodeValue$1: function (T, node, nodeName){
             var collection = node.get_Attributes();
@@ -154,40 +97,12 @@ var Lavie$XmlUtils = {
             }
             var typeT = Typeof(T);
             var value = namedItem.get_Value();
-            if (typeT == Typeof(System.Int32.ctor)){
-                var n = System.Int32.Parse$$String(value.toString());
-                return Cast((n), T);
-            }
-            else if (typeT == Typeof(System.Single.ctor)){
-                var m = System.Single.Parse$$String(value.toString());
-                return Cast((m), T);
-            }
-            else if (typeT == Typeof(System.Boolean.ctor)){
-                return Cast((value == "1"), T);
-            }
-            else if (jsimp.Reflection.TypeIsEnum(typeT)){
-                var mInt;
-                if ((function (){
-                    var $1 = {
-                        Value: mInt
-                    };
-                    var $res = System.Int32.TryParse$$String$$Int32(value.toString(), $1);
-                    mInt = $1.Value;
-                    return $res;
-                })()){
-                    return Cast((System.Int32.Parse$$String(value.toString())), T);
-                }
-                else {
-                    var tt = Typeof(T);
-                    return Cast((System.Enum.Parse$$Type$$String(tt, value.toString())), T);
-                }
-            }
-            return Cast(value, T);
+            return Cast(Lavie.XmlUtils.ConvertString2ActualType(typeT, value), T);
         },
         Select$1$$XmlNodeList$$String$$String$$String: function (T, xmlNodeList, nodeName, value, attribute){
-            var $it20 = xmlNodeList.GetEnumerator();
-            while ($it20.MoveNext()){
-                var node = $it20.get_Current();
+            var $it18 = xmlNodeList.GetEnumerator();
+            while ($it18.MoveNext()){
+                var node = $it18.get_Current();
                 if (Lavie.XmlUtils.NodeValue$1(T, node, nodeName).toString() == value){
                     return Lavie.XmlUtils.NodeValue$1(T, node, attribute);
                 }
@@ -195,9 +110,9 @@ var Lavie$XmlUtils = {
             return Default(T);
         },
         Select$1$$XmlNodeList$$String$$T: function (T, xmlNodeList, nodeName, value){
-            var $it21 = xmlNodeList.GetEnumerator();
-            while ($it21.MoveNext()){
-                var node = $it21.get_Current();
+            var $it19 = xmlNodeList.GetEnumerator();
+            while ($it19.MoveNext()){
+                var node = $it19.get_Current();
                 var nodeValue = Lavie.XmlUtils.NodeValue$1(T, node, nodeName);
                 if (jsimp.Reflection.SimpleTEquals$1(T, nodeValue, value)){
                     return node;

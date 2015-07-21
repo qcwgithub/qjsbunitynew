@@ -62,7 +62,7 @@ public class XmlTest : MonoBehaviour
 public class ShopItemData
 {
     public string ID { get; set; }
-    public ItemType ItemType;
+    public ItemType ItemType { get; set; }
     public string ItemId { get; set; }
 
 

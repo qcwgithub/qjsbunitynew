@@ -8,8 +8,15 @@ var LimitBuyNumPrices = {
     Kind: "Class",
     definition: {
         ctor: function (){
-            this.Prices = null;
+            this._Prices = null;
             System.Object.ctor.call(this);
+        },
+        Prices$$: "System.Int32[]",
+        get_Prices: function (){
+            return this._Prices;
+        },
+        set_Prices: function (value){
+            this._Prices = value;
         }
     }
 };

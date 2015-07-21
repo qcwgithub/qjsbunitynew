@@ -7,8 +7,15 @@ var LimitVIPLevel = {
     Kind: "Class",
     definition: {
         ctor: function (){
-            this.Level = 0;
+            this._Level = 0;
             System.Object.ctor.call(this);
+        },
+        Level$$: "System.Int32",
+        get_Level: function (){
+            return this._Level;
+        },
+        set_Level: function (value){
+            this._Level = value;
         }
     }
 };

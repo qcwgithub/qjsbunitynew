@@ -8,8 +8,15 @@ var LimitDayNum = {
     Kind: "Class",
     definition: {
         ctor: function (){
-            this.Count = 0;
+            this._Count = 0;
             System.Object.ctor.call(this);
+        },
+        Count$$: "System.Int32",
+        get_Count: function (){
+            return this._Count;
+        },
+        set_Count: function (value){
+            this._Count = value;
         }
     }
 };

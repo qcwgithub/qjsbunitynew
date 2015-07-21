@@ -8,8 +8,15 @@ var LimitVipDayNum = {
     Kind: "Class",
     definition: {
         ctor: function (){
-            this.Count = null;
+            this._Count = null;
             System.Object.ctor.call(this);
+        },
+        Count$$: "System.Int32[]",
+        get_Count: function (){
+            return this._Count;
+        },
+        set_Count: function (value){
+            this._Count = value;
         }
     }
 };

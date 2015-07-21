@@ -20,14 +20,21 @@ namespace Lavie
                 var fieldName = xmlAttribute.Name;
                 string value = mNode.Attributes.GetNamedItem(fieldName).Value.ToString();
 
-                Type fieldType = jsimp.Reflection.GetFieldType(mDataType, fieldName);
-                if (fieldType == null)
+                object fieldValue = null;
+                if (jsimp.Reflection.PropertyTypeIsIntArray(mDataType, fieldName))
                 {
-                    continue;
+                    fieldValue = ConvertString2IntArray(value);
                 }
-
-                object fieldValue = ConvertString2ActualType(fieldType, value);
-                jsimp.Reflection.SetFieldValue(mData, fieldName, fieldValue);
+                else
+                {
+                    Type fieldType = jsimp.Reflection.GetPropertyType(mDataType, fieldName);
+                    if (fieldType == null)
+                    {
+                        continue;
+                    }
+                    fieldValue = ConvertString2ActualType(fieldType, value);
+                }
+                jsimp.Reflection.SetPropertyValue(mData, fieldName, fieldValue);
             }
         }
         public static object CreateObjectFromXml(this XmlNode mNode, Type type)
@@ -58,18 +65,30 @@ namespace Lavie
                     foreach (XmlNode childNode in mNode.ChildNodes)
                     {
                         string fieldName = childNode.NodeValue<string>(subType);
-                        Type fieldType = jsimp.Reflection.GetFieldType(typeof(T), fieldName);
+                        Type fieldType = jsimp.Reflection.GetPropertyType(typeof(T), fieldName);
 
                         if (fieldType != null)
                         {
                             object fieldValue = childNode.CreateObjectFromXml(fieldType);
-                            jsimp.Reflection.SetFieldValue(mData, fieldName, fieldValue);
+                            jsimp.Reflection.SetPropertyValue(mData, fieldName, fieldValue);
                         }
                     }
                 }
                 list.Add(mData);
             }
             return list;
+        }
+        private static object ConvertString2IntArray(string value)
+        {
+            string[] arr = (value.Split(','));
+
+            int[] ret = new int[arr.Length];
+            for (int i = 0; i < arr.Length; i++)
+            {
+                ret[i] = int.Parse(arr[i]);
+            }
+
+            return ret;
         }
         private static object ConvertString2ActualType(Type type, string value)
         {
@@ -86,34 +105,26 @@ namespace Lavie
             {
                 ret = (bool)(value == "1");
             }
-            else if (jsimp.Reflection.TypeIsEnum(type))
+            else if (type.IsEnum)
             {
-                int mInt;
-                if (int.TryParse(value.ToString(), out mInt))
-                {
-                    ret = (int.Parse(value));
-                }
-                else
-                {
-                    ret = (Enum.Parse(type, value));
-                }
+                ret = int.Parse(value);
             }
             else if (type == typeof(string))
             {
                 ret = value;
             }
-            else if (jsimp.Reflection.TypeIsIntArray(type))
-            {
-                string[] arr = (value.Split(','));
-
-                int[] value1 = new int[arr.Length];
-                for (int i = 0; i < arr.Length; i++)
-                {
-                    value1[i] = int.Parse(arr[i]);
-                }
-
-                ret = value1;
-            }
+//             else if (jsimp.Reflection.TypeIsIntArray(type))
+//             {
+//                 string[] arr = (value.Split(','));
+// 
+//                 int[] value1 = new int[arr.Length];
+//                 for (int i = 0; i < arr.Length; i++)
+//                 {
+//                     value1[i] = int.Parse(arr[i]);
+//                 }
+// 
+//                 ret = value1;
+//             }
             else
             {
                 //throw new Exception(String.Format("value{0} is not defined!", lastValue));

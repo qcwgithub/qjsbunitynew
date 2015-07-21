@@ -53,16 +53,50 @@ namespace jsimp
             }
             return null;
         }
+        public static bool SetPropertyValue(object obj, string propertyName, object value)
+        {
+            if (obj != null)
+            {
+                Type type = obj.GetType();
+                PropertyInfo property = type.GetProperty(propertyName);
+                if (property != null)
+                {
+                    property.SetValue(obj, value, null);
+                    return true;
+                }
+            }
+            return false;
+        }
+        public static Type GetPropertyType(Type type, string propertyName)
+        {
+            if (type != null)
+            {
+                PropertyInfo property = type.GetProperty(propertyName);
+                if (property != null)
+                {
+                    return property.PropertyType;
+                }
+            }
+            return null;
+        }
+        public static bool PropertyTypeIsIntArray(Type type, string propertyName)
+        {
+            if (type != null)
+            {
+                PropertyInfo property = type.GetProperty(propertyName);
+                if (property != null)
+                {
+                    return (property.PropertyType == typeof(int[]));
+                }
+            }
+            return false;
+        }
         // in JavaScript, it will be simply
         // return (a == b);
         // call this function only when it's OK for JavaScript to do (a == b)
         public static bool SimpleTEquals<T>(T a, T b)
         {
             return a.Equals(b);
-        }
-        public static bool TypeIsEnum(Type type)
-        {
-            return type.IsSubclassOf(typeof(Enum));
         }
         public static bool TypeIsIntArray(Type type)
         {
