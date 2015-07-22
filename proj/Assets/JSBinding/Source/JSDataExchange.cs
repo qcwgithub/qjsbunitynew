@@ -510,7 +510,7 @@ public class JSDataExchangeMgr
                 {
                     // !!!
                     // if a type is marked with JsTypeAttribute
-                    // we don't return it
+                    // don't return it
                     if (t.GetCustomAttributes(typeof(SharpKit.JavaScript.JsTypeAttribute), false).Length > 0)
                     {
                         t = null;

@@ -71,8 +71,9 @@ public static class JSMgr
         int initResult = JSApi.InitJSEngine(
             new JSApi.JSErrorReporter(errorReporter), 
             new JSApi.CSEntry(JSMgr.CSEntry),
-            new JSApi.JSNative(require), 
-            new JSApi.OnObjCollected(onObjCollected));
+            new JSApi.JSNative(require),
+            new JSApi.OnObjCollected(onObjCollected),
+            new JSApi.JSNative(print));
 
         if (initResult != 0)
         {
@@ -98,10 +99,13 @@ public static class JSMgr
     public static bool isShutDown { get { return ShutDown; } }
     public static void ShutdownJSEngine()
     {
-        //
-        // There is a JS_GC called inside
-        //
+        // There is a JS_GC called inside JSApi.ShutdownJSEngine
+#if UNITY_EDITOR
+        // DO NOT really cleanup everything, because we wanna start again
         JSApi.ShutdownJSEngine(0);
+#else
+        JSApi.ShutdownJSEngine(1);
+#endif
 
         // Here:
         // mDictionary1 and mDictionary2 should only left JSComponent object
@@ -274,6 +278,14 @@ public static class JSMgr
         string jsScriptName = JSApi.getArgStringS(vp, 0);
         bool ret = evaluate(jsScriptName);
         JSApi.setRvalBoolS(vp, ret);
+        return true;
+    }
+
+    [MonoPInvokeCallbackAttribute(typeof(JSApi.JSNative))]
+    static bool print(IntPtr cx, uint argc, IntPtr vp)
+    {
+        string str = JSApi.getArgStringS(vp, 0);
+        UnityEngine.Debug.Log(str);
         return true;
     }
 
