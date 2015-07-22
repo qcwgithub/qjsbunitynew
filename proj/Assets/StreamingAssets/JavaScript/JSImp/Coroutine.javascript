@@ -4,8 +4,10 @@ var jsimp$Coroutine = {
     fullname: "jsimp.Coroutine",
     baseTypeName: "System.Object",
     staticDefinition: {
-        UpdateMonoBehaviourCoroutine: function (mb){
-            mb.$UpdateAllCoroutines(UnityEngine.Time.get_deltaTime());
+        UpdateCoroutineAndInvoke: function (mb){
+            var elapsed = UnityEngine.Time.get_deltaTime();
+            mb.$UpdateAllCoroutines(elapsed);
+            mb.$UpdateAllInvokes(elapsed);
         }
     },
     assemblyName: "SharpKitProj",

@@ -4,7 +4,7 @@ var jsimp$Coroutine = {
     fullname: "jsimp.Coroutine",
     baseTypeName: "System.Object",
     staticDefinition: {
-        UpdateMonoBehaviourCoroutine: function (mb){
+        UpdateCoroutineAndInvoke: function (mb){
         }
     },
     assemblyName: "SharpKitProj",

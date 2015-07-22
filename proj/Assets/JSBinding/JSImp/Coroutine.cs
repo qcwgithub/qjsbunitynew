@@ -9,7 +9,7 @@ namespace jsimp
 [JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/JSImp/Coroutine.javascript")]
     public class Coroutine
     {
-        public static void UpdateMonoBehaviourCoroutine(MonoBehaviour mb)
+        public static void UpdateCoroutineAndInvoke(MonoBehaviour mb)
         {
             // NOTHING TO DO
         }

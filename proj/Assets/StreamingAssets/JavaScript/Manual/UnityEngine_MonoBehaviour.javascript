@@ -7,37 +7,154 @@ for (var i = 0; i < JsTypes.length; i++) {
 }
 
 if (_jstype) {
-
-    _jstype.definition.StartCoroutine$$String$$Object = function(a0/*String*/, a1/*Object*/) { 
-        
-        return CS.Call(4, 174, 6, false, this, a0, a1); 
-    }
-    _jstype.definition.StartCoroutine$$String = function(a0/*String*/) { 
-        if (this[a0]) 
-        {
-            var fiber = this[a0].call(this);
-            return this.$AddCoroutine(fiber);
+    _jstype.definition.CancelInvoke$$String = function(a0/*String*/) {
+        this.$RemoveInvokeByName(a0);
+    };
+    _jstype.definition.CancelInvoke = function() {
+        this.$RemoveAllInvokes();
+    };
+    _jstype.definition.Invoke = function(a0/*String*/, a1/*Single*/) {
+        if (this[a0]) {
+            var fun = this[a0].bind(this);
+            this.$AddInvoke(a0, fun, a1, 0, false);
         }
-    }
+    };
+    _jstype.definition.InvokeRepeating = function(a0/*String*/, a1/*Single*/, a2/*Single*/) {
+        if (this[a0]) {
+            var fun = this[a0].bind(this);
+            this.$AddInvoke(a0, fun, a1, a2, true);
+        }
+    };
+    _jstype.definition.IsInvoking$$String = function(a0/*String*/) {
+        return this.$IsInvoking(a0);
+    };
+    _jstype.definition.IsInvoking = function() {
+        return this.$IsInvoking(undefined);
+    };
+    _jstype.definition.StartCoroutine$$String$$Object = function(a0/*String*/, a1/*Object*/) {
+        if (this[a0]) {
+            var fiber = this[a0].call(this, a1);
+            return this.$AddCoroutine(fiber, a0);
+        }
+    };
+    _jstype.definition.StartCoroutine$$String = function(a0/*String*/) {
+        if (this[a0]) {
+            var fiber = this[a0].call(this);
+            return this.$AddCoroutine(fiber, a0);
+        }
+    };
     _jstype.definition.StartCoroutine$$IEnumerator = function(a0/*IEnumerator*/) { 
         return this.$AddCoroutine(a0);
-    }
-    _jstype.definition.StartCoroutine_Auto = function(a0/*IEnumerator*/) { 
-        
-        return CS.Call(4, 174, 9, false, this, a0); 
-    }
-    _jstype.definition.StopAllCoroutines = function() { 
-        
-        return CS.Call(4, 174, 10, false, this); 
-    }
-    _jstype.definition.StopCoroutine$$Coroutine = function(a0/*Coroutine*/) { 
-        
-        return CS.Call(4, 174, 11, false, this, a0); 
-    }
-    _jstype.definition.StopCoroutine$$String = function(a0/*String*/) { 
-        
-        return CS.Call(4, 174, 12, false, this, a0); 
-    }
+    };
+    _jstype.definition.StartCoroutine_Auto = function(a0/*IEnumerator*/) {
+        return this.$AddCoroutine(a0);
+    };
+    _jstype.definition.StopAllCoroutines = function() {
+        return this.$RemoveAllCoroutines();
+    };
+    _jstype.definition.StopCoroutine$$IEnumerator = function(a0/*Coroutine*/) {
+        return this.$RemoveCoroutineByFiber(a0);
+    };
+    _jstype.definition.StopCoroutine$$String = function(a0/*String*/) {
+        return this.$RemoveCoroutineByName(a0);
+    };
+    //
+    // Invoke Scheduler
+    //
+    _jstype.definition.$AddInvoke = function (funName, fun, delay, interval, bRepeat) {
+        var invokeNode = {
+            funName: funName,
+            fun: fun,
+            delay: delay,
+            interval: interval,
+            accum: 0,
+            bRepeat: bRepeat,
+
+            prev: undefined,
+            next: undefined
+        };
+        if (this.$firstInvoke) {
+            invokeNode.next = this.$firstInvoke;
+            this.$firstInvoke.prev = invokeNode;
+        };
+        this.$firstInvoke = invokeNode;
+    };
+    _jstype.definition.$UpdateAllInvokes = function (elapsed) {
+        var invoke = this.$firstInvoke,
+            next,
+            bCall;
+        while (invoke != undefined) {
+            next = invoke.next;
+            bCall = false;
+            if (invoke.delay > 0) {
+                invoke.delay -= elapsed;
+                if (invoke.delay <= 0) {
+                    bCall = true;
+                }
+            } else {
+                invoke.accum += elapsed;
+                if (invoke.accum >= invoke.interval) {
+                    invoke.accum -= invoke.interval;
+                    bCall = true;
+                }
+            }
+            if (bCall) {
+                invoke.fun();
+                if (!invoke.bRepeat) {
+                    this.$RemoveInvoke(invoke);
+                }
+            }
+            invoke = next;
+        }
+    };
+    _jstype.definition.$IsInvoking = function (funName) {
+        if (funName == undefined) {
+            return (this.$firstInvoke != undefined);
+        } else {
+            var invoke = this.$firstInvoke,
+                next,
+                bCall;
+            while (invoke != undefined) {
+                next = invoke.next;
+                if (invoke.funName == funName) {
+                    return true;
+                }
+                invoke = next;
+            }
+            return false;
+        }
+    };
+    _jstype.definition.$RemoveAllInvokes = function () {
+        this.$firstInvoke = undefined;
+    };
+    _jstype.definition.$RemoveInvokeByName = function (funName) {
+        var invoke = this.$firstInvoke,
+            next,
+            bCall;
+        while (invoke != undefined) {
+            next = invoke.next;
+            if (invoke.funName == funName) {
+                this.$RemoveInvoke(invoke);
+            }
+            invoke = next;
+        }
+    };
+    _jstype.definition.$RemoveInvoke = function (invoke) {
+        if (this.$firstInvoke == invoke) {
+            this.$firstInvoke = invoke.next;
+        }
+        else {
+            if (invoke.next != undefined) {
+                invoke.prev.next = invoke.next;
+                invoke.next.prev = invoke.prev;
+            }
+            else if (invoke.prev) {
+                invoke.prev.next = undefined;
+            }
+        }
+        invoke.prev = undefined;
+        invoke.next = undefined;
+    };
 
     //
     // Coroutine Scheduler
@@ -52,13 +169,14 @@ if (_jstype) {
     // 
 
     // fiber 类似于 C# 的 IEnumerator
-    _jstype.definition.$AddCoroutine = function (fiber) {
+    _jstype.definition.$AddCoroutine = function (fiber, name) {
         var coroutineNode = {
             $__CN: true,  // mark this is a coroutine node
             prev: undefined,
             next: undefined,
             fiber: fiber,
             finished: false,
+            name: name,
 
             waitForFrames: 0,          // yield null
             waitForSeconds: undefined, // WaitForSeconds
@@ -75,8 +193,7 @@ if (_jstype) {
         // NOTE
         // return coroutine node itself!
         return coroutineNode;
-    }
-
+    };
     // this method is called from LateUpdate
     _jstype.definition.$UpdateAllCoroutines = function (elapsed) {
         // cn is short for Coroutine Node
@@ -116,8 +233,7 @@ if (_jstype) {
             }
             cn = next;
         }
-    }
-
+    };
     _jstype.definition.$UpdateCoroutine = function (cn) { // cn is short for Coroutine Node
         var fiber = cn.fiber;
         var obj = fiber.next();
@@ -147,12 +263,36 @@ if (_jstype) {
             cn.finished = true;
             this.$RemoveCoroutine(cn);
         }
-    }
-
+    };
+    _jstype.definition.$RemoveAllCoroutines = function () {
+        this.$first = undefined;
+    };
+    _jstype.definition.$RemoveCoroutineByFiber = function (fiber) {
+        var cn = this.$first;
+        while (cn != undefined) {
+            // store next coroutineNode before it is removed from the list
+            var next = cn.next;
+            if (cn.fiber === fiber) {
+                this.$RemoveCoroutine(cn);
+            }
+            cn = next;
+        }
+    };
+    _jstype.definition.$RemoveCoroutineByName = function (name) {
+        var cn = this.$first;
+        while (cn != undefined) {
+            // store next coroutineNode before it is removed from the list
+            var next = cn.next;
+            if (cn.name == name) {
+                this.$RemoveCoroutine(cn);
+            }
+            cn = next;
+        }
+    };
     _jstype.definition.$RemoveCoroutine = function (cn) { // cn is short for Coroutine Node
         if (this.$first == cn) {
             this.$first = cn.next;
-        } 
+        }
         else {
             if (cn.next != undefined) {
                 cn.prev.next = cn.next;
@@ -164,5 +304,5 @@ if (_jstype) {
         }
         cn.prev = undefined;
         cn.next = undefined;
-    }
+    };
 }
