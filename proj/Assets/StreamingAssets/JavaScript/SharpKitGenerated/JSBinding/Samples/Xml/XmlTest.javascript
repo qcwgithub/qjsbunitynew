@@ -32,12 +32,10 @@ var XmlTest = {
             var daoJumdata = Lavie.XmlUtils.CreateObjectFromXml$1$$XmlNodeList$$String(ShopItemData.ctor, daoJunodeList, "SubType");
             UnityEngine.Debug.Log$$Object("daojudata Count = " + daoJumdata.get_Count());
             var $it14 = daoJumdata.GetEnumerator();
-            var s = "";
             while ($it14.MoveNext()){
                 var shopItemData = $it14.get_Current();
-                s += (JSON.stringify(shopItemData)) + "\n\n";
+                UnityEngine.Debug.Log$$Object(shopItemData.get_ID());
             }
-            print(s);
         }
     }
 };

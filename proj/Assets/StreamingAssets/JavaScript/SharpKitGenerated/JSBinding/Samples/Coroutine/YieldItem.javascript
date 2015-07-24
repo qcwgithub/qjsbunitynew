@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var YieldYest$YieldItem = {
     fullname: "YieldYest.YieldItem",
     baseTypeName: "System.Object",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

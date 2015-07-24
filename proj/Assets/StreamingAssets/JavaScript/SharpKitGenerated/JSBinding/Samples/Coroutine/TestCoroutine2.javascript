@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var TestCoroutine2 = {
     fullname: "TestCoroutine2",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "SharpKitProj2010",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
