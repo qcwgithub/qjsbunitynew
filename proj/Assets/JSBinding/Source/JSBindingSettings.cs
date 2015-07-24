@@ -221,7 +221,7 @@ public class JSBindingSettings
         // ONLY for test
         typeof(PerTest.RefObject),
         typeof(PerTest),
-        //typeof(BetterList<>),
+//        typeof(BetterList<>),
 
 #region
         typeof(System.Collections.IEnumerator),
@@ -803,26 +803,6 @@ public class JSBindingSettings
         //typeof(QiucwCup<>),
 
         
-        typeof(TweenReflectionExtensions),
-        typeof(TweenTransformExtensions),
-        typeof(TweenComponentExtensions),
-        typeof(TweenCallbackExtensions),
-        typeof(TweenTextExtensions),
-        typeof(DaikonForge.Tween.Tween<>),
-        typeof(DaikonForge.Tween.TweenBase),
-        typeof(DaikonForge.Tween.TweenShake),
-        typeof(DaikonForge.Tween.Interpolation.Interpolator<>),
-        typeof(DaikonForge.Tween.Interpolation.EulerInterpolator),
-        typeof(DaikonForge.Tween.TweenEasingFunctions),
-        typeof(DaikonForge.Tween.TweenTimeline),
-//        typeof(DaikonForge.Tween.TweenEasingCallback),
-        typeof(DaikonForge.Tween.Spline),
-        typeof(DaikonForge.Tween.SplineObject),
-        typeof(DaikonForge.Tween.SplineNode),
-		typeof(DaikonForge.Tween.TweenWait),
-        typeof(DaikonForge.Tween.TweenGroup),
-        typeof(DaikonForge.Tween.TweenManager),
-        
 
 //        typeof(System.Delegate),
 //        typeof(System.MulticastDelegate),
@@ -902,14 +882,14 @@ public class JSBindingSettings
         if (type.IsInterface)
             return false;
 
-        // 如果有定义非Public的构造函数存在，就不要生成默认的构造函数
-        // 再检查参数个数，如果为0才算？
+        // don't add default constructor
+        // if it has non-public constructors
+        // (also check parameter count is 0?)
         if (type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).Length != 0)
             return false;
 
         //foreach (var c in type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance))
         //{
-            // 如果已经有不含参数的构造函数了，就不要生成了
         //    if (c.GetParameters().Length == 0)
         //        return false;
         //}
@@ -925,7 +905,6 @@ public class JSBindingSettings
         {
             foreach (var c in type.GetConstructors())
             {
-                // 如果已经有不含参数的构造函数了，就不要生成了
                 if (c.GetParameters().Length == 0)
                     return false;
             }

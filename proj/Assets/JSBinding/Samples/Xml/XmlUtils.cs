@@ -56,10 +56,10 @@ namespace Lavie
             {
                 T mData = jsimp.Reflection.CreateInstance<T>();
 
-                // 1) 基本类型成员
+                // 1) basic type members
                 AssignObjectValueFromXml(mNode, mData, typeof(T));
 
-                // 2) 对象类型成员
+                // 2) object type members
                 if (subType.Length > 0 && mNode.HasChildNodes)
                 {
                     foreach (XmlNode childNode in mNode.ChildNodes)
