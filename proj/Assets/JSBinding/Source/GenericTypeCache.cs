@@ -45,7 +45,7 @@ public class PropertyID : ConstructorID
 {
     public string name; //memberName
 
-    // 目前这2个没有使用
+    // these 2 are not used for now
     public string retTypeName;
     public TypeFlag retTypeFlag;
 

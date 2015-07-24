@@ -184,7 +184,6 @@ public class JSDataExchangeMgr
 //                 break;
 //             case eGetType.Jsval:
 //                 {
-//                     // 通过 vc.valTemp 传递值
 //                     jsval val = new jsval();
 //                     JSApi.JSh_SetJsvalUndefined(ref val);
 // 
@@ -383,10 +382,6 @@ public class JSDataExchangeMgr
 //                         }
 //                         else
 //                         {
-//                             //
-//                             // 返回给JS的对象：需要 prototype
-//                             // 他包含的__nativeObj：需要 finalizer，需要 csObj 对应
-//                             //
 //                             string typeName = JSNameMgr.GetJSTypeFullName(csType);
 //                             IntPtr jstypeObj = JSDataExchangeMgr.GetJSObjectByname(typeName);
 //                             if (jstypeObj != IntPtr.Zero)

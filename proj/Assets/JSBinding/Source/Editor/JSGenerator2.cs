@@ -295,7 +295,7 @@ _jstype.definition.{0} = function({1}) [[ CS.Call({2}); ]]";
             argActual.Clear().Add(
                 (int)JSVCall.Oper.CONSTRUCTOR, // OP
                 slot,
-                i,  // 注意
+                i,  // NOTICE
                 "true", // IsStatics                
                 "this"
                 );

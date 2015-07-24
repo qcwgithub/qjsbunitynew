@@ -216,7 +216,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
 
     public static string GetMethodArg_DelegateFuncionName(Type classType, string methodName, int methodTag, int argIndex)
     {
-        // 如果还有重复再加 method index
+        // append Method Index if still conflicts
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("{0}_{1}_GetDelegate_member{2}_arg{3}", classType.Name, methodName, methodTag, argIndex);
         return JSNameMgr.HandleFunctionName(sb.ToString());
@@ -250,7 +250,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             argsParam.Add(ps[i].Name);
         }
 
-        // <t,u,v> 的形式
+        // format as <t,u,v>
         string stringTOfMethod = string.Empty;
         if (delType.ContainsGenericParameters)
         {
@@ -288,8 +288,8 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
     public enum MemberFeature
     {
         Static = 1 << 0,
-        Indexer = 1 << 1, // Property 使用
-        Get = 1 << 2,// Get Set 只能其中之一 Field Property 使用
+        Indexer = 1 << 1, // for Property
+        Get = 1 << 2,// can be Get or Set, only one of them, for Field Property
         Set = 1 << 3,
     }
     //
@@ -325,7 +325,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                 var result = string.Empty;
                 if (bGet)
                 {
-                    // 约定：返回的结果叫 result
+                    // convention: name 'result'
                     result = "var result = ";
                 }
 
@@ -349,8 +349,8 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
             }
             else
             {
-                // 约定：外面那个得叫 member
-                if (bIndexer || !bIndexer) // 2个一样
+                // convention: name 'member'
+                if (bIndexer || !bIndexer) // both indexer and not indexer enters
                 {
                     if (bProperty)
                     {

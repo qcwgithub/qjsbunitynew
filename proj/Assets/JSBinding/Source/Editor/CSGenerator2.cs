@@ -603,7 +603,7 @@ public static class CSGenerator2
         {
             if (type.IsGenericTypeDefinition)
             {
-                // 不是 T 函数，但是类带T
+                // Not generic method, but is generic type
                 StringBuilder sbt = new StringBuilder();
 
                 sbt.AppendFormat("    ConstructorInfo constructor = JSDataExchangeMgr.makeGenericConstructor(typeof({0}), constructorID{1}); \n",
@@ -643,7 +643,7 @@ public static class CSGenerator2
         }
         else if (type.IsGenericTypeDefinition)
         {
-            // 不是 T 函数，但是类带T
+            // not generic method, but is generic type
             StringBuilder sbt = new StringBuilder();
             sbt.Append("    // Get generic method by name and param count.\n");
 
@@ -926,7 +926,7 @@ static bool {0}(JSVCall vc, int argc)
             ccbn.constructorsCSParam.Add(GenListCSParam2(new ParameterInfo[0]).ToString());        
         }*/
 
-        // 如果产生默认的构造函数，后续的索引都加1
+        // increase index if adding default constructor
         int deltaIndex = 0;
         if (JSBindingSettings.NeedGenDefaultConstructor(type))
         {
@@ -1452,7 +1452,7 @@ using UnityEngine;
         var sb = new StringBuilder();
         bool ret = true;
 
-        // 检查类型有没有重复
+        // can not export a type twice
         foreach (var type in JSBindingSettings.classes)
         {
             if (typeof(System.Delegate).IsAssignableFrom(type))
@@ -1489,7 +1489,7 @@ using UnityEngine;
             }
         }
 
-        // 检查有没有基类没导出
+        // Is BaseType exported?
         foreach (var typeb in dict)
         {
             Type type = typeb.Key;
@@ -1673,7 +1673,8 @@ using UnityEngine;
         JSGenerator2.GenerateClassBindings();
         UnityEngineManual.afterUse();
 
-        // 放这里不合适
+        // TODO
+        // should not be here
 //         bContinue = EditorUtility.DisplayDialog("TIP",
 //              "Also correct JavaScript yield code?\n(Choose 'Yes' if you have coroutine code)",
 //              "Yes",
