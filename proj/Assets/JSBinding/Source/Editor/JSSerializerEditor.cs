@@ -416,7 +416,7 @@ public static class JSSerializerEditor
     /// <typeparam name="T"></typeparam>
     /// <param name="go">GameObject to replace MonoBehaviours.</param>
     /// <returns>return true if any MonoBehaviour of go has been replaced.</returns>
-    public static bool CopyGameObject<T>(GameObject go) where T : JSSerializer
+    public static bool CopyGameObject(GameObject go)
     {
         bool bReplaced = false;
         var behaviours = go.GetComponents<MonoBehaviour>();
@@ -439,7 +439,12 @@ public static class JSSerializerEditor
             {   // if this MonoBehaviour is going to be translated to JavaScript
                 // replace this behaviour with JSComponent
                 // copy the serialized data if needed
-                JSSerializer helper = (JSSerializer)go.AddComponent<T>();
+                //JSSerializer helper = (JSSerializer)go.AddComponent<T>();
+                JSSerializer helper = JSComponentGenerator.CreateJSComponentInstance(go, behav);
+                if (helper == null)
+                {
+                    continue;
+                }
                 CopyBehaviour(behav, helper);
                 bReplaced = true;
             }

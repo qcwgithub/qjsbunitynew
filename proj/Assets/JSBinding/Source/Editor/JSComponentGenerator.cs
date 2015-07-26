@@ -2,8 +2,10 @@
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Text;
+using System.Reflection;
 
 public class JSComponentGenerator
 {
@@ -21,7 +23,7 @@ public class JSComponentGenerator
         {
             get { return "id" + methodName; }
         }
-        string methodName
+        public string methodName
         {
             get
             {
@@ -83,31 +85,29 @@ public class JSComponentGenerator
 //      new Info("OnDestroy()"),
 
         // Performance killer
-//         new Info("Update()", 0),
-// 
-//         new Info("FixedUpdate()", 0),
-// 
-//         new Info("LateUpdate()", 0),
-// 
-//         new Info("OnGUI()", 0),
-// 
-//         new Info("OnDisable()", 10),
-//         new Info("OnEnable()", 10),
-//         new Info("OnBecameInvisible()", 10),
-//         new Info("OnBecameVisible()", 10),
-// 
-//         new Info("OnTransformChildrenChanged()", 80),
-//         new Info("OnTransformParentChanged()", 80),
-// 
-//         new Info("OnApplicationFocus(bool focusStatus)", 20),
-//         new Info("OnApplicationPause(bool pauseStatus)", 20),
-//         new Info("OnApplicationQuit()", 20),
-//         new Info("OnAudioFilterRead(float[] data, int channels)", 20),
-//         new Info("OnLevelWasLoaded(int level)", 20),
-// 
-//         new Info("OnAnimatorIK(int layerIndex)", 30),
-//         new Info("OnAnimatorMove()", 30),
-//         new Info("OnJointBreak(float breakForce)", 30),
+        new Info("Update()", "Update"),
+        new Info("LateUpdate()", "Update"),
+ 
+        new Info("FixedUpdate()", "FixedUpdate_OnGUI"),
+        new Info("OnGUI()", "FixedUpdate_OnGUI"),
+
+        new Info("OnDisable()", "Enable_Visible"),
+        new Info("OnEnable()", "Enable_Visible"),
+        new Info("OnBecameInvisible()", "Enable_Visible"),
+        new Info("OnBecameVisible()", "Enable_Visible"),
+
+        new Info("OnTransformChildrenChanged()", "TransChange"),
+        new Info("OnTransformParentChanged()", "TransChange"),
+
+        new Info("OnApplicationFocus(bool focusStatus)", "Application"),
+        new Info("OnApplicationPause(bool pauseStatus)", "Application"),
+        new Info("OnApplicationQuit()", "Application"),
+        new Info("OnAudioFilterRead(float[] data, int channels)", "Application"),
+        new Info("OnLevelWasLoaded(int level)", "Application"),
+
+        new Info("OnAnimatorIK(int layerIndex)", "AnimatorIK_Move_JointBreak"),
+        new Info("OnAnimatorMove()", "AnimatorIK_Move_JointBreak"),
+        new Info("OnJointBreak(float breakForce)", "AnimatorIK_Move_JointBreak"),
 
         new Info("OnParticleCollision(GameObject other)", "Physics"),
         new Info("OnCollisionEnter(Collision collisionInfo)", "Physics"),
@@ -159,9 +159,49 @@ public class JSComponentGenerator
         // OnValidate
     };
 
-    public static JSComponent CreateJSComponentInstance(MonoBehaviour behav)
+    public static JSComponent CreateJSComponentInstance(GameObject go, MonoBehaviour behav)
     {
-        return null;
+//         JSComponent ret = (JSComponent)go.AddComponent<JSComponent>();
+//         return ret;
+
+        Type type = behav.GetType();
+        MethodInfo[] methods = type.GetMethods(BindingFlags.Public 
+                        | BindingFlags.NonPublic
+                        | BindingFlags.Instance
+                        // | BindingFlags.Static
+                        // | BindingFlags.DeclaredOnly
+                        );
+        Dictionary<string, bool> dict = new Dictionary<string, bool>();
+        foreach (var method in methods)
+        {
+            if (!dict.ContainsKey(method.Name))
+                dict.Add(method.Name, true);
+        }
+        string className = "JSComponent";
+        for (var i = 0; i < infos.Length; /*i++*/)
+        {
+            if (dict.ContainsKey(infos[i].methodName))
+            {
+                className += "_" + infos[i].group;
+                var j = i + 1;
+                while (j < infos.Length && infos[j].group == infos[i].group)
+                {
+                    j++;
+                }
+                i = j;
+            }
+            else
+            {
+                i++;
+            }
+        }
+        Type jsComponentType = JSDataExchangeMgr.GetTypeByName(className, null);
+        if (jsComponentType == null)
+        {
+            Debug.LogError(type.Name + " JSComponent not found!");
+        }
+        JSComponent ret = (JSComponent)go.AddComponent(jsComponentType);
+        return ret;
     }
 
     //[MenuItem("JSB/Gen JSComopnents", false, 1000)]

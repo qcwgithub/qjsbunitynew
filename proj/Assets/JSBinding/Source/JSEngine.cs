@@ -17,7 +17,9 @@ using jsval = JSApi.jsval;
 public class JSEngine : MonoBehaviour
 {
     public static JSEngine inst;
-    public static bool inited = false;
+    public static int initState = 0;
+    public static bool initSuccess { get { return initState == 1; } set { if (value) initState = 1; } }
+    public static bool initFail { get { return initState == 2; } set { if (value) initState = 2; else initState = 0; } }
 
     /*
      * Debug settings, if port is not available, try another one
@@ -56,12 +58,12 @@ public class JSEngine : MonoBehaviour
                 }
             }
 
-            if (JSApi.initErrorHandler() == 1) 
+            if (JSApi.initErrorHandler() == 1)
                 Debug.Log("JS: print error stack: YES");
-            else 
+            else
                 Debug.Log("JS: print error stack: NO");
 
-            inited = true;
+            initSuccess = true;
             Debug.Log("JS: Init JSEngine OK");
             if (mDebug)
             {
@@ -70,26 +72,54 @@ public class JSEngine : MonoBehaviour
             }
         }
         else
+        {
+            initFail = true;
             Debug.Log("JS: Init JSEngine FAIL");
+        }
+    }
 
+    // FirstInit may be called from JSComponent!
+    public static void FirstInit(JSEngine jse = null)
+    {
+        if (!initSuccess && !initFail)
+        {
+            if (jse == null)
+            {
+                GameObject jseGO = GameObject.Find("_JSEngine");
+                if (jseGO == null)
+                {
+                    initFail = true;
+                    Debug.LogError("_JSEngine gameObject not found. Drag a \"JSBinding/Prefabs/_JSEngine.prefab\" to the scene.");
+                }
+                else
+                {
+                    jse = jseGO.GetComponent<JSEngine>();
+                }
+            }
+
+            if (jse != null)
+            {
+                /*
+                * Don't destroy this GameObject on load
+                */
+                DontDestroyOnLoad(jse.gameObject);
+                inst = jse;
+
+                JSMgr.InitJSEngine(jse.jsLoader, jse.OnInitJSEngine);
+            }
+        }
     }
 
     void Awake()
     {
-        if (JSEngine.inst != null)
+        if (JSEngine.inst != null && JSEngine.inst != this)
         {
-            // destroy self
+            // destroy self if there is already a JSEngine gameObject
             Destroy(gameObject);
             return;
         }
 
-        /*
-         * Don't destroy this GameObject on load
-         */
-        DontDestroyOnLoad(gameObject);
-        inst = this;
-
-        JSMgr.InitJSEngine(jsLoader, OnInitJSEngine);
+        JSEngine.FirstInit(this);
     }
 
     int jsCallCountPerFrame = 0;
@@ -101,7 +131,7 @@ public class JSEngine : MonoBehaviour
         jsCallCountPerFrame = JSMgr.vCall.jsCallCount;
         JSMgr.vCall.jsCallCount = 0;
 
-        if (inited)
+        if (initSuccess)
         {
             if (mDebug)
                 JSApi.updateDebugger();
@@ -114,7 +144,7 @@ public class JSEngine : MonoBehaviour
         if (this != JSEngine.inst)
             return;
 
-        if (inited && GCInterval >= 0f)
+        if (initSuccess && GCInterval >= 0f)
         {
             accum += Time.deltaTime;
             if (accum > GCInterval)
@@ -139,7 +169,7 @@ public class JSEngine : MonoBehaviour
                 JSApi.cleanupDebugger();
             JSMgr.ShutdownJSEngine();
             JSEngine.inst = null;
-            JSEngine.inited = false;
+            JSEngine.initState = 0;
             Debug.Log("JS: JSEngine Destroy");
         }
     }

@@ -98,7 +98,7 @@ public static class JSAnalyzer
         {
             case TraverseOp.CopyMonoBehaviour:
                 {
-                    bool bReplaced = JSSerializerEditor.CopyGameObject<JSComponent>(go);
+					bool bReplaced = JSSerializerEditor.CopyGameObject(go);
                     if (bReplaced && !hasReplaced)
                     {
                         hasReplaced = true;
@@ -567,7 +567,7 @@ public static class JSAnalyzer
     {
         Debug.Log("CopyGameObjectMonoBehaviours");
         foreach(var go in Selection.gameObjects)
-            JSSerializerEditor.CopyGameObject<JSComponent>(go);
+            JSSerializerEditor.CopyGameObject(go);
     }
     // Alt + Shift + W
     [MenuItem("JSB/Remove Selected GameObjects Other MonoBehaviours &#w", false, 111)]

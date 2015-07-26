@@ -20,6 +20,28 @@ public class JSComponent : JSSerializer
     [NonSerialized]
     public int jsObjID = 0;
 
+    int idAwake = 0;
+    int idStart = 0;
+    int idOnDestroy = 0;
+
+//     int idFixedUpdate = 0;
+//     int idUpdate = 0;
+//     int idLateUpdate = 0;
+//     int idOnGUI = 0;
+//     int idOnEnable = 0;
+//     int idOnTriggerEnter2D = 0;
+//     int idOnTriggerStay = 0;
+//     int idOnTriggerExit = 0;
+//     int idOnAnimatorMove = 0;
+//     int idOnAnimatorIK = 0;
+
+    //
+    // 2D Platformer 
+    //
+//     int idDestroyChildGameObject = 0;
+//     int idDisableChildGameObject = 0;
+//     int idDestroyGameObject = 0;
+
     /// <summary>
     /// Initializes the member function.
     /// </summary>
@@ -27,20 +49,22 @@ public class JSComponent : JSSerializer
     {
         idAwake = JSApi.getObjFunction(jsObjID, "Awake");
         idStart = JSApi.getObjFunction(jsObjID, "Start");
-        idFixedUpdate = JSApi.getObjFunction(jsObjID, "FixedUpdate");
-        idUpdate = JSApi.getObjFunction(jsObjID, "Update");
-        idLateUpdate = JSApi.getObjFunction(jsObjID, "LateUpdate");
         idOnDestroy = JSApi.getObjFunction(jsObjID, "OnDestroy");
-        idOnGUI = JSApi.getObjFunction(jsObjID, "OnGUI");
-        idOnEnable = JSApi.getObjFunction(jsObjID, "OnEnable");
-        idOnTriggerEnter2D = JSApi.getObjFunction(jsObjID, "OnTriggerEnter2D");
-        idOnTriggerStay = JSApi.getObjFunction(jsObjID, "OnTriggerStay");
-        idOnTriggerExit = JSApi.getObjFunction(jsObjID, "OnTriggerExit");
-        idOnAnimatorMove = JSApi.getObjFunction(jsObjID, "OnAnimatorMove");
-        idOnAnimatorIK = JSApi.getObjFunction(jsObjID, "OnAnimatorIK");
-        idDestroyChildGameObject = JSApi.getObjFunction(jsObjID, "DestroyChildGameObject");
-        idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "DisableChildGameObject");
-        idDestroyGameObject = JSApi.getObjFunction(jsObjID, "DestroyGameObject");
+
+//         idFixedUpdate = JSApi.getObjFunction(jsObjID, "FixedUpdate");
+//         idUpdate = JSApi.getObjFunction(jsObjID, "Update");
+//         idLateUpdate = JSApi.getObjFunction(jsObjID, "LateUpdate");
+//         idOnGUI = JSApi.getObjFunction(jsObjID, "OnGUI");
+//         idOnEnable = JSApi.getObjFunction(jsObjID, "OnEnable");
+//         idOnTriggerEnter2D = JSApi.getObjFunction(jsObjID, "OnTriggerEnter2D");
+//         idOnTriggerStay = JSApi.getObjFunction(jsObjID, "OnTriggerStay");
+//         idOnTriggerExit = JSApi.getObjFunction(jsObjID, "OnTriggerExit");
+//         idOnAnimatorMove = JSApi.getObjFunction(jsObjID, "OnAnimatorMove");
+//         idOnAnimatorIK = JSApi.getObjFunction(jsObjID, "OnAnimatorIK");
+
+//         idDestroyChildGameObject = JSApi.getObjFunction(jsObjID, "DestroyChildGameObject");
+//         idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "DisableChildGameObject");
+//         idDestroyGameObject = JSApi.getObjFunction(jsObjID, "DestroyGameObject");
     }
     /// <summary>
     /// Removes if exist.
@@ -48,7 +72,10 @@ public class JSComponent : JSSerializer
     /// <param name="id">The identifier.</param>
     void removeIfExist(int id)
     {
-        if (id != 0) JSApi.removeByID(id);
+        if (id != 0)
+        {
+            JSApi.removeByID(id);
+        }
     }
     void removeMemberFunction()
     {
@@ -81,23 +108,6 @@ public class JSComponent : JSSerializer
 //         removeIfExist(idDisableChildGameObject);
 //         removeIfExist(idDestroyGameObject);
     }
-
-    int idAwake = 0;
-    int idStart = 0;
-    int idFixedUpdate = 0;
-    int idUpdate = 0;
-    int idLateUpdate = 0;
-    int idOnDestroy = 0;
-    int idOnGUI = 0;
-    int idOnEnable = 0;
-    int idOnTriggerEnter2D = 0;
-    int idOnTriggerStay = 0;
-    int idOnTriggerExit = 0;
-    int idOnAnimatorMove = 0;
-    int idOnAnimatorIK = 0;
-    int idDestroyChildGameObject = 0;
-    int idDisableChildGameObject = 0;
-    int idDestroyGameObject = 0;
 
     int initState = 0;
     bool initSuccess { get { return initState == 1; } set { if (value) initState = 1; } }
@@ -139,14 +149,18 @@ public class JSComponent : JSSerializer
     }
     public void Awake()
     {
-        if (!JSEngine.inited)
-            return;
-
-        initJS();
-
-        if (initSuccess)
+        if (!JSEngine.initSuccess && !JSEngine.initFail)
         {
-            initSerializedData(jsObjID);
+            JSEngine.FirstInit();
+        }
+        if (JSEngine.initSuccess)
+        {
+            initJS();
+
+            if (initSuccess)
+            {
+                initSerializedData(jsObjID);
+            }
         }
     }
     /// <summary>
@@ -177,23 +191,16 @@ public class JSComponent : JSSerializer
         callIfExist(idStart);
     }
 
-    void FixedUpdate()
-    {
-        callIfExist(idFixedUpdate);
-    }
-    void Update()
-    {
-        callIfExist(idUpdate);
-    }
-    void LateUpdate()
-    {
-        callIfExist(idLateUpdate);
-    }
-
     void OnDestroy()
     {
+        if (!JSMgr.isShutDown)
+        {
+            callIfExist(idOnDestroy);
+        }
+
         if (initSuccess)
         {
+            // remove this jsObjID even if JSMgr.isShutDown is true
             JSMgr.removeJSCSRel(jsObjID);
         }
 
@@ -201,8 +208,6 @@ public class JSComponent : JSSerializer
         {
             return;
         }
-
-        callIfExist(idOnDestroy);
 
         if (initSuccess)
         {
@@ -219,48 +224,66 @@ public class JSComponent : JSSerializer
             removeMemberFunction();
         }
     }
-    void OnEnable()
-    {
-        callIfExist(idOnEnable);
-    }
-    void OnGUI()
-    {
-        callIfExist(idOnGUI);
-    }
 
-    void OnTriggerEnter2D (Collider2D other)
-    {
-        callIfExist(idOnTriggerEnter2D, other);
-    }
-    void OnTriggerStay(Collider other)
-    {
-        callIfExist(idOnTriggerStay, other);
-    }
-    void OnTriggerExit(Collider other)
-    {
-        callIfExist(idOnTriggerExit, other);
-    }
-    void OnAnimatorMove()
-    {
-        callIfExist(idOnAnimatorMove);
-    }
-    void OnAnimatorIK(int layerIndex)
-    {
-        callIfExist(idOnAnimatorIK);
-    }
+//     void FixedUpdate()
+//     {
+//         callIfExist(idFixedUpdate);
+//     }
+//     void Update()
+//     {
+//         callIfExist(idUpdate);
+//     }
+//     void LateUpdate()
+//     {
+//         callIfExist(idLateUpdate);
+//     }
+// 
+//     void OnEnable()
+//     {
+//         callIfExist(idOnEnable);
+//     }
+//     void OnGUI()
+//     {
+//         callIfExist(idOnGUI);
+//     }
+// 
+//     void OnTriggerEnter2D (Collider2D other)
+//     {
+//         callIfExist(idOnTriggerEnter2D, other);
+//     }
+//     void OnTriggerStay(Collider other)
+//     {
+//         callIfExist(idOnTriggerStay, other);
+//     }
+//     void OnTriggerExit(Collider other)
+//     {
+//         callIfExist(idOnTriggerExit, other);
+//     }
+//     void OnAnimatorMove()
+//     {
+//         callIfExist(idOnAnimatorMove);
+//     }
+//     void OnAnimatorIK(int layerIndex)
+//     {
+//         callIfExist(idOnAnimatorIK);
+//     }
+// 
+    //
+    // 2DPlatformer
+    //
 
-    void DestroyChildGameObject()
-    {
-        callIfExist(idDestroyChildGameObject);
-    }
-
-    void DisableChildGameObject()
-    {
-        callIfExist(idDisableChildGameObject);
-    }
-
-    void DestroyGameObject()
-    {
-        callIfExist(idDestroyGameObject);
-    }
+//     void DestroyChildGameObject()
+//     {
+//         callIfExist(idDestroyChildGameObject);
+//     }
+// 
+//     void DisableChildGameObject()
+//     {
+//         callIfExist(idDisableChildGameObject);
+//     }
+// 
+//     void DestroyGameObject()
+//     {
+//         callIfExist(idDestroyGameObject);
+//     }
 }
