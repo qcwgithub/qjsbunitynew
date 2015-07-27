@@ -74,15 +74,15 @@ NavMeshSettings:
     widthInaccuracy: 16.666666
     heightInaccuracy: 10
   m_NavMesh: {fileID: 0}
---- !u!1 &616388517
+--- !u!1 &406074315
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 1060887949}
+  m_PrefabInternal: {fileID: 697403246}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 616388519}
-  - 114: {fileID: 616388518}
+  - 4: {fileID: 406074316}
+  - 114: {fileID: 406074317}
   m_Layer: 0
   m_Name: _JSEngine
   m_TagString: Untagged
@@ -90,13 +90,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &616388518
+--- !u!4 &406074316
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
+  m_PrefabInternal: {fileID: 697403246}
+  m_GameObject: {fileID: 406074315}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 503701770}
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+--- !u!114 &406074317
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400000, guid: e06934f7bc4aaa444b6e96140e1b77e9,
     type: 2}
-  m_PrefabInternal: {fileID: 1060887949}
-  m_GameObject: {fileID: 616388517}
+  m_PrefabInternal: {fileID: 697403246}
+  m_GameObject: {fileID: 406074315}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d134e75bc11fdf04fada25deba19d0b1, type: 3}
@@ -105,33 +118,20 @@ MonoBehaviour:
   debug: 1
   port: 5086
   GCInterval: 10000
-  jsLoader: {fileID: 946594854}
+  jsLoader: {fileID: 503701769}
   InitLoadScripts:
   - includes
   showStatistics: 1
   guiX: 0
---- !u!4 &616388519
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 400000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 1060887949}
-  m_GameObject: {fileID: 616388517}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 946594855}
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
---- !u!1 &946594853
+--- !u!1 &503701768
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100002, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 1060887949}
+  m_PrefabInternal: {fileID: 697403246}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 946594855}
-  - 114: {fileID: 946594854}
+  - 4: {fileID: 503701770}
+  - 114: {fileID: 503701769}
   m_Layer: 0
   m_Name: _JSFileLoader
   m_TagString: Untagged
@@ -139,31 +139,31 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &946594854
+--- !u!114 &503701769
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400002, guid: e06934f7bc4aaa444b6e96140e1b77e9,
     type: 2}
-  m_PrefabInternal: {fileID: 1060887949}
-  m_GameObject: {fileID: 946594853}
+  m_PrefabInternal: {fileID: 697403246}
+  m_GameObject: {fileID: 503701768}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f9a11c9655e6f424490536c7b7c63e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &946594855
+--- !u!4 &503701770
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 400002, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_PrefabInternal: {fileID: 1060887949}
-  m_GameObject: {fileID: 946594853}
+  m_PrefabInternal: {fileID: 697403246}
+  m_GameObject: {fileID: 503701768}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 616388519}
+  m_Father: {fileID: 406074316}
   m_RootOrder: 0
---- !u!1001 &1060887949
+--- !u!1001 &697403246
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -204,7 +204,7 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e06934f7bc4aaa444b6e96140e1b77e9, type: 2}
-  m_RootGameObject: {fileID: 616388517}
+  m_RootGameObject: {fileID: 406074315}
   m_IsPrefabParent: 0
   m_IsExploded: 1
 --- !u!1 &1194719190
@@ -327,13 +327,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1368680963}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
+  m_Script: {fileID: 11500000, guid: 72ec4f413f6883e41a370e08094c1e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   jsClassName: SerializeSimple
   arrString:
   - 7/age/55
-  - 5/shortAge/23
+  - 5/shortAge/0
   - 15/go/0
   - 13/firstName/QIU
   - 1/doYouLoveMe/False

@@ -6,12 +6,12 @@ var XmlParser = {
     staticDefinition: {
         ComvertType$1: function (T, dict){
             var obj = jsimp.Reflection.CreateInstance$1(T);
-            var $it8 = dict.GetEnumerator();
-            while ($it8.MoveNext()){
-                var ele = $it8.get_Current();
+            var $it1 = dict.GetEnumerator();
+            while ($it1.MoveNext()){
+                var ele = $it1.get_Current();
                 var fieldName = ele.get_Key();
                 var fieldValue = ele.get_Value();
-                jsimp.Reflection.SetField(obj, fieldName, fieldValue);
+                jsimp.Reflection.SetFieldValue(obj, fieldName, fieldValue);
             }
             return obj;
         }

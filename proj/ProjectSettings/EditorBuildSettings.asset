@@ -6,7 +6,35 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/2DPlatformer/Scenes/Level.unity
+    path: Assets/JSBinding/Samples/SampleViewer.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/V3Test.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/V3Test_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/PerformanceTest1.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/PerformanceTest1_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/ListTest.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/ListTest_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/DictionaryTest.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/DictionaryTest_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/DelegateTest.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/DelegateTest_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Coroutine/TestCoroutine.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/Coroutine/TestCoroutine_JS.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/JSImpTest/JSImpTest1.unity
+  - enabled: 1
+    path: Assets/JSBinding/Samples/JSImpTest/JSImpTest1_JS.unity
   - enabled: 1
     path: Assets/JSBinding/Samples/Serialization/Car.unity
   - enabled: 1
@@ -20,40 +48,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/JSBinding/Samples/Serialization/SerializeStruct_JS.unity
   - enabled: 1
-    path: Assets/JSBinding/Samples/ListTest.unity
+    path: Assets/JSBinding/Samples/Xml/XmlTest.unity
   - enabled: 1
-    path: Assets/JSBinding/Samples/ListTest_JS.unity
-  - enabled: 1
-    path: Assets/JSBinding/Samples/PerformanceTest1.unity
-  - enabled: 1
-    path: Assets/JSBinding/Samples/PerformanceTest1_JS.unity
-  - enabled: 1
-    path: Assets/JSBinding/Samples/Serialization/SerializeStruct.unity
-  - enabled: 1
-    path: Assets/JSBinding/Samples/TestCoroutine.unity
-  - enabled: 1
-    path: Assets/JSBinding/Samples/V3Test.unity
-  - enabled: 1
-    path: Assets/JSBinding/Samples/V3Test_JS.unity
-  - enabled: 1
-    path: Assets/JSBinding/Samples/Viewer.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Camera Shake.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Camera Shake_JS.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Doge.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Doge_JS.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Easing Functions.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Easing Functions_JS.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Slinky.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Slinky_JS.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Tween Along Path.unity
-  - enabled: 1
-    path: Assets/DaikonForge Tween (Pro)/Examples/Scenes/Tween Along Path_JS.unity
+    path: Assets/JSBinding/Samples/Xml/XmlTest_JS.unity

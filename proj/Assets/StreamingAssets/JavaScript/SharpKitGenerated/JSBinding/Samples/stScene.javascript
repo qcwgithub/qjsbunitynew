@@ -1,7 +1,7 @@
 if (typeof(JsTypes) == "undefined")
     var JsTypes = [];
-var Viewer$stScene = {
-    fullname: "Viewer.stScene",
+var SampleViewer$stScene = {
+    fullname: "SampleViewer.stScene",
     baseTypeName: "System.ValueType",
     assemblyName: "SharpKitProj",
     Kind: "Struct",
@@ -20,5 +20,5 @@ var Viewer$stScene = {
         }
     }
 };
-JsTypes.push(Viewer$stScene);
+JsTypes.push(SampleViewer$stScene);
 

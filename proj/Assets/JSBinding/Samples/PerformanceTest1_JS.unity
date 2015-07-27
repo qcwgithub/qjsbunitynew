@@ -227,7 +227,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 689045839}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33b59d8e106685240b389eb84622a68f, type: 3}
+  m_Script: {fileID: 11500000, guid: 72ec4f413f6883e41a370e08094c1e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   jsClassName: PerformanceTest1

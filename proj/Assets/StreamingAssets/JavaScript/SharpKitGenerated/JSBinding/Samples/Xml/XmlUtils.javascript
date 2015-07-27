@@ -5,9 +5,9 @@ var Lavie$XmlUtils = {
     baseTypeName: "System.Object",
     staticDefinition: {
         AssignObjectValueFromXml: function (mNode, mData, mDataType){
-            var $it15 = mNode.get_Attributes().GetEnumerator();
-            while ($it15.MoveNext()){
-                var xmlAttribute = $it15.get_Current();
+            var $it7 = mNode.get_Attributes().GetEnumerator();
+            while ($it7.MoveNext()){
+                var xmlAttribute = $it7.get_Current();
                 var fieldName = xmlAttribute.get_Name();
                 var value = mNode.get_Attributes().GetNamedItem$$String(fieldName).get_Value().toString();
                 var fieldValue = null;
@@ -36,15 +36,15 @@ var Lavie$XmlUtils = {
         },
         CreateObjectFromXml$1$$XmlNodeList$$String: function (T, nodeList, subType){
             var list = new System.Collections.Generic.List$1.ctor(T);
-            var $it16 = nodeList.GetEnumerator();
-            while ($it16.MoveNext()){
-                var mNode = $it16.get_Current();
+            var $it8 = nodeList.GetEnumerator();
+            while ($it8.MoveNext()){
+                var mNode = $it8.get_Current();
                 var mData = jsimp.Reflection.CreateInstance$1(T);
                 Lavie.XmlUtils.AssignObjectValueFromXml(mNode, mData, Typeof(T));
                 if (subType.length > 0 && mNode.get_HasChildNodes()){
-                    var $it17 = mNode.get_ChildNodes().GetEnumerator();
-                    while ($it17.MoveNext()){
-                        var childNode = $it17.get_Current();
+                    var $it9 = mNode.get_ChildNodes().GetEnumerator();
+                    while ($it9.MoveNext()){
+                        var childNode = $it9.get_Current();
                         var fieldName = Lavie.XmlUtils.NodeValue$1(System.String.ctor, childNode, subType);
                         var fieldType = jsimp.Reflection.GetPropertyType(Typeof(T), fieldName);
                         if (fieldType != null){
@@ -100,9 +100,9 @@ var Lavie$XmlUtils = {
             return Cast(Lavie.XmlUtils.ConvertString2ActualType(typeT, value), T);
         },
         Select$1$$XmlNodeList$$String$$String$$String: function (T, xmlNodeList, nodeName, value, attribute){
-            var $it18 = xmlNodeList.GetEnumerator();
-            while ($it18.MoveNext()){
-                var node = $it18.get_Current();
+            var $it10 = xmlNodeList.GetEnumerator();
+            while ($it10.MoveNext()){
+                var node = $it10.get_Current();
                 if (Lavie.XmlUtils.NodeValue$1(T, node, nodeName).toString() == value){
                     return Lavie.XmlUtils.NodeValue$1(T, node, attribute);
                 }
@@ -110,9 +110,9 @@ var Lavie$XmlUtils = {
             return Default(T);
         },
         Select$1$$XmlNodeList$$String$$T: function (T, xmlNodeList, nodeName, value){
-            var $it19 = xmlNodeList.GetEnumerator();
-            while ($it19.MoveNext()){
-                var node = $it19.get_Current();
+            var $it11 = xmlNodeList.GetEnumerator();
+            while ($it11.MoveNext()){
+                var node = $it11.get_Current();
                 var nodeValue = Lavie.XmlUtils.NodeValue$1(T, node, nodeName);
                 if (jsimp.Reflection.SimpleTEquals$1(T, nodeValue, value)){
                     return node;
