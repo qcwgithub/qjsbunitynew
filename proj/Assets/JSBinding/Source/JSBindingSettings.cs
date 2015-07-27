@@ -36,186 +36,64 @@ public class JSBindingSettings
     public static Type[] enums = new Type[]
     {
         /*
-         * Nothing to export for demo
-         * Add enums here as you need.
+         * No need to export enum anymore
+         * Enum should be 'compilied' by SharpKit only
          */
-
-	    /*
-        
-        typeof(UnityEngine.FilterMode),
-        typeof(UnityEngine.TextureWrapMode),
-        typeof(UnityEngine.NPOTSupport),
-        typeof(UnityEngine.TextureFormat),
-        typeof(UnityEngine.CubemapFace),
-        typeof(UnityEngine.RenderTextureFormat),
-        typeof(UnityEngine.RenderTextureReadWrite),
-        typeof(UnityEngine.Rendering.BlendMode),
-        typeof(UnityEngine.Rendering.BlendOp),
-        typeof(UnityEngine.Rendering.CompareFunction),
-        typeof(UnityEngine.Rendering.CullMode),
-        typeof(UnityEngine.Rendering.ColorWriteMask),
-        typeof(UnityEngine.Rendering.StencilOp),
-        typeof(UnityEngine.SocialPlatforms.UserState),
-        typeof(UnityEngine.SocialPlatforms.UserScope),
-        typeof(UnityEngine.SocialPlatforms.TimeScope),
-        typeof(UnityEngineInternal.TypeInferenceRules),
-        typeof(UnityEngine.ForceMode),
-        typeof(UnityEngine.RigidbodyConstraints),
-        typeof(UnityEngine.RigidbodyInterpolation),
-        typeof(UnityEngine.JointDriveMode),
-        typeof(UnityEngine.JointProjectionMode),
-        typeof(UnityEngine.ConfigurableJointMotion),
-        typeof(UnityEngine.RotationDriveMode),
-        typeof(UnityEngine.CollisionDetectionMode),
-        typeof(UnityEngine.PhysicMaterialCombine),
-        typeof(UnityEngine.CollisionFlags),
-        typeof(UnityEngine.RigidbodyInterpolation2D),
-        typeof(UnityEngine.RigidbodySleepMode2D),
-        typeof(UnityEngine.CollisionDetectionMode2D),
-        typeof(UnityEngine.ForceMode2D),
-        typeof(UnityEngine.JointLimitState2D),
-        typeof(UnityEngine.ObstacleAvoidanceType),
-        typeof(UnityEngine.OffMeshLinkType),
-        typeof(UnityEngine.NavMeshPathStatus),
-        typeof(UnityEngine.AudioSpeakerMode),
-        typeof(UnityEngine.AudioType),
-        typeof(UnityEngine.AudioVelocityUpdateMode),
-        typeof(UnityEngine.FFTWindow),
-        typeof(UnityEngine.AudioRolloffMode),
-        typeof(UnityEngine.AudioReverbPreset),
-        typeof(UnityEngine.WebCamFlags),
-        typeof(UnityEngine.WrapMode),
-        typeof(UnityEngine.PlayMode),
-        typeof(UnityEngine.QueueMode),
-        typeof(UnityEngine.AnimationBlendMode),
-        typeof(UnityEngine.AnimationPlayMode),
-        typeof(UnityEngine.AnimationCullingType),
-        typeof(UnityEngine.AvatarTarget),
-        typeof(UnityEngine.AvatarIKGoal),
-        typeof(UnityEngine.AnimatorCullingMode),
-        typeof(UnityEngine.AnimatorUpdateMode),
-        typeof(UnityEngine.HumanBodyBones),
-        typeof(UnityEngine.DetailRenderMode),
-        typeof(UnityEngine.TerrainRenderFlags),
-        typeof(UnityEngine.HideFlags),
-        typeof(UnityEngine.SendMessageOptions),
-        typeof(UnityEngine.PrimitiveType),
-        typeof(UnityEngine.Space),
-        typeof(UnityEngine.RuntimePlatform),
-        typeof(UnityEngine.SystemLanguage),
-        typeof(UnityEngine.LogType),
-        typeof(UnityEngine.DeviceType),
-        typeof(UnityEngine.ThreadPriority),
-        typeof(UnityEngine.CursorMode),
-        typeof(UnityEngine.LightType),
-        typeof(UnityEngine.LightRenderMode),
-        typeof(UnityEngine.LightShadows),
-        typeof(UnityEngine.FogMode),
-        
-        typeof(UnityEngine.ShadowProjection),
-        typeof(UnityEngine.CameraClearFlags),
-        typeof(UnityEngine.DepthTextureMode),
-        typeof(UnityEngine.TexGenMode),
-        typeof(UnityEngine.AnisotropicFiltering),
-        typeof(UnityEngine.BlendWeights),
-        //typeof(UnityEngine.TextureCompressionQuality),
-        typeof(UnityEngine.MeshTopology),
-        typeof(UnityEngine.SkinQuality),
-        typeof(UnityEngine.ParticleRenderMode),
-        typeof(UnityEngine.LightmapsMode),
-        typeof(UnityEngine.ColorSpace),
-        typeof(UnityEngine.ScreenOrientation),
-        typeof(UnityEngine.TextAlignment),
-        typeof(UnityEngine.TextAnchor),
-        typeof(UnityEngine.ScaleMode),
-        typeof(UnityEngine.FocusType),
-        typeof(UnityEngine.FontStyle),
-        typeof(UnityEngine.TextWrapMode),
-        typeof(UnityEngine.ImagePosition),
-        typeof(UnityEngine.TextClipping),
-        //typeof(UnityEngine.FullScreenMovieControlMode),
-        //typeof(UnityEngine.FullScreenMovieScalingMode),
-        //typeof(UnityEngine.iOSActivityIndicatorStyle),
-        //typeof(UnityEngine.AndroidActivityIndicatorStyle),
-        //typeof(UnityEngine.TouchScreenKeyboardType),
-        //typeof(UnityEngine.iPhoneGeneration),
-        typeof(UnityEngine.KeyCode),
-        typeof(UnityEngine.EventType),
-        typeof(UnityEngine.EventModifiers),
-        //typeof(UnityEngine.iPhoneTouchPhase),
-        //typeof(UnityEngine.iPhoneOrientation),
-        //typeof(UnityEngine.iPhoneScreenOrientation),
-        //typeof(UnityEngine.iPhoneKeyboardType),
-        //typeof(UnityEngine.iPhoneMovieControlMode),
-        //typeof(UnityEngine.iPhoneMovieScalingMode),
-        //typeof(UnityEngine.iPhoneNetworkReachability),
-        //typeof(UnityEngine.CalendarIdentifier),
-        //typeof(UnityEngine.CalendarUnit),
-        //typeof(UnityEngine.RemoteNotificationType),
-        typeof(UnityEngine.RPCMode),
-        typeof(UnityEngine.ConnectionTesterStatus),
-        typeof(UnityEngine.NetworkConnectionError),
-        typeof(UnityEngine.NetworkDisconnection),
-        typeof(UnityEngine.MasterServerEvent),
-        typeof(UnityEngine.NetworkStateSynchronization),
-        typeof(UnityEngine.NetworkPeerType),
-        typeof(UnityEngine.NetworkLogLevel),
-        typeof(UnityEngine.ParticleSystemRenderMode),
-        typeof(UnityEngine.ParticleSystemSimulationSpace),
-        typeof(UnityEngine.ProceduralProcessorUsage),
-        typeof(UnityEngine.ProceduralCacheSize),
-        typeof(UnityEngine.ProceduralLoadingBehavior),
-        typeof(UnityEngine.ProceduralPropertyType),
-        typeof(UnityEngine.ProceduralOutputType),
-        typeof(UnityEngine.SpriteAlignment),
-        typeof(UnityEngine.SpritePackingMode),
-        typeof(UnityEngine.SpritePackingRotation),
-        typeof(UnityEngine.SpriteMeshType),
-        typeof(UnityEngine.NetworkReachability),
-        typeof(UnityEngine.UserAuthorization),
-        typeof(UnityEngine.RenderingPath),
-        typeof(UnityEngine.TransparencySortMode),
-        typeof(UnityEngine.ComputeBufferType),
-        typeof(UnityEngine.TouchPhase),
-        typeof(UnityEngine.IMECompositionMode),
-        typeof(UnityEngine.DeviceOrientation),
-        typeof(UnityEngine.LocationServiceStatus),
-
-        // Obsolete
-        // typeof(UnityEngine.QualityLevel),
-         
-         
-        typeof(SeekOrigin), 		
-		*/       
     };
 
-    public static Type[] classes2 = new Type[]
+    //
+    // types to export to JavaSciprt
+    // only for samples!
+    //
+    // below there is another classes(commented out) having almost all types in UnityEngine
+    //
+    public static Type[] classes = new Type[]
     {
-//         typeof(List<>), 
-//         typeof(List<>.Enumerator), 
-//         typeof(System.Diagnostics.Stopwatch),
-//         typeof(GameObject),
-//         typeof(UnityEngine.Object),
-//         typeof(UnityEngine.MonoBehaviour),
-//         typeof(UnityEngine.Behaviour),
-//         typeof(UnityEngine.Component),
-//         typeof(Debug),
-//         typeof(TweenTransformExtensions),
-//         typeof(TweenCallbackExtensions),
-//         typeof(DaikonForge.Tween.Tween<>),
-//         typeof(DaikonForge.Tween.TweenBase),
-//         typeof(DaikonForge.Tween.TweenShake),
-//         typeof(DaikonForge.Tween.Interpolation.Interpolator<>),
-//         typeof(DaikonForge.Tween.TweenEasingFunctions),
-//         typeof(DaikonForge.Tween.TweenTimeline),
-        //typeof(System.Delegate),
-        //typeof(System.MulticastDelegate),
-        //typeof(DaikonForge.Tween.TweenEasingCallback),
+        typeof(PerTest),
+        typeof(PerTest.RefObject),
+
+        typeof(Debug),
+        typeof(Input),
+        typeof(GameObject),
+        typeof(Transform),
+        typeof(Vector2),
+        typeof(Vector3),
+        typeof(MonoBehaviour),
+        typeof(Behaviour),
+        typeof(Component),
+        typeof(UnityEngine.Object),
+        typeof(YieldInstruction),
+        typeof(WaitForSeconds),
+        typeof(WWW),
+        typeof(Application),
+        typeof(UnityEngine.Time),
+        typeof(Resources),
+        typeof(TextAsset),
         
-        //typeof(QiucwCup<>),
+        typeof(IEnumerator),
+        typeof(List<>),
+        typeof(List<>.Enumerator),
+        typeof(Dictionary<,>),
+        typeof(Dictionary<,>.KeyCollection), 
+        typeof(Dictionary<,>.ValueCollection), 
+        typeof(Dictionary<,>.Enumerator), 
+        typeof(KeyValuePair<,>), 
+        
+        typeof(System.Diagnostics.Stopwatch),
+        typeof(UnityEngine.Random),
+        typeof(StringBuilder),
+
         typeof(System.Xml.XmlNode),
         typeof(System.Xml.XmlDocument),
+        typeof(System.Xml.XmlNodeList),
+        typeof(System.Xml.XmlElement),
+        typeof(System.Xml.XmlLinkedNode),
+        typeof(System.Xml.XmlAttributeCollection),
+        typeof(System.Xml.XmlNamedNodeMap),
+        typeof(System.Xml.XmlAttribute),
     };
+
+    /*
     public static Type[] classes = new Type[]
     {
         // ONLY for test
@@ -227,33 +105,6 @@ public class JSBindingSettings
         typeof(System.Collections.IEnumerator),
 #endregion
 
-        /*
-         * Classes to export for demo
-         * Add classes here to export
-         */
-
-         //interface
-
-//         typeof(UnityEngine.SocialPlatforms.ISocialPlatform), 
-//         typeof(UnityEngine.SocialPlatforms.ILocalUser),
-//         typeof(UnityEngine.SocialPlatforms.IUserProfile),
-//         typeof(UnityEngine.SocialPlatforms.IAchievement),
-//         typeof(UnityEngine.SocialPlatforms.IAchievementDescription),
-//         typeof(UnityEngine.SocialPlatforms.IScore),
-//         typeof(UnityEngine.SocialPlatforms.ILeaderboard),
-//         typeof(UnityEngine.ISerializationCallbackReceiver),
-
-         //class
-
- //       typeof(UnityEngine.SocialPlatforms.Impl.LocalUser),
- //       typeof(UnityEngine.SocialPlatforms.Impl.UserProfile),
- //       typeof(UnityEngine.SocialPlatforms.Impl.Achievement),
- //       typeof(UnityEngine.SocialPlatforms.Impl.AchievementDescription),
- //       typeof(UnityEngine.SocialPlatforms.Impl.Score),
- //       typeof(UnityEngine.SocialPlatforms.Impl.Leaderboard),
- //       typeof(UnityEngine.SocialPlatforms.Local),
-
- 
         typeof(System.Xml.XmlNode),
         typeof(System.Xml.XmlDocument),
         typeof(System.Xml.XmlNodeList),
@@ -442,15 +293,15 @@ public class JSBindingSettings
         typeof(UnityEngine.Gizmos),                    
         typeof(UnityEngine.LightProbeGroup),                         
 
-        /*
-        typeof(UnityEngine.Ping),                                    
-        typeof(UnityEngine.NetworkView),                             
-        typeof(UnityEngine.Network),                                 
-        typeof(UnityEngine.BitStream),                               
-        //typeof(UnityEngine.RPC),                                     
-        typeof(UnityEngine.HostData),                                
-        typeof(UnityEngine.MasterServer),                            
-        */
+        
+//         typeof(UnityEngine.Ping),                                    
+//         typeof(UnityEngine.NetworkView),                             
+//         typeof(UnityEngine.Network),                                 
+//         typeof(UnityEngine.BitStream),                               
+//         //typeof(UnityEngine.RPC),                                     
+//         typeof(UnityEngine.HostData),                                
+//         typeof(UnityEngine.MasterServer),                            
+        
 
         typeof(UnityEngine.ParticleSystem),                          
         typeof(UnityEngine.ParticleSystemRenderer),                  
@@ -557,11 +408,11 @@ public class JSBindingSettings
         typeof(UnityEngine.Plane),                       
         typeof(UnityEngine.Mathf),         
         
-        /*
-        typeof(UnityEngine.NetworkPlayer),               
-        typeof(UnityEngine.NetworkViewID),               
-        typeof(UnityEngine.NetworkMessageInfo),          
-        */
+        
+//         typeof(UnityEngine.NetworkPlayer),               
+//         typeof(UnityEngine.NetworkViewID),               
+//         typeof(UnityEngine.NetworkMessageInfo),          
+        
         typeof(UnityEngine.Touch),                       
         typeof(UnityEngine.AccelerationEvent),           
         typeof(UnityEngine.LocationInfo), 
@@ -678,7 +529,7 @@ public class JSBindingSettings
         //
         //
 
-#if UNITY_4_9
+#if UNITY_4_6
         
         // interface
 
@@ -789,7 +640,7 @@ public class JSBindingSettings
         // delegates
         // typeof(UnityEngine.UI.InputField.OnValidateInput),
 
-#endif
+#endif // #if UNITY_4_6
 
         
         // test
@@ -824,7 +675,7 @@ public class JSBindingSettings
         typeof(UnityEngine.Canvas),
 #endif
     };
-
+*/
     
 
     // some public class members can be used
@@ -846,6 +697,16 @@ public class JSBindingSettings
             return true;
         }
 
+        if ((type == typeof(Application) && memberName == "ExternalEval") ||
+                        (type == typeof(Input) && memberName == "IsJoystickPreconfigured"))
+        {
+            return true;
+        }
+            
+        //
+        // Temporarily commented out
+        // Uncomment them yourself!!
+        //
         if ((type == typeof(Motion)) ||
             (type == typeof(AnimationClip) && memberInfo.DeclaringType == typeof(Motion)) ||
             (type == typeof(Application) && memberName == "ExternalEval") ||
@@ -860,8 +721,8 @@ public class JSBindingSettings
             (type == typeof(StreamWriter) && (memberName == "CreateObjRef" || memberName == "GetLifetimeService" || memberName == "InitializeLifetimeService")) ||
             (type == typeof(UnityEngine.Font) && memberName == "textureRebuildCallback")
 #if UNITY_4_6
-             || (type == typeof(UnityEngine.EventSystems.PointerEventData) && memberName == "lastPress") ||
-            (type == typeof(UnityEngine.UI.InputField) && memberName == "onValidateInput") // property delegate FUCK
+             || (type == typeof(UnityEngine.EventSystems.PointerEventData) && memberName == "lastPress")
+             || (type == typeof(UnityEngine.UI.InputField) && memberName == "onValidateInput") // property delegate
 #endif
 )
         {
@@ -910,43 +771,6 @@ public class JSBindingSettings
             }
             return true;
         }
-
-//if (type == typeof(Coroutine)
-//    || type == typeof(CrashReport)
-//    || type == typeof(Display)
-//    || type == typeof(GUILayoutOption)
-//    || type == typeof(Gyroscope)
-//
-//    || type == typeof(TrackedReference)
-//    || type == typeof(Transform)
-//    #if UNITY_IPHONE
-//|| type == typeof(RemoteNotification)
-//    #endif
-//#if UNITY_ANDROID
-//||  type == typeof(AndroidInput)
-//|| type == typeof(AndroidJNI)
-//|| type == typeof(AndroidJNIHelper)
-//|| type == typeof(AndroidJavaException)
-//    #endif
-//|| type == typeof(UnityEngine.EventSystems.EventSystem)
-//|| type == typeof(UnityEngine.EventSystems.EventTrigger)
-//|| type == typeof(UnityEngine.EventSystems.Physics2DRaycaster)
-//|| type == typeof(UnityEngine.EventSystems.PhysicsRaycaster)
-//|| type == typeof(UnityEngine.EventSystems.StandaloneInputModule)
-//|| type == typeof(UnityEngine.EventSystems.TouchInputModule)
-//|| type == typeof(UnityEngine.UI.AspectRatioFitter)
-//|| type == typeof(UnityEngine.UI.Button)
-//|| type == typeof(UnityEngine.UI.CanvasScaler)
-//|| type == typeof(UnityEngine.UI.CanvasUpdateRegistry)
-//|| type == typeof(UnityEngine.UI.ContentSizeFitter)
-//|| type == typeof(UnityEngine.UI.GraphicRegistry)
-//|| type == typeof(UnityEngine.UI.GridLayoutGroup)
-//|| type == typeof(UnityEngine.UI.HorizontalLayoutGroup)
-//|| type == typeof(UnityEngine.UI.Image)
-//|| type == typeof(UnityEngine.UI.InputField)
-//)
-//return false;
-//return true;
     }
 
     // extension (including ".")
