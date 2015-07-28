@@ -165,8 +165,10 @@ public class JSEngine : MonoBehaviour
     {
         if (this == JSEngine.inst)
         {
-            if (mDebug)
+            if (mDebug && initSuccess)
+            {
                 JSApi.cleanupDebugger();
+            }
             JSMgr.ShutdownJSEngine();
             JSEngine.inst = null;
             JSEngine.initState = 0;

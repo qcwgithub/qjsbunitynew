@@ -82,17 +82,19 @@ public static class JSMgr
             return false;
         }
 
+        JSMgr.jsLoader = jsLoader;
+
         if (!RefCallStaticMethod("CSharpGenerated", "RegisterAll"))
         {
-            Debug.LogError("Call CSharpGenerated.RegisterAll() failed. Did you forget to click menu [JSB/Generate JS and CS Bindings]?");
+            Debug.LogError("Call CSharpGenerated.RegisterAll() failed. Did you forget to click menu [Assets | JSB | Generate JS and CS Bindings]?");
             onInitJSEngine(false);
             return false;
         }
-
-        JSMgr.jsLoader = jsLoader;
-
-        onInitJSEngine(true);
-        return true;
+        else
+        {
+            onInitJSEngine(true);
+            return true;
+        }
     }
 
     public static bool ShutDown = false;
