@@ -7,12 +7,15 @@ var JSImpTest1 = {
     Kind: "Class",
     definition: {
         ctor: function (){
+            this.elapsed = 0;
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
         },
         Update: function (){
-            if (UnityEngine.Input.GetMouseButtonDown(0)){
+            this.elapsed += UnityEngine.Time.get_deltaTime();
+            if (this.elapsed > 1){
+                this.elapsed = 0;
                 var dict = new System.Collections.Generic.Dictionary$2.ctor(System.String.ctor, System.String.ctor);
                 dict.Add("firstName", "De Hua");
                 dict.Add("lastName", "Liu");

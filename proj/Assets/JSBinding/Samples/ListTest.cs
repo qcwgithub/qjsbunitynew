@@ -11,11 +11,14 @@ public class ListTest : MonoBehaviour {
 	void Start () {
 	    
 	}
-	
-	// Update is called once per frame
-	void Update () {
-        if (Input.GetMouseButtonDown(0))
+
+    float elapsed = 0;
+    void Update()
+    {
+        elapsed += Time.deltaTime;
+        if (elapsed > 1f)
         {
+            elapsed = 0f;
             List<int> lst = new List<int>();
             lst.Add(6);
             lst.Add(95);

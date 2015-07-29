@@ -82,10 +82,9 @@ public class PerformanceTest1 : MonoBehaviour {
     {
         var sw = new System.Diagnostics.Stopwatch();
         sw.Start();
-        Vector3 m = Vector3.one;
         for (int i = 0; i < 2000; i++)
         {
-            m = new Vector3(i, i, i);
+            new Vector3(i, i, i);
         }
         Debug.Log("test5 time: " + sw.ElapsedMilliseconds + " ms");
     }
@@ -129,10 +128,13 @@ public class PerformanceTest1 : MonoBehaviour {
 
     }
 
+    float elapsed = 0;
     void Update()
     {
-        if (Input.GetMouseButtonUp(0))
+        elapsed += Time.deltaTime;
+        if (elapsed > 3f)
         {
+            elapsed = 0f;
             Test0();
             Test1();
             Test2();
@@ -140,7 +142,6 @@ public class PerformanceTest1 : MonoBehaviour {
             Test4();
             Test5();
             Test6();
-            Test7();
         }
 	}
 }

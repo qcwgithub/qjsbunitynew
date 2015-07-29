@@ -19,11 +19,15 @@ public class DelegateTest : MonoBehaviour {
 	void Start () 
     {
 	}
-	
+
+    float elapsed = 0;
 	// Update is called once per frame
-	void Update () {
-        if (Input.GetMouseButtonDown(0))
+    void Update()
+    {
+        elapsed += Time.deltaTime;
+        if (elapsed > 1f)
         {
+            elapsed = 0f;
             var f = lst.Find((v) => v == mi);
             Debug.Log("Found: " + f);
 

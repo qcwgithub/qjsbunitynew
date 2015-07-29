@@ -10,12 +10,15 @@ public class DictionaryTest : MonoBehaviour {
 	void Start () {
 	
 	}
-	
-	// Update is called once per frame
-	void Update () 
+
+
+    float elapsed = 0;
+	void Update ()
     {
-        if (Input.GetMouseButtonDown(0))
+        elapsed += Time.deltaTime;
+        if (elapsed > 1f)
         {
+            elapsed = 0f;
             Dictionary<string, int> dict = new Dictionary<string, int>();
             dict.Add("qiucw", 28);
             dict.Add("helj", 27);

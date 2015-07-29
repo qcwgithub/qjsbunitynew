@@ -15,6 +15,7 @@ var V3Test = {
         Update: function (){
             this.elapsed += UnityEngine.Time.get_deltaTime();
             if (this.elapsed > 1){
+                this.elapsed = 0;
                 var sb = new System.Text.StringBuilder.ctor();
                 this.elapsed = 0;
                 var v = new UnityEngine.Vector3.ctor$$Single$$Single$$Single(2, 3, 6);

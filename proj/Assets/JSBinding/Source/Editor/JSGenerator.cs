@@ -9,7 +9,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 
-public static class JSGenerator2
+public static class JSGenerator
 {
     // input
     static StringBuilder sb = null;
@@ -314,8 +314,8 @@ _jstype.definition.{0} = function({1}) [[ CS.Call({2}); ]]";
                 }
             }
 
-            StringBuilder sbFormalParam = new StringBuilder();
-            StringBuilder sbActualParam = new StringBuilder();
+            //StringBuilder sbFormalParam = new StringBuilder();
+            //StringBuilder sbActualParam = new StringBuilder();
             for (int j = 0; j < ps.Length; j++)
             {
                 argFormal.Add("a" + j.ToString());
@@ -345,7 +345,7 @@ _jstype.staticDefinition.{1} = function({2}) [[
     return CS.Call({7}, {3}, {4}, true{5}); 
 ]]";
 
-        bool bIsSystemObject = (type == typeof(System.Object));
+        //bool bIsSystemObject = (type == typeof(System.Object));
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < methods.Length; i++)
@@ -481,7 +481,7 @@ _jstype.staticDefinition.{1} = function({2}) [[
 
 
         string fileName = JSBindingSettings.jsGeneratedDir + "/" +
-            JSNameMgr.GetTypeFileName(JSGenerator2.type)
+            JSNameMgr.GetTypeFileName(JSGenerator.type)
             + JSBindingSettings.jsExtension;
         var writer2 = OpenFile(fileName, false);
         writer2.Write(sbClass.ToString());
@@ -591,27 +591,27 @@ using UnityEngine;
 //         if (!typeClassName.ContainsKey(typeof(UnityEngine.Object)))
 //             typeClassName.Add(typeof(UnityEngine.Object), "UnityObject");
 
-        JSGenerator2.OnBegin();
+        JSGenerator.OnBegin();
 
         // enums
         for (int i = 0; i < JSBindingSettings.enums.Length; i++)
         {
-            JSGenerator2.Clear();
-            JSGenerator2.type = JSBindingSettings.enums[i];
-            JSGenerator2.GenerateEnum();
+            JSGenerator.Clear();
+            JSGenerator.type = JSBindingSettings.enums[i];
+            JSGenerator.GenerateEnum();
         }
 
         // classes
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
-            JSGenerator2.Clear();
-            JSGenerator2.type = JSBindingSettings.classes[i];
+            JSGenerator.Clear();
+            JSGenerator.type = JSBindingSettings.classes[i];
             if (!typeClassName.TryGetValue(type, out className))
                 className = type.Name;
-            JSGenerator2.GenerateClass();
+            JSGenerator.GenerateClass();
         }
 
-        JSGenerator2.OnEnd();
+        JSGenerator.OnEnd();
 
         Debug.Log("Generate JS Bindings OK. enum " + JSBindingSettings.enums.Length.ToString() + ", class " + JSBindingSettings.classes.Length.ToString());
     }

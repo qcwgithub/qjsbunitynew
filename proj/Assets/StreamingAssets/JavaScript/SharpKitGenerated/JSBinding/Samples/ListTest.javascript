@@ -7,12 +7,15 @@ var ListTest = {
     Kind: "Class",
     definition: {
         ctor: function (){
+            this.elapsed = 0;
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
         },
         Update: function (){
-            if (UnityEngine.Input.GetMouseButtonDown(0)){
+            this.elapsed += UnityEngine.Time.get_deltaTime();
+            if (this.elapsed > 1){
+                this.elapsed = 0;
                 var lst = new System.Collections.Generic.List$1.ctor(System.Int32.ctor);
                 lst.Add(6);
                 lst.Add(95);

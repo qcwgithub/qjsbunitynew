@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using UnityEngine.SocialPlatforms;
 using System.Runtime.InteropServices;
 
-public static class CSGenerator2
+public static class CSGenerator
 {
     // input
     static StringBuilder sb = null;
@@ -95,7 +95,7 @@ public static class CSGenerator2
         var sb = new StringBuilder();
         for (int i = 0; i < fields.Length; i++)
         {
-            var sbCall = new StringBuilder();
+            //var sbCall = new StringBuilder();
 
             FieldInfo field = fields[i];
             bool isDelegate = JSDataExchangeEditor.IsDelegateDerived(field.FieldType);// (typeof(System.Delegate).IsAssignableFrom(field.FieldType));
@@ -809,7 +809,7 @@ public static class CSGenerator2
             {
                 StringBuilder sbCall = new StringBuilder();
                 StringBuilder sbActualParamT_arr = new StringBuilder();
-                StringBuilder sbUpdateRefT = new StringBuilder();
+                //StringBuilder sbUpdateRefT = new StringBuilder();
 
                 if (TCount == 0 && !type.IsGenericTypeDefinition)
                 {
@@ -927,11 +927,11 @@ static bool {0}(JSVCall vc, int argc)
         }*/
 
         // increase index if adding default constructor
-        int deltaIndex = 0;
-        if (JSBindingSettings.NeedGenDefaultConstructor(type))
-        {
-            deltaIndex = 1;
-        }
+//         int deltaIndex = 0;
+         if (JSBindingSettings.NeedGenDefaultConstructor(type))
+         {
+//             deltaIndex = 1;
+         }
 
         for (int i = 0; i < constructors.Length; i++)
         {
@@ -942,7 +942,7 @@ static bool {0}(JSVCall vc, int argc)
                 sb.AppendFormat("public static ConstructorID constructorID{0} = new ConstructorID({1});\n", i, "null, null");
 
                 // this is default constructor
-                bool returnVoid = false;
+                //bool returnVoid = false;
                 //string functionName = type.Name + "_" + type.Name + "1";
                 int olIndex = i + 1; // for constuctors, they are always overloaded
                 string functionName = JSNameMgr.HandleFunctionName(type.Name + "_" + type.Name + (olIndex > 0 ? olIndex.ToString() : ""));
@@ -1270,8 +1270,8 @@ public class JSGeneratedFileNames
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
             string name = JSNameMgr.GetTypeFileName(JSBindingSettings.classes[i]).Replace('.', '_');
-            if (JSGenerator2.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
-                name = JSGenerator2.typeClassName[JSBindingSettings.classes[i]];
+            if (JSGenerator.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
+                name = JSGenerator.typeClassName[JSBindingSettings.classes[i]];
             sbA.AppendFormat("        \"{0}\",\n", name);
         }
         StringBuilder sb = new StringBuilder();
@@ -1296,8 +1296,8 @@ public class JSGeneratedFileNames
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
             string name = JSNameMgr.GetTypeFileName(JSBindingSettings.classes[i]).Replace('.', '_');
-            if (JSGenerator2.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
-                name = JSGenerator2.typeClassName[JSBindingSettings.classes[i]];
+            if (JSGenerator.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
+                name = JSGenerator.typeClassName[JSBindingSettings.classes[i]];
             sb.AppendFormat("CS.require(\"Generated/{0}\");\n", name);
         }
 
@@ -1371,8 +1371,16 @@ public class {0}
         if (type.Namespace != null)
         {
             nameSpaceString = type.Namespace;
-            if (nameSpaceString == "UnityEngine")
+            if (nameSpaceString == "UnityEngine"
+                || nameSpaceString == "System"
+                || nameSpaceString == "System.Collections"
+                || nameSpaceString == "System.Collections.Generic"
+                || nameSpaceString == "System.IO"
+                || nameSpaceString == "System.Reflection"
+                )
+            {
                 nameSpaceString = string.Empty;
+            }
         }
         sbFile.AppendFormat(fmtFile, thisClassName, sbClass, nameSpaceString.Length > 0 ? "using " + nameSpaceString + ";" : "");
         HandleStringFormat(sbFile);
@@ -1574,21 +1582,21 @@ using UnityEngine;
 		}
         return;*/
 
-        CSGenerator2.OnBegin();
+        CSGenerator.OnBegin();
 
         allClassCallbackNames = null;
         allClassCallbackNames = new List<ClassCallbackNames>(JSBindingSettings.classes.Length);
 
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
-            CSGenerator2.Clear();
-            CSGenerator2.type = JSBindingSettings.classes[i];
-            CSGenerator2.GenerateClass();
+            CSGenerator.Clear();
+            CSGenerator.type = JSBindingSettings.classes[i];
+            CSGenerator.GenerateClass();
         }
         GenerateRegisterAll();
         GenerateAllJSFileNames();
 
-        CSGenerator2.OnEnd();
+        CSGenerator.OnEnd();
 
         Debug.Log("Generate CS Bindings OK. total = " + JSBindingSettings.classes.Length.ToString());
     }
@@ -1647,7 +1655,7 @@ using UnityEngine;
     {
         AssetDatabase.FindAssets("backgrounds", new string[]{"Assets/Prefabs/Environment"});
     }
-    [MenuItem("JSB/Generate JS and CS Bindings", false, 1)]
+    [MenuItem("Assets/JSB/Generate JS and CS Bindings", false, 1)]
     public static void GenerateJSCSBindings()
 	{
 		if (!CheckClassBindings())
@@ -1669,8 +1677,8 @@ using UnityEngine;
 
         JSDataExchangeEditor.reset();
         UnityEngineManual.initManual();
-        CSGenerator2.GenerateClassBindings();
-        JSGenerator2.GenerateClassBindings();
+        CSGenerator.GenerateClassBindings();
+        JSGenerator.GenerateClassBindings();
         UnityEngineManual.afterUse();
 
         // TODO

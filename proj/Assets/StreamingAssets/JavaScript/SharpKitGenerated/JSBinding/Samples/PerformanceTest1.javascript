@@ -15,6 +15,7 @@ var PerformanceTest1 = {
     definition: {
         ctor: function (){
             this.mTransform = null;
+            this.elapsed = 0;
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
@@ -73,9 +74,8 @@ var PerformanceTest1 = {
         Test5: function (){
             var sw = new System.Diagnostics.Stopwatch.ctor();
             sw.Start();
-            var m = UnityEngine.Vector3.get_one();
             for (var i = 0; i < 2000; i++){
-                m = new UnityEngine.Vector3.ctor$$Single$$Single$$Single(i, i, i);
+                new UnityEngine.Vector3.ctor$$Single$$Single$$Single(i, i, i);
             }
             UnityEngine.Debug.Log$$Object("test5 time: " + sw.get_ElapsedMilliseconds() + " ms");
         },
@@ -101,7 +101,9 @@ var PerformanceTest1 = {
         OnChangeEvent: function (){
         },
         Update: function (){
-            if (UnityEngine.Input.GetMouseButtonUp(0)){
+            this.elapsed += UnityEngine.Time.get_deltaTime();
+            if (this.elapsed > 3){
+                this.elapsed = 0;
                 this.Test0();
                 this.Test1();
                 this.Test2();
@@ -109,7 +111,6 @@ var PerformanceTest1 = {
                 this.Test4();
                 this.Test5();
                 this.Test6();
-                this.Test7();
             }
         }
     }

@@ -7,12 +7,15 @@ var DictionaryTest = {
     Kind: "Class",
     definition: {
         ctor: function (){
+            this.elapsed = 0;
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
         },
         Update: function (){
-            if (UnityEngine.Input.GetMouseButtonDown(0)){
+            this.elapsed += UnityEngine.Time.get_deltaTime();
+            if (this.elapsed > 1){
+                this.elapsed = 0;
                 var dict = new System.Collections.Generic.Dictionary$2.ctor(System.String.ctor, System.Int32.ctor);
                 dict.Add("qiucw", 28);
                 dict.Add("helj", 27);

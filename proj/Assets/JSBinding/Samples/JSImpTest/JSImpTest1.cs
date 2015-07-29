@@ -22,10 +22,13 @@ public class JSImpTest1 : MonoBehaviour
 	}
 	
 	// Update is called once per frame
+    float elapsed = 0;
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        elapsed += Time.deltaTime;
+        if (elapsed > 1f)
         {
+            elapsed = 0f;
             Dictionary<string, string> dict = new Dictionary<string, string>();
             dict.Add("firstName", "De Hua");
             dict.Add("lastName", "Liu");

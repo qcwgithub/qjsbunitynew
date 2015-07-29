@@ -9,6 +9,7 @@ var DelegateTest = {
         ctor: function (){
             this.lst = null;
             this.mi = 0;
+            this.elapsed = 0;
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Awake: function (){
@@ -20,7 +21,9 @@ var DelegateTest = {
         Start: function (){
         },
         Update: function (){
-            if (UnityEngine.Input.GetMouseButtonDown(0)){
+            this.elapsed += UnityEngine.Time.get_deltaTime();
+            if (this.elapsed > 1){
+                this.elapsed = 0;
                 var f = this.lst.Find($CreateAnonymousDelegate(this, function (v){
                     return v == this.mi;
                 }));

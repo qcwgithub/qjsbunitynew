@@ -17,6 +17,7 @@ public class V3Test : MonoBehaviour
         elapsed += Time.deltaTime;
         if (elapsed > 1f)
         {
+            elapsed = 0f;
             var sb = new StringBuilder();
             elapsed = 0f;
             Vector3 v = new Vector3(2, 3, 6);
