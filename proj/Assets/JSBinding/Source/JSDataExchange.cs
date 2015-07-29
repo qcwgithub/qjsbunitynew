@@ -162,7 +162,7 @@ public class JSDataExchangeMgr
 //                     object csObj = JSMgr.getCSObj(jsObj);
 //                     return csObj;
                 }
-                break;
+                // break; !!
 //             case eGetType.GetARGVRefOut:
 //                 {
 //                     jsval val = new jsval();
@@ -895,7 +895,8 @@ public class CSRepresentedObject
             s_objCount++;
 
         // refCount show always be 1
-        int refCount = JSApi.incRefCount(jsObjID);
+        //int refCount = 
+            JSApi.incRefCount(jsObjID);
         //Debug.Log(new StringBuilder().AppendFormat("+ CSRepresentedObject {0} Ref[{1}] Fun[{1}]", jsObjID, refCount, bFunction ? 1 : 0));
     }
     ~CSRepresentedObject()

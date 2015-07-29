@@ -79,7 +79,7 @@ public class JSVCall
         if (slot < 0 || slot >= JSMgr.allCallbackInfo.Count)
         {
             throw (new Exception("Bad slot: " + slot));
-            return false;
+            //return false;
         }
         JSMgr.CallbackInfo aInfo = JSMgr.allCallbackInfo[slot];
         if (isStatic == 0)
@@ -88,7 +88,7 @@ public class JSVCall
             if (this.jsObjID == 0)
             {
                 throw (new Exception("Invalid this jsObjID"));
-                return false;
+                //return false;
             }
 
             // for manual javascript code, this.csObj will be null
@@ -111,7 +111,7 @@ public class JSVCall
                     if (fun == null)
                     {
                         throw (new Exception("Field not found"));
-                        return false;
+                        //return false;
                     }
                     fun(this);
                 }
@@ -124,7 +124,7 @@ public class JSVCall
                     if (fun == null)
                     {
                         throw (new Exception("Property not found"));
-                        return false;
+                        //return false;
                     }
                     fun(this);
                 }

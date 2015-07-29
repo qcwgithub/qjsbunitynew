@@ -262,13 +262,13 @@ public static class GeneratorHelp
                 {
                     if (!method.IsStatic)
                     {
-                        Debug.LogWarning("IGNORE not-static special-name function: " + type.Name + "." + method.Name);
+                        Debug.Log("IGNORE not-static special-name function: " + type.Name + "." + method.Name);
                         continue;
                     }
                 }
                 else
                 {
-                    Debug.LogWarning("IGNORE special-name function:" + type.Name + "." + method.Name);
+                    Debug.Log("IGNORE special-name function:" + type.Name + "." + method.Name);
                     continue;
                 }
             }

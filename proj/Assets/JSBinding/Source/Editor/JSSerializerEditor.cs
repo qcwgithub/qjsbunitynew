@@ -356,8 +356,8 @@ public static class JSSerializerEditor
         lstString.Clear();
         lstObjs.Clear();
 
-        GameObject go = behaviour.gameObject;
-        Type type = behaviour.GetType();
+        // GameObject go = behaviour.gameObject;
+        //Type type = behaviour.GetType();
 
         FieldInfo[] fields = GetMonoBehaviourSerializedFields(behaviour);
         foreach (FieldInfo field in fields)

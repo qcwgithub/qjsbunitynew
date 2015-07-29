@@ -122,24 +122,24 @@ namespace cg
         METHOD,
     }
 
-    public class GenClassProcess
-    {
-        public static MemberType memberType = MemberType.CONSTRUCTOR;
-        public static bool isStatic = false;
-
-        public void setFunctionName(string name) { 
-
-        }
-
-        public void setFunctionParamsCount(int needCount, int allCount) {
-            functionBodies = new FunctionBodyProcess[allCount - needCount + 1];
-            this.needParamCount = needCount;
-            this.allParamCount = allCount;
-        }
-        int needParamCount, allParamCount;
-        FunctionBodyProcess[] functionBodies = null;
-        FunctionBodyProcess functionBody { get { return functionBodies[0]; } }
-    }
+//     public class GenClassProcess
+//     {
+//         public static MemberType memberType = MemberType.CONSTRUCTOR;
+//         public static bool isStatic = false;
+// 
+//         public void setFunctionName(string name) { 
+// 
+//         }
+// 
+//         public void setFunctionParamsCount(int needCount, int allCount) {
+//             functionBodies = new FunctionBodyProcess[allCount - needCount + 1];
+//             this.needParamCount = needCount;
+//             this.allParamCount = allCount;
+//         }
+//         int needParamCount, allParamCount;
+//         FunctionBodyProcess[] functionBodies = null;
+//         FunctionBodyProcess functionBody { get { return functionBodies[0]; } }
+//     }
     public class FunctionBodyProcess
     {
         public StringBuilder sbPrepareMethod = new StringBuilder();

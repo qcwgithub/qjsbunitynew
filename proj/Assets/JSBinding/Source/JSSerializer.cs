@@ -77,7 +77,7 @@ public class JSSerializer : MonoBehaviour
                     JSApi.setBooleanS((int)JSApi.SetType.SaveAndTempTrace, v);
                     return JSApi.getSaveID();
                 }
-                break;
+                //break;
 
             case UnitType.ST_SByte:
             case UnitType.ST_Char:
@@ -124,7 +124,7 @@ public class JSSerializer : MonoBehaviour
                     JSApi.setStringS((int)JSApi.SetType.SaveAndTempTrace, strValue);
                     return JSApi.getSaveID();
                 }
-                break;
+                //break;
             default:
                 break;
         }
@@ -308,7 +308,7 @@ public class JSSerializer : MonoBehaviour
                         // ! return here
                         return;
                     }
-                    break;
+                    //break;
                 default:
                     {
                         UnitType eUnitType = (UnitType)int.Parse(s0);
