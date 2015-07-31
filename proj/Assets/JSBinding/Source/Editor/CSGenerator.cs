@@ -1655,7 +1655,7 @@ using UnityEngine;
     {
         AssetDatabase.FindAssets("backgrounds", new string[]{"Assets/Prefabs/Environment"});
     }
-    [MenuItem("Assets/JSB/Generate JS and CS Bindings", false, 1)]
+    [MenuItem("JSB/Generate JS and CS Bindings", false, 1)]
     public static void GenerateJSCSBindings()
 	{
 		if (!CheckClassBindings())
