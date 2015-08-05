@@ -47,6 +47,8 @@ public class JSBindingSettings
     //
     // below there is another classes(commented out) having almost all types in UnityEngine
     //
+
+    /*
     public static Type[] classes = new Type[]
     {
         typeof(PerTest),
@@ -91,9 +93,55 @@ public class JSBindingSettings
         typeof(System.Xml.XmlAttributeCollection),
         typeof(System.Xml.XmlNamedNodeMap),
         typeof(System.Xml.XmlAttribute),
-    };
 
-    /*
+        // for 2d platformer
+        typeof(LayerMask),
+        typeof(Physics2D),
+        typeof(Rigidbody2D),
+        typeof(Collision2D),
+        typeof(RaycastHit2D),
+        typeof(AudioClip),
+        typeof(AudioSource),
+        typeof(ParticleSystem),
+        typeof(Renderer),
+        typeof(ParticleSystemRenderer),
+        typeof(DateTime),
+        typeof(GUIElement),
+        typeof(GUIText),
+        typeof(GUITexture),
+        typeof(SpriteRenderer),
+        typeof(Animator),
+        typeof(Camera),
+        typeof(Mathf),
+        typeof(Quaternion),
+        typeof(Sprite),
+        typeof(Collider2D),
+        typeof(BoxCollider2D),
+        typeof(CircleCollider2D),
+        typeof(Material),
+        typeof(Color),
+        typeof(PolygonCollider2D),
+
+        typeof(Light),
+        typeof(NavMeshAgent),
+        typeof(Rect),
+        typeof(Physics),
+        typeof(Collider),
+        typeof(SphereCollider),
+        typeof(LineRenderer),
+        typeof(MeshCollider),
+        typeof(MeshRenderer),
+        typeof(Screen),
+        typeof(RaycastHit),
+        typeof(BoxCollider),
+        typeof(CapsuleCollider),
+        typeof(AnimatorStateInfo),
+        typeof(Rigidbody),
+        typeof(NavMeshPath),
+
+    };*/
+
+    
     public static Type[] classes = new Type[]
     {
         // ONLY for test
@@ -675,7 +723,6 @@ public class JSBindingSettings
         typeof(UnityEngine.Canvas),
 #endif
     };
-*/
     
 
     // some public class members can be used
@@ -798,7 +845,7 @@ public class JSBindingSettings
     public static string[] PathsNotToJavaScript = new string[]
     {
         "JSBinding/",
-        "Stealth/",
+        //"Stealth/",
         "DaikonForge Tween (Pro)/",
         "NGUI/",
     };
