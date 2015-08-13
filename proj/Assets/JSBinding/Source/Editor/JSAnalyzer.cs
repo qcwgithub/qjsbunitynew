@@ -20,9 +20,9 @@ public static class JSAnalyzer
     static List<string> ExamMonoBehaviour(MonoBehaviour com)
     {
         List<string> lstProblem = new List<string>();
-        StringBuilder sbProblem = new StringBuilder();
+        //StringBuilder sbProblem = new StringBuilder();
         MonoBehaviour behaviour = com as MonoBehaviour;
-        Type type = behaviour.GetType();
+        //Type type = behaviour.GetType();
         FieldInfo[] fields = JSSerializerEditor.GetMonoBehaviourSerializedFields(behaviour);
         for (var i = 0; i < fields.Length; i++)
         {
@@ -835,5 +835,6 @@ fields before this action.",
     public static void OpenHelp()
     {
         Application.OpenURL("http://www.cnblogs.com/answerwinner/p/4469021.html");
+		// Application.OpenURL("http://www.cnblogs.com/answerwinner/p/4591144.html"); // English
     }
 }

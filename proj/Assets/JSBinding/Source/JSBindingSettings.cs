@@ -47,6 +47,8 @@ public class JSBindingSettings
     //
     // below there is another classes(commented out) having almost all types in UnityEngine
     //
+
+    /*
     public static Type[] classes = new Type[]
     {
         typeof(PerTest),
@@ -91,9 +93,55 @@ public class JSBindingSettings
         typeof(System.Xml.XmlAttributeCollection),
         typeof(System.Xml.XmlNamedNodeMap),
         typeof(System.Xml.XmlAttribute),
-    };
 
-    /*
+        // for 2d platformer
+        typeof(LayerMask),
+        typeof(Physics2D),
+        typeof(Rigidbody2D),
+        typeof(Collision2D),
+        typeof(RaycastHit2D),
+        typeof(AudioClip),
+        typeof(AudioSource),
+        typeof(ParticleSystem),
+        typeof(Renderer),
+        typeof(ParticleSystemRenderer),
+        typeof(DateTime),
+        typeof(GUIElement),
+        typeof(GUIText),
+        typeof(GUITexture),
+        typeof(SpriteRenderer),
+        typeof(Animator),
+        typeof(Camera),
+        typeof(Mathf),
+        typeof(Quaternion),
+        typeof(Sprite),
+        typeof(Collider2D),
+        typeof(BoxCollider2D),
+        typeof(CircleCollider2D),
+        typeof(Material),
+        typeof(Color),
+        typeof(PolygonCollider2D),
+
+        typeof(Light),
+        typeof(NavMeshAgent),
+        typeof(Rect),
+        typeof(Physics),
+        typeof(Collider),
+        typeof(SphereCollider),
+        typeof(LineRenderer),
+        typeof(MeshCollider),
+        typeof(MeshRenderer),
+        typeof(Screen),
+        typeof(RaycastHit),
+        typeof(BoxCollider),
+        typeof(CapsuleCollider),
+        typeof(AnimatorStateInfo),
+        typeof(Rigidbody),
+        typeof(NavMeshPath),
+
+    };*/
+
+    
     public static Type[] classes = new Type[]
     {
         // ONLY for test
@@ -574,7 +622,7 @@ public class JSBindingSettings
         typeof(UnityEngine.EventSystems.BaseEventData),
         typeof(UnityEngine.EventSystems.PointerEventData),
         typeof(UnityEngine.EventSystems.BaseInputModule),
-//        typeof(UnityEngine.EventSystems.PointerInputModule),
+        typeof(UnityEngine.EventSystems.PointerInputModule),
 //        typeof(UnityEngine.EventSystems.PointerInputModule.MouseButtonEventData),
         typeof(UnityEngine.EventSystems.StandaloneInputModule),
         typeof(UnityEngine.EventSystems.TouchInputModule),
@@ -661,21 +709,21 @@ public class JSBindingSettings
         typeof(StringBuilder),
 
 #if UNITY_4_6
-        typeof(UnityEngine.EventSystems.UIBehaviour),
-        typeof(UnityEngine.UI.Selectable),
-        typeof(UnityEngine.UI.Slider),
-        typeof(UnityEngine.UI.Graphic),
-        typeof(UnityEngine.UI.MaskableGraphic),
-        typeof(UnityEngine.UI.Image),
-        typeof(UnityEngine.UI.Text),
+        //typeof(UnityEngine.EventSystems.UIBehaviour),
+        //typeof(UnityEngine.UI.Selectable),
+        //typeof(UnityEngine.UI.Slider),
+        //typeof(UnityEngine.UI.Graphic),
+        //typeof(UnityEngine.UI.MaskableGraphic),
+        //typeof(UnityEngine.UI.Image),
+        //typeof(UnityEngine.UI.Text),
         typeof(UnityEngine.Events.UnityEventBase),
         typeof(UnityEngine.Events.UnityEvent<>),
-        typeof(UnityEngine.UI.Slider.SliderEvent),
+        typeof(UnityEngine.Events.UnityEvent),
+        //typeof(UnityEngine.UI.Slider.SliderEvent),
 
         typeof(UnityEngine.Canvas),
 #endif
     };
-*/
     
 
     // some public class members can be used
@@ -798,7 +846,7 @@ public class JSBindingSettings
     public static string[] PathsNotToJavaScript = new string[]
     {
         "JSBinding/",
-        "Stealth/",
+        //"Stealth/",
         "DaikonForge Tween (Pro)/",
         "NGUI/",
     };
