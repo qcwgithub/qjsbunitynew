@@ -6,6 +6,9 @@ public class ComponentTest : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        // 测试！
+        // 这里调用 GetComponent<基类>()
+        // 本对象绑的是 TEnemy，他继承自 TEnemyBase
         TEnemyBase eb = GetComponent<TEnemyBase>();
         if (eb != null)
         {
