@@ -176,6 +176,21 @@ public class JSEngine : MonoBehaviour
         }
     }
 
+    // Utilities
+    JSComponentUtil util = null;
+    public bool IsInheritanceRel(string baseClassName, string subClassName)
+    {
+        if (util == null)
+        {
+            util = GetComponent<JSComponentUtil>();
+        }
+        if (util != null)
+        {
+            return util.IsInheritanceRel(baseClassName, subClassName);
+        }
+        return false;
+    }
+
 	public bool showStatistics = true;
     public int guiX = 0;
 

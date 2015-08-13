@@ -118,7 +118,6 @@ public static class JSMgr
         allCallbackInfo.Clear();
         JSMgr.ClearJSCSRel();
         evaluatedScript.Clear();
-        funIsInheritanceRel = 0;
         jsEngineRound++;
     }
     
@@ -265,26 +264,6 @@ public static class JSMgr
 
         bool ret = (1 == JSApi.evaluate(bytes, (uint)bytes.Length, fullName));
         return ret;
-    }
-
-    static int funIsInheritanceRel = 0;
-    public static bool IsInheritanceRel(string baseClassName, string subClassName)
-    {
-        if (funIsInheritanceRel == 0)
-        {
-            funIsInheritanceRel = JSApi.getObjFunction(0, "jsb_IsInheritanceRel");
-            if (funIsInheritanceRel == 0)
-            {
-                // 现在会走到这里
-                funIsInheritanceRel = -1; // fail!
-            }
-        }
-
-        if (funIsInheritanceRel > 0)
-        {
-            return JSMgr.vCall.CallJSFunctionValue(0, funIsInheritanceRel, baseClassName, subClassName);
-        }
-        return false;
     }
 
     /// <summary>

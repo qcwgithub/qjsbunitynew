@@ -41,6 +41,7 @@ CS.require("Manual/UnityEngine_Vector2");
 CS.require("Manual/UnityEngine_MonoBehaviour");
 CS.require("Manual/UnityEngine_WaitForSeconds");
 CS.require("Manual/MissingClasses");
+CS.require("Manual/JSComponentUtil");
 //
 // may be more..
 //

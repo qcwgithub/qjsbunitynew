@@ -19,7 +19,8 @@ public partial class UnityEngineManual
         int id = 0;
         foreach (var jsCom in jsComs)
         {
-            if (jsCom.jsClassName == typeString)
+            if (jsCom.jsClassName == typeString ||
+                JSEngine.inst.IsInheritanceRel(typeString, jsCom.jsClassName))
             {
                 id = jsCom.jsObjID;
                 break;
@@ -32,7 +33,8 @@ public partial class UnityEngineManual
         List<JSComponent> lst = new List<JSComponent>();
         foreach (var c in com)
         {
-            if (c.jsClassName == typeString)
+            if (c.jsClassName == typeString ||
+                JSEngine.inst.IsInheritanceRel(typeString, c.jsClassName))
             {
                 lst.Add(c);
             }
