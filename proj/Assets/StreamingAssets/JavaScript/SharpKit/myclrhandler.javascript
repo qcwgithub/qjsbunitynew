@@ -114,3 +114,26 @@ function jsb_formatParamsArray(preCount, argArray, funArguments)
         return Array.prototype.slice.apply(funArguments).slice(preCount);
     }
 }
+
+function jsb_IsInheritanceRel(baseName, subName)
+{
+    var arr = subName.split(".");
+    var obj = this;
+    arr.forEach(function (a) {
+        if (obj)
+            obj = obj[a];
+    });
+    if (obj != undefined && obj !== this) {
+         while (true) {
+             if (obj.baseType != undefined) {
+                 if (obj.baseType.fullname == baseName) 
+                     return true;
+                 else 
+                     obj = obj.baseType;
+             }
+             else 
+                 break;
+         }
+    }
+    return false;
+}

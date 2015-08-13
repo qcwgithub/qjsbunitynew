@@ -6,6 +6,9 @@
 CS.require("SharpKitGenerated/JSBinding/JSImp/Coroutine.javascript");
 CS.require("SharpKitGenerated/JSBinding/JSImp/Iterator.javascript");
 CS.require("SharpKitGenerated/JSBinding/JSImp/Reflection.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/ComponentTest/ComponentTest.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/ComponentTest/TEnemy.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/ComponentTest/TEnemyBase.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Coroutine/TestCoroutine.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/DelegateTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/DictionaryTest.javascript");
