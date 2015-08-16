@@ -7,6 +7,9 @@ public class TestCoroutine : MonoBehaviour {
 	void Start () 
     {
         StartCoroutine("DoTest");
+        StartCoroutine(DoTest2(() => { 
+            Debug.Log("Action called!"); 
+        }));
         InvokeRepeating("PrintHelloInvoke", 4f, 1f);
         Invoke("DelayInvoke", 5f);
 	}
@@ -49,7 +52,13 @@ public class TestCoroutine : MonoBehaviour {
         // test another coroutine
         yield return StartCoroutine(WaitForCangJingKong());
         Debug.Log("DoTest 4 Wait for CangJingKong finished!");
-    }  
+    }
+    IEnumerator DoTest2(System.Action a)
+    {
+        Debug.Log("will call action 2 seconds later");
+        yield return new WaitForSeconds(2f);
+        a();
+    }
     void PrintHelloInvoke()
     {
         print("Hello, Invoke! (every 1 second)");

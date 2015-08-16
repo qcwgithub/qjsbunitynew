@@ -11,6 +11,9 @@ var TestCoroutine = {
         },
         Start: function (){
             this.StartCoroutine$$String("DoTest");
+            this.StartCoroutine$$IEnumerator(this.DoTest2($CreateAnonymousDelegate(this, function (){
+                UnityEngine.Debug.Log$$Object("Action called!");
+            })));
             this.InvokeRepeating("PrintHelloInvoke", 4, 1);
             this.Invoke("DelayInvoke", 5);
         },
@@ -38,6 +41,13 @@ var TestCoroutine = {
             UnityEngine.Debug.Log$$Object("DoTest 3 Text from WWW: " + www.get_text());
             yield (this.StartCoroutine$$IEnumerator(this.WaitForCangJingKong()));
             UnityEngine.Debug.Log$$Object("DoTest 4 Wait for CangJingKong finished!");
+            
+        },
+        DoTest2: function* (a){
+            
+            UnityEngine.Debug.Log$$Object("will call action 2 seconds later");
+            yield (new UnityEngine.WaitForSeconds.ctor(2));
+            a();
             
         },
         PrintHelloInvoke: function (){
