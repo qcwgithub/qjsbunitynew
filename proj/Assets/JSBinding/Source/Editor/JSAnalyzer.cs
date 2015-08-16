@@ -760,7 +760,7 @@ fields before this action.",
         string YIELD_DEF = "var $yield = [];"; // to delete
         string YIELD_PUSH = "$yield.push"; // to replace with "yield "
         string YIELD_RET = "return $yield;"; // to delete
-        string FUN_DEC = "function (){"; // to replace with "function* (){"
+        string FUN_DEC = "function ("; // to replace with "function* ("
 
         string[] files = Directory.GetFiles(JSBindingSettings.jsDir, "*.javascript", SearchOption.AllDirectories);
         List<string> lstFiles = new List<string>();
@@ -806,7 +806,7 @@ fields before this action.",
                 if (funStart < 0) { suc = false; break; }
 
                 sb.Append(str.Substring(lastIndex, funStart - lastIndex));
-                sb.Append("function* (){");
+                sb.Append("function* (");
 
                 funStart += FUN_DEC.Length;
                 lastIndex = str.IndexOf(YIELD_RET, yildDefIndex);
