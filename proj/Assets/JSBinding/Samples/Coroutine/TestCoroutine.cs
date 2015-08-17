@@ -44,6 +44,11 @@ public class TestCoroutine : MonoBehaviour {
         Debug.Log("DoTest 2");
         yield return new WaitForSeconds(1f);
 
+        // 这个可以正常运行
+        // 但是要求用户要手动添加这个场景到 BuildSetting 里，先去掉吧
+//         Debug.Log("Do Test LoadLevelAdditive");
+//         yield return Application.LoadLevelAdditiveAsync("AddScene");
+
         // test WWW
         WWW www = new WWW("file://" + Application.dataPath + "/JSBinding/Samples/Coroutine/CoroutineReadme.txt");
         yield return www;

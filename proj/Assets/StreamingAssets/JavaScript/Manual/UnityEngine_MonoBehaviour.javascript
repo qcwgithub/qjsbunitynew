@@ -181,6 +181,7 @@ if (_jstype) {
             waitForFrames: 0,          // yield null
             waitForSeconds: undefined, // WaitForSeconds
             www: undefined,            // WWW
+            asyncOp: undefined,         // AsyncOperation
             waitForCoroutine: undefined, // Coroutine
         };
 
@@ -222,6 +223,12 @@ if (_jstype) {
                     this.$UpdateCoroutine(cn);
                 }
             }
+            else if (cn.asyncOp) {
+                if (cn.asyncOp.get_isDone()) {
+                    cn.asyncOp = undefined;
+                    this.$UpdateCoroutine(cn);
+                }
+            }
             else if (cn.waitForCoroutine) {
                 if (cn.waitForCoroutine.finished == true) {
                     cn.waitForCoroutine = undefined;
@@ -249,6 +256,9 @@ if (_jstype) {
                 } 
                 else if (yieldCommand instanceof UnityEngine.WWW.ctor) {
                     cn.www = yieldCommand;
+                }
+                else if (yieldCommand instanceof UnityEngine.AsyncOperation.ctor) {
+                    cn.asyncOp = yieldCommand;
                 }
                 else if (yieldCommand.$__CN === true/*yieldCommand.toString() == "[object Generator]"*/) {
                     cn.waitForCoroutine = yieldCommand;
