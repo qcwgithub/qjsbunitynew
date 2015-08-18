@@ -293,7 +293,13 @@ public class JSApi
     {
         setBoolean(e, v ? 1 : 0);
     }
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+#else
+    // TODO
+    // android & iOS & Mac OS 需要编译 mozjswrap.dll，目前先这样，他们仨 C# -> C 时中文会乱码，英文正常
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+#endif
     private static extern void setString(int e, string value);
     public static void setStringS(int e, object value)
     {
