@@ -20,7 +20,7 @@ var JSComponentUtil = {
         },
         // 用于判断2个类是不是继承关系
 		IsInheritanceRel: function (baseClassName, subClassName) {
-            print(baseClassName + "/" + subClassName);
+            //print(baseClassName + "/" + subClassName);
             var arr = subClassName.split(".");
             var obj = window;
                 arr.forEach(function (a) {
