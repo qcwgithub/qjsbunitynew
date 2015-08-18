@@ -741,7 +741,7 @@ fields before this action.",
             //Debug.Log(path + " -> " + nextPath);
 
             string content = File.ReadAllText(path);
-            var reg = new Regex(@"(?>^\s*\[\s*JsType.*$)?\s*(?<ClassDefinition>^(?>(?>public|protected|private|static|partial|abstract|internal)*\s*)*(?>class|struct|enum)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);
+            var reg = new Regex(@"(?>^\s*\[\s*JsType.*$)?\s*(?<ClassDefinition>^(?>(?>public|protected|private|static|partial|abstract|internal)*\s*)*(?>class|struct|enum|interface)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);
             content = reg.Replace(content, MyMatchEvaluator);
 
             if (matched && content.IndexOf("using SharpKit.JavaScript;") < 0)
