@@ -32,7 +32,10 @@ public class DictionaryTest : MonoBehaviour {
             {
                 Debug.Log("not found");
             }
-
+            foreach (var v in dict)
+            {
+                Debug.Log(v.Key.ToString() + "->" + v.Value.ToString());
+            }
         }
 	}
 }
