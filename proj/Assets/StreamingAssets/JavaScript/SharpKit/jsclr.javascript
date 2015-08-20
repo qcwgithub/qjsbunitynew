@@ -642,9 +642,11 @@ JsCompiler._CopyObject = function (source, target){
 // qiucw source: base JsType, target: child JsType
 JsCompiler._CopyFields = function (source, target){
     for (var p in source.fields) {
+        if (target.fields == undefined) target.fields = {};
         target.fields[p] = source.fields[p];
     }
     for (var p in source.staticFields) {
+        if (target.staticFields == undefined) target.staticFields = {};
         target.staticFields[p] = source.staticFields[p];
     }
 };
