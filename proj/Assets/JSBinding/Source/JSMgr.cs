@@ -37,14 +37,42 @@ public static class JSMgr
 
     static bool RefCallStaticMethod(string className, string methodName)
     {
-        Type t = Type.GetType(className);
-        if (t == null) 
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+        if (assemblies == null)
+        {
             return false;
-        MethodInfo method = t.GetMethod(methodName);
-        if (method == null)
+        }
+        bool find = false;
+        MethodInfo method = null;
+        for (int i = 0; i < assemblies.Length; i++)
+        {
+            Type[] types = assemblies[i].GetExportedTypes();
+
+            if (types == null) return false;
+            for (int j = 0; j < types.Length; j++)
+            {
+                if (types[j].FullName == className)
+                {
+                    method = types[j].GetMethod(methodName);
+
+                    if (method != null)
+                    {
+                        find = true;
+                        break;
+                    }
+                }
+            }
+        } 
+        if (find)
+        {
+            method.Invoke(null, null);
+            return true;
+        }
+        else
+        {
             return false;
-        method.Invoke(null, null);
-        return true;
+        }
     }
     static object RefGetStaticField(string className, string fieldName)
     {
