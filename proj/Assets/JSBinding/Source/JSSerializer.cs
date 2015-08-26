@@ -144,7 +144,7 @@ public class JSSerializer : MonoBehaviour
             // NOTE£ºCan not bind a script to a GameObject twice!
             if (com.jsClassName == scriptName)
             {
-                return com.GetJSObjID();
+                return com.GetJSObjID(false);
             }
         }
         return 0;

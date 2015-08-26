@@ -18,7 +18,7 @@ public class JSComponent : JSSerializer
 {
     [HideInInspector]
     [NonSerialized]
-    public int jsObjID = 0;
+    protected int jsObjID = 0;
 
     int idAwake = 0;
     int idStart = 0;
@@ -41,7 +41,8 @@ public class JSComponent : JSSerializer
 //     int idDestroyChildGameObject = 0;
 //     int idDisableChildGameObject = 0;
 //     int idDestroyGameObject = 0;
-
+    int idStartSinking = 0;
+    int idRestartLevel = 0;
     /// <summary>
     /// Initializes the member function.
     /// </summary>
@@ -65,6 +66,8 @@ public class JSComponent : JSSerializer
 //         idDestroyChildGameObject = JSApi.getObjFunction(jsObjID, "DestroyChildGameObject");
 //         idDisableChildGameObject = JSApi.getObjFunction(jsObjID, "DisableChildGameObject");
 //         idDestroyGameObject = JSApi.getObjFunction(jsObjID, "DestroyGameObject");
+        idStartSinking = JSApi.getObjFunction(jsObjID, "StartSinking");
+        idRestartLevel = JSApi.getObjFunction(jsObjID, "RestartLevel");
     }
     /// <summary>
     /// Removes if exist.
@@ -109,9 +112,9 @@ public class JSComponent : JSSerializer
 //         removeIfExist(idDestroyGameObject);
     }
 
-    int initState = 0;
-    bool initSuccess { get { return initState == 1; } set { if (value) initState = 1; } }
-    public bool initFail { get { return initState == 2; } set { if (value) initState = 2; else initState = 0; } }
+    int jsState = 0;
+    bool jsSuccess { get { return jsState == 1; } set { if (value) jsState = 1; } }
+    public bool jsFail { get { return jsState == 2; } set { if (value) jsState = 2; else jsState = 0; } }
 
     protected void callIfExist(int funID, params object[] args)
     {
@@ -123,11 +126,11 @@ public class JSComponent : JSSerializer
 
     public void initJS()
     {
-        if (initFail || initSuccess) return;
+        if (jsFail || jsSuccess) return;
 
         if (string.IsNullOrEmpty(jsClassName))
         {
-            initFail = true;
+            jsFail = true;
             return;
         }
 
@@ -140,28 +143,64 @@ public class JSComponent : JSSerializer
         if (jsObjID == 0)
         {
             Debug.LogError("New MonoBehaviour \"" + this.jsClassName + "\" failed. Did you forget to export that class?");
-            initFail = true;
+            jsFail = true;
             return;
         } 
         JSMgr.addJSCSRel(jsObjID, this);
         initMemberFunction();
-        initSuccess = true;
+        jsSuccess = true;
     }
-    public void Awake()
+
+    //
+    // 有几个事情要做
+    // A) initJS()
+    // B) initSerializedData(jsObjID)
+    // C) callIfExist(idAwake);
+    //
+    // 不同时候要做的事情，假设有2个类 X 和 Y
+    // 1) 假设 X 类不被其他类所引用，则 X 类 Awake 时：A + B + C
+    // 2) 在 X 类 initSerializedData 时发现引用了 Y 类，而 Y 类的 Awake 还没有被调用，那么会马上调用 Y 类的 A（看 GetJSObjID 函数），之后 Y 类的 Awake 里：B + C
+    //    看 JSSerializer.GetGameObjectMonoBehaviourJSObj 函数
+    //    为什么第1步只调用Y的A，而不调B？因为那时候X类正在处理序列化，不想中间又穿插Y的序列化处理，也用不到
+    // 3) 在 AddComponent<X>() 时，我们知道他会调用 Awake()，但是此时由于 jsClassName 未被设置，所以会 jsFail=true，但紧接着我们又设置 jsFail=false，然后调用 init(true) 和 callAwake()，做的事情也是 A + B + C
+    //    看 Components.cs 里的 GameObject_AddComponentT1 函数
+    // 4) 在 GetComponent<X>() 时，如果 X 的 Awake() 还未调用，我们会调用 X 的 init(true)，他做了 A + B，之后 X 的 Awake() 再做 C
+    //    看 Components.cs 里的 help_searchAndRetCom 和 help_searchAndRetComs 函数
+    //
+    //
+    // 总结：以上那么多分类，做的事情其实就是，当一个类X要在Awake时去获取Y类组件，甚至访问Y类成员，如果此时Y类的Awake还没有调用，此时会得到undefined，那么我们只好先初始化一下Y类的JS对象。
+    //
+    bool dataSerialized = false;
+    public void init(bool callSerialize)
     {
         if (!JSEngine.initSuccess && !JSEngine.initFail)
         {
             JSEngine.FirstInit();
         }
-        if (JSEngine.initSuccess)
+        if (!JSEngine.initSuccess)
         {
-            initJS();
-
-            if (initSuccess)
-            {
-                initSerializedData(jsObjID);
-            }
+            return;
         }
+
+        initJS();
+
+        if (jsSuccess && callSerialize && !dataSerialized)
+        {
+            dataSerialized = true;
+            initSerializedData(jsObjID);
+        }
+    }
+    public void callAwake()
+    {
+        if (jsSuccess)
+        {
+            callIfExist(idAwake);
+        }
+    }
+    void Awake()
+    {
+        init(true);
+        callAwake();
     }
     /// <summary>
     /// get javascript object id of this JSComponent.
@@ -170,24 +209,17 @@ public class JSComponent : JSSerializer
     /// </summary>
     /// <returns></returns>
     /// 
-    public int GetJSObjID()
+    public int GetJSObjID(bool callSerialize)
     {
         if (jsObjID == 0)
         {
-            if (!initFail) 
-                initJS();
+            init(callSerialize);
         }
         return jsObjID;
     }
 
-    private bool firstStart = true;
     void Start() 
     {
-        if (firstStart)
-        {
-            firstStart = false;
-            callIfExist(idAwake);
-        }
         callIfExist(idStart);
     }
 
@@ -198,7 +230,7 @@ public class JSComponent : JSSerializer
             callIfExist(idOnDestroy);
         }
 
-        if (initSuccess)
+        if (jsSuccess)
         {
             // remove this jsObjID even if JSMgr.isShutDown is true
             JSMgr.removeJSCSRel(jsObjID);
@@ -209,7 +241,7 @@ public class JSComponent : JSSerializer
             return;
         }
 
-        if (initSuccess)
+        if (jsSuccess)
         {
             // JSMgr.RemoveRootedObject(jsObj);
             JSApi.setTraceS(jsObjID, false);
@@ -286,4 +318,12 @@ public class JSComponent : JSSerializer
 //     {
 //         callIfExist(idDestroyGameObject);
 //     }
+    void StartSinking()
+    {
+        callIfExist(idStartSinking);
+    }
+    void RestartLevel()
+    {
+        callIfExist(idRestartLevel);
+    }
 }
