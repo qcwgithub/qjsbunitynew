@@ -2,10 +2,12 @@ using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/AwakeTest/AwakeA.javascript")]
-public class AwakeA : MonoBehaviour {
+public class AwakeA : MonoBehaviour
+{
+    public int valueOfA = 0;
 	void Awake () {
         var b = GetComponent<AwakeB>();
-        print("A call B: " + b.name);
+        print(string.Format("A.GetComponent<B>: {0}, value: {1}", b.name, b.valueOfB));
 	}
 	
 }
