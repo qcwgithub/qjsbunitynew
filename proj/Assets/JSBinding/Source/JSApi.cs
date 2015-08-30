@@ -406,6 +406,9 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int/* bool */ evaluate(byte[] ascii, uint length, string filename);
 
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern int/* bool */ evaluate_jsc(byte[] ascii, uint length, string filename);
+
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr getArgString(IntPtr vp, int i);
     public static string getArgStringS(IntPtr vp, int i)

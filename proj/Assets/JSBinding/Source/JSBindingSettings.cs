@@ -823,8 +823,10 @@ public class JSBindingSettings
 
     // extension (including ".")
     public static string jsExtension = ".javascript";
+    public static string jscExtension = ".jsc";
     // directory to save js files
     public static string jsDir = Application.streamingAssetsPath + "/JavaScript";
+    public static string jscDir = Application.streamingAssetsPath + "/JavaScript_jsc";
 
 
     // directory to save generated js files (gen by JSGenerateor2)

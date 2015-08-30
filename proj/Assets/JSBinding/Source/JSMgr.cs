@@ -277,7 +277,19 @@ public static class JSMgr
         evaluatedScript.Add(jsScriptName, true);
 
         string fullName = JSMgr.getJSFullName(jsScriptName, false);
-        byte[] bytes = jsLoader.LoadJSSync(fullName);
+        byte[] bytes;
+
+        bool jsc = false;
+        string jscFullName = fullName.Replace(JSBindingSettings.jsDir, JSBindingSettings.jscDir).Replace(JSBindingSettings.jsExtension, JSBindingSettings.jscExtension);
+//         if (File.Exists(jscFullName))
+//         {
+//             jsc = true;
+//             bytes = jsLoader.LoadJSSync(jscFullName);
+//         }
+//         else
+        {
+            bytes = jsLoader.LoadJSSync(fullName);
+        }
 
         if (bytes == null)
         {
@@ -290,7 +302,8 @@ public static class JSMgr
             return false;
         }
 
-        bool ret = (1 == JSApi.evaluate(bytes, (uint)bytes.Length, fullName));
+        bool ret = jsc ? (1 == JSApi.evaluate_jsc(bytes, (uint)bytes.Length, jscFullName)) 
+            : (1 == JSApi.evaluate(bytes, (uint)bytes.Length, fullName));
         return ret;
     }
 
