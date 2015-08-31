@@ -3597,13 +3597,10 @@ var System$IO$Path = {
         cctor: function (){
             System.IO.Path.AltDirectorySeparatorChar = "/";
             System.IO.Path.DirectorySeparatorChar = "\\";
-            System.IO.Path.InvalidFileNameChars = ["\"", "<", ">", "|", "\0", "", "", "", "", "", "", "", "", "\t", "\n", "", "", "\r", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ":", "*", "?", "\\", "/"];
-            System.IO.Path.InvalidPathChars = ["\"", "<", ">", "|", "\0", "", "", "", "", "", "", "", "", "\t", "\n", "", "", "\r", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
             System.IO.Path.MAX_DIRECTORY_PATH = 248;
             System.IO.Path.MAX_PATH = 260;
             System.IO.Path.MaxPath = 260;
             System.IO.Path.PathSeparator = ";";
-            System.IO.Path.RealInvalidPathChars = ["\"", "<", ">", "|", "\0", "", "", "", "", "", "", "", "", "\t", "\n", "", "", "\r", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
             System.IO.Path.VolumeSeparatorChar = ":";
         },
         ChangeExtension: function (path, extension){
