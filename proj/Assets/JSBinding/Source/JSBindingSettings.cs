@@ -826,6 +826,7 @@ public class JSBindingSettings
     public static string jscExtension = ".jsc";
     // directory to save js files
     public static string jsDir = Application.streamingAssetsPath + "/JavaScript";
+    public static string mergedJsDir = Application.dataPath + "/../Temp/JavaScript_js";
     public static string jscDir = Application.streamingAssetsPath + "/JavaScript_jsc";
 
 
