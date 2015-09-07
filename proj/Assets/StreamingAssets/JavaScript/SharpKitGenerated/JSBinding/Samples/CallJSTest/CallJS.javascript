@@ -8,3 +8,12 @@ var CreateJSBindingInfo = function () {
         }
     };
 };
+
+var JSBindingInfoFun = function () {
+    this.Version = "1.5.0";
+    this.QQGroup = 189738580;
+    this.isForiOSUpdate = true;
+    this.getDocumentUrl = function () {
+        return "http://www.cnblogs.com/answerwinner/p/4469021.html";
+    };
+};

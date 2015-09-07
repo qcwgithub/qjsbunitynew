@@ -1,6 +1,8 @@
 ﻿using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
+
+// 这个是跑在C#的
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/CallJSTest/CallJSTest.javascript")]
 public class CallJSTest : MonoBehaviour {
 
@@ -11,18 +13,15 @@ public class CallJSTest : MonoBehaviour {
         JSMgr.vCall.CallJSFunctionName(0, "CreateJSBindingInfo");
 
         object obj = JSMgr.datax.getObject((int)JSApi.GetType.JSFunRet);
-        CSRepresentedObject csObj = (CSRepresentedObject)obj;
-
-        PrintJSBindingInfo(csObj.jsObjID);
-
-
-        //2---------------------------------------------------------------
-
-        int id = JSApi.newJSClassObject("JSBindingInfoFun");
-        JSApi.setTraceS(id, true);
-
-        PrintJSBindingInfo(id);
-        JSApi.setTraceS(id, false);
+        if (obj != null)
+        {
+            CSRepresentedObject csObj = (CSRepresentedObject)obj;
+            PrintJSBindingInfo(csObj.jsObjID);
+        }
+        else
+        {
+            Debug.Log("obj is null");
+        }
 	}
 
     void PrintJSBindingInfo(int objID)

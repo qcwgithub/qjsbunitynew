@@ -66,6 +66,8 @@ CS.require("JSImp/Iterator");
 //--------------------------------------------------
 CS.require("SharpKit/myclrhandler");
 
+CS.require("SharpKitGenerated/JSBinding/Samples/CallJSTest/CallJS");
+
 // 6) Error handler
 //--------------------------------------------------
 CS.require("ErrorHandler");
