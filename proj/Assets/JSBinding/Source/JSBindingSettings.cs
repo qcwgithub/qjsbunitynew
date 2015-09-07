@@ -20,6 +20,18 @@ public class PerTest
     }
 
     public static RefObject StaticObject = new RefObject();
+
+    public static void test123(params object[] ts)
+    {
+        if (ts != null && ts.Length > 0)
+        {
+            for (int i = 0; i < ts.Length; i++)
+            {
+                Debug.LogError("test>>>>>>>+test>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>i" + i + "  >>>>" + ts[i]);
+            }
+        }
+
+    }
 }
 
 
