@@ -395,6 +395,8 @@ public class JSApi
     public static extern bool moveID2Arr(int id, int arrIndex);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern void getProperty(int id, string name);
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int/* bool */ setProperty(int id, string name, int valueID);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int/* bool */ getElement(int id, int i);
