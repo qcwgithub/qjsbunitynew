@@ -27,7 +27,19 @@ public class PerTest
         {
             for (int i = 0; i < ts.Length; i++)
             {
-                Debug.LogError("test>>>>>>>+test>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>i" + i + "  >>>>" + ts[i]);
+                Debug.LogError("[" + i + "] = " + ts[i]);
+            }
+        }
+
+    }
+
+    public static void testString(params object[] ts)
+    {
+        if (ts != null && ts.Length > 0)
+        {
+            for (int i = 0; i < ts.Length; i++)
+            {
+                Debug.LogError("[" + i + "] = " + ts[i]);
             }
         }
 
