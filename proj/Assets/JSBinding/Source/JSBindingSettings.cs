@@ -33,7 +33,7 @@ public class PerTest
 
     }
 
-    public static void testString(params object[] ts)
+    public static void testString(params string[] ts)
     {
         if (ts != null && ts.Length > 0)
         {
