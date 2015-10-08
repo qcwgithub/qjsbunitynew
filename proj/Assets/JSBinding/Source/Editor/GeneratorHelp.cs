@@ -148,6 +148,7 @@ public static class GeneratorHelp
     public static void FilterTypeInfo(Type type, ATypeInfo ti)
     {
         bool bIsStaticClass = (type.IsClass && type.IsAbstract && type.IsSealed);
+        bool bIsAbstractClass = (type.IsClass && type.IsAbstract);
 
         List<ConstructorInfoAndIndex> lstCons = new List<ConstructorInfoAndIndex>();
         List<FieldInfoAndIndex> lstField = new List<FieldInfoAndIndex>();
@@ -157,6 +158,9 @@ public static class GeneratorHelp
 
         for (int i = 0; i < ti.constructors.Length; i++)
         {
+            if (bIsAbstractClass)
+                continue;
+
             if (ti.constructors[i] == null)
             {
                 lstCons.Add(new ConstructorInfoAndIndex(null, i));
