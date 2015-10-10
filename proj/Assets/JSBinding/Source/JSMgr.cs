@@ -112,18 +112,62 @@ public static class JSMgr
 
         JSMgr.jsLoader = jsLoader;
 
+        bool ret = false;
         if (!RefCallStaticMethod("CSharpGenerated", "RegisterAll"))
         {
             Debug.LogError("Call CSharpGenerated.RegisterAll() failed. Did you forget to click menu [Assets | JSB | Generate JS and CS Bindings]?");
             onInitJSEngine(false);
-            return false;
+            ret = false;
         }
         else
         {
             onInitJSEngine(true);
-            return true;
+            ret = true;
+        }
+
+        //InitMonoBehaviourJSComponentName();
+
+        return ret;
+    }
+
+    public static string GetMonoBehaviourJSComponentName(string monoBehaviourName)
+    {
+        string ret;
+        if (dictMB2JSComName.TryGetValue(monoBehaviourName, out ret))
+            return ret;
+        return string.Empty;
+    }
+    static void InitMonoBehaviourJSComponentName()
+    {
+        dictMB2JSComName.Clear();
+
+        int i = 0;
+        string str;
+        string[] arr;
+
+        // 从JS逐个取出
+        while (true)
+        {
+            // 调用全局函数，使用 id 0
+            if (!JSMgr.vCall.CallJSFunctionName(0, "GetMonoBehaviourJSComponentName", i))
+                break;
+
+            str = JSApi.getStringS((int)JSApi.GetType.JSFunRet);
+            if (string.IsNullOrEmpty(str))
+                break;
+
+            arr = str.Split('|');
+            if (arr == null || arr.Length != 2)
+                break;
+
+            //Debug.Log(arr[0] + " -> " + arr[1]);
+
+            dictMB2JSComName.Add(arr[0], arr[1]);
+
+            i++;
         }
     }
+    static Dictionary<string, string> dictMB2JSComName = new Dictionary<string,string>();
 
     public static bool ShutDown = false;
     public static bool isShutDown { get { return ShutDown; } }

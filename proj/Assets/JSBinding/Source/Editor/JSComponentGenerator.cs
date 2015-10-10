@@ -159,12 +159,14 @@ public class JSComponentGenerator
         // OnValidate
     };
 
-    public static JSComponent CreateJSComponentInstance(GameObject go, MonoBehaviour behav)
+    /// <summary>
+    /// 根据一个 MonoBehaviour
+    /// 获得要使用的 JSComponent 类名
+    /// </summary>
+    /// <param name="behav"></param>
+    /// <returns></returns>
+    public static string GetJSComponentClassName(Type type)
     {
-//         JSComponent ret = (JSComponent)go.AddComponent<JSComponent>();
-//         return ret;
-
-        Type type = behav.GetType();
         MethodInfo[] methods = type.GetMethods(BindingFlags.Public 
                         | BindingFlags.NonPublic
                         | BindingFlags.Instance
@@ -195,6 +197,18 @@ public class JSComponentGenerator
                 i++;
             }
         }
+        return className;
+    }
+    /// <summary>
+    /// 根据 behav，给 go 添加一个 JSComponent_XX 组件
+    /// </summary>
+    /// <param name="go"></param>
+    /// <param name="behav"></param>
+    /// <returns></returns>
+    public static JSComponent CreateJSComponentInstance(GameObject go, MonoBehaviour behav)
+    {
+        Type type = behav.GetType();
+        string className = GetJSComponentClassName(type);
         Type jsComponentType = JSDataExchangeMgr.GetTypeByName(className, null);
         if (jsComponentType == null)
         {

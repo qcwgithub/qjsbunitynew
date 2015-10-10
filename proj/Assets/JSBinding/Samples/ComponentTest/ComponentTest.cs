@@ -1,14 +1,15 @@
 using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
+
 [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/ComponentTest/ComponentTest.javascript")]
 public class ComponentTest : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        // ²âÊÔ£¡
-        // ÕâÀïµ÷ÓÃ GetComponent<»ùÀà>()
-        // ±¾¶ÔÏó°óµÄÊÇ TEnemy£¬Ëû¼Ì³Ð×Ô TEnemyBase
+        // ï¿½ï¿½ï¿½Ô£ï¿½
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ GetComponent<ï¿½ï¿½ï¿½ï¿½>()
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TEnemyï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½ï¿½ï¿½ TEnemyBase
         TEnemyBase eb = GetComponent<TEnemyBase>();
         if (eb != null)
         {
@@ -19,6 +20,8 @@ public class ComponentTest : MonoBehaviour {
         {
             Debug.Log("GetComponent<TEnemyBase>() returns null!");
         }
+
+        gameObject.AddComponent<MentosKXT>();
 	}
 	
 	// Update is called once per frame
