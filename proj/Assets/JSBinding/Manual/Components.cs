@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -94,7 +95,18 @@ public partial class UnityEngineManual
         }
         else
         {
-            JSComponent jsComp = go.AddComponent<JSComponent>();
+            string jsComponentName = JSMgr.GetMonoBehaviourJSComponentName(typeString);
+            Type jsComponentType = typeof(JSComponent);
+            if (string.IsNullOrEmpty(jsComponentName))
+            {
+                Debug.LogWarning(string.Format("\"{0}\" has no JSComponent_XX. Use JSComponent instead.", typeString));
+            }
+            else
+            {
+                jsComponentType = JSDataExchangeMgr.GetTypeByName(jsComponentName, jsComponentType);
+            }
+            
+            JSComponent jsComp = (JSComponent)go.AddComponent(jsComponentType);
             jsComp.jsClassName = typeString;
             jsComp.jsFail = false;
             jsComp.init(true);

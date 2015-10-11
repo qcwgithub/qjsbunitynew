@@ -125,18 +125,20 @@ public static class JSMgr
             ret = true;
         }
 
-        //InitMonoBehaviourJSComponentName();
+        InitMonoBehaviourJSComponentName();
 
         return ret;
     }
-
+    // 根据 脚本名获得JSComponent名
     public static string GetMonoBehaviourJSComponentName(string monoBehaviourName)
     {
         string ret;
         if (dictMB2JSComName.TryGetValue(monoBehaviourName, out ret))
             return ret;
+        // 没找到返回  Empty
         return string.Empty;
     }
+    // 从 MonoBehaviour2JSComponentName.javascript 加载
     static void InitMonoBehaviourJSComponentName()
     {
         dictMB2JSComName.Clear();
@@ -160,12 +162,17 @@ public static class JSMgr
             if (arr == null || arr.Length != 2)
                 break;
 
-            //Debug.Log(arr[0] + " -> " + arr[1]);
+            Debug.Log(arr[0] + "->" + arr[1]);
 
             dictMB2JSComName.Add(arr[0], arr[1]);
 
             i++;
         }
+
+//         if (i == 0)
+//         {
+//             Debug.LogWarning("");
+//         }
     }
     static Dictionary<string, string> dictMB2JSComName = new Dictionary<string,string>();
 
