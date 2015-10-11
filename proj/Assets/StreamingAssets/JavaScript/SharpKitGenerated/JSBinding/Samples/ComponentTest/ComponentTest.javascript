@@ -18,6 +18,7 @@ var ComponentTest = {
             else {
                 UnityEngine.Debug.Log$$Object("GetComponent<TEnemyBase>() returns null!");
             }
+            this.get_gameObject().AddComponent$1(MentosKXT.ctor);
         },
         Update: function (){
         }
