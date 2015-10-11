@@ -609,7 +609,8 @@ var GetMonoBehaviourJSComponentName = function (i)
     public static string MyMatchEvaluator(Match m)
     {
         matched = true;
-        var sb = new StringBuilder();
+        string matchedString = m.ToString();
+
         if (addJsType)
         {
             var lastDir = "";
@@ -626,15 +627,24 @@ var GetMonoBehaviourJSComponentName = function (i)
                 }
             }
 
-            sb.AppendFormat("\n[JsType(JsMode.Clr,\"{0}{1}{2}{3}{4}\")]\n{5}",
-                lastDir, JSBindingSettings.sharpKitGenFileDir, nextPath, m.Groups["ClassName"], JSBindingSettings.jsExtension, 
-                m.Groups["ClassDefinition"]);
+            string JsTypeSection = string.Format("[JsType(JsMode.Clr,\"{0}{1}{2}{3}{4}\")]", 
+                lastDir, JSBindingSettings.sharpKitGenFileDir, nextPath, m.Groups["ClassName"], JSBindingSettings.jsExtension);
+
+            // 如果JsType定义已经存在且相同，就不要改了，直接返回相同的串
+            if (matchedString.IndexOf(JsTypeSection) >= 0)
+                return matchedString;
+            else
+                return string.Format("\n{0}\n{1}", JsTypeSection, m.Groups["ClassDefinition"]);
         }
         else
         {
-            sb.AppendFormat("\n{0}", m.Groups["ClassDefinition"]);
+            // 如果没有 JsType，就不要替换了，因为替换会加个\n，会导致文件修改
+            // 当然如果你的类名包含 JsType，那就替换一下，加个换行，也没事
+            if (matchedString.IndexOf("JsType") < 0)
+                return matchedString;
+            else
+                return string.Format("\n{0}", m.Groups["ClassDefinition"]);
         }
-        return sb.ToString();
     }
 
     // including '/'
@@ -757,6 +767,8 @@ fields before this action.",
             return false;
         }
 
+        int changedCount = 0;
+        StringBuilder sbChanged = new StringBuilder();
         // path in lstFiles has full path
         foreach (string path in lstFiles)
         {
@@ -770,15 +782,22 @@ fields before this action.",
 
             string content = File.ReadAllText(path);
             var reg = new Regex(@"(?>^\s*\[\s*JsType.*$)?\s*(?<ClassDefinition>^(?>(?>public|protected|private|static|partial|abstract|internal)*\s*)*(?>class|struct|enum|interface)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);
-            content = reg.Replace(content, MyMatchEvaluator);
+            string newContent = reg.Replace(content, MyMatchEvaluator);
 
-            if (matched && content.IndexOf("using SharpKit.JavaScript;") < 0)
+            if (matched && newContent.IndexOf("using SharpKit.JavaScript;") < 0)
             {
-                content = "using SharpKit.JavaScript;\n" + content;
+                newContent = "using SharpKit.JavaScript;\n" + newContent;
             }
-            File.WriteAllText(path, content);
+            if (newContent != content)
+            {
+                changedCount++;
+                sbChanged.AppendLine(path);
+                File.WriteAllText(path, newContent);
+            }
         }
-        Debug.Log("Make JsType Attribute OK.");
+        Debug.Log("Add JsType finished, " + changedCount + " of " + lstFiles.Count + " file(s) changed.");
+        if (changedCount > 0)
+            Debug.Log(sbChanged.ToString());
         AssetDatabase.Refresh();
         return true;
     }
