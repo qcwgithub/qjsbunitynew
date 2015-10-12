@@ -265,6 +265,11 @@ public static class JSMgr
         | BindingFlags.NonPublic
         | BindingFlags.Instance
         | BindingFlags.Static;
+    public static BindingFlags BindingFlagsMethod3 =
+        BindingFlags.Public
+        | BindingFlags.NonPublic
+        | BindingFlags.Static
+        | BindingFlags.FlattenHierarchy;
 
     public static BindingFlags BindingFlagsProperty = 
         BindingFlags.Public 

@@ -437,7 +437,20 @@ public static class GeneratorHelp
     /// <returns></returns>
     public static bool MethodIsOverloaded(Type type, string methodName)
     {
-        MethodInfo[] methods = type.GetMethods(JSMgr.BindingFlagsMethod2);
+        bool ret = MethodIsOverloaded2(type, methodName, JSMgr.BindingFlagsMethod2);
+        if (!ret)
+        {
+            if (MethodIsOverloaded2(type, methodName, JSMgr.BindingFlagsMethod3))
+            {
+                ret = true;
+                Debug.Log("NEW OVERLOAD " + type.Name + "." + methodName);
+            }
+        }
+        return ret;
+    }
+    public static bool MethodIsOverloaded2(Type type, string methodName, BindingFlags flag)
+    {
+        MethodInfo[] methods = type.GetMethods(flag);
         int N = 0;
         foreach (var m in methods)
         {
@@ -450,4 +463,5 @@ public static class GeneratorHelp
         }
         return false;
     }
+
 }
