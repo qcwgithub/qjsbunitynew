@@ -162,7 +162,7 @@ public static class JSMgr
             if (arr == null || arr.Length != 2)
                 break;
 
-            Debug.Log(arr[0] + "->" + arr[1]);
+            //Debug.Log(arr[0] + "->" + arr[1]);
 
             dictMB2JSComName.Add(arr[0], arr[1]);
 

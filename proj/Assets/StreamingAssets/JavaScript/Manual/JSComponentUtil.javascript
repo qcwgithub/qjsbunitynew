@@ -19,26 +19,38 @@ var JSComponentUtil = {
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         // 用于判断2个类是不是继承关系
-		IsInheritanceRel: function (baseClassName, subClassName) {
+		IsInheritanceRel: function (baseClassName, subClassName)
+        {
             //print(baseClassName + "/" + subClassName);
             var arr = subClassName.split(".");
             var obj = window;
-                arr.forEach(function (a) {
-            if (obj)
-                obj = obj[a];
+            arr.forEach(function (a) {
+                if (obj)
+                    obj = obj[a];
             });
+
             if (obj != undefined && obj !== this) {
                 while (true) {
                     if (obj.baseType != undefined) {
                         if (obj.baseType.fullname == baseClassName)
                             return true;
-                        else
-                            obj = obj.baseType;
+
+                        if (obj.interfaceNames !== undefined) {
+                            for (var i in obj.interfaceNames) {
+                                //print(baseClassName + " Y " + subClassName);
+                                if (obj.interfaceNames[i] == baseClassName) {
+                                    return true;
+                                }
+                            }
                         }
-                    else
+                        obj = obj.baseType;
+                    }
+                    else {
                         break;
+                    }
                 }
             }
+            //print(baseClassName + " X " + subClassName);
             return false;
 		}
     }
