@@ -300,7 +300,13 @@ public class JSApi
     // android & iOS & Mac OS 需要编译 mozjswrap.dll，目前先这样，他们仨 C# -> C 时中文会乱码，英文正常
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
 #endif
-    private static extern void setString(int e, string value);
+    private static extern void setString(
+            int e,
+        // Here MarshalAs must be added, or there are bugs for IL2CPP on iOS
+        // See:
+        // http://answers.unity3d.com/questions/967090/what-difference-il2cpp-make-for-native-plugins.html
+            [MarshalAs(UnmanagedType.LPWStr)] string value
+        );
     public static void setStringS(int e, object value)
     {
         setString(e, (string)value);
