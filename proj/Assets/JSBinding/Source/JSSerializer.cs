@@ -138,6 +138,11 @@ public class JSSerializer : MonoBehaviour
     /// <returns></returns>
     public int GetGameObjectMonoBehaviourJSObj(GameObject go, string scriptName)
     {
+		// go may be null
+		// because the serialized MonoBehaviour can be null
+		if (go == null)
+			return 0;
+
         JSComponent[] jsComs = go.GetComponents<JSComponent>();
         foreach (var com in jsComs)
         {

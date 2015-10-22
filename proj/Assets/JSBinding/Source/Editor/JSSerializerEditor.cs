@@ -82,7 +82,12 @@ public static class JSSerializerEditor
                                 //  ST_MonoBehaviour
                                 
                                 // add game object
-                                var index = AllocObject(((MonoBehaviour)this.value).gameObject);
+								// this.value can be null
+								int index;
+								if (this.value == null)
+									index = AllocObject(null);
+								else
+									index = AllocObject(((MonoBehaviour)this.value).gameObject);
 
                                 // UnitType / Name / object Index / MonoBehaviour Name
                                 sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSNameMgr.GetTypeFullName(objectType));
@@ -141,6 +146,7 @@ public static class JSSerializerEditor
             }
             else if (type.IsClass || type.IsValueType)
             {
+				if (value == null) return 0;
                 lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.StructBegin, name, type));
                 lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.StructObj, name, type, value));
                 lstAnalyze.Insert(index++, new AnalyzeStructInfo(JSSerializer.AnalyzeType.StructEnd, name, type));
