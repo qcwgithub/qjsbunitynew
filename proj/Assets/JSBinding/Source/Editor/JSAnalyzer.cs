@@ -121,6 +121,12 @@ public static class JSAnalyzer
                     for (var c = 0; c < coms.Length; c++)
                     {
                         MonoBehaviour mb = (MonoBehaviour)coms[c];
+						if (mb == null)
+						{
+							Debug.LogError("Null MonoBehaviour found, gameObject name: " + go.name);
+							continue;
+						}
+
                         if (JSSerializerEditor.WillTypeBeTranslatedToJavaScript(mb.GetType()))
                         {
                             if (!dictMono.ContainsKey(mb.GetType()))
@@ -147,6 +153,10 @@ public static class JSAnalyzer
                     for (var c = 0; c < coms.Length; c++)
                     {
                         MonoBehaviour mb = (MonoBehaviour)coms[c];
+						if (mb == null)
+						{
+							continue;
+						}
                         if (JSSerializerEditor.WillTypeBeTranslatedToJavaScript(mb.GetType()))
                         {
                             List<string> lstError = ExamMonoBehaviour(mb);
@@ -344,6 +354,7 @@ var GetMonoBehaviourJSComponentName = function (i)
             foreach (var p in lstScenes)
             {
                 StringBuilder sbLog = new StringBuilder();
+				Debug.Log("Check Scene: " + p);
                 sbLog.AppendFormat("FILE: {0}\n", p);
 
                 EditorApplication.OpenScene(p);
@@ -361,8 +372,9 @@ var GetMonoBehaviourJSComponentName = function (i)
                 UnityEngine.Object mainAsset = AssetDatabase.LoadMainAssetAtPath(p);
                 if (mainAsset is GameObject)
                 {
-                    StringBuilder sbLog = new StringBuilder();
-                    sbLog.AppendFormat("FILE: {0}\n", p);
+					StringBuilder sbLog = new StringBuilder();
+					Debug.Log("Check Prefab: " + p);
+					sbLog.AppendFormat("FILE: {0}\n", p);
 
                     TraverseGameObject(sbLog, (GameObject)mainAsset, 1, op);
                     sbCheckLog.Append(sbLog + "\n");
