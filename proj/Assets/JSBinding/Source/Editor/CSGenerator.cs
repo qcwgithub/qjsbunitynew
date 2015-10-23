@@ -1658,6 +1658,17 @@ using UnityEngine;
     [MenuItem("JSB/Generate JS and CS Bindings", false, 1)]
     public static void GenerateJSCSBindings()
 	{
+		if (EditorApplication.isCompiling)
+		{
+			
+			EditorUtility.DisplayDialog("Tip:",
+			                            "please wait EditorApplication Compiling",
+			                            "OK"
+			                            );
+			return; 
+		}
+
+
 		if (!CheckClassBindings())
             return;
 
