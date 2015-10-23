@@ -63,7 +63,9 @@ public static class JSSerializerEditor
                         var sb = new StringBuilder();
 
                         // this.value could be null
-                        Type objectType = this.type; // this.value.GetType();
+                        Type declaredType = this.type;
+						Type valueType = (this.value != null ? this.value.GetType() : declaredType);
+
                         if (this.unitType == JSSerializer.UnitType.ST_JavaScriptMonoBehaviour ||
                             this.unitType == JSSerializer.UnitType.ST_UnityEngineObject)
                         {
@@ -71,10 +73,10 @@ public static class JSSerializerEditor
 
                             if (this.unitType == JSSerializer.UnitType.ST_JavaScriptMonoBehaviour)
                             {
-                                if (!typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(objectType) ||
-                                    !WillTypeBeTranslatedToJavaScript(objectType))
+								if (!typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(valueType) ||
+						    		!WillTypeBeTranslatedToJavaScript(valueType))
                                 {
-                                    Debug.LogError("unitType is ST_JavaScriptMonoBehaviour, but objectType is not MonoBehaviour or not having JsType attribute.");
+									Debug.LogError("unitType is ST_JavaScriptMonoBehaviour, but valueType is not MonoBehaviour or doesn't JsType attribute.");
                                 }
 
                                 // if a monobehaviour is referenced
@@ -90,7 +92,7 @@ public static class JSSerializerEditor
 									index = AllocObject(((MonoBehaviour)this.value).gameObject);
 
                                 // UnitType / Name / object Index / MonoBehaviour Name
-                                sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSNameMgr.GetTypeFullName(objectType));
+								sb.AppendFormat("{0}/{1}/{2}/{3}", (int)this.unitType, this.Name, index, JSNameMgr.GetTypeFullName(valueType));
                                 AllocString(sb.ToString());
                             }
                             else
@@ -129,7 +131,7 @@ public static class JSSerializerEditor
     public static int AddAnalyze(Type type, string name, object value, int index = -1)
     {
         if (index == -1) index = lstAnalyze.Count;
-        JSSerializer.UnitType unitType = GetUnitType(type);
+        JSSerializer.UnitType unitType = GetUnitType(type, value);
         if (unitType != JSSerializer.UnitType.ST_Unknown)
         {
             lstAnalyze.Insert(index, new AnalyzeStructInfo(JSSerializer.AnalyzeType.Unit, name, type, value, unitType));
@@ -167,7 +169,7 @@ public static class JSSerializerEditor
     /// type to UnitType
     /// </summary>
     static Dictionary<Type, JSSerializer.UnitType> sDict;
-    static JSSerializer.UnitType GetUnitType(Type type)
+    static JSSerializer.UnitType GetUnitType(Type type, object value)
     {
         if (sDict == null)
         {
@@ -197,8 +199,15 @@ public static class JSSerializerEditor
             return JSSerializer.UnitType.ST_Enum;
         }
 
-        if ((typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type)) &&
-            WillTypeBeTranslatedToJavaScript(type))
+		Type valueType = (value != null ? value.GetType () : type);
+
+        if (
+			((typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(type)) && WillTypeBeTranslatedToJavaScript(type)) ||
+			// 2015/10/23
+			// 其实这个函数应该总是取 valueType 来判断
+			// 怕出 bug，这里先特殊支持，当 type == MonoBehaviour 时，才检查 valueType
+			((typeof(UnityEngine.MonoBehaviour) == type) && WillTypeBeTranslatedToJavaScript(valueType))
+		    )
         {
             return JSSerializer.UnitType.ST_JavaScriptMonoBehaviour;
         }
