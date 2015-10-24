@@ -300,8 +300,19 @@ public class JSDataExchangeMgr
     /// <param name="e">The e.</param>
     /// <param name="csObj">The cs object.</param>
     /// <returns></returns>
-    public int setObject(/* JSApi.SetType */int e, object csObj)
+    public int setObject(/* JSApi.SetType */int e, object csObjN)
     {
+		// http://answers.unity3d.com/questions/1087158/unityengineobject-is-null-but-systemobject-is-not.html
+		object csObj = csObjN;
+		if (csObj != null && (csObj is UnityEngine.Object))
+		{
+			UnityEngine.Object uObj = (UnityEngine.Object)csObj;
+			if (uObj == null)
+			{
+				csObj = null;
+			}
+		}
+
         int jsObjID = 0;
         if (csObj != null)
         {
