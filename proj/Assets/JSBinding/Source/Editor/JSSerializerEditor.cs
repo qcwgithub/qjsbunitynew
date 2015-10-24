@@ -278,6 +278,10 @@ public static class JSSerializerEditor
         for (var i = 0; i < fields.Length; i++)
         {
             bool bNonSerialized = false;
+			// Skip generic type
+			if (fields[i].FieldType.IsGenericType)
+				continue;
+
             object[] attrs = fields[i].GetCustomAttributes(false);
             for (var j = 0; j < attrs.Length; j++)
             {
