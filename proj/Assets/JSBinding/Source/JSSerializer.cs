@@ -216,7 +216,8 @@ public class JSSerializer : MonoBehaviour
                     break;
                 case SType.Array:
                     {
-                        int Count = lstChildren.Count;
+                        // 当数组元素个数为0时，lstChildren是null
+                        int Count = (lstChildren == null ? 0 : lstChildren.Count);
                         for (var i = 0; i < Count; i++)
                         {
                             int id = lstChildren[i].calcID();
