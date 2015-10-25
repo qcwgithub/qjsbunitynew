@@ -24,7 +24,7 @@ public class JSVCall
 {
     public bool CallJSFunctionValue(int jsObjID, int funID, params object[] args)
     {
-        if (JSMgr.isShutDown) return false;
+        if (JSMgr.IsShutDown) return false;
 
         int argsLen = (args != null ? args.Length : 0);
         if (argsLen == 0)
@@ -45,7 +45,7 @@ public class JSVCall
 
     public bool CallJSFunctionName(int jsObjID, string funName, params object[] args)
     {
-        if (JSMgr.isShutDown) return false;
+        if (JSMgr.IsShutDown) return false;
         int funID = JSApi.getObjFunction(jsObjID, funName);
         if (funID <= 0)
             return false;

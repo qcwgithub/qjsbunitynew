@@ -225,7 +225,7 @@ public class JSComponent : JSSerializer
 
     void OnDestroy()
     {
-        if (!JSMgr.isShutDown)
+        if (!JSMgr.IsShutDown)
         {
             callIfExist(idOnDestroy);
         }
@@ -236,7 +236,7 @@ public class JSComponent : JSSerializer
             JSMgr.removeJSCSRel(jsObjID);
         }
 
-        if (JSMgr.isShutDown)
+        if (JSMgr.IsShutDown)
         {
             return;
         }

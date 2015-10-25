@@ -91,10 +91,15 @@ public static class JSMgr
     /// start from 1
     /// </summary>
     public static int jsEngineRound = 1;
+    static int startValueMapID = 0;
+    static bool IsJSIDOld(int id)
+    {
+        return id < startValueMapID;
+    }
     static JSFileLoader jsLoader;
     public static bool InitJSEngine(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
     {
-        ShutDown = false;
+        shutDown = false;
 
         int initResult = JSApi.InitJSEngine(
             new JSApi.JSErrorReporter(errorReporter), 
@@ -102,6 +107,9 @@ public static class JSMgr
             new JSApi.JSNative(require),
             new JSApi.OnObjCollected(onObjCollected),
             new JSApi.JSNative(print));
+
+        startValueMapID = JSApi.getValueMapStartIndex();
+        Debug.Log("startValueMapID " + startValueMapID);
 
         if (initResult != 0)
         {
@@ -176,10 +184,50 @@ public static class JSMgr
     }
     static Dictionary<string, string> dictMB2JSComName = new Dictionary<string,string>();
 
-    public static bool ShutDown = false;
-    public static bool isShutDown { get { return ShutDown; } }
+    public static bool shutDown = false;
+    public static bool IsShutDown { get { return shutDown; } }
+
     public static void ShutdownJSEngine()
     {
+        shutDown = true;
+
+        /* 
+         * 在 Shutdown 时，先主动删除 CSRepresentedObject
+         * 现在已经没有必要再维护 id -> CSR.. 的关系了
+         * 移除后，CSR.. 有可能还被其他地方引用，所以在这个函数中调用C# GC，也不一定会调用到 CSR.. 的析构
+         * 后来在某个时刻析构被调用，在析构函数里有  removeJSCSRel ，那里会判断 round 是上一轮的所以忽略
+         */
+        List<int> keysToRemove = new List<int>();
+        List<int> hashsToRemove = new List<int>();
+        foreach (var KV in mDictionary1)
+        {
+            JS_CS_Rel rel = KV.Value;
+            if (rel.csObj is WeakReference)
+            {
+                if ((rel.csObj as WeakReference).Target is CSRepresentedObject)
+                {
+                    keysToRemove.Add(KV.Key);
+                    hashsToRemove.Add(rel.hash);
+                }
+            }
+        }
+        foreach (var k in keysToRemove)
+        {
+            mDictionary1.Remove(k);
+        }
+        foreach (var h in hashsToRemove)
+        {
+            mDictionary2.Remove(h);
+        }
+
+        //
+        // 并GC
+        //
+        System.GC.Collect();
+
+        int Count = mDictionary1.Count;
+
+
         // There is a JS_GC called inside JSApi.ShutdownJSEngine
 #if UNITY_EDITOR
         // DO NOT really cleanup everything, because we wanna start again
@@ -188,14 +236,28 @@ public static class JSMgr
         JSApi.ShutdownJSEngine(1);
 #endif
 
-        // Here:
-        // mDictionary1 and mDictionary2 should only left JSComponent object
-        // because their 'OnDestroy' may not be called yet
-        // It's OK not to call 'JSMgr.ClearJSCSRel()' here
-        //
-        ShutDown = true;
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("After JSApi.ShutdownJSEngine: ");
+        sb.Append("mDictionary1 count " + Count + " -> " + mDictionary1.Count + ", left elements(should only contain JSComponent):\n");
+        /*
+         * 到这里 mDictionary1 和 mDictionary2 应该只剩余 JSComponent 及其子类，原因是：
+         * 除了 JSComponent 外，其他东西都应该在 JSApi.ShutdownJSEngine(0) 后被移除（他里面调用了 JS_GC)
+         * 而 JSComponent 是没有垃圾回收回调的，他是在 OnDestroy 时从这2个字典里移除的
+         * 这时候可能他的 OnDestroy 还没有执行，所以这2个字典里还会有他们
+         */
+        List<int> Keys = new List<int>(mDictionary1.Keys);
+        foreach (var K in Keys)
+        {
+            if (!mDictionary1.ContainsKey(K))
+                continue;
+            
+            JS_CS_Rel Rel = mDictionary1[K];
+            sb.AppendLine(K.ToString() + " " + Rel.name);
+        }
+        Debug.Log(sb);
+
         allCallbackInfo.Clear();
-        JSMgr.ClearJSCSRel();
+        JSMgr.MoveJSCSRel2Old();
         evaluatedScript.Clear();
         jsEngineRound++;
     }
@@ -303,7 +365,7 @@ public static class JSMgr
     [MonoPInvokeCallbackAttribute(typeof(JSApi.CSEntry))]
     static int CSEntry(int iOP, int slot, int index, int isStatic, int argc)
     {
-        if (JSMgr.isShutDown) return 0; 
+        if (JSMgr.IsShutDown) return 0; 
         try
         {
             vCall.CallCallback(iOP, slot, index, isStatic, argc);
@@ -408,6 +470,17 @@ public static class JSMgr
     }
     public static void addJSCSRel(int jsObjID, object csObj, bool weakReference = false)
     {
+        //if (csObj == null || csObj.Equals(null))
+
+        if (csObj != null && csObj is UnityEngine.Object)
+        {
+            if (csObj.Equals(null))
+            {
+                Debug.LogError("JSMgr.addJSCSRel object == null, call stack:" + new System.Diagnostics.StackTrace().ToString());
+                //throw new Exception();
+            }
+        }
+
         if (weakReference)
         {
             int hash = csObj.GetHashCode();
@@ -426,6 +499,11 @@ public static class JSMgr
                 }
             }
 
+            if (mDictionary1.ContainsKey(jsObjID))
+            {
+                Debug.Log(">_<");
+            }
+
             mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, csObj, hash));
 
             if (csObj.GetType().IsClass)
@@ -435,26 +513,47 @@ public static class JSMgr
         }
     }
 
+    // round 用于标记 CSRepresentedObj 是属于上一轮的还是这一轮的
+    // id 可以用于判定JS对象是属于上一轮的还是这一轮的
     public static void removeJSCSRel(int id, int round = 0)
     {
         // don't remove an ID belonging to previous round
         if (round == 0 || round == JSMgr.jsEngineRound)
         {
             JS_CS_Rel Rel;
-            if (mDictionary1.TryGetValue(id, out Rel))
-            {
-                mDictionary1.Remove(id);
-                mDictionary2.Remove(Rel.hash);
+
+            if (IsJSIDOld(id))
+            {   // 这个分支不分进入！
+                // 因为上一轮的理应在 ShutdownJSEngine 之后全部被回收
+                // 但这些代码留着也无防
+                if (mDictionary1_Old.TryGetValue(id, out Rel))
+                {
+                    mDictionary1_Old.Remove(id);
+                    mDictionary2_Old.Remove(Rel.hash);
+
+                    Debug.Log("Remove " + id + " from old, left " + mDictionary1_Old.Count + " and " + mDictionary2_Old.Count);
+                }
+                else
+                {
+                    Debug.LogError("JSMgr.removeJSCSRel (OLD): " + id + " not found.");
+                }
             }
-            else if (!JSMgr.isShutDown)
+            else
             {
-                Debug.LogError("JSMgr.removeJSCSRel: " + id + " not found.");
+                if (mDictionary1.TryGetValue(id, out Rel))
+                {
+                    mDictionary1.Remove(id);
+                    mDictionary2.Remove(Rel.hash);
+                }
+                else if (!JSMgr.IsShutDown)
+                {
+                    Debug.LogError("JSMgr.removeJSCSRel: " + id + " not found.");
+                }
             }
         }
         else if (round > 0)
         {
-            // 
-            // Debug.Log(new StringBuilder().AppendFormat("didn't remove id {0} because it belongs to old round {1}", id, round));
+            //Debug.Log(new StringBuilder().AppendFormat("didn't remove id {0} because it belongs to old round {1}", id, round));
         }
     }
 
@@ -506,10 +605,13 @@ public static class JSMgr
             mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, csObjNew, csObjNew.GetHashCode()));
         }
     }
-    public static void ClearJSCSRel()
+    public static void MoveJSCSRel2Old()
     {
-        mDictionary1.Clear();
-        mDictionary2.Clear();
+        mDictionary1_Old = mDictionary1;
+        mDictionary2_Old = mDictionary2;
+
+        mDictionary1 = new Dictionary<int, JS_CS_Rel>(); // key = OBJID
+        mDictionary2 = new Dictionary<int, JS_CS_Rel>(); // key = object.GetHashCode()
     }
 
     [MonoPInvokeCallbackAttribute(typeof(JSApi.OnObjCollected))]
@@ -518,6 +620,7 @@ public static class JSMgr
         removeJSCSRel(id);
     }
     static Dictionary<int, JS_CS_Rel> mDictionary1 = new Dictionary<int, JS_CS_Rel>(); // key = OBJID
+    static Dictionary<int, JS_CS_Rel> mDictionary1_Old;
     /// <summary>
     /// NOTICE
     /// two C# object may have same hash code?
@@ -525,13 +628,14 @@ public static class JSMgr
     /// TODO
     /// </summary>
     static Dictionary<int, JS_CS_Rel> mDictionary2 = new Dictionary<int, JS_CS_Rel>(); // key = object.GetHashCode()
+    static Dictionary<int, JS_CS_Rel> mDictionary2_Old;
 
     public static void GetDictCount(out int countDict1, out int countDict2)
     {
         countDict1 = mDictionary1.Count;
         countDict2 = mDictionary2.Count;
     }
-    public static Dictionary<int, JS_CS_Rel> GetDict1() { return mDictionary1;  }
+    public static Dictionary<int, JS_CS_Rel> GetDict1() { return mDictionary1; }
 
     #endregion
 

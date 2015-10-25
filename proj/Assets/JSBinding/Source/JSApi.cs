@@ -445,4 +445,6 @@ public class JSApi
     public static extern int getValueMapSize();
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern int getValueMapIndex();
+    [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+    public static extern int getValueMapStartIndex();
 }
