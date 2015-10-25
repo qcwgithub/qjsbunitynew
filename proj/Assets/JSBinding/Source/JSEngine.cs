@@ -211,19 +211,24 @@ public class JSEngine : MonoBehaviour
 
         int clsCount = 0;
         Dictionary<int, JSMgr.JS_CS_Rel> dict1 = JSMgr.GetDict1();
-        Dictionary<string, int> tj = new Dictionary<string, int>();
-        foreach (var v in dict1)
+        List<int> Keys = new List<int>(dict1.Keys);
+
+        Dictionary<string, int> class2Count = new Dictionary<string, int>();
+        foreach (var K in Keys)
         {
-            var jscs = v.Value;
-            if (tj.ContainsKey(jscs.name))
+            if (!dict1.ContainsKey(K))
+                continue;
+
+            var Rel = dict1[K];
+            if (class2Count.ContainsKey(Rel.name))
             {
-                tj[jscs.name]++;
+                class2Count[Rel.name]++;
             }
             else
             {
-                tj[jscs.name] = 1;
+                class2Count[Rel.name] = 1;
             }
-            if (jscs.csObj != null && jscs.csObj.GetType().IsClass)
+            if (Rel.csObj != null && Rel.csObj.GetType().IsClass)
             {
                 clsCount++;
             }
@@ -239,7 +244,7 @@ public class JSEngine : MonoBehaviour
         GUI.TextArea(new Rect(guiX, y, 400, 20), "valueMapIndex: " + JSApi.getValueMapIndex());
         y += 20;
 
-        foreach (var v in tj)
+        foreach (var v in class2Count)
         {
             GUI.TextArea(new Rect(guiX, y, 400, 20), v.Key + ": " + v.Value);
             y += 20;
