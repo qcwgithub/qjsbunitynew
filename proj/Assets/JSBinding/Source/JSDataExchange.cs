@@ -271,7 +271,7 @@ public class JSDataExchangeMgr
         }
         else if (type == typeof(Vector2))
         {
-            JSApi.setVector3S(e, (Vector2)obj);
+            JSApi.setVector2S(e, (Vector2)obj);
         }
         else
         {
