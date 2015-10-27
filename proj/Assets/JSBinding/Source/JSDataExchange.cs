@@ -920,26 +920,40 @@ public class CSRepresentedObject
     }
     ~CSRepresentedObject()
     {
-        if (bFunction)
-            s_funCount--;
-        else 
-            s_objCount--;
+        if (JSMgr.IsShutDown)
+            return;
 
-        int refCount = JSApi.decRefCount(jsObjID);
-        if (refCount <= 0)
-        {
-            JSMgr.removeJSCSRel(jsObjID, this.jsEngineRound);
-            if (bFunction)
-            {
-                JSMgr.removeJSFunCSDelegateRel(jsObjID);
-            }
-        }
-        else
-        {
-            Debug.LogError(";;;//IIL.x&");
-        }
+        Action action = CreateDestructAction(this.bFunction, this.jsObjID, this.jsEngineRound);
+        JSEngine.inst.DoThreadSafeAction(action);
+
         //Debug.Log(new StringBuilder().AppendFormat("- CSRepresentedObject {0} Ref[{1}] Fun[{1}]", jsObjID, refCount, bFunction ? 1 : 0));
     }
+
+    Action CreateDestructAction(bool bFunction, int jsObjID, int round)
+    {
+        return () =>
+            {
+                if (bFunction)
+                    s_funCount--;
+                else
+                    s_objCount--;
+
+                int refCount = JSApi.decRefCount(jsObjID);
+                if (refCount <= 0)
+                {
+                    JSMgr.removeJSCSRel(jsObjID, round);
+                    if (bFunction)
+                    {
+                        JSMgr.removeJSFunCSDelegateRel(jsObjID);
+                    }
+                }
+                else
+                {
+                    Debug.LogError(";;;//IIL.x&");
+                }
+            };
+    }
+
     public int jsObjID;
     public bool bFunction;
     int jsEngineRound;

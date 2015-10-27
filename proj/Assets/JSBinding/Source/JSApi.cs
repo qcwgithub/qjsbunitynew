@@ -360,7 +360,7 @@ public class JSApi
 
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern bool callFunctionValue(int jsObjID, int funID, int argCount);
+    public static extern void callFunctionValue(int jsObjID, int funID, int argCount);
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern int incRefCount(int id);

@@ -29,7 +29,8 @@ public class JSVCall
         int argsLen = (args != null ? args.Length : 0);
         if (argsLen == 0)
         {
-            return JSApi.callFunctionValue(jsObjID, funID, 0);
+            JSApi.callFunctionValue(jsObjID, funID, 0);
+            return true;
         }
 
         for (int i = 0; i < argsLen; i++)
@@ -39,7 +40,8 @@ public class JSVCall
             JSApi.moveSaveID2Arr(i);
         }
 
-        return JSApi.callFunctionValue(jsObjID, funID, argsLen);
+        JSApi.callFunctionValue(jsObjID, funID, argsLen);
+        return true;
     }
 
 

@@ -131,10 +131,40 @@ public class JSEngine : MonoBehaviour
         jsCallCountPerFrame = JSMgr.vCall.jsCallCount;
         JSMgr.vCall.jsCallCount = 0;
 
+        UpdateThreadSafeActions();
+
         if (initSuccess)
         {
             if (mDebug)
                 JSApi.updateDebugger();
+        }
+    }
+
+    List<Action> lstThreadSafeActions = new List<Action>();
+    bool hasThreadSafeActions = false;
+    object @lock = new object();
+
+    public void DoThreadSafeAction(Action action)
+    {
+        lock (@lock)
+        {
+            hasThreadSafeActions = true;
+            lstThreadSafeActions.Add(action);
+        }
+    }
+    void UpdateThreadSafeActions()
+    {
+        if (hasThreadSafeActions)
+        {
+            lock (@lock)
+            {
+                foreach (Action action in lstThreadSafeActions)
+                {
+                    action();
+                }
+                lstThreadSafeActions.Clear();
+                hasThreadSafeActions = false;
+            }
         }
     }
 
@@ -193,6 +223,8 @@ public class JSEngine : MonoBehaviour
 
 	public bool showStatistics = true;
     public int guiX = 0;
+
+
 
     /// <summary>
     /// OnGUI: Output some statistics

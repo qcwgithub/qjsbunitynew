@@ -258,7 +258,11 @@ public static class JSMgr
 
         allCallbackInfo.Clear();
         JSMgr.MoveJSCSRel2Old();
+        mDictJSFun1.Clear();
+        mDictJSFun2.Clear();
         evaluatedScript.Clear();
+        CSRepresentedObject.s_objCount = 0;
+        CSRepresentedObject.s_funCount = 0;
         jsEngineRound++;
     }
     
@@ -584,9 +588,17 @@ public static class JSMgr
         }
 
         JS_CS_Rel Rel;
-        int hash = (csObj is WeakReference) ? ((WeakReference)csObj).Target.GetHashCode() : csObj.GetHashCode();
+        object newObj = (csObj is WeakReference) ? ((WeakReference)csObj).Target : csObj;
+        int hash = newObj.GetHashCode();
         if (mDictionary2.TryGetValue(hash, out Rel))
         {
+#if UNITY_EDITOR
+            object oldObj = (Rel.csObj is WeakReference) ? ((WeakReference)Rel.csObj).Target : Rel.csObj;
+            if (!oldObj.Equals(newObj))
+            {
+                Debug.LogError("mDictionary2 and mDictionary1 saves different object");
+            }
+#endif
             return Rel.jsObjID;
         }
         return 0;
