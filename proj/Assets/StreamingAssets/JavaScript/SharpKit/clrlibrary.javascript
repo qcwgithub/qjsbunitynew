@@ -5450,7 +5450,14 @@ var System$Collections$Generic$Dictionary$2 = {
         },
         Count$$: "System.Int32",
         get_Count: function (){
-            throw $CreateException(new System.NotImplementedException.ctor(), new Error());
+            // throw $CreateException(new System.NotImplementedException.ctor(), new Error());
+            var count = 0;
+            for (var k in this._keys) {
+                if (this._keys.hasOwnProperty(k)) {
+                    count++;
+                }
+            }
+            return count;
         },
         IsReadOnly$$: "System.Boolean",
         get_IsReadOnly: function (){
