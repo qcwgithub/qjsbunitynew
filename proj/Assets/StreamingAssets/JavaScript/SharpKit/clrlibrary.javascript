@@ -5387,13 +5387,12 @@ var System$Collections$Generic$Dictionary$2 = {
         Remove: function (key){
             if (key == null)
                 throw $CreateException(new System.ArgumentNullException.ctor$$String("key"), new Error());
-            if (!this.ContainsKey(key))
-                throw $CreateException(new System.ArgumentException.ctor$$String$$String$$Exception("The specified key does not exist.", "key", null), new Error());
+            var result = this.ContainsKey(key);
             var hashKey = this.GetHashKey(key);
             delete this._table[hashKey];
             delete this._keys[hashKey];
             this._version++;
-            return true;
+            return result;
         },
         Item$$: "`1",
         get_Item$$TKey: function (key){
@@ -5669,6 +5668,12 @@ var System$Collections$Generic$List$1 = {
             System.Object.ctor.call(this);
             this._list = new Array();
             this.AddRange(collection);
+        },
+        ctor$$Int32: function (T, capacity){
+            this.T = T;
+            this._list = null;
+            System.Object.ctor.call(this);
+            this._list = new Array();
         },
         RemoveRange: function (index, count){
             this._list.splice(index, count);
@@ -7351,16 +7356,15 @@ var System$Text$StringBuilder = {
         },
         Length$$: "System.Int32",
         get_Length: function (){
-            return this.array.length;
+            return this.length;
         },
         set_Length: function (value){
-            if (value < 0)
-                throw $CreateException(new System.ArgumentOutOfRangeException.ctor(), new Error());
-            if (value < this.array.length)
-                this.array.length = value;
+            if (value == this.length)
+                return;
+            if (value > this.length)
+                this.Append$$String(new Array(value + 1).join("\0"));
             else {
-                for (var i = this.array.length; i < this.length; i++)
-                    this.array.push("\0");
+                this.Remove(value, this.length - value);
             }
         },
         Remove: function (start, count){
