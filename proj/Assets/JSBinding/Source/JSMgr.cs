@@ -97,8 +97,15 @@ public static class JSMgr
         return id < startValueMapID;
     }
     static JSFileLoader jsLoader;
+    static bool InitJSEngine_ing = false;
     public static bool InitJSEngine(JSFileLoader jsLoader, OnInitJSEngine onInitJSEngine)
     {
+        if (InitJSEngine_ing)
+        {
+            Debug.LogError("FATAL ERROR: Trying to InitJSEngine twice");
+        }
+
+        InitJSEngine_ing = true;
         shutDown = false;
 
         int initResult = JSApi.InitJSEngine(
@@ -115,6 +122,7 @@ public static class JSMgr
         {
             Debug.LogError("InitJSEngine fail. error = " + initResult);
             onInitJSEngine(false);
+            InitJSEngine_ing = false;
             return false;
         }
 
@@ -134,7 +142,7 @@ public static class JSMgr
         }
 
         InitMonoBehaviourJSComponentName();
-
+        InitJSEngine_ing = false;
         return ret;
     }
     // 根据 脚本名获得JSComponent名
