@@ -2858,167 +2858,167 @@ JsTypes.push(
 //JsTypes.push({ fullname: "Float32Array"});
 //JsTypes.push({ fullname: "Float64Array"});
 
-//JsTypes.push({ fullname: "Array", baseTypeName: "Object", definition:
-//{
-//    GetEnumerator: function () {
-//        return new ArrayEnumerator.ctor(this);
-//    },
-//    getItem: function (index) {
-//        return this[index];
-//    },
-//    getCount: function () {
-//        return this.length;
-//    },
-//    get_Count: function () {
-//        return this.length;
-//    },
-//    ///
-//    /// returns an array that contains the values of the specified
-//    /// property name from each item
-//    ///
-//    selectSingle: function (propName) {
-//        var result = [];
-//        for (var i = 0; i < this.length; i++) {
-//            var item = this[i];
-//            var value = item[propName]; //TODO: support getValue
-//            if (value === undefined) //array cannot contain undefined.
-//                value = null;
-//            result.push(value);
-//        }
-//        return result;
-//    },
-//    Clone: function () {
-//        return this.concat();
-//    },
-//    toArray: function () {
-//        return this;
-//    },
-//    Add: function (item) {
-//        this.push(item);
-//    },
-//    AddRange: function (items) {
-//        var length = items.length;
-//        var thisLength = this.length;
-//        for (var i = 0; i < length; i++) {
-//            this[thisLength] = items[i]; //Keep order
-//            thisLength++;
-//        }
-//    },
-//    Clear: function () {
-//        if (this.length > 0) {
-//            this.splice(0, this.length);
-//        }
-//    },
-//    clone: function () {
-//        return this.slice(0);
-//    },
-//    contains: function (item) {
-//        var index = this.indexOf(item);
-//        return (index >= 0);
-//    },
-//    Contains$$Object: function (item) {
-//        return Contains(item);
-//    },
-//    Contains: function (item) {
-//        var index = this.indexOf(item);
-//        return (index >= 0);
-//    },
-//    dequeue: function () {
-//        return this.shift();
-//    },
-//    indexOf: function (item, startFrom) {
-//        if (startFrom == null)
-//            startFrom = 0;
-//        var length = this.length;
-//        if (length != 0) {
-//            for (var index = startFrom; index < length; index++) {
-//                if (this[index] == item) {
-//                    return index;
-//                }
-//            }
-//        }
-//        return -1;
-//    },
-//    insert: function (index, item) {
-//        this.splice(index, 0, item);
-//    },
-//    addAt: function (index, item) {
-//        this.splice(index, 0, item);
-//    },
-//    queue: function (item) {
-//        this.push(item);
-//    },
-//    Remove$$Object: function (item) {
-//        return this.Remove(item);
-//    },
-//    Remove: function (item) {
-//        var index = this.indexOf(item);
-//        if (index >= 0) {
-//            this.splice(index, 1);
-//        }
-//        return index;
-//    },
-//    RemoveAt: function (index) {
-//        this.splice(index, 1);
-//    },
-//    copyTo: function (target, startIndex) {
-//        for (var i = startIndex; i < this.length; i++) {
-//            target.push(this[i]);
-//        }
-//    },
-//    filter: function (pred) {
-//        var item, i = 0;
-//        for (var i = 0, j = this.length; i < j; i++) {
-//            item = this[i];
-//            if (!pred(item)) {
-//                this.splice(i, 1);
-//                i--; //prevent increase
-//                j--; //length is decreased
-//            }
-//        }
-//        return this;
-//    },
-//    filterOut: function (pred) {
-//        return this.filter(function (item) { return !pred(item); });
-//    },
-//    apply: function (modifier) {
-//        for (var i = 0, j = this.length; i < j; i++) {
-//            this[i] = modifier(this[i]);
-//        }
-//        return this;
-//    },
-//    findFirst: function (pred) {
-//        var item;
-//        for (var i = 0, j = this.length; i < j; i++) {
-//            item = this[i];
-//            if (pred(item))
-//                return item;
-//        }
-//        return null;
-//    },
-//    ToArray: function () {
-//        return this;
-//    },
-//    peek: function () {
-//        return this[this.length - 1];
-//    },
-//    getLast: function () {
-//        return this[this.length - 1];
-//    },
-//    getIterator: function () {
-//        return new ArrayIterator(this);
-//    },
-//    get_Length: function () {
-//        return this.length;
-//    },
-//    get_Item: function (index) {
-//        return this[index];
-//    },
-//    get_Item$$Int32: function (index) {
-//        return this[index];
-//    }
-//}
-//});
+JsTypes.push({ fullname: "Array", baseTypeName: "Object", definition:
+{
+    GetEnumerator: function () {
+        return new ArrayEnumerator.ctor(this);
+    },
+    getItem: function (index) {
+        return this[index];
+    },
+    getCount: function () {
+        return this.length;
+    },
+    get_Count: function () {
+        return this.length;
+    },
+    ///
+    /// returns an array that contains the values of the specified
+    /// property name from each item
+    ///
+    selectSingle: function (propName) {
+        var result = [];
+        for (var i = 0; i < this.length; i++) {
+            var item = this[i];
+            var value = item[propName]; //TODO: support getValue
+            if (value === undefined) //array cannot contain undefined.
+                value = null;
+            result.push(value);
+        }
+        return result;
+    },
+    Clone: function () {
+        return this.concat();
+    },
+    toArray: function () {
+        return this;
+    },
+    Add: function (item) {
+        this.push(item);
+    },
+    AddRange: function (items) {
+        var length = items.length;
+        var thisLength = this.length;
+        for (var i = 0; i < length; i++) {
+            this[thisLength] = items[i]; //Keep order
+            thisLength++;
+        }
+    },
+    Clear: function () {
+        if (this.length > 0) {
+            this.splice(0, this.length);
+        }
+    },
+    clone: function () {
+        return this.slice(0);
+    },
+    contains: function (item) {
+        var index = this.indexOf(item);
+        return (index >= 0);
+    },
+    Contains$$Object: function (item) {
+        return Contains(item);
+    },
+    Contains: function (item) {
+        var index = this.indexOf(item);
+        return (index >= 0);
+    },
+    dequeue: function () {
+        return this.shift();
+    },
+    indexOf: function (item, startFrom) {
+        if (startFrom == null)
+            startFrom = 0;
+        var length = this.length;
+        if (length != 0) {
+            for (var index = startFrom; index < length; index++) {
+                if (this[index] == item) {
+                    return index;
+                }
+            }
+        }
+        return -1;
+    },
+    insert: function (index, item) {
+        this.splice(index, 0, item);
+    },
+    addAt: function (index, item) {
+        this.splice(index, 0, item);
+    },
+    queue: function (item) {
+        this.push(item);
+    },
+    Remove$$Object: function (item) {
+        return this.Remove(item);
+    },
+    Remove: function (item) {
+        var index = this.indexOf(item);
+        if (index >= 0) {
+            this.splice(index, 1);
+        }
+        return index;
+    },
+    RemoveAt: function (index) {
+        this.splice(index, 1);
+    },
+    copyTo: function (target, startIndex) {
+        for (var i = startIndex; i < this.length; i++) {
+            target.push(this[i]);
+        }
+    },
+    filter: function (pred) {
+        var item, i = 0;
+        for (var i = 0, j = this.length; i < j; i++) {
+            item = this[i];
+            if (!pred(item)) {
+                this.splice(i, 1);
+                i--; //prevent increase
+                j--; //length is decreased
+            }
+        }
+        return this;
+    },
+    filterOut: function (pred) {
+        return this.filter(function (item) { return !pred(item); });
+    },
+    apply: function (modifier) {
+        for (var i = 0, j = this.length; i < j; i++) {
+            this[i] = modifier(this[i]);
+        }
+        return this;
+    },
+    findFirst: function (pred) {
+        var item;
+        for (var i = 0, j = this.length; i < j; i++) {
+            item = this[i];
+            if (pred(item))
+                return item;
+        }
+        return null;
+    },
+    ToArray: function () {
+        return this;
+    },
+    peek: function () {
+        return this[this.length - 1];
+    },
+    getLast: function () {
+        return this[this.length - 1];
+    },
+    getIterator: function () {
+        return new ArrayIterator(this);
+    },
+    get_Length: function () {
+        return this.length;
+    },
+    get_Item: function (index) {
+        return this[index];
+    },
+    get_Item$$Int32: function (index) {
+        return this[index];
+    }
+}
+});
 JsTypes.push({ fullname: "ArrayEnumerator", baseTypeName: "System.Object", definition: //TODO: implement IEnumerator
 {
     ctor: function (array) {
@@ -5741,11 +5741,17 @@ var System$Collections$Generic$List$1 = {
         IndexOf: function (item){
             return this._list.indexOf(item);
         },
+        IndexOf$$T: function (item) {
+            return this._list.indexOf(item);
+        },
         Insert: function (index, item){
             this._list.insert(index, item);
         },
         RemoveAt: function (index){
             this._list.RemoveAt(index);
+        },
+        RemoveAll: function (fun) {
+            this._list.filterOut(fun);
         },
         TryRemove: function (item){
             throw $CreateException(new System.NotImplementedException.ctor$$String("TryRemove"), new Error());

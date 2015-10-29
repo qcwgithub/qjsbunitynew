@@ -622,6 +622,11 @@ JsCompiler.Compile_Phase3 = function (){
 * 这里的 target == window，也就是global
 * */
 JsCompiler.CopyToGlobal = function (source, name, target){
+    // 不要替换 Array
+    // 保持 JS 标准 Array
+    if (name == "Array") {
+        return;
+    }
     var old = target[name];
     if (old !== source) {
         if (old != undefined) {
@@ -786,12 +791,22 @@ JsCompiler.CompileType = function (type){
             // 2)
             JsCompiler._CopyFields(currentType.baseType, currentType);
         }
+
+        var isArray = type.fullname == "Array";
+
         for (var p in type.definition){
             var member = type.definition[p];
             currentType.commonPrototype[p] = member;
             if (typeof(member) == "function"){
                 member._name = p;
                 member._type = currentType;
+
+                // 往标准 Array 上添加我们自己的函数
+                // 可以在 clrlibrary 中查找 fullname: "Array"
+                if (isArray) {
+                    // print("copy to [] " + p);
+                    Array.prototype[p] = member;
+                }
             }
         }
         if (type.definition.toString != Object.prototype.toString){
