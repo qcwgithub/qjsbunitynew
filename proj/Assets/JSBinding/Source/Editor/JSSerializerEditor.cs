@@ -282,6 +282,9 @@ public static class JSSerializerEditor
 			if (fields[i].FieldType.IsGenericType)
 				continue;
 
+			if (fields[i].FieldType.IsSubclassOf(typeof(System.Delegate)))
+			    continue;
+
             object[] attrs = fields[i].GetCustomAttributes(false);
             for (var j = 0; j < attrs.Length; j++)
             {
