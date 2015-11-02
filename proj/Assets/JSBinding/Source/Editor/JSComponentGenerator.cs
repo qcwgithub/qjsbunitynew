@@ -159,6 +159,48 @@ public class JSComponentGenerator
         // OnValidate
     };
 
+	// 如果是实现这几个接口的 MonoBehaviour
+	// 统一使用 JSComponent_EventTrigger
+	// 他只能有 Awake Start Update LateUpdate
+	static HashSet<Type> EventListenerInterfaces;
+	static bool IsEventTriggerMonoBehaviour(Type type)
+	{
+		if (EventListenerInterfaces == null)
+		{
+			EventListenerInterfaces = new HashSet<Type> (new Type[] 
+			{
+				typeof(UnityEngine.EventSystems.IEventSystemHandler),
+				typeof(UnityEngine.EventSystems.IPointerEnterHandler),
+				typeof(UnityEngine.EventSystems.IPointerExitHandler),
+				typeof(UnityEngine.EventSystems.IPointerDownHandler),
+				typeof(UnityEngine.EventSystems.IPointerUpHandler),
+				typeof(UnityEngine.EventSystems.IPointerClickHandler),
+				typeof(UnityEngine.EventSystems.IBeginDragHandler),
+				typeof(UnityEngine.EventSystems.IInitializePotentialDragHandler),
+				typeof(UnityEngine.EventSystems.IDragHandler),
+				typeof(UnityEngine.EventSystems.IEndDragHandler),
+				typeof(UnityEngine.EventSystems.IDropHandler),
+				typeof(UnityEngine.EventSystems.IScrollHandler),
+				typeof(UnityEngine.EventSystems.IUpdateSelectedHandler),
+				typeof(UnityEngine.EventSystems.ISelectHandler),
+				typeof(UnityEngine.EventSystems.IDeselectHandler),
+				typeof(UnityEngine.EventSystems.IMoveHandler),
+				typeof(UnityEngine.EventSystems.ISubmitHandler),
+				typeof(UnityEngine.EventSystems.ICancelHandler)
+			});
+		}
+
+		Type[] interfaces = type.GetInterfaces ();
+		foreach (var interf in interfaces)
+		{
+			if (EventListenerInterfaces.Contains(interf))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
     /// <summary>
     /// 根据一个 MonoBehaviour
     /// 获得要使用的 JSComponent 类名
@@ -167,6 +209,10 @@ public class JSComponentGenerator
     /// <returns></returns>
     public static string GetJSComponentClassName(Type type)
     {
+		if (IsEventTriggerMonoBehaviour (type)) {
+			return typeof(JSComponent_EventTrigger).Name;
+		}
+
         MethodInfo[] methods = type.GetMethods(BindingFlags.Public 
                         | BindingFlags.NonPublic
                         | BindingFlags.Instance
