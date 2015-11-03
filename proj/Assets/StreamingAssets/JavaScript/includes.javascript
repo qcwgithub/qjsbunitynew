@@ -56,8 +56,6 @@ CS.require("MonoBehaviour2JSComponentName");
 // will overwrite some classes in step 1)
 //--------------------------------------------------
 CS.require("JSImp/Reflection");
-CS.require("JSImp/Coroutine");
-CS.require("JSImp/Iterator");
 
 //
 // may be more..
