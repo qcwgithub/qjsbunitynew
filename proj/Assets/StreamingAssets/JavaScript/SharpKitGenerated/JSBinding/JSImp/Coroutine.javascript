@@ -5,6 +5,9 @@ var jsimp$Coroutine = {
     baseTypeName: "System.Object",
     staticDefinition: {
         UpdateCoroutineAndInvoke: function (mb){
+            var elapsed = UnityEngine.Time.get_deltaTime();
+            mb.$UpdateAllCoroutines(elapsed);
+            mb.$UpdateAllInvokes(elapsed);
         }
     },
     assemblyName: "SharpKitProj",
