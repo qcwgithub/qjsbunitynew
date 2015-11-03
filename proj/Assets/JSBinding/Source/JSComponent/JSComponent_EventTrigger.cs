@@ -84,70 +84,70 @@ public class JSComponent_EventTrigger : JSComponent,
     }
     public virtual void OnBeginDrag(PointerEventData eventData)
     {
-        callIfExist(idOnBeginDrag);
+		callIfExist(idOnBeginDrag, eventData);
     }
     public virtual void OnCancel(BaseEventData eventData)
     {
-        callIfExist(idOnCancel);
+		callIfExist(idOnCancel, eventData);
     }
     public virtual void OnDeselect(BaseEventData eventData)
     {
-        callIfExist(idOnDeselect);
+		callIfExist(idOnDeselect, eventData);
     }
     public virtual void OnDrag(PointerEventData eventData)
     {
-        callIfExist(idOnDrag);
+		callIfExist(idOnDrag, eventData);
     }
     public virtual void OnDrop(PointerEventData eventData)
     {
-        callIfExist(idOnDrop);
+		callIfExist(idOnDrop, eventData);
     }
     public virtual void OnEndDrag(PointerEventData eventData)
     {
-        callIfExist(idOnEndDrag);
+		callIfExist(idOnEndDrag, eventData);
     }
     public virtual void OnInitializePotentialDrag(PointerEventData eventData)
     {
-        callIfExist(idOnInitializePotentialDrag);
+		callIfExist(idOnInitializePotentialDrag, eventData);
     }
     public virtual void OnMove(AxisEventData eventData)
     {
-        callIfExist(idOnMove);
+		callIfExist(idOnMove, eventData);
     }
     public virtual void OnPointerClick(PointerEventData eventData)
     {
-        callIfExist(idOnPointerClick);
+		callIfExist(idOnPointerClick, eventData);
     }
     public virtual void OnPointerDown(PointerEventData eventData)
     {
-        callIfExist(idOnPointerDown);
+		callIfExist(idOnPointerDown, eventData);
     }
     public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        callIfExist(idOnPointerEnter);
+		callIfExist(idOnPointerEnter, eventData);
     }
     public virtual void OnPointerExit(PointerEventData eventData)
     {
-        callIfExist(idOnPointerExit);
+		callIfExist(idOnPointerExit, eventData);
     }
     public virtual void OnPointerUp(PointerEventData eventData)
     {
-        callIfExist(idOnPointerUp);
+        callIfExist(idOnPointerUp, eventData);
     }
     public virtual void OnScroll(PointerEventData eventData)
     {
-        callIfExist(idOnScroll);
+		callIfExist(idOnScroll, eventData);
     }
     public virtual void OnSelect(BaseEventData eventData)
     {
-        callIfExist(idOnSelect);
+		callIfExist(idOnSelect, eventData);
     }
     public virtual void OnSubmit(BaseEventData eventData)
     {
-        callIfExist(idOnSubmit);
+		callIfExist(idOnSubmit, eventData);
     }
     public virtual void OnUpdateSelected(BaseEventData eventData)
     {
-        callIfExist(idOnUpdateSelected);
+		callIfExist(idOnUpdateSelected, eventData);
     }
 }
