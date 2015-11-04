@@ -55,7 +55,6 @@ CS.require("MonoBehaviour2JSComponentName");
 // 4) JavaScript implemented
 // will overwrite some classes in step 1)
 //--------------------------------------------------
-CS.require("JSImp/Reflection");
 
 //
 // may be more..
