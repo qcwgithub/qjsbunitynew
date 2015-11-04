@@ -261,9 +261,15 @@ if (!_found) [[
 
         string assemblyName = "";
         string Kind = "unknown";
-        if (type.IsClass) { Kind = "Class"; }
-        else if (type.IsEnum) { Kind = "Enum"; }
-        else if (type.IsValueType) { Kind = "Struct"; }
+        if (type.IsClass) {
+			Kind = "Class";
+		} else if (type.IsEnum) {
+			Kind = "Enum";
+		} else if (type.IsValueType) {
+			Kind = "Struct";
+		} else if (type.IsInterface) {
+			Kind = "Interface";
+		}
 
         string fullname = SharpKitClassName(type);
         string baseTypeName = SharpKitClassName(type.BaseType);
