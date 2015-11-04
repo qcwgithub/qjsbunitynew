@@ -171,9 +171,11 @@ namespace jsimp
 		
 		/// <summary>
 		/// </summary>
-		// 调用obj的函数，这个函数没有返回值，有1个参数。
-		[JsMethod(Code = @"var args = Array.prototype.slice.apply(parameters);
-            obj[methodName].apply(obj, args.slice(0));
+		// 调用obj的函数，这个函数没有返回值，有任意个参数。
+		[JsMethod(Code = @"var args = Array.prototype.slice.apply(arguments);
+			var obj = args[0];
+			var methodName = args[1];
+            obj[methodName].apply(obj, args.slice(2));
             return true;")]
 		public static bool CallObjMethod(object obj, string methodName, params object[] parameters)
 		{
