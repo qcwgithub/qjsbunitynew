@@ -42,6 +42,24 @@ var print = function () {};
     }
 }());
 
+/*
+* Sort JsTypes before Compile()
+* if we have 2 types: A.B.C and A.B
+* A.B will be in front of A.B.C after sort
+*/
+JsTypes.sort(function (a, b) {
+    return (a.fullname < b.fullname ? -1 : 1);
+});
+
+/*
+
+var str = "";
+for (var i = 0; i < JsTypes.length; i++) {
+    str += JsTypes[i].fullname + "\n";
+}
+print(str);
+    
+*/
 
 try
 {

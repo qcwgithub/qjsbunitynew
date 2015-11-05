@@ -569,8 +569,12 @@ JsCompiler.Compile_Phase2_TmpType = function (tmpType){
 
     if (type.ns != null){
         var ns = JsCompiler.ResolveNamespace(type.ns);
-        if (type != null)
+        if (type != null) {
+			// !
+			// Assume JsType = [..., A.B.C, A.B, ...]
+			// After this line, A.B is re-assigned, so A.B.C is gone
             ns[type.name] = type;
+		}
     }
 };
 JsCompiler.LinkInterfaceMethods = function (){
