@@ -622,6 +622,41 @@ using UnityEngine;
         Debug.Log("Generate JS Bindings OK. enum " + JSBindingSettings.enums.Length.ToString() + ", class " + JSBindingSettings.classes.Length.ToString());
     }
 
+	//[UnityEditor.MenuItem("JSB/Merge Generated JS and SharpKit Generated JS", false, 502)]
+	public static void MergeGeneratedJsAndSharpKitGeneratedJS()
+	{
+		string[] sourceDirs = new string[]
+		{
+			JSBindingSettings.jsGeneratedDir,
+			JSBindingSettings.sharpKitGenFileFullDir,
+		};
+		string[] targetFiles = new string[]
+		{
+			JSBindingSettings.GeneratedFilesAll,
+			JSBindingSettings.SharpkitGeneratedFilesAll,
+		};
+
+		for (var i = 0; i < sourceDirs.Length; i++)
+		{
+			string dir = sourceDirs[i];
+			string[] files = Directory.GetFiles(
+				dir,
+				"*.javascript", SearchOption.AllDirectories);
+
+			StringBuilder sb = new StringBuilder();
+			StringBuilder sbFileName = new StringBuilder();
+			foreach (var f in files)
+			{
+				string text = File.ReadAllText(f);
+				sb.Append(text);
+			}
+
+			File.WriteAllText(targetFiles[i], sb.ToString());
+
+			Debug.Log ("合并 " + dir + " ---> " + targetFiles[i]);
+		}		
+	}
+
     //     [MenuItem("JS for Unity/Output All Types in UnityEngine")]
     //     public static void OutputAllTypesInUnityEngine()
     //     {
