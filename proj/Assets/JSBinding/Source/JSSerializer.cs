@@ -1,4 +1,4 @@
-using UnityEngine;
+锘縰sing UnityEngine;
 using System;
 using System.Text;
 using System.Reflection;
@@ -146,7 +146,7 @@ public class JSSerializer : MonoBehaviour
         JSComponent[] jsComs = go.GetComponents<JSComponent>();
         foreach (var com in jsComs)
         {
-            // NOTE：Can not bind a script to a GameObject twice!
+            // NOTE锛欳an not bind a script to a GameObject twice!
             if (com.jsClassName == scriptName)
             {
                 return com.GetJSObjID(false);
@@ -216,13 +216,20 @@ public class JSSerializer : MonoBehaviour
                     break;
                 case SType.Array:
                     {
-                        // 当数组元素个数为0时，lstChildren是null
+                        // 褰撴暟缁勫厓绱犱釜鏁颁负0鏃讹紝lstChildren鏄痭ull
                         int Count = (lstChildren == null ? 0 : lstChildren.Count);
+						// Can not combine these 2 loops
+						// moveID2Arr can be called inside calcID 
                         for (var i = 0; i < Count; i++)
                         {
-                            int id = lstChildren[i].calcID();
+                            lstChildren[i].calcID();
+                        }
+						for (var i = 0; i < Count; i++)
+                        {
+							int id = lstChildren[i].id;
                             JSApi.moveID2Arr(id, i);
                         }
+						// 娉ㄦ剰锛歴etArrayS 鏈�鍚庝竴涓弬鏁版槸 false
                         JSApi.setArrayS((int)JSApi.SetType.SaveAndTempTrace, Count, false);
                         this.id = JSApi.getSaveID();
                     }
@@ -250,7 +257,9 @@ public class JSSerializer : MonoBehaviour
                                 var child = lstChildren[i];
                                 int id = child.calcID();
                                 //JSApi.JSh_SetUCProperty(JSMgr.cx, jsObjID, child.name, -1, ref mVal);
-                                JSApi.setProperty(jsObjID, child.name, id);
+                                //JSApi.setProperty(jsObjID, child.name, id);
+
+								SetObjectFieldOrProperty(jsObjID, child.name, id);
                             }
                         }
                     }
@@ -394,9 +403,35 @@ public class JSSerializer : MonoBehaviour
             foreach (var child in root.lstChildren)
             {
                 child.calcID();
-                JSApi.setProperty(jsObjID, child.name, child.id);
+				SetObjectFieldOrProperty(jsObjID, child.name, child.id);
             }
         }
         root.removeID();
     }
+
+	static void SetObjectFieldOrProperty(int jsObjID, string name, int valueID)
+	{
+		if (name[0] == '#')
+		{
+			// Property
+
+			string funName = "set_" + name.Substring(1);
+			int funID = JSApi.getObjFunction(jsObjID, funName);
+			if (funID <= 0)
+			{
+				Debug.LogError("JSSerializer: Property fun " + funName + " not exist");
+				return;
+			}
+
+			JSApi.moveID2Arr(valueID, 0 /* index */);
+			// 鐗规畩澶勭悊
+			JSApi.setCallFunctionValueRemoveArrS(false);
+			JSApi.callFunctionValue(jsObjID, funID, 1/* arg count*/);
+		}
+		else
+		{
+			// Field
+			JSApi.setProperty(jsObjID, name, valueID);
+		}
+	}
 }

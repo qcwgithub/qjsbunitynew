@@ -276,6 +276,7 @@ public class JSBindingSettings
         typeof(UnityEngine.Animator),
         typeof(UnityEngine.AvatarBuilder),
         typeof(UnityEngine.RuntimeAnimatorController),
+		typeof(UnityEngine.AnimatorOverrideController),
         typeof(UnityEngine.Avatar),
         typeof(UnityEngine.HumanTrait),
         typeof(UnityEngine.TreePrototype),
@@ -337,7 +338,7 @@ public class JSBindingSettings
         //typeof(UnityEngine.ImageEffectTransformsToLDR),                        
         //typeof(UnityEngine.ImageEffectOpaque),                                 
         typeof(UnityEngine.Texture),                                           
-//        typeof(UnityEngine.Texture2D),                                         
+        typeof(UnityEngine.Texture2D),                                         
         typeof(UnityEngine.Cubemap),                                           
         typeof(UnityEngine.Texture3D),                                         
         typeof(UnityEngine.SparseTexture),                                     
@@ -660,7 +661,7 @@ public class JSBindingSettings
         typeof(UnityEngine.UI.CanvasUpdateRegistry),
         //typeof(UnityEngine.UI.FontUpdateTracker),
         typeof(UnityEngine.UI.Graphic),
-//        typeof(UnityEngine.UI.GraphicRaycaster),
+        typeof(UnityEngine.UI.GraphicRaycaster),
         //typeof(UnityEngine.UI.GraphicRebuildTracker),
         typeof(UnityEngine.UI.GraphicRegistry),
         typeof(UnityEngine.UI.Image),
@@ -716,13 +717,16 @@ public class JSBindingSettings
 
         
         // test
-        typeof(List<>), 
-        typeof(List<>.Enumerator), 
-        typeof(Dictionary<,>), 
-        typeof(Dictionary<,>.KeyCollection), 
-        typeof(Dictionary<,>.ValueCollection), 
-        typeof(Dictionary<,>.Enumerator), 
-        typeof(KeyValuePair<,>), 
+        //typeof(List<>), 
+        //typeof(List<>.Enumerator), 
+
+        //typeof(Dictionary<,>), 
+        //typeof(Dictionary<,>.KeyCollection), 
+        //typeof(Dictionary<,>.ValueCollection), 
+        //typeof(Dictionary<,>.ValueCollection.Enumerator),
+        //typeof(Dictionary<,>.Enumerator), 
+        //typeof(KeyValuePair<,>), 
+
         //typeof(QiucwCup<>),
 
         
@@ -795,6 +799,8 @@ public class JSBindingSettings
 #if UNITY_4_6
              || (type == typeof(UnityEngine.EventSystems.PointerEventData) && memberName == "lastPress")
              || (type == typeof(UnityEngine.UI.InputField) && memberName == "onValidateInput") // property delegate
+		    || (type == typeof(UnityEngine.UI.Graphic) && memberName == "OnRebuildRequested")
+		    || (type == typeof(UnityEngine.UI.Text) && memberName == "OnRebuildRequested")
 #endif
 )
         {
@@ -861,9 +867,14 @@ public class JSBindingSettings
     // 
     public static string csDir = Application.dataPath + "/JSBinding/CSharp";
     public static string csGeneratedDir = Application.dataPath + "/JSBinding/Generated";
-    public static string sharpkitGeneratedFiles = JSBindingSettings.jsDir + "/SharpKitGeneratedFiles.javascript";
+	public static string sharpkitGeneratedFiles = JSBindingSettings.jsDir + "/SharpKitGeneratedFiles.javascript";
     public static string monoBehaviour2JSComponentName = JSBindingSettings.jsDir + "/MonoBehaviour2JSComponentName.javascript";
     public static string sharpKitGenFileDir = "StreamingAssets/JavaScript/SharpKitGenerated/";
+
+	public static string sharpKitGenFileFullDir { get { return jsDir + "/SharpKitGenerated"; }}
+	
+	public static string SharpkitGeneratedFilesAll = JSBindingSettings.jsDir + "/SharpKitGeneratedFilesAll.javascript";
+	public static string GeneratedFilesAll = JSBindingSettings.jsDir + "/GeneratedFilesAll.javascript";
 
 
     /*
@@ -877,6 +888,7 @@ public class JSBindingSettings
         //"Stealth/",
         "DaikonForge Tween (Pro)/",
         "NGUI/",
+		"Scripts/Framework/"
     };
     public static string[] PathsToJavaScript = new string[]
     {
@@ -905,4 +917,37 @@ public class JSBindingSettings
         "DaikonForge Tween (Pro)/",
         "NGUI/",
     };
+
+	/// <summary>
+	/// Gets the type serialized properties.
+	/// 如果想要序列化某个类的Property，则得在这里配置，否则不序列化。
+	/// </summary>
+	/// <returns>The type serialized properties.</returns>
+	public static PropertyInfo[] GetTypeSerializedProperties(Type type)
+	{
+		PropertyInfo[] infos = null;
+		if (type == typeof(AnimationCurve))
+		{
+			infos = new PropertyInfo[]
+			{
+				type.GetProperty("keys"),
+				type.GetProperty("postWrapMode"),
+				type.GetProperty("preWrapMode")
+			};
+		}
+		else if (type == typeof(Keyframe))
+		{
+			infos = new PropertyInfo[]
+			{
+				type.GetProperty("inTangent"),
+				type.GetProperty("outTangent"),
+				type.GetProperty("tangentMode"),
+				type.GetProperty("time"),
+				type.GetProperty("value")
+			};
+		}
+		if (infos == null)
+			infos = new PropertyInfo[0];
+		return infos;
+	}
 }

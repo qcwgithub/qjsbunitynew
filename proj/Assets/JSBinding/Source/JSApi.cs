@@ -358,7 +358,6 @@ public class JSApi
      * ****************** Other APIs ****************** 
      */
 
-
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void callFunctionValue(int jsObjID, int funID, int argCount);
 
@@ -386,13 +385,19 @@ public class JSApi
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern void moveSaveID2Arr(int arrIndex);
 
-    // these 3 functions are only used by JSSerializer
+    // these 4 functions are only used by JSSerializer
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern int getSaveID();
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern void removeByID(int id);
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
     public static extern bool moveID2Arr(int id, int arrIndex);
+	[DllImport(JSDll, CallingConvention = CallingConvention.Cdecl)]
+	public static extern void setCallFunctionValueRemoveArr(int bRemove);
+	public static void setCallFunctionValueRemoveArrS(bool bRemove)
+	{
+		setCallFunctionValueRemoveArr (bRemove ? 1 : 0);
+	}
 
     [DllImport(JSDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void getProperty(int id, string name);

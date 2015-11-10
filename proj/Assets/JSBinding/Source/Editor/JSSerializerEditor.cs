@@ -300,7 +300,11 @@ public static class JSSerializerEditor
             }
         }
         return lst.ToArray();
-    }
+	}
+	public static PropertyInfo[] GetTypeSerializedProperties(Type type)
+	{
+		return JSBindingSettings.GetTypeSerializedProperties(type);
+	}
     static void TraverseAnalyze()
     {
         bool bContinueTraverse = false;
@@ -331,11 +335,21 @@ public static class JSSerializerEditor
                     {
                         bContinueTraverse = true;
                         var structure = info.value;
+
+						// 1) Fields
                         FieldInfo[] fields = GetTypeSerializedFields(structure.GetType());
                         foreach (FieldInfo field in fields)
                         {
                             Pos += AddAnalyze(field.FieldType, field.Name, field.GetValue(structure), Pos);
                         }
+						
+						// 2) Properties
+						PropertyInfo[] properties = GetTypeSerializedProperties (structure.GetType());
+						foreach (PropertyInfo pro in properties)
+						{
+							Pos += AddAnalyze(pro.PropertyType, "#" + pro.Name, pro.GetValue(structure, null), Pos);
+						}
+
                         lstAnalyze.RemoveAt(i);
                     }
                     break;
@@ -381,11 +395,19 @@ public static class JSSerializerEditor
         // GameObject go = behaviour.gameObject;
         //Type type = behaviour.GetType();
 
+		// 1) Fields
         FieldInfo[] fields = GetMonoBehaviourSerializedFields(behaviour);
         foreach (FieldInfo field in fields)
         {
             AddAnalyze(field.FieldType, field.Name, field.GetValue(behaviour));
         }
+
+		// 2) Properties
+		PropertyInfo[] properties = GetTypeSerializedProperties (behaviour.GetType());
+		foreach (PropertyInfo pro in properties)
+		{
+			AddAnalyze(pro.PropertyType, "#" + pro.Name, pro.GetValue(behaviour, null));
+		}
 
         TraverseAnalyze();
 
