@@ -64,8 +64,10 @@ var jsimp$Reflection = {
             return type._JsType == Int32Array;
         },
         CallObjMethod: function (obj, methodName, parameters){
-            var args = Array.prototype.slice.apply(parameters);
-            obj[methodName].apply(obj, args.slice(0));
+            var args = Array.prototype.slice.apply(arguments);
+			var obj = args[0];
+			var methodName = args[1];
+            obj[methodName].apply(obj, args.slice(2));
             return true;
         }
     },
