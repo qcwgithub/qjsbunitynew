@@ -792,8 +792,9 @@ fields before this action.",
             nextPath = path.Substring(srcFolder.Length + 1, path.LastIndexOf('/') - srcFolder.Length);
             //Debug.Log(path + " -> " + nextPath);
 
-            string content = File.ReadAllText(path);
-            var reg = new Regex(@"(?>^\s*\[\s*JsType.*$)?\s*(?<ClassDefinition>^(?>(?>public|protected|private|static|partial|abstract|internal)*\s*)*(?>class|struct|enum|interface)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);
+			string content = File.ReadAllText(path);
+//			var reg = new Regex(@"(?>^\s*\[\s*JsType.*$)?\s*(?<ClassDefinition>^(?>(?>public|protected|private|static|partial|abstract|internal)*\s*)*(?>class|struct|enum|interface)\s+(?<ClassName>\w+)\s*(?::\s*\w+\s*(?:\,\s*\w+)*)?\s*\{)", RegexOptions.Multiline);
+            var reg = new Regex(@"(?>^\s*\[\s*JsType.*$)?\s*(?<ClassDefinition>^(?>(?>public|protected|private|static|partial|abstract|internal)*\s*)*(?>class|struct|enum|interface)\s+(?<ClassName>\w+))", RegexOptions.Multiline);
             string newContent = reg.Replace(content, MyMatchEvaluator);
 
             if (matched && newContent.IndexOf("using SharpKit.JavaScript;") < 0)
