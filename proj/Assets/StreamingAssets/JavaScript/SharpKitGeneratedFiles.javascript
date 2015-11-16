@@ -2,13 +2,15 @@
 * see JSAnalyzer.cs / OutputAllTypesWithJsTypeAttribute() function
 * better not modify manually.
 */
+
 CS.require("SharpKitGenerated/JSBinding/JSImp/ComponentExtension.javascript");
 CS.require("SharpKitGenerated/JSBinding/JSImp/Coroutine.javascript");
-CS.require("SharpKitGenerated/JSBinding/JSImp/Iterator.javascript");
+CS.require("SharpKitGenerated/JSBinding/JSImp/Misc.javascript");
 CS.require("SharpKitGenerated/JSBinding/JSImp/Reflection.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/AwakeTest/AwakeA.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/AwakeTest/AwakeB.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/AwakeTest/AwakeC.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/CallJSTest/CallJSTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/ComponentTest/ComponentTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/ComponentTest/MentosKXT.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/ComponentTest/TEnemy.javascript");
@@ -17,13 +19,18 @@ CS.require("SharpKitGenerated/JSBinding/Samples/Coroutine/TestCoroutine.javascri
 CS.require("SharpKitGenerated/JSBinding/Samples/DelegateTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/DictionaryTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/EncodingTest.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/LoginManager.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/TestLogin.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/EventTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/JSImpTest/JSImpTest1.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/JSImpTest/Person.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/JSImpTest/XmlParser.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/ListTest.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/MiscTest/MiscTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/PerformanceTest1.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/SampleViewer.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/stScene.javascript");
+CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/AnimationCurveTest.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/Car.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/SerializeSimple.javascript");
 CS.require("SharpKitGenerated/JSBinding/Samples/Serialization/SerializeStruct.javascript");
