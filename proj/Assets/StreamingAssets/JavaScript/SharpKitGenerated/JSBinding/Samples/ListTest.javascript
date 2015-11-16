@@ -19,9 +19,9 @@ var ListTest = {
                 var lst = new System.Collections.Generic.List$1.ctor(System.Int32.ctor);
                 lst.Add(6);
                 lst.Add(95);
-                var $it2 = lst.GetEnumerator();
-                while ($it2.MoveNext()){
-                    var v = $it2.get_Current();
+                var $it3 = lst.GetEnumerator();
+                while ($it3.MoveNext()){
+                    var v = $it3.get_Current();
                     UnityEngine.Debug.Log$$Object(v);
                 }
                 var vFind = lst.Find($CreateAnonymousDelegate(this, function (val){
@@ -31,9 +31,9 @@ var ListTest = {
                 var lstS = lst.ConvertAll$1(System.String.ctor, $CreateAnonymousDelegate(this, function (v){
                     return "s: " + v;
                 }));
-                var $it3 = lstS.GetEnumerator();
-                while ($it3.MoveNext()){
-                    var v = $it3.get_Current();
+                var $it4 = lstS.GetEnumerator();
+                while ($it4.MoveNext()){
+                    var v = $it4.get_Current();
                     UnityEngine.Debug.Log$$Object(v);
                 }
                 UnityEngine.Debug.Log$$Object(lstS.get_Item$$Int32(0));

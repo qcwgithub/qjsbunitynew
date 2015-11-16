@@ -33,6 +33,11 @@ var DictionaryTest = {
                 else {
                     UnityEngine.Debug.Log$$Object("not found");
                 }
+                var $it1 = dict.GetEnumerator();
+                while ($it1.MoveNext()){
+                    var v = $it1.get_Current();
+                    UnityEngine.Debug.Log$$Object(v.get_Key().toString() + "->" + v.get_Value().toString());
+                }
             }
         }
     }

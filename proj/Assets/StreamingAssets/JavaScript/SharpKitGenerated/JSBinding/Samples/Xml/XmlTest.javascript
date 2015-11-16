@@ -31,9 +31,9 @@ var XmlTest = {
             UnityEngine.Debug.Log$$Object("daojulist Count = " + daoJunodeList.get_Count());
             var daoJumdata = Lavie.XmlUtils.CreateObjectFromXml$1$$XmlNodeList$$String(ShopItemData.ctor, daoJunodeList, "SubType");
             UnityEngine.Debug.Log$$Object("daojudata Count = " + daoJumdata.get_Count());
-            var $it6 = daoJumdata.GetEnumerator();
-            while ($it6.MoveNext()){
-                var shopItemData = $it6.get_Current();
+            var $it8 = daoJumdata.GetEnumerator();
+            while ($it8.MoveNext()){
+                var shopItemData = $it8.get_Current();
                 UnityEngine.Debug.Log$$Object(shopItemData.get_ID());
             }
         }

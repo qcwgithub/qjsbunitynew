@@ -71,7 +71,7 @@ var jsimp$Reflection = {
             return true;
         }
     },
-    assemblyName: "Assembly-CSharp",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){

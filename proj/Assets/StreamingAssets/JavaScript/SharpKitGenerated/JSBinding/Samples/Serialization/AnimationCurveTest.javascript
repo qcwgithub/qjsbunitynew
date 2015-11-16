@@ -3,7 +3,7 @@ if (typeof(JsTypes) == "undefined")
 var AnimationCurveTest = {
     fullname: "AnimationCurveTest",
     baseTypeName: "UnityEngine.MonoBehaviour",
-    assemblyName: "Assembly-CSharp",
+    assemblyName: "SharpKitProj",
     Kind: "Class",
     definition: {
         ctor: function (){
