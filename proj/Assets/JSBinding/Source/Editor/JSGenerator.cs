@@ -15,36 +15,37 @@ public static class JSGenerator
     static StringBuilder sb = null;
     public static Type type = null;
 
-    static StreamWriter enumWriter;
-    static string enumFile = JSBindingSettings.jsGeneratedDir + "/enum" + JSBindingSettings.jsExtension;
+    static StreamWriter W;
+    //static string enumFile = JSBindingSettings.jsGeneratedDir + "/enum" + JSBindingSettings.jsExtension;
     //static string tempFile = JSBindingSettings.jsDir + "/temp"+JSBindingSettings.jsExtension;
 
     public static void OnBegin()
     {
         GeneratorHelp.ClearTypeInfo();
 
-        if (Directory.Exists(JSBindingSettings.jsGeneratedDir))
-        {
-            // delete all last generated files
-            string[] files = Directory.GetFiles(JSBindingSettings.jsGeneratedDir);
-            for (int i = 0; i < files.Length; i++)
-            {
-                File.Delete(files[i]);
-            }
-        }
-        else
-        {
-            // create directory
-            Directory.CreateDirectory(JSBindingSettings.jsGeneratedDir);
-        }
+//        if (Directory.Exists(JSBindingSettings.jsGeneratedDir))
+//        {
+//            // delete all last generated files
+//            string[] files = Directory.GetFiles(JSBindingSettings.jsGeneratedDir);
+//            for (int i = 0; i < files.Length; i++)
+//            {
+//                File.Delete(files[i]);
+//            }
+//        }
+//        else
+//        {
+//            // create directory
+//            Directory.CreateDirectory(JSBindingSettings.jsGeneratedDir);
+//        }
+
 
         // clear generated enum files
-        enumWriter = OpenFile(enumFile, false);
-        enumWriter.Write("this.Enum = {};\n");
+        W = OpenFile(JSBindingSettings.jsGeneratedFiles, false);
+        W.Write("this.Enum = {};\n");
     }
     public static void OnEnd()
     {
-        enumWriter.Close();
+        W.Close();
     }
 
     public static string SharpKitTypeName(Type type)
@@ -486,12 +487,13 @@ _jstype.staticDefinition.{1} = function({2}) [[
         HandleStringFormat(sbClass);
 
 
-        string fileName = JSBindingSettings.jsGeneratedDir + "/" +
-            JSNameMgr.GetTypeFileName(JSGenerator.type)
-            + JSBindingSettings.jsExtension;
-        var writer2 = OpenFile(fileName, false);
-        writer2.Write(sbClass.ToString());
-        writer2.Close();
+//        string fileName = JSBindingSettings.jsGeneratedDir + "/" +
+//            JSNameMgr.GetTypeFileName(JSGenerator.type)
+//            + JSBindingSettings.jsExtension;
+//        var writer2 = OpenFile(fileName, false);
+//        writer2.Write(sbClass.ToString());
+//        writer2.Close();
+        W.Write(sbClass.ToString());
     }
 
     static void GenerateEnum()
@@ -528,7 +530,7 @@ _jstype.staticDefinition.{1} = function({2}) [[
         sb.Append(fmtEnter);
 
         HandleStringFormat(sb);
-        enumWriter.Write(sb.ToString());
+        W.Write(sb.ToString());
     }
 
     public static void Clear()
@@ -627,12 +629,12 @@ using UnityEngine;
 	{
 		string[] sourceDirs = new string[]
 		{
-			JSBindingSettings.jsGeneratedDir,
+			//JSBindingSettings.jsGeneratedDir,
 			JSBindingSettings.sharpKitGenFileFullDir,
 		};
 		string[] targetFiles = new string[]
 		{
-			JSBindingSettings.GeneratedFilesAll,
+			//JSBindingSettings.GeneratedFilesAll,
 			JSBindingSettings.SharpkitGeneratedFilesAll,
 		};
 

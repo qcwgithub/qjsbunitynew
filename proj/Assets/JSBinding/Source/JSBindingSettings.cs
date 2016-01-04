@@ -861,7 +861,7 @@ public class JSBindingSettings
 
 
     // directory to save generated js files (gen by JSGenerateor2)
-    public static string jsGeneratedDir{ get { return jsDir + "/Generated"; } }
+    //public static string jsGeneratedDir{ get { return jsDir + "/Generated"; } }
     // a file to save generated js file names
     public static string jsGeneratedFiles { get { return jsDir + "/GeneratedFiles" + jsExtension; } }
     // 
