@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
+using SharpKit.JavaScript;
+
+[assembly: JsExportAttribute(ForceIntegers = true, JsCodeFormat = "C#")]
+[assembly: JsType(NativeParams = false)]
 
 public class PerTest
 {
