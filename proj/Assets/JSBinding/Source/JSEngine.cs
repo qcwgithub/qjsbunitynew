@@ -68,7 +68,7 @@ public class JSEngine : MonoBehaviour
             if (mDebug)
             {
                 Debug.Log("JS: Enable Debugger");
-                JSApi.enableDebugger(new string[2] { JSBindingSettings.jsDir, JSBindingSettings.jsGeneratedDir }, 2, port);
+                JSApi.enableDebugger(new string[] { JSBindingSettings.jsDir }, 1, port);
             }
         }
         else

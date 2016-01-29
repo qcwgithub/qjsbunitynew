@@ -281,9 +281,9 @@ public static class JSMgr
     /// <param name="shortName">The short name.</param>
     /// <param name="bGenerated">if set to <c>true</c> [b generated].</param>
     /// <returns></returns>
-    static public string getJSFullName(string shortName, bool bGenerated)
+    static public string getJSFullName(string shortName)
     {
-        string baseDir = bGenerated ? JSBindingSettings.jsGeneratedDir : JSBindingSettings.jsDir;
+        string baseDir = JSBindingSettings.jsDir;
         string fullName = baseDir + "/" + shortName;// + JSBindingSettings.jsExtension;
         // don't append, if extension already exist
         if (shortName.IndexOf('.') < 0)
@@ -406,7 +406,7 @@ public static class JSMgr
         // add even failed
         evaluatedScript.Add(jsScriptName, true);
 
-        string fullName = JSMgr.getJSFullName(jsScriptName, false);
+        string fullName = JSMgr.getJSFullName(jsScriptName);
         byte[] bytes;
 
         bool jsc = false;

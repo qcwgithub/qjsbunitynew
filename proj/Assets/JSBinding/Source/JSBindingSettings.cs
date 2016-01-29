@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
+using SharpKit.JavaScript;
+
+[assembly: JsExportAttribute(ForceIntegers = true, JsCodeFormat = "C#")]
+[assembly: JsType(NativeParams = false)]
 
 public class PerTest
 {
@@ -861,7 +865,7 @@ public class JSBindingSettings
 
 
     // directory to save generated js files (gen by JSGenerateor2)
-    public static string jsGeneratedDir{ get { return jsDir + "/Generated"; } }
+    //public static string jsGeneratedDir{ get { return jsDir + "/Generated"; } }
     // a file to save generated js file names
     public static string jsGeneratedFiles { get { return jsDir + "/GeneratedFiles" + jsExtension; } }
     // 

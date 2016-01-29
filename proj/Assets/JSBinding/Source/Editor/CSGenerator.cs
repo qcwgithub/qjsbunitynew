@@ -1252,39 +1252,39 @@ public class CSharpGenerated
         writer2.Write(sb.ToString());
         writer2.Close();
     }
-    public static void GenerateAllJSFileNames2()
-    {
-//         if (!JSGenerator2.typeClassName.ContainsKey(typeof(UnityEngine.Object)))
-//             JSGenerator2.typeClassName.Add(typeof(UnityEngine.Object), "UnityObject");
-
-        string fmt = @"
-public class JSGeneratedFileNames
-[[
-    public static string[] names = new string[]
-    [[
-{0}
-    ]];
-]]
-";
-        StringBuilder sbA = new StringBuilder();
-        for (int i = 0; i < JSBindingSettings.classes.Length; i++)
-        {
-            string name = JSNameMgr.GetTypeFileName(JSBindingSettings.classes[i]).Replace('.', '_');
-            if (JSGenerator.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
-                name = JSGenerator.typeClassName[JSBindingSettings.classes[i]];
-            sbA.AppendFormat("        \"{0}\",\n", name);
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat(fmt, sbA);
-        HandleStringFormat(sb);
-
-        sb.Replace("\r\n", "\n");
-
-        string fileName = JSBindingSettings.csGeneratedDir + "/" + "AllJSFileNames.cs";
-        var writer2 = OpenFile(fileName, false);
-        writer2.Write(sb.ToString());
-        writer2.Close();
-    }
+//    public static void GenerateAllJSFileNames2()
+//    {
+////         if (!JSGenerator2.typeClassName.ContainsKey(typeof(UnityEngine.Object)))
+////             JSGenerator2.typeClassName.Add(typeof(UnityEngine.Object), "UnityObject");
+//
+//        string fmt = @"
+//public class JSGeneratedFileNames
+//[[
+//    public static string[] names = new string[]
+//    [[
+//{0}
+//    ]];
+//]]
+//";
+//        StringBuilder sbA = new StringBuilder();
+//        for (int i = 0; i < JSBindingSettings.classes.Length; i++)
+//        {
+//            string name = JSNameMgr.GetTypeFileName(JSBindingSettings.classes[i]).Replace('.', '_');
+//            if (JSGenerator.typeClassName.ContainsKey(JSBindingSettings.classes[i]))
+//                name = JSGenerator.typeClassName[JSBindingSettings.classes[i]];
+//            sbA.AppendFormat("        \"{0}\",\n", name);
+//        }
+//        StringBuilder sb = new StringBuilder();
+//        sb.AppendFormat(fmt, sbA);
+//        HandleStringFormat(sb);
+//
+//        sb.Replace("\r\n", "\n");
+//
+//        string fileName = JSBindingSettings.csGeneratedDir + "/" + "AllJSFileNames.cs";
+//        var writer2 = OpenFile(fileName, false);
+//        writer2.Write(sb.ToString());
+//        writer2.Close();
+//    }
     public static void GenerateAllJSFileNames()
     {
         //         if (!JSGenerator2.typeClassName.ContainsKey(typeof(UnityEngine.Object)))
@@ -1594,7 +1594,7 @@ using UnityEngine;
             CSGenerator.GenerateClass();
         }
         GenerateRegisterAll();
-        GenerateAllJSFileNames();
+        //GenerateAllJSFileNames();
 
         CSGenerator.OnEnd();
 
@@ -1676,7 +1676,7 @@ using UnityEngine;
         bool bContinue;
         bContinue = EditorUtility.DisplayDialog("TIP",
              "Files in these directories will all be deleted and re-created: \n" + 
-              JSBindingSettings.jsGeneratedDir + "\n" + 
+              //JSBindingSettings.jsGeneratedDir + "\n" + 
               JSBindingSettings.csGeneratedDir + "\n",
              "OK",
              "Cancel");
