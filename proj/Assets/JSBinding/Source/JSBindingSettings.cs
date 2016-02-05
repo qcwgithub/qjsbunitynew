@@ -817,6 +817,19 @@ public class JSBindingSettings
 #endif
         return false;
     }
+
+    public static bool IsSupportByDotNet2SubSet(string functionName)
+    {
+        if (functionName == "Directory_CreateDirectory__String__DirectorySecurity" ||
+            functionName == "Directory_GetAccessControl__String__AccessControlSections" ||
+            functionName == "Directory_GetAccessControl__String" ||
+            functionName == "Directory_SetAccessControl__String__DirectorySecurity")
+        {
+            return false;
+        }
+        return true;
+    }
+
     public static bool NeedGenDefaultConstructor(Type type)
     {
         if (typeof(Delegate).IsAssignableFrom(type))

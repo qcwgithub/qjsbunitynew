@@ -68,7 +68,10 @@ public static class CSGenerator
         }
         else
         {
-            name = type.Name;
+            if (type == typeof(UnityEngine.Object))
+                name = "UE" + type.Name;
+            else
+                name = type.Name;
         }
         return name;
 
@@ -1100,6 +1103,10 @@ static bool {0}(JSVCall vc, int argc)
             if (UnityEngineManual.isManual(functionName))
             {
                 sb.AppendFormat(fmt, functionName, "    UnityEngineManual." + functionName + "(vc, argc);");
+            }
+            else if (!JSBindingSettings.IsSupportByDotNet2SubSet(functionName))
+            {
+                sb.AppendFormat(fmt, functionName, "    UnityEngine.Debug.LogError(\"This method is not supported by .Net 2.0 subset.\");");
             }
             else
             {
