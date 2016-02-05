@@ -1,9 +1,10 @@
-﻿using SharpKit.JavaScript;
+using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
 
 // 这个是跑在C#的
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/CallJSTest/CallJSTest.javascript")]
+
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class CallJSTest : MonoBehaviour {
 
 	// Use this for initialization

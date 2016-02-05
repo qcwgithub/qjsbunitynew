@@ -2,7 +2,7 @@ using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Coroutine/TestCoroutine.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class TestCoroutine : MonoBehaviour {
 	void Start () 
     {
@@ -44,8 +44,8 @@ public class TestCoroutine : MonoBehaviour {
         Debug.Log("DoTest 2");
         yield return new WaitForSeconds(1f);
 
-        // Õâ¸ö¿ÉÒÔÕý³£ÔËÐÐ
-        // µ«ÊÇÒªÇóÓÃ»§ÒªÊÖ¶¯Ìí¼ÓÕâ¸ö³¡¾°µ½ BuildSetting Àï£¬ÏÈÈ¥µô°É
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        // ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ã»ï¿½Òªï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ BuildSetting ï¿½ï£¬ï¿½ï¿½È¥ï¿½ï¿½ï¿½ï¿½
 //         Debug.Log("Do Test LoadLevelAdditive");
 //         yield return Application.LoadLevelAdditiveAsync("AddScene");
 

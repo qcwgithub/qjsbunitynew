@@ -7,12 +7,13 @@ using System;
 using System.Reflection;
 using Lavie;
 
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class MindActUpMide<T>
 {
     public T Value;
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/XmlTest.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class XmlTest : MonoBehaviour
 {
     private void Start()
@@ -58,7 +59,7 @@ public class XmlTest : MonoBehaviour
     }
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ShopItemData.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class ShopItemData
 {
     public string ID { get; set; }
@@ -101,43 +102,43 @@ public class ShopItemData
     }
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitDayNum.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class LimitDayNum : IShopLime
 {
     public int Count { get; set; }
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitVIPLevel.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class LimitVIPLevel
 {
     public int Level { get; set; }
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitBuyNumPrices.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class LimitBuyNumPrices : IShopLime
 {
     public int[] Prices{get;set;}
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimitVipDayNum.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class LimitVipDayNum : IShopLime
 {
     public int[] Count { get; set; }
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/LimeTimeNum.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class LimeTimeNum : IShopLime
 {
     public int Interval { get; set; }
     public int Count { get; set; }
 }
 
-[JsType(JsMode.Clr, "../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/IShopLime.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public interface IShopLime
 {
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ItemType.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public enum ItemType
 {
     Normal = 1,
@@ -152,7 +153,7 @@ public enum ItemType
     Stone = 10,
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ItemCell.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class ItemCell
 {
     public int ID { get; set; }
@@ -173,7 +174,7 @@ public class ItemCell
     public int expSupply { get; set; }
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/ColorSign.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public enum ColorSign
 {
     White = 1,
@@ -185,7 +186,7 @@ public enum ColorSign
     Black
 }
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/enumMoneyType.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public enum enumMoneyType
 {
     None = 0,

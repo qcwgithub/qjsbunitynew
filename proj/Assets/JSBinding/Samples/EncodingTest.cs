@@ -1,11 +1,11 @@
-﻿using SharpKit.JavaScript;
+using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
 using System.Text;
 
 // JS VERSION OF THIS TEST DOES NOT WORK
 
-[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/EncodingTest.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class EncodingTest : MonoBehaviour 
 {
     public static string byteConverString(byte[] data, int index, int count)

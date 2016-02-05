@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Text;
 
-[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/V3Test.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class V3Test : MonoBehaviour 
 {
 	// Use this for initialization

@@ -1,7 +1,8 @@
 using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/MiscTest/MiscTest.javascript")]
+
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class MiscTest : MonoBehaviour {
 
 	// Use this for initialization

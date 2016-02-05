@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 // test System.Collections.Generic.List
 
-[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/ListTest.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class ListTest : MonoBehaviour {
 
 	// Use this for initialization

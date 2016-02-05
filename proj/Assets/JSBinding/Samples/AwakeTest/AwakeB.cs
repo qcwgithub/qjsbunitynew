@@ -1,7 +1,8 @@
-﻿using SharpKit.JavaScript;
+using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/AwakeTest/AwakeB.javascript")]
+
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class AwakeB : MonoBehaviour {
 
     public int valueOfB = 0;

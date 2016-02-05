@@ -3,14 +3,14 @@ using System;
 using UnityEngine;
 using System.Collections;
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Serialization/SerializeStruct.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class SerializeStruct : MonoBehaviour
 {
     [System.Serializable]
 
 //[JsType(JsMode.Clr,"../../StreamingAssets/JavaScript/SharpKitGenerated/Serialization/AppleInfo.javascript")]
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Serialization/AppleInfo.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
     public struct AppleInfo
     { 
         public int age;

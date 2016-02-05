@@ -177,12 +177,6 @@ public class JSBindingSettings
         typeof(PerTest),
 //        typeof(BetterList<>),
 
-typeof(Directory),
-typeof(MarshalByRefObject),
-typeof(FileSystemInfo),
-typeof(DirectoryInfo),
-typeof(File),
-
 #region
         typeof(System.Collections.IEnumerator),
 #endregion

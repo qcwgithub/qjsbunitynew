@@ -10,7 +10,8 @@ using Lavie;
 
 namespace Lavie
 {
-    [JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Xml/XmlUtils.javascript")]
+
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
     public static class XmlUtils
     {
         public static void AssignObjectValueFromXml(this XmlNode mNode, object mData, Type mDataType)

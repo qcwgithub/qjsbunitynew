@@ -5,7 +5,7 @@ using System.Collections;
 // demonstrate how to refer other scripts, GameObjects, components
 // and array
 
-[JsType(JsMode.Clr,"../../../StreamingAssets/JavaScript/SharpKitGenerated/JSBinding/Samples/Serialization/Car.javascript")]
+[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class Car : MonoBehaviour {
 
     public Wheel[] wheels; // left-front, right-front
