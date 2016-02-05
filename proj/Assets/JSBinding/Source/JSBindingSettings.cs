@@ -177,6 +177,12 @@ public class JSBindingSettings
         typeof(PerTest),
 //        typeof(BetterList<>),
 
+typeof(Directory),
+typeof(MarshalByRefObject),
+typeof(FileSystemInfo),
+typeof(DirectoryInfo),
+typeof(File),
+
 #region
         typeof(System.Collections.IEnumerator),
 #endregion
@@ -823,7 +829,19 @@ public class JSBindingSettings
         if (functionName == "Directory_CreateDirectory__String__DirectorySecurity" ||
             functionName == "Directory_GetAccessControl__String__AccessControlSections" ||
             functionName == "Directory_GetAccessControl__String" ||
-            functionName == "Directory_SetAccessControl__String__DirectorySecurity")
+            functionName == "Directory_SetAccessControl__String__DirectorySecurity" ||
+            functionName == "DirectoryInfo_Create__DirectorySecurity" ||
+            functionName == "DirectoryInfo_CreateSubdirectory__String__DirectorySecurity" ||
+            functionName == "DirectoryInfo_GetAccessControl__AccessControlSections" ||
+            functionName == "DirectoryInfo_SetAccessControl__DirectorySecurity" ||
+            functionName == "DirectoryInfo_SetAccessControl__DirectorySecurity" ||
+            functionName == "DirectoryInfo_GetAccessControl" ||
+            functionName == "File_Create__String__Int32__FileOptions__FileSecurity" ||
+            functionName == "File_Create__String__Int32__FileOptions" ||
+            functionName == "File_GetAccessControl__String__AccessControlSections" ||
+            functionName == "File_GetAccessControl__String" ||
+            functionName == "File_SetAccessControl__String__FileSecurity"
+            )
         {
             return false;
         }
