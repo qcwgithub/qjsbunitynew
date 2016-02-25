@@ -9,8 +9,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using SharpKit.JavaScript;
 
-[assembly: JsExportAttribute(ForceIntegers = true, JsCodeFormat = "C#")]
-[assembly: JsType(NativeParams = false)]
+
 
 public class PerTest
 {
@@ -717,7 +716,7 @@ public class JSBindingSettings
         // delegates
         // typeof(UnityEngine.UI.InputField.OnValidateInput),
 
-#endif // #if UNITY_4_6
+#endif // #if UNITY_4_6 || UNITY_4_7
 
         
         // test
@@ -740,7 +739,7 @@ public class JSBindingSettings
         //typeof(SerializeStruct.AppleInfo),
         typeof(StringBuilder),
 
-#if UNITY_4_6
+#if UNITY_4_6 || UNITY_4_7
         //typeof(UnityEngine.EventSystems.UIBehaviour),
         //typeof(UnityEngine.UI.Selectable),
         //typeof(UnityEngine.UI.Slider),
@@ -800,7 +799,7 @@ public class JSBindingSettings
             (type == typeof(StreamReader) && (memberName == "CreateObjRef" || memberName == "GetLifetimeService" || memberName == "InitializeLifetimeService")) ||
             (type == typeof(StreamWriter) && (memberName == "CreateObjRef" || memberName == "GetLifetimeService" || memberName == "InitializeLifetimeService")) ||
             (type == typeof(UnityEngine.Font) && memberName == "textureRebuildCallback")
-#if UNITY_4_6
+#if UNITY_4_6 || UNITY_4_7
              || (type == typeof(UnityEngine.EventSystems.PointerEventData) && memberName == "lastPress")
              || (type == typeof(UnityEngine.UI.InputField) && memberName == "onValidateInput") // property delegate
 		    || (type == typeof(UnityEngine.UI.Graphic) && memberName == "OnRebuildRequested")
@@ -816,31 +815,29 @@ public class JSBindingSettings
             return true;
 #endif
         return false;
-    }
-
-    public static bool IsSupportByDotNet2SubSet(string functionName)
-    {
-        if (functionName == "Directory_CreateDirectory__String__DirectorySecurity" ||
-            functionName == "Directory_GetAccessControl__String__AccessControlSections" ||
-            functionName == "Directory_GetAccessControl__String" ||
-            functionName == "Directory_SetAccessControl__String__DirectorySecurity" ||
-            functionName == "DirectoryInfo_Create__DirectorySecurity" ||
-            functionName == "DirectoryInfo_CreateSubdirectory__String__DirectorySecurity" ||
-            functionName == "DirectoryInfo_GetAccessControl__AccessControlSections" ||
-            functionName == "DirectoryInfo_SetAccessControl__DirectorySecurity" ||
-            functionName == "DirectoryInfo_SetAccessControl__DirectorySecurity" ||
-            functionName == "DirectoryInfo_GetAccessControl" ||
-            functionName == "File_Create__String__Int32__FileOptions__FileSecurity" ||
-            functionName == "File_Create__String__Int32__FileOptions" ||
-            functionName == "File_GetAccessControl__String__AccessControlSections" ||
-            functionName == "File_GetAccessControl__String" ||
-            functionName == "File_SetAccessControl__String__FileSecurity"
-            )
-        {
-            return false;
-        }
-        return true;
-    }
+	}
+	
+	public static bool IsSupportByDotNet2SubSet(string functionName)
+	{
+		if (functionName == "Directory_CreateDirectory__String__DirectorySecurity" ||
+		    functionName == "Directory_GetAccessControl__String__AccessControlSections" ||
+		    functionName == "Directory_GetAccessControl__String" ||
+		    functionName == "Directory_SetAccessControl__String__DirectorySecurity" ||
+		    functionName == "DirectoryInfo_Create__DirectorySecurity" ||
+		    functionName == "DirectoryInfo_CreateSubdirectory__String__DirectorySecurity" ||
+		    functionName == "DirectoryInfo_GetAccessControl__AccessControlSections" ||
+		    functionName == "DirectoryInfo_GetAccessControl" ||
+		    functionName == "DirectoryInfo_SetAccessControl__DirectorySecurity" ||
+		    functionName == "File_Create__String__Int32__FileOptions__FileSecurity" ||
+		    functionName == "File_Create__String__Int32__FileOptions" ||
+		    functionName == "File_GetAccessControl__String__AccessControlSections" ||
+		    functionName == "File_GetAccessControl__String" ||
+		    functionName == "File_SetAccessControl__String__FileSecurity")
+		{
+			return false;
+		}
+		return true;
+	}
 
     public static bool NeedGenDefaultConstructor(Type type)
     {
@@ -882,15 +879,17 @@ public class JSBindingSettings
 
     // extension (including ".")
     public static string jsExtension = ".javascript";
-    public static string jscExtension = ".jsc";
+    public static string jscExtension = ".bytes";
     // directory to save js files
     public static string jsDir = Application.streamingAssetsPath + "/JavaScript";
+	public static string jsRelDir = "Assets/StreamingAssets/JavaScript";
     public static string mergedJsDir = Application.dataPath + "/../Temp/JavaScript_js";
-    public static string jscDir = Application.streamingAssetsPath + "/JavaScript_jsc";
+    public static string jscDir = Application.dataPath + "/JSC";
+	public static string jscRelDir = "Assets/JSC";
 
 
     // directory to save generated js files (gen by JSGenerateor2)
-    //public static string jsGeneratedDir{ get { return jsDir + "/Generated"; } }
+    public static string jsGeneratedDir{ get { return jsDir + "/Generated"; } }
     // a file to save generated js file names
     public static string jsGeneratedFiles { get { return jsDir + "/GeneratedFiles" + jsExtension; } }
     // 

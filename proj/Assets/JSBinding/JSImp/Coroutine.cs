@@ -5,8 +5,7 @@ using SharpKit.JavaScript;
 
 namespace jsimp
 {
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
     public class Coroutine
 	{
 		[JsMethod(Code = @"var elapsed = UnityEngine.Time.get_deltaTime();

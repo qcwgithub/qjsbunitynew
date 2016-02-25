@@ -2,8 +2,7 @@ using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class DelegateTest : MonoBehaviour {
 
 	// Use this for initialization

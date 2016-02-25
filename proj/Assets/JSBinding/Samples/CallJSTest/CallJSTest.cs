@@ -3,8 +3,7 @@ using UnityEngine;
 using System.Collections;
 
 // 这个是跑在C#的
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class CallJSTest : MonoBehaviour {
 
 	// Use this for initialization

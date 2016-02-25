@@ -4,12 +4,10 @@ using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class JSImpTest1 : MonoBehaviour 
 {
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
     public class Person
     {
         public string firstName;

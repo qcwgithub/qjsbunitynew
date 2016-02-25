@@ -48,11 +48,13 @@ namespace cg
             NewObjArr,// new object[] {a, b, c}
             GenericT, // <a, b, c>
             Flag,// a | b | c
+            Space, // a b c
+            Return,
         }
         public string Format(ArgsFormat fmt)
         {
             sb.Remove(0, sb.Length);
-
+            
             switch (fmt)
             {
                 case ArgsFormat.Call:
@@ -77,7 +79,16 @@ namespace cg
             {
                 sb.Append(lst[i]);
                 if (i != lst.Count - 1)
-                    sb.Append((fmt == ArgsFormat.Flag) ? " | " : ", ");
+                {
+                    if (fmt == ArgsFormat.Flag)
+                        sb.Append(" | ");
+                    else if (fmt == ArgsFormat.Space)
+                        sb.Append(" ");
+                    else if (fmt == ArgsFormat.Return)
+                        sb.Append("\n");
+                    else
+                        sb.Append(", ");
+                }
             }
             switch (fmt)
             {
@@ -106,7 +117,7 @@ namespace cg
             return this.Format(ArgsFormat.OnlyList);
         }
     }
-
+    
     public class autotab
     {
         public static string Format(string str, int tab)
@@ -114,36 +125,36 @@ namespace cg
             return "";
         }
     }
-
+    
     public enum MemberType { 
         CONSTRUCTOR,
         FIELD,
         PROPERTY,
         METHOD,
     }
-
-//     public class GenClassProcess
-//     {
-//         public static MemberType memberType = MemberType.CONSTRUCTOR;
-//         public static bool isStatic = false;
-// 
-//         public void setFunctionName(string name) { 
-// 
-//         }
-// 
-//         public void setFunctionParamsCount(int needCount, int allCount) {
-//             functionBodies = new FunctionBodyProcess[allCount - needCount + 1];
-//             this.needParamCount = needCount;
-//             this.allParamCount = allCount;
-//         }
-//         int needParamCount, allParamCount;
-//         FunctionBodyProcess[] functionBodies = null;
-//         FunctionBodyProcess functionBody { get { return functionBodies[0]; } }
-//     }
+    
+    //     public class GenClassProcess
+    //     {
+    //         public static MemberType memberType = MemberType.CONSTRUCTOR;
+    //         public static bool isStatic = false;
+    // 
+    //         public void setFunctionName(string name) { 
+    // 
+    //         }
+    // 
+    //         public void setFunctionParamsCount(int needCount, int allCount) {
+    //             functionBodies = new FunctionBodyProcess[allCount - needCount + 1];
+    //             this.needParamCount = needCount;
+    //             this.allParamCount = allCount;
+    //         }
+    //         int needParamCount, allParamCount;
+    //         FunctionBodyProcess[] functionBodies = null;
+    //         FunctionBodyProcess functionBody { get { return functionBodies[0]; } }
+    //     }
     public class FunctionBodyProcess
     {
         public StringBuilder sbPrepareMethod = new StringBuilder();
-
+        
         public StringBuilder sbCallParams = new StringBuilder();
     }
 }

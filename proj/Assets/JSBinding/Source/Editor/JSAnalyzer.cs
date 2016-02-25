@@ -61,11 +61,16 @@ public static class JSAnalyzer
         RemoveOldBehaviour, 
         Analyze
     }
-    static string GetTempFileNameFullPath(string shortPath)
+    public static string GetTempFileNameFullPath(string shortPath)
     {
         Directory.CreateDirectory(Application.dataPath + "/Temp/");
         return Application.dataPath + "/Temp/" + shortPath;
     }
+
+	public static string GetAllExportedMembersFile()
+	{
+		return GetTempFileNameFullPath("AllExportedMembers.txt");
+	}
 
     /// <summary>
     /// Do some actions to GameObject hierachy.
@@ -294,7 +299,9 @@ var GetMonoBehaviourJSComponentName = function (i)
     /// 2) Did your MonoBehaviour(with JsType attribute) refer to other MonoBehaviour that is not available in JavaScript?
     /// 3) Did your MonoBehaviour(with JsType attribute) have not-supported public fields? (List, for example)
     /// </summary>
-    [MenuItem("JSB/Check All Monos for all Prefabs and Scenes", false, 112)]
+    //[MenuItem("JSB/Check All Monos for all Prefabs and Scenes", false, 112)]
+
+	// 返回值：是否继续下一步
     public static bool CheckAllMonos()
     {
         bool bContinue = EditorUtility.DisplayDialog("WARNING",
@@ -409,6 +416,18 @@ var GetMonoBehaviourJSComponentName = function (i)
 		return !CheckHasError;
     }
 
+	
+	[MenuItem("JSB/Check and Replace All Monos", false, 162)]
+	static void CheckAndReplaceAllMonos()
+	{
+		if (CheckAllMonos())
+		{
+			Debug.Log("Continue ReplaceAllMonos");
+			ReplaceAllMonos();
+		}
+	}
+
+
     // delegate return true: not to replace
     public delegate bool DelFilterReplaceFile(string fullpath);
 
@@ -417,7 +436,7 @@ var GetMonoBehaviourJSComponentName = function (i)
     /// Replaces all MonoBehaviours who has JsType attribute with JSComponent!
     /// Care muse be taken when executing this menu.
     /// </summary>
-    [MenuItem("JSB/Replace All Monos for all Prefabs and Scenes", false, 113)]
+    //[MenuItem("JSB/Replace All Monos for all Prefabs and Scenes", false, 113)]
     public static void ReplaceAllMonos()
     {
         bool bContinue = EditorUtility.DisplayDialog("WARNING",
@@ -623,7 +642,7 @@ var GetMonoBehaviourJSComponentName = function (i)
 //         Debug.Log(sbHierachy);
 //     }
     // Alt + Shift + Q
-    [MenuItem("JSB/Copy Selected GameObjects MonoBehaviours &#q", false, 110)]
+    [MenuItem("JSB/Others/Copy Selected GameObjects MonoBehaviours &#q", false, 171)]
     public static void CopyGameObjectMonoBehaviours()
     {
         Debug.Log("CopyGameObjectMonoBehaviours");
@@ -631,7 +650,7 @@ var GetMonoBehaviourJSComponentName = function (i)
             JSSerializerEditor.CopyGameObject(go);
     }
     // Alt + Shift + W
-    [MenuItem("JSB/Remove Selected GameObjects Other MonoBehaviours &#w", false, 111)]
+	[MenuItem("JSB/Others/Remove Selected GameObjects Other MonoBehaviours &#w", false, 172)]
     public static void RemoveOtherMonoBehaviours()
     {
         Debug.Log("RemoveOtherMonoBehaviours");
@@ -664,7 +683,7 @@ var GetMonoBehaviourJSComponentName = function (i)
 //                lastDir, JSBindingSettings.sharpKitGenFileDir, nextPath, m.Groups["ClassName"], JSBindingSettings.jsExtension);
 
 			// !! 2016/1/7 改成全部输出到同一个文件中
-			string JsTypeSection = "[JsType(JsMode.Clr, \"~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript\")]";
+			string JsTypeSection = "[JsType(JsMode.Clr, \"~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript\")]";
 
             // 如果JsType定义已经存在且相同，就不要改了，直接返回相同的串
             if (matchedString.IndexOf(JsTypeSection) >= 0)
@@ -692,7 +711,7 @@ var GetMonoBehaviourJSComponentName = function (i)
     /// <summary>
     /// See 'MakeJsTypeAttributeInSrc' for detail.
     /// </summary>
-    [MenuItem("JSB/Delete SharpKit JsType Attribute for all Structs and Classes", false, 52)]
+	[MenuItem("JSB/Others/Delete SharpKit JsType Attribute for all Structs and Classes", false, 173)]
     public static void DelJsTypeAttributeInSrc()
     {
         addJsType = false;
@@ -838,91 +857,119 @@ fields before this action.",
         AssetDatabase.Refresh();
         return true;
     }
-    [MenuItem("JSB/Correct JavaScript Yield code", false, 131)]
-    public static void CorrectJavaScriptYieldCode()
-    {
-        string YIELD_DEF = "var $yield = [];"; // to delete
-        string YIELD_PUSH = "$yield.push"; // to replace with "yield "
-        string YIELD_RET = "return $yield;"; // to delete
-        string FUN_DEC = "function ("; // to replace with "function* ("
 
-        // string[] files = Directory.GetFiles(JSBindingSettings.jsDir, "*.javascript", SearchOption.AllDirectories);
-
-		// !! 2016/1/7 现在只需要处理这么一个大文件
-		string[] files = new string[]
+	// 这个函数没有用了，已经整合至编译器
+    //[MenuItem("JSB/Correct JavaScript Yield code", false, 131)]
+//    public static void CorrectJavaScriptYieldCode()
+//    {
+//        string YIELD_DEF = "var $yield = [];"; // to delete
+//        string YIELD_PUSH = "$yield.push"; // to replace with "yield "
+//        string YIELD_RET = "return $yield;"; // to delete
+//        string FUN_DEC = "function ("; // to replace with "function* ("
+//
+//        // string[] files = Directory.GetFiles(JSBindingSettings.jsDir, "*.javascript", SearchOption.AllDirectories);
+//
+//		// !! 2016/1/7 现在只需要处理这么一个大文件
+//		string[] files = new string[]
+//		{
+//			JSBindingSettings.sharpkitGeneratedFiles
+//		};
+//
+//        List<string> lstFiles = new List<string>();
+//        StringBuilder sb = new StringBuilder();
+//        foreach (var f in files)
+//        {
+//            string str = File.ReadAllText(f);
+//            if (str.IndexOf(YIELD_DEF) != -1)
+//            {
+//                lstFiles.Add(f);
+//                sb.AppendFormat("{0}", f);
+//                sb.AppendLine();
+//            }
+//        }
+//        string fileName = GetTempFileNameFullPath("FilesToCorrectYield.txt");
+//        File.WriteAllText(fileName, sb.ToString());
+//
+//        StringBuilder sbFail = new StringBuilder();
+//        // path in lstFiles has full path
+//        foreach (string f in lstFiles)
+//        {
+//            sb.Remove(0, sb.Length);
+//
+//            bool suc = true;
+//            string str = File.ReadAllText(f);
+//            int lastIndex = 0, yildDefIndex, funStart = 0;
+//            while (true)
+//            {
+//                yildDefIndex = str.IndexOf(YIELD_DEF, lastIndex);
+//                if (yildDefIndex < 0) { break; }
+//
+//                funStart = str.LastIndexOf(FUN_DEC, yildDefIndex);
+//                if (funStart < 0) { suc = false; break; }
+//
+//                sb.Append(str.Substring(lastIndex, funStart - lastIndex));
+//                sb.Append("function* (");
+//
+//                funStart += FUN_DEC.Length;
+//                lastIndex = str.IndexOf(YIELD_RET, yildDefIndex);
+//                if (lastIndex < 0) { suc = false; break; }
+//                lastIndex += YIELD_RET.Length;
+//
+//                sb.Append(str.Substring(funStart, lastIndex - funStart).Replace(YIELD_DEF, "").Replace(YIELD_PUSH, "yield ").Replace(YIELD_RET, ""));
+//            }
+//            if (suc)
+//            {
+//                sb.Append(str.Substring(lastIndex));
+//                File.WriteAllText(f, sb.ToString());
+//            }
+//            else
+//            {
+//                sbFail.AppendLine();
+//                sbFail.Append(f);
+//            }
+//        }
+//        if (sbFail.Length == 0)
+//            Debug.Log("Correct JavaScript Yield code OK.");
+//        else
+//            Debug.LogError("Correct JavaScript Yield code failed. Error files: " + sbFail.ToString());
+//    }
+	//[MenuItem("JSB/Merge JavaScript", false, 141)]
+	public static void MergeJavaScript()
+	{
+		string[] dirs = new string[]            
 		{
-			JSBindingSettings.sharpkitGeneratedFiles
+			"Assets\\StreamingAssets\\JavaScript\\Generated",
+			"Assets\\StreamingAssets\\JavaScript\\SharpKitGenerated",
 		};
+		string[] outputPaths = new string[]
+		{
+			"Assets\\StreamingAssets\\JavaScript\\GeneratedAll.javascript",
+			"Assets\\StreamingAssets\\JavaScript\\SharpKitGeneratedAll.javascript",
+		};
+		
+		for (var i = 0; i < dirs.Length; i++)
+		{
+			string dir = dirs[i];
+			string output = outputPaths[i];
 
-        List<string> lstFiles = new List<string>();
-        StringBuilder sb = new StringBuilder();
-        foreach (var f in files)
-        {
-            string str = File.ReadAllText(f);
-            if (str.IndexOf(YIELD_DEF) != -1)
-            {
-                lstFiles.Add(f);
-                sb.AppendFormat("{0}", f);
-                sb.AppendLine();
-            }
-        }
-        string fileName = GetTempFileNameFullPath("FilesToCorrectYield.txt");
-        File.WriteAllText(fileName, sb.ToString());
-        bool bContinue = EditorUtility.DisplayDialog("TIP",
-             "Files to correct yield are in " + fileName + ". please verify.",
-             "OK",
-             "Cancel");
-
-        if (!bContinue)
-        {
-            Debug.Log("Correct JavaScript Yield code canceled.");
-            return;
-        }
-
-        StringBuilder sbFail = new StringBuilder();
-        // path in lstFiles has full path
-        foreach (string f in lstFiles)
-        {
-            sb.Remove(0, sb.Length);
-
-            bool suc = true;
-            string str = File.ReadAllText(f);
-            int lastIndex = 0, yildDefIndex, funStart = 0;
-            while (true)
-            {
-                yildDefIndex = str.IndexOf(YIELD_DEF, lastIndex);
-                if (yildDefIndex < 0) { break; }
-
-                funStart = str.LastIndexOf(FUN_DEC, yildDefIndex);
-                if (funStart < 0) { suc = false; break; }
-
-                sb.Append(str.Substring(lastIndex, funStart - lastIndex));
-                sb.Append("function* (");
-
-                funStart += FUN_DEC.Length;
-                lastIndex = str.IndexOf(YIELD_RET, yildDefIndex);
-                if (lastIndex < 0) { suc = false; break; }
-                lastIndex += YIELD_RET.Length;
-
-                sb.Append(str.Substring(funStart, lastIndex - funStart).Replace(YIELD_DEF, "").Replace(YIELD_PUSH, "yield ").Replace(YIELD_RET, ""));
-            }
-            if (suc)
-            {
-                sb.Append(str.Substring(lastIndex));
-                File.WriteAllText(f, sb.ToString());
-            }
-            else
-            {
-                sbFail.AppendLine();
-                sbFail.Append(f);
-            }
-        }
-        if (sbFail.Length == 0)
-            Debug.Log("Correct JavaScript Yield code OK.");
-        else
-            Debug.LogError("Correct JavaScript Yield code failed. Error files: " + sbFail.ToString());
-    }
-    [MenuItem("JSB/Online Documents", false, 191)]
+			if (Directory.Exists(dir))
+			{
+				string[] files = Directory.GetFiles(dir, "*.javascript", SearchOption.AllDirectories);
+			
+				StringBuilder sb = new StringBuilder();
+				foreach (var f in files)
+				{
+					string text = File.ReadAllText(f);
+					sb.Append(text);
+				}
+				
+				File.WriteAllText(output, sb.ToString());
+				
+				Debug.Log(dir + " -> " + output);
+			}
+		}
+	}
+	[MenuItem("JSB/Others/Online Documents", false, 174)]
     public static void OpenHelp()
     {
         Application.OpenURL("http://www.cnblogs.com/answerwinner/p/4469021.html");

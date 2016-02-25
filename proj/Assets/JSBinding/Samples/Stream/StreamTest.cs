@@ -4,8 +4,7 @@ using UnityEngine;
 using System.Collections;
 using System.IO;
 using System.Text;
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class StreamTest : MonoBehaviour
 {
     // Use this for initialization

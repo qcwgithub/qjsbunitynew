@@ -14,8 +14,7 @@ using System.Reflection;
 /// </summary>
 namespace jsimp
 {
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
     public class Reflection
 	{
 		/// <summary>

@@ -109,7 +109,7 @@
             }
         }
 
-        [UnityEditor.MenuItem("JSB/Welcome Screen", false, 152)]
+        //[UnityEditor.MenuItem("JSB/Welcome Screen", false, 192)]
         public static void ShowWindow()
         {
             WelcomeScreen window = EditorWindow.GetWindow<WelcomeScreen>(true, "Welcome to JSBinding");

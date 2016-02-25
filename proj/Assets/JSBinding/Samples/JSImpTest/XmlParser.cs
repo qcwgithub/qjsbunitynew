@@ -4,8 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 //
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class XmlParser
 {
     public static T ComvertType<T>(Dictionary<string, string> dict)

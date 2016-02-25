@@ -67,11 +67,11 @@ public static class CSGenerator
             }
         }
         else
-        {
-            if (type == typeof(UnityEngine.Object))
-                name = "UE" + type.Name;
-            else
-                name = type.Name;
+		{
+			if (type == typeof(UnityEngine.Object))
+				name = "UE" + type.Name;
+			else
+            	name = type.Name;
         }
         return name;
 
@@ -1103,11 +1103,11 @@ static bool {0}(JSVCall vc, int argc)
             if (UnityEngineManual.isManual(functionName))
             {
                 sb.AppendFormat(fmt, functionName, "    UnityEngineManual." + functionName + "(vc, argc);");
-            }
-            else if (!JSBindingSettings.IsSupportByDotNet2SubSet(functionName))
-            {
-                sb.AppendFormat(fmt, functionName, "    UnityEngine.Debug.LogError(\"This method is not supported by .Net 2.0 subset.\");");
-            }
+			}
+			else if (!JSBindingSettings.IsSupportByDotNet2SubSet(functionName))
+			{
+				sb.AppendFormat(fmt, functionName, "    UnityEngine.Debug.LogError(\"This method is not supported by .Net 2.0 subset.\");");
+			}
             else
             {
                 sb.AppendFormat(fmt, functionName,
@@ -1519,6 +1519,27 @@ using UnityEngine;
                     JSNameMgr.GetTypeFullName(baseType));
                 ret = false;
             }
+
+			// 检查 interface 有没有配置		
+			Type[] interfaces = type.GetInterfaces();
+			for (int i = 0; i < interfaces.Length; i++)
+			{
+				Type ti = interfaces[i];
+
+				string tiFullName = JSNameMgr.GetTypeFullName(ti);
+
+				// 这个检查有点奇葩
+				// 有些接口带 <>，这里直接忽略，不检查他
+				if (!tiFullName.Contains("<") && tiFullName.Contains(">") && 
+				    !clrLibrary.ContainsKey(ti) && !dict.ContainsKey(ti))
+				{
+					sb.AppendFormat("\"{0}\"\'s interface \"{1}\" must also be in JSBindingSettings.classes.\n",
+					                JSNameMgr.GetTypeFullName(type),
+					                JSNameMgr.GetTypeFullName(ti));
+					ret = false;
+				}
+			}
+
 //             foreach (var Interface in type.GetInterfaces())
 //             {
 //                 if (!dict.ContainsKey(Interface))

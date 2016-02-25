@@ -1,8 +1,7 @@
 using SharpKit.JavaScript;
 using UnityEngine;
 using System.Collections;
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
 public class SampleViewer : MonoBehaviour
 {
     static SampleViewer inst = null;
@@ -35,8 +34,7 @@ public class SampleViewer : MonoBehaviour
     {
 
     }
-
-[JsType(JsMode.Clr, "~/../Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
+[JsType(JsMode.Clr, "~/Assets/StreamingAssets/JavaScript/SharpKitGeneratedFiles.javascript")]
     struct stScene
     {
         public string levelName;
