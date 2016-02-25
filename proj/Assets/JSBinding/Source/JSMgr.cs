@@ -141,56 +141,10 @@ public static class JSMgr
             ret = true;
         }
 
-        InitMonoBehaviourJSComponentName();
+        JSCache.InitMonoBehaviourJSComponentName();
         InitJSEngine_ing = false;
         return ret;
     }
-    // 根据 脚本名获得JSComponent名
-    public static string GetMonoBehaviourJSComponentName(string monoBehaviourName)
-    {
-        string ret;
-        if (dictMB2JSComName.TryGetValue(monoBehaviourName, out ret))
-            return ret;
-        // 没找到返回  Empty
-        return string.Empty;
-    }
-    // 从 MonoBehaviour2JSComponentName.javascript 加载
-    static void InitMonoBehaviourJSComponentName()
-    {
-        dictMB2JSComName.Clear();
-
-        int i = 0;
-        string str;
-        string[] arr;
-
-        // 从JS逐个取出
-        while (true)
-        {
-            // 调用全局函数，使用 id 0
-            if (!JSMgr.vCall.CallJSFunctionName(0, "GetMonoBehaviourJSComponentName", i))
-                break;
-
-            str = JSApi.getStringS((int)JSApi.GetType.JSFunRet);
-            if (string.IsNullOrEmpty(str))
-                break;
-
-            arr = str.Split('|');
-            if (arr == null || arr.Length != 2)
-                break;
-
-            //Debug.Log(arr[0] + "->" + arr[1]);
-
-            dictMB2JSComName.Add(arr[0], arr[1]);
-
-            i++;
-        }
-
-//         if (i == 0)
-//         {
-//             Debug.LogWarning("");
-//         }
-    }
-    static Dictionary<string, string> dictMB2JSComName = new Dictionary<string,string>();
 
     public static bool shutDown = false;
     public static bool IsShutDown { get { return shutDown; } }
@@ -484,43 +438,49 @@ public static class JSMgr
     {
         //if (csObj == null || csObj.Equals(null))
 
-        if (csObj != null && csObj is UnityEngine.Object)
-        {
-            if (csObj.Equals(null))
-            {
-                Debug.LogError("JSMgr.addJSCSRel object == null, call stack:" + new System.Diagnostics.StackTrace().ToString());
-                //throw new Exception();
-            }
-        }
+//         if (csObj != null && csObj is UnityEngine.Object)
+//         {
+//             if (csObj.Equals(null))
+//             {
+//                 Debug.LogError("JSMgr.addJSCSRel object == null, call stack:" + new System.Diagnostics.StackTrace().ToString());
+//                 //throw new Exception();
+//             }
+//         }
 
         if (weakReference)
         {
             int hash = csObj.GetHashCode();
             WeakReference wrObj = new WeakReference(csObj);
-            mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, wrObj, hash));
-            mDictionary2.Add(hash, new JS_CS_Rel(jsObjID, wrObj, hash));
+            var Rel = new JS_CS_Rel(jsObjID, wrObj, hash);
+            mDictionary1.Add(jsObjID, Rel);
+            mDictionary2.Add(hash, Rel);
         }
         else
         {
             int hash = csObj.GetHashCode();
+            JSCache.TypeInfo typeInfo = JSCache.GetTypeInfo(csObj.GetType());
+
             if (mDictionary1.ContainsKey(jsObjID))
             {
-                if (csObj.GetType().IsValueType)
+                if (typeInfo.IsValueType)
                 {
                     mDictionary1.Remove(jsObjID);
                 }
             }
 
+#if UNITY_EDITOR
             if (mDictionary1.ContainsKey(jsObjID))
             {
                 Debug.Log(">_<");
             }
+#endif
 
-            mDictionary1.Add(jsObjID, new JS_CS_Rel(jsObjID, csObj, hash));
+            var Rel = new JS_CS_Rel(jsObjID, csObj, hash);
+            mDictionary1.Add(jsObjID, Rel);
 
-            if (csObj.GetType().IsClass)
+            if (typeInfo.IsClass)
             {
-                mDictionary2.Add(hash, new JS_CS_Rel(jsObjID, csObj, hash));
+                mDictionary2.Add(hash, Rel);
             }
         }
     }
@@ -588,9 +548,9 @@ public static class JSMgr
         }
         return null;
     }
-    public static int getJSObj(object csObj)
+    public static int getJSObj(object csObj, JSCache.TypeInfo typeInfo)
     {
-        if (csObj.GetType().IsValueType)
+        if (typeInfo.IsValueType)
         {
             return 0;
         }
@@ -639,6 +599,7 @@ public static class JSMgr
     {
         removeJSCSRel(id);
     }
+
     static Dictionary<int, JS_CS_Rel> mDictionary1 = new Dictionary<int, JS_CS_Rel>(); // key = OBJID
     static Dictionary<int, JS_CS_Rel> mDictionary1_Old;
     /// <summary>

@@ -24,6 +24,7 @@ public class JSEngine : MonoBehaviour
     /*
      * Debug settings, if port is not available, try another one
      */
+	public bool JSC = false;
     public bool debug = true;
     public int port = 5086;
     bool mDebug = true;
@@ -46,7 +47,7 @@ public class JSEngine : MonoBehaviour
         /* 
          * Debugging is only available in desktop platform
          * */
-        mDebug = debug;
+        mDebug = debug && JSC;
         if (bSuccess)
         {
             if (InitLoadScripts != null)
@@ -119,6 +120,7 @@ public class JSEngine : MonoBehaviour
             return;
         }
 
+		Debug.Log (JSC ? "JS: Use JSC" : "JS: Not Use JSC");
         JSEngine.FirstInit(this);
     }
 
@@ -204,21 +206,6 @@ public class JSEngine : MonoBehaviour
             JSEngine.initState = 0;
             Debug.Log("JS: JSEngine Destroy");
         }
-    }
-
-    // Utilities
-    JSComponentUtil util = null;
-    public bool IsInheritanceRel(string baseClassName, string subClassName)
-    {
-        if (util == null)
-        {
-            util = GetComponent<JSComponentUtil>();
-        }
-        if (util != null)
-        {
-            return util.IsInheritanceRel(baseClassName, subClassName);
-        }
-        return false;
     }
 
 	public bool showStatistics = true;
