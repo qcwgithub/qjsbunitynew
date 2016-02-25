@@ -38,10 +38,9 @@ public static class JSGenerator
 //            Directory.CreateDirectory(JSBindingSettings.jsGeneratedDir);
 //        }
 
-
-        // clear generated enum files
-        W = OpenFile(JSBindingSettings.jsGeneratedFiles, false);
-        W.Write("this.Enum = {};\n");
+		// clear generated enum files
+		W = OpenFile(JSBindingSettings.jsGeneratedFiles, false);
+		W.Write("this.Enum = {};\n");
     }
     public static void OnEnd()
     {
@@ -144,7 +143,7 @@ public static class JSGenerator
         return JSNameMgr.GetJSTypeFullName(type);
     }
 
-    public static StringBuilder BuildFields(Type type, FieldInfo[] fields, int slot)
+    public static StringBuilder BuildFields(Type type, FieldInfo[] fields, int slot, List<string> lstNames)
     {
 //        string fmt2 = @"
 // _jstype.{7}.get_{0} = function() [[ return CS.Call({1}, {3}, {4}, {5}{6}); ]]
@@ -162,6 +161,8 @@ _jstype.{7}.{0} =  [[
         {
             FieldInfo field = fields[i];
 
+			lstNames.Add((field.IsStatic ? "Static_" : "") + field.Name);
+
             sb.AppendFormat(fmt3, 
                 field.Name, // [0]
                 (int)JSVCall.Oper.GET_FIELD, // [1]
@@ -174,7 +175,7 @@ _jstype.{7}.{0} =  [[
         }
         return sb;
     }
-    public static StringBuilder BuildProperties(Type type, PropertyInfo[] properties, int slot)
+	public static StringBuilder BuildProperties(Type type, PropertyInfo[] properties, int slot, List<string> lstNames)
     {
         string fmt2 = @"
 _jstype.{7}.get_{0} = function({9}) [[ return CS.Call({1}, {3}, {4}, {5}{6}{8}); ]]
@@ -202,8 +203,13 @@ _jstype.{7}.set_{0} = function({10}v) [[ return CS.Call({2}, {3}, {4}, {5}{6}{8}
 
             MethodInfo[] accessors = property.GetAccessors();
             bool isStatic = accessors[0].IsStatic;
+
+			string mName = SharpKitPropertyName(property);
+			lstNames.Add((isStatic ? "Static_" : "") + "get_" + mName);
+			lstNames.Add((isStatic ? "Static_" : "") + "set_" + mName);
+
             sb.AppendFormat(fmt2,
-                SharpKitPropertyName(property), // [0]
+			                mName, // [0]
                 (int)JSVCall.Oper.GET_PROPERTY, // [1] op
                 (int)JSVCall.Oper.SET_PROPERTY, // [2] op
                 slot,                           // [3]
@@ -240,8 +246,8 @@ _jstype =
     staticFields: [[]],
     assemblyName: '{1}',
     Kind: '{2}',
-    fullname: '{3}',
-    {4}
+    fullname: '{3}', {4}
+    {5}
 ]];
 
 var _found = false;
@@ -274,6 +280,19 @@ if (!_found) [[
 
         string fullname = SharpKitClassName(type);
         string baseTypeName = SharpKitClassName(type.BaseType);
+		Type[] interfaces = type.GetInterfaces();
+		StringBuilder sbI = new StringBuilder();
+		if (interfaces != null && interfaces.Length > 0)
+		{
+			sbI.Append("\n    interfaceNames: [");
+			for (int i = 0; i < interfaces.Length; i++)
+			{
+				sbI.AppendFormat("\'{0}\'", SharpKitClassName(interfaces[i]));
+				if (i < interfaces.Length - 1)
+					sbI.Append(", ");
+			}
+			sbI.Append("],");
+		}
 
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat(fmt, 
@@ -281,11 +300,12 @@ if (!_found) [[
             assemblyName, // [1]
             Kind,         // [2] 
             fullname,     // [3] full name
-            baseTypeName.Length > 0 ? "baseTypeName: '" + baseTypeName + "'" : "");
+			sbI.ToString(), // [4] interfaceNames
+            baseTypeName.Length > 0 ? "baseTypeName: '" + baseTypeName + "'" : ""); // [5] baseTypeName
 
         return sb;
     }
-    public static StringBuilder BuildConstructors(Type type, ConstructorInfo[] constructors, int slot, int howmanyConstructors)
+    public static StringBuilder BuildConstructors(Type type, ConstructorInfo[] constructors, int slot, int howmanyConstructors, List<string> lstNames)
     {
         string fmt = @"
 _jstype.definition.{0} = function({1}) [[ CS.Call({2}); ]]";
@@ -328,8 +348,12 @@ _jstype.definition.{0} = function({1}) [[ CS.Call({2}); ]]";
                 argFormal.Add("a" + j.ToString());
                 argActual.Add("a" + j.ToString());
             }
+
+			string mName = SharpKitMethodName("ctor", ps, howmanyConstructors > 1);
+			lstNames.Add(mName);
+
             sb.AppendFormat(fmt,
-                SharpKitMethodName("ctor", ps, howmanyConstructors > 1), // [0]
+                mName, // [0]
                 argFormal,    // [1]
                 argActual);    // [2]
         }
@@ -337,7 +361,7 @@ _jstype.definition.{0} = function({1}) [[ CS.Call({2}); ]]";
     }
 
     // can handle all methods
-    public static StringBuilder BuildMethods(Type type, MethodInfo[] methods, int slot)
+	public static StringBuilder BuildMethods(Type type, MethodInfo[] methods, int slot, List<string> lstNames)
     {
         string fmt = @"
 /* {6} */
@@ -414,10 +438,13 @@ _jstype.staticDefinition.{1} = function({2}) [[
             string methodName = method.Name;
             if (methodName == "ToString") { methodName = "toString"; }
 
+			string mName = SharpKitMethodName(methodName, paramS, bOverloaded, TCount);
+			lstNames.Add((method.IsStatic ? "Static_" : "") + mName);
+
             if (!method.IsStatic)
                 sb.AppendFormat(fmt,
                     className,
-                    SharpKitMethodName(methodName, paramS, bOverloaded, TCount), // [1] method name
+				    mName, // [1] method name
                     sbFormalParam.ToString(),  // [2] formal param
                     slot,                      // [3] slot
                     i,                         // [4] index
@@ -430,7 +457,7 @@ _jstype.staticDefinition.{1} = function({2}) [[
             else
                 sb.AppendFormat(fmtStatic, 
                     className,
-                    SharpKitMethodName(methodName, paramS, bOverloaded, TCount), 
+				    mName, 
                     sbFormalParam.ToString(), 
                     slot, 
                     i, 
@@ -467,7 +494,7 @@ _jstype.staticDefinition.{1} = function({2}) [[
         return sb;
     }
 
-    public static void GenerateClass()
+    public static List<string> GenerateClass()
     {
         /*if (type.IsInterface)
         {
@@ -475,25 +502,29 @@ _jstype.staticDefinition.{1} = function({2}) [[
             return;
         }*/
 
+		List<string> memberNames = new List<string>();
+
         GeneratorHelp.ATypeInfo ti;
         int slot = GeneratorHelp.AddTypeInfo(type, out ti);
         var sbHeader = BuildHeader(type);
-        var sbCons = sbHeader.Append(BuildConstructors(type, ti.constructors, slot, ti.howmanyConstructors));
-        var sbFields = BuildFields(type, ti.fields, slot);
-        var sbProperties = BuildProperties(type, ti.properties, slot);
-        var sbMethods = BuildMethods(type, ti.methods, slot);
+		var sbCons = sbHeader.Append(BuildConstructors(type, ti.constructors, slot, ti.howmanyConstructors, memberNames));
+		var sbFields = BuildFields(type, ti.fields, slot, memberNames);
+		var sbProperties = BuildProperties(type, ti.properties, slot, memberNames);
+		var sbMethods = BuildMethods(type, ti.methods, slot, memberNames);
         //sbMethods.Append(BuildTail());
         var sbClass = BuildClass(type, sbFields, sbProperties, sbMethods, sbCons);
-        HandleStringFormat(sbClass);
+		HandleStringFormat(sbClass);
+		
+		
+		//        string fileName = JSBindingSettings.jsGeneratedDir + "/" +
+		//            JSNameMgr.GetTypeFileName(JSGenerator.type)
+		//            + JSBindingSettings.jsExtension;
+		//        var writer2 = OpenFile(fileName, false);
+		//        writer2.Write(sbClass.ToString());
+		//        writer2.Close();
+		W.Write(sbClass.ToString());
 
-
-//        string fileName = JSBindingSettings.jsGeneratedDir + "/" +
-//            JSNameMgr.GetTypeFileName(JSGenerator.type)
-//            + JSBindingSettings.jsExtension;
-//        var writer2 = OpenFile(fileName, false);
-//        writer2.Write(sbClass.ToString());
-//        writer2.Close();
-        W.Write(sbClass.ToString());
+		return memberNames;
     }
 
     static void GenerateEnum()
@@ -529,8 +560,8 @@ _jstype.staticDefinition.{1} = function({2}) [[
         string fmtEnter = "]];\n";
         sb.Append(fmtEnter);
 
-        HandleStringFormat(sb);
-        W.Write(sb.ToString());
+		HandleStringFormat(sb);
+		W.Write(sb.ToString());
     }
 
     public static void Clear()
@@ -609,6 +640,9 @@ using UnityEngine;
             JSGenerator.GenerateEnum();
         }
 
+		// typeName -> member list
+		Dictionary<string, List<string>> allDefs = new Dictionary<string, List<string>>();
+
         // classes
         for (int i = 0; i < JSBindingSettings.classes.Length; i++)
         {
@@ -616,10 +650,27 @@ using UnityEngine;
             JSGenerator.type = JSBindingSettings.classes[i];
             if (!typeClassName.TryGetValue(type, out className))
                 className = type.Name;
-            JSGenerator.GenerateClass();
+            
+
+			List<string> memberNames = JSGenerator.GenerateClass();
+			allDefs.Add(SharpKitClassName(type), memberNames);
         }
 
         JSGenerator.OnEnd();
+
+		StringBuilder sb = new StringBuilder();
+		foreach (var KV in allDefs)
+		{
+			sb.AppendFormat("[{0}]\r\n", KV.Key);
+
+			var lst = KV.Value;
+			foreach (var l in lst)
+			{
+				sb.AppendFormat("    {0}\r\n", l);
+			}
+			sb.Append("\r\n");
+		}
+		File.WriteAllText(JSAnalyzer.GetAllExportedMembersFile(), sb.ToString());
 
         Debug.Log("Generate JS Bindings OK. enum " + JSBindingSettings.enums.Length.ToString() + ", class " + JSBindingSettings.classes.Length.ToString());
     }
