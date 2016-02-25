@@ -360,16 +360,6 @@ var ListTest = {
                     return (val == 6);
                 }));
                 UnityEngine.Debug.Log$$Object("vFind = " + vFind);
-                var lstS = lst.ConvertAll$1(System.String.ctor, $CreateAnonymousDelegate(this, function (v){
-                    return "s: " + v;
-                }));
-                var $it3 = lstS.GetEnumerator();
-                while ($it3.MoveNext()){
-                    var v = $it3.get_Current();
-                    UnityEngine.Debug.Log$$Object(v);
-                }
-                UnityEngine.Debug.Log$$Object(lstS.get_Item$$Int32(0));
-                UnityEngine.Debug.Log$$Object(lstS.get_Item$$Int32(1));
             }
         }
     }
@@ -863,9 +853,9 @@ var XmlParser = {
     staticDefinition: {
         ComvertType$1: function (T, dict){
             var obj = jsimp.Reflection.CreateInstance$1(T);
-            var $it4 = dict.GetEnumerator();
-            while ($it4.MoveNext()){
-                var ele = $it4.get_Current();
+            var $it3 = dict.GetEnumerator();
+            while ($it3.MoveNext()){
+                var ele = $it3.get_Current();
                 var fieldName = ele.get_Key();
                 var fieldValue = ele.get_Value();
                 jsimp.Reflection.SetFieldValue(obj, fieldName, fieldValue);
@@ -895,7 +885,7 @@ var MiscTest = {
             PerTest.testString([null, "abc"]);
         },
         PrintStrings: function (s, strs){
-            for (var $i6 = 0,$l6 = strs.length,v = strs[$i6]; $i6 < $l6; $i6++, v = strs[$i6])
+            for (var $i5 = 0,$l5 = strs.length,v = strs[$i5]; $i5 < $l5; $i5++, v = strs[$i5])
                 UnityEngine.MonoBehaviour.print(v);
         }
     }
@@ -939,12 +929,12 @@ var Car = {
             UnityEngine.MonoBehaviour.ctor.call(this);
         },
         Start: function (){
-            for (var $i7 = 0,$t7 = this.wheels,$l7 = $t7.length,w = $t7[$i7]; $i7 < $l7; $i7++, w = $t7[$i7]){
+            for (var $i6 = 0,$t6 = this.wheels,$l6 = $t6.length,w = $t6[$i6]; $i6 < $l6; $i6++, w = $t6[$i6]){
                 if (UnityEngine.Object.op_Inequality(w, null)){
                     w.setSpeed(UnityEngine.Random.Range$$Single$$Single(1, 4));
                 }
             }
-            for (var $i8 = 0,$t8 = this.goWheels,$l8 = $t8.length,go = $t8[$i8]; $i8 < $l8; $i8++, go = $t8[$i8]){
+            for (var $i7 = 0,$t7 = this.goWheels,$l7 = $t7.length,go = $t7[$i7]; $i7 < $l7; $i7++, go = $t7[$i7]){
                 if (UnityEngine.Object.op_Inequality(go, null)){
                     var w = go.GetComponent$1(Wheel.ctor);
                     if (UnityEngine.Object.op_Inequality(w, null)){
@@ -1135,9 +1125,9 @@ var XmlTest = {
             UnityEngine.Debug.Log$$Object("daojulist Count = " + daoJunodeList.get_Count());
             var daoJumdata = Lavie.XmlUtils.CreateObjectFromXml$1$$XmlNodeList$$String(ShopItemData.ctor, daoJunodeList, "SubType");
             UnityEngine.Debug.Log$$Object("daojudata Count = " + daoJumdata.get_Count());
-            var $it8 = daoJumdata.GetEnumerator();
-            while ($it8.MoveNext()){
-                var shopItemData = $it8.get_Current();
+            var $it7 = daoJumdata.GetEnumerator();
+            while ($it7.MoveNext()){
+                var shopItemData = $it7.get_Current();
                 UnityEngine.Debug.Log$$Object(shopItemData.get_ID());
             }
         }
@@ -1635,9 +1625,9 @@ var Lavie$XmlUtils = {
     baseTypeName: "System.Object",
     staticDefinition: {
         AssignObjectValueFromXml: function (mNode, mData, mDataType){
-            var $it9 = mNode.get_Attributes().GetEnumerator();
-            while ($it9.MoveNext()){
-                var xmlAttribute = $it9.get_Current();
+            var $it8 = mNode.get_Attributes().GetEnumerator();
+            while ($it8.MoveNext()){
+                var xmlAttribute = $it8.get_Current();
                 var fieldName = xmlAttribute.get_Name();
                 var value = mNode.get_Attributes().GetNamedItem$$String(fieldName).get_Value().toString();
                 var fieldValue = null;
@@ -1666,15 +1656,15 @@ var Lavie$XmlUtils = {
         },
         CreateObjectFromXml$1$$XmlNodeList$$String: function (T, nodeList, subType){
             var list = new System.Collections.Generic.List$1.ctor(T);
-            var $it10 = nodeList.GetEnumerator();
-            while ($it10.MoveNext()){
-                var mNode = $it10.get_Current();
+            var $it9 = nodeList.GetEnumerator();
+            while ($it9.MoveNext()){
+                var mNode = $it9.get_Current();
                 var mData = jsimp.Reflection.CreateInstance$1(T);
                 Lavie.XmlUtils.AssignObjectValueFromXml(mNode, mData, Typeof(T));
                 if (subType.length > 0 && mNode.get_HasChildNodes()){
-                    var $it11 = mNode.get_ChildNodes().GetEnumerator();
-                    while ($it11.MoveNext()){
-                        var childNode = $it11.get_Current();
+                    var $it10 = mNode.get_ChildNodes().GetEnumerator();
+                    while ($it10.MoveNext()){
+                        var childNode = $it10.get_Current();
                         var fieldName = Lavie.XmlUtils.NodeValue$1(System.String.ctor, childNode, subType);
                         var fieldType = jsimp.Reflection.GetPropertyType(Typeof(T), fieldName);
                         if (fieldType != null){
@@ -1730,9 +1720,9 @@ var Lavie$XmlUtils = {
             return Cast(Lavie.XmlUtils.ConvertString2ActualType(typeT, value), T);
         },
         Select$1$$XmlNodeList$$String$$String$$String: function (T, xmlNodeList, nodeName, value, attribute){
-            var $it12 = xmlNodeList.GetEnumerator();
-            while ($it12.MoveNext()){
-                var node = $it12.get_Current();
+            var $it11 = xmlNodeList.GetEnumerator();
+            while ($it11.MoveNext()){
+                var node = $it11.get_Current();
                 if (Lavie.XmlUtils.NodeValue$1(T, node, nodeName).toString() == value){
                     return Lavie.XmlUtils.NodeValue$1(T, node, attribute);
                 }
@@ -1740,9 +1730,9 @@ var Lavie$XmlUtils = {
             return Default(T);
         },
         Select$1$$XmlNodeList$$String$$T: function (T, xmlNodeList, nodeName, value){
-            var $it13 = xmlNodeList.GetEnumerator();
-            while ($it13.MoveNext()){
-                var node = $it13.get_Current();
+            var $it12 = xmlNodeList.GetEnumerator();
+            while ($it12.MoveNext()){
+                var node = $it12.get_Current();
                 var nodeValue = Lavie.XmlUtils.NodeValue$1(T, node, nodeName);
                 if (jsimp.Reflection.SimpleTEquals$1(T, nodeValue, value)){
                     return node;

@@ -22,7 +22,27 @@ public class Compiler
 			args.AddFormat("/dir:{0}", workingDir);
 		
 		// define		
-		string define = "TRACE;DEBUG;UNITY_EDITOR;UNITY_4;UNITY_4_6;JS";
+		string define = "TRACE;DEBUG;UNITY_EDITOR;JS";
+
+        #if UNITY_4_6
+        define += ";UNITY_4_6";
+        #endif
+        
+        #if UNITY_4_7
+        define += ";UNITY_4_7";
+        #endif
+        
+        #if UNITY_5
+        define += ";UNITY_5";
+        #endif
+        #if UNITY_5_1
+        define += ";UNITY_5_1";
+        #endif
+        #if UNITY_5_2
+        define += ";UNITY_5_2";
+        #endif
+
+        // NOVA!
 		if (PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone).IndexOf("USEAB") >= 0)
 			define += ";USEAB";
 		

@@ -169,8 +169,7 @@ public class JSComponent : JSSerializer
     //
     //
     // 总结：以上那么多分类，做的事情其实就是，当一个类X要在Awake时去获取Y类组件，甚至访问Y类成员，如果此时Y类的Awake还没有调用，此时会得到undefined，那么我们只好先初始化一下Y类的JS对象。
-    //
-    bool dataSerialized = false;
+    // 
     public void init(bool callSerialize)
     {
         if (!JSEngine.initSuccess && !JSEngine.initFail)
@@ -184,12 +183,28 @@ public class JSComponent : JSSerializer
 
         initJS();
 
-        if (jsSuccess && callSerialize && !dataSerialized)
+        if (jsSuccess && callSerialize && !DataSerialized)
         {
-            dataSerialized = true;
             initSerializedData(jsObjID);
         }
     }
+
+	public override void initSerializedData(int jsObjID)
+	{
+		if (DataSerialized)
+			return;
+		base.initSerializedData(jsObjID);
+		
+		// init child
+		for (int i = 0; waitSerialize != null && i < waitSerialize.Count; i++)
+		{
+			waitSerialize[i].initSerializedData(waitSerialize[i].jsObjID);
+		}
+		waitSerialize = null;
+	}
+
+
+
     public void callAwake()
     {
         if (jsSuccess)

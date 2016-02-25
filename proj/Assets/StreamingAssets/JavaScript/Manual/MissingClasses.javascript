@@ -36,7 +36,33 @@
         baseTypeName: "System.Object",
         interfaceNames: ["System.Collections.IEnumerator"],
         Kind: "Class"
-    }
+    },
+    {
+        fullname: "UnityEngine.UI.IGraphicEnabledDisabled",
+        baseTypeName: "System.Object",
+        Kind: "Interface",
+    },
+    {
+        fullname: "UnityEngine.Transform.Enumerator",
+        baseTypeName: "System.Object",
+        interfaceNames: ["System.Collections.IEnumerator"],
+        Kind: "Class"
+    },
+    {
+        fullname: "System.Xml.IHasXmlChildNode",
+        baseTypeName: "System.Object",
+        Kind: "Interface",
+    },
+    {
+        fullname: "System.Xml.XPath.IXPathNavigable",
+        baseTypeName: "System.Object",
+        Kind: "Interface",
+    },
+    {
+        fullname: "UnityEngine.ISerializationCallbackReceiver",
+        baseTypeName: "System.Object",
+        Kind: "Interface",
+    },
 ].forEach(function (jsType) {
         JsTypes.push(jsType);
     });

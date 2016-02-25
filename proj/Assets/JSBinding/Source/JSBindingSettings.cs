@@ -175,12 +175,46 @@ public class JSBindingSettings
         typeof(PerTest.RefObject),
         typeof(PerTest),
 //        typeof(BetterList<>),
+		typeof(UnityEngine.RectTransform),
+		typeof(UnityEngine.EventSystems.EventTrigger),
+
+		typeof(System.Random),
+		typeof(RectTransformUtility),
+
+		typeof(System.IO.Path),
+		typeof(System.IO.Directory),
+		typeof(System.IO.File),
+		typeof(System.IO.DirectoryInfo),
+		typeof(System.IO.FileSystemInfo),
+		typeof(System.MarshalByRefObject),
+		typeof(UnityEngine.ICanvasRaycastFilter),
+		typeof(UnityEngine.CanvasGroup),
+		
 
 #region
         typeof(System.Collections.IEnumerator),
 #endregion
 
+		typeof(System.Math),
+		typeof(System.TimeSpan),
+		typeof(System.DateTime),
+
+		typeof(System.IConvertible),
+		//typeof(System.Xml.IHasXmlChildNode),
+		typeof(System.Collections.ICollection),
+		typeof(System.Runtime.Serialization.ISerializable),
+		typeof(System.Runtime.InteropServices._Exception),
+		typeof(System.IDisposable),
+		typeof(System.Runtime.Serialization.ISurrogateSelector),
+		typeof(UnityEngine.ISerializationCallbackReceiver),
+//		typeof(UnityEngine.UI.IGraphicEnabledDisabled),
+		//typeof(UnityEngine.UI.IGraphicEnabledDisabled),
+		//typeof(IEquatable<UnityEngine.UI.LayoutRebuilder>),
+
         typeof(System.Xml.XmlNode),
+		typeof(System.Xml.XPath.IXPathNavigable),
+		typeof(System.ICloneable),
+		typeof(System.Collections.IEnumerable),
         typeof(System.Xml.XmlDocument),
         typeof(System.Xml.XmlNodeList),
         typeof(System.Xml.XmlElement),

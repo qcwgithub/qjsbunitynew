@@ -1980,7 +1980,10 @@ var System$Char = {
         },
         IsDigit$$Char: function (s){
             return /[0-9]/.test(s);
-        }
+        },
+		IsNumber$$Char: function (s){
+			return this.IsDigit$$Char(s);
+		}
     },
     assemblyName: "SharpKit.JsClr",
     Kind: "Class",
@@ -2848,6 +2851,16 @@ JsTypes.push(
     }
     });
 
+    // 当 new List<int>(new int[] {5,6,7}); 会使用到以下几个
+Uint8Array.prototype.GetEnumerator = function() { return new ArrayEnumerator.ctor(this); };
+Uint16Array.prototype.GetEnumerator = function() { return new ArrayEnumerator.ctor(this); };
+Uint32Array.prototype.GetEnumerator = function() { return new ArrayEnumerator.ctor(this); };
+Int8Array.prototype.GetEnumerator = function() { return new ArrayEnumerator.ctor(this); };
+Int16Array.prototype.GetEnumerator = function() { return new ArrayEnumerator.ctor(this); };
+Int32Array.prototype.GetEnumerator = function() { return new ArrayEnumerator.ctor(this); };
+Float32Array.prototype.GetEnumerator = function() { return new ArrayEnumerator.ctor(this); };
+Float64Array.prototype.GetEnumerator = function() { return new ArrayEnumerator.ctor(this); };
+
 //JsTypes.push({ fullname: "Object" });
 //JsTypes.push({ fullname: "Int8Array" });
 //JsTypes.push({ fullname: "Uint8Array"});
@@ -2962,8 +2975,15 @@ JsTypes.push({ fullname: "Array", baseTypeName: "Object", definition:
         this.splice(index, 1);
     },
     copyTo: function (target, startIndex) {
+        throw $CreateException(new System.NotImplementedException.ctor(), new Error());
+        //for (var i = startIndex; i < this.length; i++) {
+        //    target.push(this[i]);
+        //}
+    },
+    // By Qiucw
+    CopyTo: function (target, startIndex) {
         for (var i = startIndex; i < this.length; i++) {
-            target.push(this[i]);
+            target[i] = this[i];
         }
     },
     filter: function (pred) {
@@ -3081,6 +3101,44 @@ JsTypes.push({ fullname: "System.Int32", baseTypeName: "System.ValueType", defin
     }
 }
 });
+// Qiucw
+JsTypes.push({ fullname: "System.Int64", baseTypeName: "System.ValueType", definition:
+{
+    ctor: Number,
+    toString: Number.prototype.toString //avoid toString override by compiler (toString(radix) won't work if overriden)
+}, staticDefinition:
+{
+    tryParse: function (s) {
+        return parseInt(s);
+    },
+    Parse$$String: function (s) {
+        return parseInt(s);
+    },
+    TryParse$$String$$Int64: function (s, out) {
+        out.Value = parseInt(s);
+        return true;
+    }
+}
+});
+// Qiucw
+JsTypes.push({ fullname: "System.UInt64", baseTypeName: "System.ValueType", definition:
+{
+    ctor: Number,
+    toString: Number.prototype.toString //avoid toString override by compiler (toString(radix) won't work if overriden)
+}, staticDefinition:
+{
+    tryParse: function (s) {
+        return parseInt(s);
+    },
+    Parse$$String: function (s) {
+        return parseInt(s);
+    },
+    TryParse$$String$$UInt64: function (s, out) {
+        out.Value = parseInt(s);
+        return true;
+    }
+}
+});
 JsTypes.push({
     fullname: "System.Single", baseTypeName: "System.ValueType", definition:
     {
@@ -3136,7 +3194,8 @@ JsTypes.push({ fullname: "System.String", baseTypeName: "System.Object", definit
     GetType: function () {
         return Typeof(System.String);
     },
-    Insert$$Int32$$String: function (startIndex, str) {
+    //Insert$$Int32$$String: function (startIndex, str) {
+	Insert: function (startIndex, str) {
         var sub1 = this.substring(0, startIndex);
         var sub2 = this.substring(startIndex);
         return sub1 + str + sub2;
@@ -3249,6 +3308,9 @@ JsTypes.push({ fullname: "System.String", baseTypeName: "System.Object", definit
     Remove$$Int32$$Int32: function (start, count) {
         return this.substr(0, start) + this.substr(start + count);
     },
+	Remove$$Int32: function (start) {
+		return this.substr(0, start);
+	},
     StartsWith$$String: function (str) {
         if (str == null)
             throw new System.ArgumentNullException.ctor();
@@ -3312,6 +3374,28 @@ JsTypes.push({ fullname: "System.String", baseTypeName: "System.Object", definit
             crc = ( crc >>> 8 ) ^ x;
         }
         return crc ^ (-1);
+    },
+    PadLeft$$Int32$$Char: function (totalWidth, paddingChar) {
+         if ( this.length < totalWidth) {
+              var paddingString = new String();
+              for (i = 1; i <= (totalWidth - this.length); i++)
+                    paddingString += paddingChar;
+
+              return (paddingString + this);
+         } 
+         else
+              return this;
+    },
+    PadRight$$Int32$$Char: function (totalWidth, paddingChar) {
+         if ( this.length < totalWidth) {
+              var paddingString = new String();
+              for (i = 1; i <= (totalWidth - this.length); i++)
+                    paddingString += paddingChar;
+
+              return (this + paddingString);
+         } 
+         else
+              return this;
     }
 }, staticDefinition:
 {
@@ -5741,6 +5825,14 @@ var System$Collections$Generic$List$1 = {
         IndexOf: function (item){
             return this._list.indexOf(item);
         },
+	    Exists: function (match) {
+            for (var i = 0; i < this._list.length; i++) {
+                if (match(this._list[i])) {
+                    return true;
+                }
+            }
+            return false;
+		},
         IndexOf$$T: function (item) {
             return this._list.indexOf(item);
         },
@@ -5778,6 +5870,17 @@ var System$Collections$Generic$List$1 = {
             for (var i = 0; i < this._list.length; i++){
                 action(this._list[i]);
             }
+        },
+        // Qiucw
+        Find: function (match) {
+            var len = this.get_Count();
+            for (var i = 0; i < len; i++) {
+                var v = this.get_Item$$Int32(i);
+                if (match(v)) {
+                    return v;
+                }
+            }
+            return undefined;
         }
     }
 };

@@ -323,9 +323,11 @@ public class JSDataExchangeMgr
         if (csObj != null)
         {
             Type csType = csObj.GetType();
-            if (csType.IsClass)
+            JSCache.TypeInfo typeInfo = JSCache.GetTypeInfo(csType);
+
+            if (typeInfo.IsClass)
             {
-                jsObjID = JSMgr.getJSObj(csObj);
+                jsObjID = JSMgr.getJSObj(csObj, typeInfo);
             }
             if (jsObjID == 0)
             {
@@ -335,8 +337,7 @@ public class JSDataExchangeMgr
                 }
                 else
                 {
-                    bool bDelegate = typeof(System.Delegate).IsAssignableFrom(csType);
-                    if (bDelegate)
+                    if (typeInfo.IsDelegate)
                     {
                         jsObjID = JSMgr.getFunIDByDelegate((Delegate)csObj);
                     }
@@ -344,21 +345,22 @@ public class JSDataExchangeMgr
                     {
                         string typeName = string.Empty;
                         // create a JSRepresentedObject object in JS to represent a C# delegate object
-                        if (bDelegate)
+                        if (typeInfo.IsDelegate)
                         {
                             typeName = "JSRepresentedObject";
                             jsObjID = JSApi.createJSClassObject(typeName);
                         }
                         else
                         {
-                            typeName = JSNameMgr.GetJSTypeFullName(csType);
+                            typeName = typeInfo.JSTypeFullName;
                             jsObjID = JSApi.createJSClassObject(typeName);
                             if (jsObjID == 0)
                             {
                                 Type baseType = csType.BaseType;
+                                JSCache.TypeInfo baseTypeInfo = JSCache.GetTypeInfo(baseType);
                                 if (baseType != null)
                                 {
-                                    var baseTypeName = JSNameMgr.GetJSTypeFullName(baseType);
+                                    var baseTypeName = baseTypeInfo.JSTypeFullName;
                                     jsObjID = JSApi.createJSClassObject(baseTypeName);
                                     if (jsObjID != 0)
                                     {

@@ -133,25 +133,33 @@ function jsb_formatParamsArray(preCount, argArray, funArguments)
     }
 }
 
-function jsb_IsInheritanceRel(baseName, subName)
+function jsb_IsInheritanceRel(baseClassName, subClassName)
 {
-    var arr = subName.split(".");
-    var obj = this;
+    var arr = subClassName.split(".");
+    var obj = window;
     arr.forEach(function (a) {
         if (obj)
             obj = obj[a];
     });
-    if (obj != undefined && obj !== this) {
-         while (true) {
-             if (obj.baseType != undefined) {
-                 if (obj.baseType.fullname == baseName) 
-                     return true;
-                 else 
-                     obj = obj.baseType;
-             }
-             else 
-                 break;
-         }
+    
+    if (obj == undefined || obj === this)
+        return false;
+
+    while (true) {
+        if (obj.baseType != undefined) {
+            if (obj.baseType.fullname == baseClassName)
+                return true;
+
+            if (obj.interfaceNames !== undefined) {
+                for (var i in obj.interfaceNames) {
+                    if (obj.interfaceNames[i] == baseClassName) {
+                        return true;
+                    }
+                }
+            }
+            obj = obj.baseType;
+        }
+        else break;
     }
     return false;
 }

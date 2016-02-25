@@ -136,8 +136,10 @@ public class JSSerializer : MonoBehaviour
     /// <param name="go">The gameobject.</param>
     /// <param name="scriptName">Name of the script.</param>
     /// <returns></returns>
-    public int GetGameObjectMonoBehaviourJSObj(GameObject go, string scriptName)
+    public int GetGameObjectMonoBehaviourJSObj(GameObject go, string scriptName, out JSComponent component)
     {
+		component = null;
+
 		// go may be null
 		// because the serialized MonoBehaviour can be null
 		if (go == null)
@@ -146,9 +148,10 @@ public class JSSerializer : MonoBehaviour
         JSComponent[] jsComs = go.GetComponents<JSComponent>();
         foreach (var com in jsComs)
         {
-            // NOTE：Can not bind a script to a GameObject twice!
+			// NOTE: if a script bind to a GameObject twice, it will always return the first one
             if (com.jsClassName == scriptName)
             {
+				component = com;
                 return com.GetJSObjID(false);
             }
         }
@@ -347,13 +350,18 @@ public class JSSerializer : MonoBehaviour
                             var scriptName = arr[1];
 
                             var child = new SerializeStruct(SerializeStruct.SType.Unit, valName, st);
-                            int refJSObjID = this.GetGameObjectMonoBehaviourJSObj((GameObject)this.arrObject[objIndex], scriptName);
+							JSComponent component;
+                            int refJSObjID = this.GetGameObjectMonoBehaviourJSObj((GameObject)this.arrObject[objIndex], scriptName, out component);
                             if (refJSObjID == 0)
                             {
                                 child.id = 0;
                             }
                             else
-                            {
+							{
+								if (waitSerialize == null)
+									waitSerialize = new List<JSComponent>();
+								waitSerialize.Add(component);
+
                                 JSApi.setObject((int)JSApi.SetType.SaveAndTempTrace, refJSObjID);
                                 child.id = JSApi.getSaveID();
                             }
@@ -384,13 +392,22 @@ public class JSSerializer : MonoBehaviour
             return arrString[arrStringIndex++];
         }
         return null;
-    }
+	}
+
+	bool dataSerialized = false;
+	protected bool DataSerialized { get { return dataSerialized; } }
+	protected List<JSComponent> waitSerialize = null;
     /// <summary>
     /// Initializes the serialized data.
     /// </summary>
     /// <param name="jsObjID">The js object identifier.</param>
-    public void initSerializedData(int jsObjID)
-    {
+    public virtual void initSerializedData(int jsObjID)
+	{
+		if (dataSerialized)
+			return;
+		
+		dataSerialized = true;
+
         if (arrString == null || arrString.Length == 0)
         {
             return;

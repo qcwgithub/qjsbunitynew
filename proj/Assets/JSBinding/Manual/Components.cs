@@ -21,7 +21,7 @@ public partial class UnityEngineManual
         foreach (var jsCom in jsComs)
         {
             if (jsCom.jsClassName == typeString ||
-                JSEngine.inst.IsInheritanceRel(typeString, jsCom.jsClassName))
+                JSCache.IsInheritanceRel(typeString, jsCom.jsClassName))
             {
                 id = jsCom.GetJSObjID(true);
                 break;
@@ -35,7 +35,7 @@ public partial class UnityEngineManual
         foreach (var c in com)
         {
             if (c.jsClassName == typeString ||
-                JSEngine.inst.IsInheritanceRel(typeString, c.jsClassName))
+                JSCache.IsInheritanceRel(typeString, c.jsClassName))
             {
                 lst.Add(c);
             }
@@ -74,6 +74,7 @@ public partial class UnityEngineManual
         }
         typeString = JSApi.getStringS((int)JSApi.GetType.Arg);
         type = JSDataExchangeMgr.GetTypeByName(typeString);
+		typeInfo = JSCache.GetTypeInfo (type);
     }
 
     static void help_getComponentGo(JSVCall vc)
@@ -88,14 +89,14 @@ public partial class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (isCSMonoBehaviour(type))
+		if (typeInfo.IsCSMonoBehaviour)
         {
             Component com = go.AddComponent(type);
             JSMgr.datax.setObject((int)JSApi.SetType.Rval, com);
         }
         else
         {
-            string jsComponentName = JSMgr.GetMonoBehaviourJSComponentName(typeString);
+            string jsComponentName = JSCache.GetMonoBehaviourJSComponentName(typeString);
             Type jsComponentType = typeof(JSComponent);
             if (string.IsNullOrEmpty(jsComponentName))
             {
@@ -131,7 +132,7 @@ public partial class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (isCSMonoBehaviour(type))
+        if (typeInfo.IsCSMonoBehaviour)
         {
             Component com = go.GetComponent(type);
             JSMgr.datax.setObject((int)JSApi.SetType.Rval, com);
@@ -157,7 +158,7 @@ public partial class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (isCSMonoBehaviour(type))
+		if (typeInfo.IsCSMonoBehaviour)
         {
             Component[] arrRet = go.GetComponents(type);
             help_retComArr(vc, arrRet);
@@ -183,7 +184,7 @@ public partial class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (isCSMonoBehaviour(type))
+		if (typeInfo.IsCSMonoBehaviour)
         {
             Component com = go.GetComponentInChildren(type);
             JSMgr.datax.setObject((int)JSApi.SetType.Rval, com);
@@ -209,7 +210,7 @@ public partial class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (isCSMonoBehaviour(type))
+		if (typeInfo.IsCSMonoBehaviour)
         {
             Component[] arrRet = go.GetComponentsInChildren(type);
             help_retComArr(vc, arrRet);
@@ -238,7 +239,7 @@ public partial class UnityEngineManual
         //        bool includeInactive = JSMgr.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
         bool includeInactive = JSApi.getBooleanS((int)JSApi.GetType.Arg);
 
-        if (isCSMonoBehaviour(type))
+		if (typeInfo.IsCSMonoBehaviour)
         {
             Component[] arrRet = go.GetComponentsInChildren(type, includeInactive);
             help_retComArr(vc, arrRet);
@@ -264,7 +265,7 @@ public partial class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (isCSMonoBehaviour(type))
+		if (typeInfo.IsCSMonoBehaviour)
         {
             Component com = go.GetComponentInParent(type);
             JSMgr.datax.setObject((int)JSApi.SetType.Rval, com);
@@ -290,7 +291,7 @@ public partial class UnityEngineManual
     {
         help_getGoAndType(vc);
 
-        if (isCSMonoBehaviour(type))
+		if (typeInfo.IsCSMonoBehaviour)
         {
             Component[] arrRet = go.GetComponentsInParent(type);
             help_retComArr(vc, arrRet);
@@ -319,7 +320,7 @@ public partial class UnityEngineManual
         //        bool includeInactive = JSMgr.datax.getBoolean(JSDataExchangeMgr.eGetType.GetARGV);
         bool includeInactive = JSApi.getBooleanS((int)JSApi.GetType.Arg);
 
-        if (isCSMonoBehaviour(type))
+		if (typeInfo.IsCSMonoBehaviour)
         {
             Component[] arrRet = go.GetComponentsInParent(type, includeInactive);
             help_retComArr(vc, arrRet);
