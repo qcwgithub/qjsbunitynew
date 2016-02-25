@@ -639,7 +639,7 @@ public class JSBindingSettings
         //
         //
 
-#if UNITY_4_6
+//#if UNITY_4_6
         
         // interface
 
@@ -750,7 +750,7 @@ public class JSBindingSettings
         // delegates
         // typeof(UnityEngine.UI.InputField.OnValidateInput),
 
-#endif // #if UNITY_4_6 || UNITY_4_7
+//#endif // #if UNITY_4_6 || UNITY_4_7
 
         
         // test
@@ -773,7 +773,7 @@ public class JSBindingSettings
         //typeof(SerializeStruct.AppleInfo),
         typeof(StringBuilder),
 
-#if UNITY_4_6 || UNITY_4_7
+//#if UNITY_4_6 || UNITY_4_7
         //typeof(UnityEngine.EventSystems.UIBehaviour),
         //typeof(UnityEngine.UI.Selectable),
         //typeof(UnityEngine.UI.Slider),
@@ -787,7 +787,7 @@ public class JSBindingSettings
         //typeof(UnityEngine.UI.Slider.SliderEvent),
 
         typeof(UnityEngine.Canvas),
-#endif
+//#endif
     };
     
 
