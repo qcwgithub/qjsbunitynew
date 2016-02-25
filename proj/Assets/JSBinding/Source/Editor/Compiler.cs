@@ -24,23 +24,33 @@ public class Compiler
 		// define		
 		string define = "TRACE;DEBUG;UNITY_EDITOR;JS";
 
-        #if UNITY_4_6
+#if UNITY_4_6
         define += ";UNITY_4_6";
-        #endif
+#endif
         
-        #if UNITY_4_7
+#if UNITY_4_7
         define += ";UNITY_4_7";
-        #endif
-        
-        #if UNITY_5
-        define += ";UNITY_5";
-        #endif
-        #if UNITY_5_1
+#endif
+
+#if UNITY_4_8
+        define += ";UNITY_4_8";
+#endif
+
+#if UNITY_5_0
+        define += ";UNITY_5_0";
+#endif
+
+#if UNITY_5_1
         define += ";UNITY_5_1";
-        #endif
-        #if UNITY_5_2
+#endif
+
+#if UNITY_5_2
         define += ";UNITY_5_2";
-        #endif
+#endif
+
+#if UNITY_5_3
+        define += ";UNITY_5_3";
+#endif
 
         // NOVA!
 		if (PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone).IndexOf("USEAB") >= 0)
