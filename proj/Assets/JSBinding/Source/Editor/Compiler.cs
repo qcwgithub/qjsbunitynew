@@ -83,7 +83,10 @@ public class Compiler
 		string[] sources = Directory.GetFiles(Application.dataPath, "*.cs", SearchOption.AllDirectories);
 		foreach (var s in sources)
 		{
-			args.Add(s.Replace("/", "\\"));
+            if (s.IndexOf(' ') >= 0)
+                args.Add("\"" + s.Replace("/", "\\") + "\"");
+            else
+			    args.Add(s.Replace("/", "\\"));
 		}
 		
 		// 把参数写到文件中，然后把这个文件路径做为参数传递给 skc5.exe
