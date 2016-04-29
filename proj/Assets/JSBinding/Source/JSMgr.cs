@@ -645,6 +645,18 @@ public static class JSMgr
             mDictJSFun2.Add(rel.hashCode, funID);
         }
     }
+    public static Delegate getJSFunCSDelegateRel(int funID)
+    {
+        JS_CS_FunRel rel;
+        if (mDictJSFun1.TryGetValue(funID, out rel))
+        {
+            object obj = rel.wr.Target;
+            if (obj == null)
+                Debug.LogError("ERROR getJSFunCSDelegateRel rel.wr.Target == null");
+            return (Delegate)obj;
+        }
+        return null;
+    }
     public static void removeJSFunCSDelegateRel(int funID)
     {
         JS_CS_FunRel rel;

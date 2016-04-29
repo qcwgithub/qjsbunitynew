@@ -271,7 +271,10 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
         sb.Append("    if (objFunction == null || objFunction.jsObjID == 0)\n");
         sb.Append("    [[\n        return null;\n    ]]\n");
 
-        sb.AppendFormat("    {0} action = ({1}) => \n", JSNameMgr.GetTypeFullName(delType, true), argsParam.Format(cg.args.ArgsFormat.OnlyList));
+        sb.AppendFormat("    {0} action = ({0})JSMgr.getJSFunCSDelegateRel(objFunction.jsObjID); \n", JSNameMgr.GetTypeFullName(delType, true));
+        sb.Append("    if (action != null)\n        return action;\n\n");
+
+        sb.AppendFormat("    action = ({0}) => \n", argsParam.Format(cg.args.ArgsFormat.OnlyList));
         sb.AppendFormat("    [[\n");
         sb.AppendFormat("        JSMgr.vCall.CallJSFunctionValue(0, objFunction.jsObjID{0}{1});\n", (argsParam.Count > 0) ? ", " : "", argsParam);
 
