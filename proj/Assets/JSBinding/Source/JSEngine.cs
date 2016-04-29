@@ -154,7 +154,7 @@ public class JSEngine : MonoBehaviour
             lstThreadSafeActions.Add(action);
         }
     }
-    void UpdateThreadSafeActions()
+    public void UpdateThreadSafeActions()
     {
         if (hasThreadSafeActions)
         {

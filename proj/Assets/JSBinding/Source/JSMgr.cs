@@ -540,7 +540,9 @@ public static class JSMgr
                 object tar = ((WeakReference)ret).Target;
                 if (tar == null)
                 {
-                    Debug.LogError("ERROR: JSMgr.getCSObj WeakReference.Target == null");
+                    JSEngine.inst.UpdateThreadSafeActions();
+                    if (mDictionary1.ContainsKey(jsObjID))
+                        Debug.LogError("ERROR: JSMgr.getCSObj WeakReference.Target == null");
                 }
                 return tar;
             }
