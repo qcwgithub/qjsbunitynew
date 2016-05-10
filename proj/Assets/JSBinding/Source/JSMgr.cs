@@ -540,9 +540,17 @@ public static class JSMgr
                 object tar = ((WeakReference)ret).Target;
                 if (tar == null)
                 {
-                    JSEngine.inst.UpdateThreadSafeActions();
-                    if (mDictionary1.ContainsKey(jsObjID))
-                        Debug.LogError("ERROR: JSMgr.getCSObj WeakReference.Target == null");
+//                    JSEngine.inst.UpdateThreadSafeActions();
+//                    if (mDictionary1.ContainsKey(jsObjID))
+//                        Debug.LogError("ERROR: JSMgr.getCSObj WeakReference.Target == null");
+
+                    // 这里为什么这么做
+					// 这里先移除，返回值为null，外面自然会再添加
+                    // 更多细节请看 CSRepresentedObject 注释！
+                    // 这里唯一需要纠结一下的就是 round 参数，总是传 0 吧，现在已经不需要检查 round 是否是上一轮的
+                    // 而且在手机上跑的话也不可能出现遗留上一轮对象的问题，因为一共只有一轮
+                    JSMgr.removeJSCSRel(jsObjID, 0 /* round TODO */);
+                    JSMgr.removeJSFunCSDelegateRel(jsObjID);
                 }
                 return tar;
             }

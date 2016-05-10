@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using UnityEngine;
 using System.Collections.Generic;
@@ -827,7 +827,7 @@ public class JSDataExchange_Arr
         string getValMethod = JSDataExchangeMgr.GetMetatypeKeyword(elementType).Replace("get", "set");
 
         // 2015.Sep.2
-        // +�ж�arrRetΪnull�����
+        // +判断arrRet为null的情况
         if (elementType.ContainsGenericParameters)
         {
             sb.AppendFormat("    var arrRet = (Array){0};\n", expVar)
@@ -915,7 +915,12 @@ public class CSRepresentedObject
         else 
             s_objCount++;
 
-        // refCount show always be 1
+        // !
+        // inc 之后 refCount 可能 > 1
+        // getCSObj 可能检查 WeakReference.Target == null，表明 ~CSRepresentedObject 未被调用
+        // 此时我们继续创建另一个 CSRepresentedObject 对象
+        // 那么 refCount 就会 > 1
+
         //int refCount = 
             JSApi.incRefCount(jsObjID);
         //Debug.Log(new StringBuilder().AppendFormat("+ CSRepresentedObject {0} Ref[{1}] Fun[{1}]", jsObjID, refCount, bFunction ? 1 : 0));
@@ -939,6 +944,9 @@ public class CSRepresentedObject
                     s_funCount--;
                 else
                     s_objCount--;
+                        
+                // !
+                // 由于 refCount 可能 > 1，这里必须判断 refCount <= 0 才能 JSMgr.removeJSCSRel
 
                 int refCount = JSApi.decRefCount(jsObjID);
                 if (refCount <= 0)
@@ -949,10 +957,10 @@ public class CSRepresentedObject
                         JSMgr.removeJSFunCSDelegateRel(jsObjID);
                     }
                 }
-                else
-                {
-                    Debug.LogError(";;;//IIL.x&");
-                }
+//                else
+//                {
+//                    Debug.LogError(";;;//IIL.x&");
+//                }
             };
     }
 
