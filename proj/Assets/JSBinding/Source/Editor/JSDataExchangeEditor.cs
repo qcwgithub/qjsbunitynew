@@ -120,7 +120,7 @@ public class JSDataExchangeEditor : JSDataExchangeMgr
                     .ToString();
             }
 
-            if (isOut)
+            if (isOut || isRef)
             {
                 var _sb = new StringBuilder();
                 if (bTOrContainsT)
